@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Painel Administrativo | Minha Lista</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="dashboard">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html" class="active">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Painel administrativo</h1>
+
+                    <p>
+                        Visão geral dos usuários, assinaturas e serviços.
+                    </p>
+                </div>
+
+                <span
+                    id="statusSistema"
+                    class="status status-ativo">
+                    Sistema operacional
+                </span>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Usuários</span>
+                    <strong id="adminTotalUsuarios">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Premium ativos</span>
+                    <strong id="adminTotalPremium">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Cortesias ativas</span>
+                    <strong id="adminTotalCortesia">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Receita mensal</span>
+                    <strong id="adminReceitaMensal">R$ 0,00</strong>
+                </article>
+
+            </section>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Listas criadas</span>
+                    <strong id="adminTotalListas">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Produtos cadastrados</span>
+                    <strong id="adminTotalProdutos">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Supermercados</span>
+                    <strong id="adminTotalSupermercados">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Preços coletados hoje</span>
+                    <strong id="adminPrecosHoje">0</strong>
+                </article>
+
+            </section>
+
+            <section class="admin-grid">
+
+                <article class="card">
+
+                    <div class="section-header">
+                        <div>
+                            <span class="card-label">Assinaturas</span>
+                            <h2>Distribuição de acessos</h2>
+                        </div>
+                    </div>
+
+                    <div id="adminDistribuicaoPlanos" class="lista-status">
+
+                        <div class="status-item">
+                            <span>Free</span>
+                            <strong id="quantidadePlanoFree">0</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Premium mensal</span>
+                            <strong id="quantidadePremiumMensal">0</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Premium trimestral</span>
+                            <strong id="quantidadePremiumTrimestral">0</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Premium anual</span>
+                            <strong id="quantidadePremiumAnual">0</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Cortesia</span>
+                            <strong id="quantidadeCortesia">0</strong>
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <article class="card">
+
+                    <div class="section-header">
+                        <div>
+                            <span class="card-label">Atividade</span>
+                            <h2>Últimos usuários</h2>
+                        </div>
+
+                        <a href="./usuarios.html">Ver todos</a>
+                    </div>
+
+                    <div id="adminUltimosUsuarios">
+                        <p class="estado-vazio">
+                            Nenhum usuário encontrado.
+                        </p>
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="admin-grid">
+
+                <article class="card">
+
+                    <div class="section-header">
+                        <div>
+                            <span class="card-label">Scraping</span>
+                            <h2>Últimas execuções</h2>
+                        </div>
+
+                        <a href="./scrapers.html">Ver detalhes</a>
+                    </div>
+
+                    <div id="adminUltimosScrapers">
+                        <p class="estado-vazio">
+                            Nenhuma execução registrada.
+                        </p>
+                    </div>
+
+                </article>
+
+                <article class="card">
+
+                    <div class="section-header">
+                        <div>
+                            <span class="card-label">Pagamentos</span>
+                            <h2>Eventos recentes</h2>
+                        </div>
+                    </div>
+
+                    <div id="adminEventosPagamento">
+                        <p class="estado-vazio">
+                            Nenhum evento de pagamento.
+                        </p>
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Acesso rápido</span>
+                        <h2>Gerenciamento</h2>
+                    </div>
+                </div>
+
+                <div class="admin-atalhos">
+
+                    <a class="card admin-atalho" href="./usuarios.html">
+                        👥 Usuários
+                    </a>
+
+                    <a class="card admin-atalho" href="./produtos.html">
+                        📦 Produtos
+                    </a>
+
+                    <a class="card admin-atalho" href="./supermercados.html">
+                        🏪 Supermercados
+                    </a>
+
+                    <a class="card admin-atalho" href="./monitoramento.html">
+                        📊 Monitoramento
+                    </a>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

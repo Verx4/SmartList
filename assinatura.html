@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+    <title>Planos e Assinatura | Minha Lista</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/checkout.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/temas.css">
+</head>
+
+<body>
+    <div id="mensagens" class="mensagens-globais" aria-live="polite"></div>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="./dashboard.html">Minha lista</a>
+                <a href="./comparacao.html">Comparação</a>
+                <a href="./historico.html">Histórico</a>
+                <a href="./assinatura.html" class="active">Planos</a>
+                <a href="./perfil.html">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+        <section class="page-header">
+            <span class="page-eyebrow">Planos</span>
+            <h1>Escolha como deseja usar o Minha Lista</h1>
+            <p>
+                O plano Free funciona totalmente de forma manual. O Premium libera todos os recursos inteligentes.
+            </p>
+        </section>
+
+        <section class="plano-atual">
+            <div>
+                <small>Seu plano atual</small>
+                <h2 id="nomePlanoAtual">Plano Free</h2>
+            </div>
+            <span id="statusPlanoAtual" class="selo-ativo">Ativo</span>
+        </section>
+
+        <section class="planos-grid">
+            <article class="plano-card">
+                <span class="plano-nome">Free</span>
+                <div class="preco">R$ 0,00</div>
+
+                <p class="descricao">
+                    <strong>Sistema seco e manual.</strong>
+                    Você preenche e controla todas as informações da compra por conta própria.
+                </p>
+
+                <h3 class="plano-secao-titulo">O que está incluído</h3>
+                <ul class="lista-recursos">
+                    <li>✓ Criar sua lista de compras</li>
+                    <li>✓ Adicionar produtos manualmente</li>
+                    <li>✓ Informar preços e quantidades manualmente</li>
+                    <li>✓ Cadastrar seus mercados</li>
+                    <li>✓ Utilizar a barra de orçamento</li>
+                    <li>✓ Dados salvos no navegador</li>
+                </ul>
+
+                <h3 class="plano-secao-titulo">Não está incluído</h3>
+                <ul class="lista-nao-inclui">
+                    <li>✕ Comparação automática de preços</li>
+                    <li>✕ Histórico completo de compras</li>
+                    <li>✕ Cálculo automático de economia</li>
+                    <li>✕ Sugestão do mercado mais barato</li>
+                    <li>✕ Compra inteligente</li>
+                    <li>✕ Scraping de preços reais</li>
+                    <li>✕ Relatórios e estatísticas</li>
+                </ul>
+
+                <button class="btn btn-secondary btn-block" type="button" disabled>Plano atual</button>
+            </article>
+
+            <article class="plano-card plano-premium">
+                <span class="selo-recomendado">Todos os recursos</span>
+                <span class="plano-nome">Premium</span>
+
+                <p class="descricao">
+                    <strong>Tudo o que existe no aplicativo.</strong>
+                    Automatize pesquisas, comparações, histórico e cálculo de economia.
+                </p>
+
+                <div class="seletor-ciclos">
+                    <label class="opcao-ciclo">
+                        <input type="radio" name="cicloPremium" value="mensal" checked>
+                        <span class="opcao-ciclo-conteudo">
+                            <strong>Mensal</strong>
+                            <span>R$ 9,97</span>
+                            <small>por mês</small>
+                        </span>
+                    </label>
+
+                    <label class="opcao-ciclo">
+                        <input type="radio" name="cicloPremium" value="trimestral">
+                        <span class="opcao-ciclo-conteudo">
+                            <strong>Trimestral</strong>
+                            <span>R$ 26,91</span>
+                            <small>economize R$ 3,00</small>
+                        </span>
+                    </label>
+
+                    <label class="opcao-ciclo">
+                        <input type="radio" name="cicloPremium" value="anual">
+                        <span class="opcao-ciclo-conteudo">
+                            <strong>Anual</strong>
+                            <span>R$ 95,64</span>
+                            <small>economize R$ 24,00</small>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="preco-premium-linha">
+                    <strong id="precoPremium">R$ 9,97</strong>
+                    <span id="periodoPremium">/mês</span>
+                </div>
+
+                <h3 class="plano-secao-titulo">Tudo incluído</h3>
+                <ul class="lista-recursos">
+                    <li>✓ Todos os recursos do plano Free</li>
+                    <li>✓ Busca automática de preços</li>
+                    <li>✓ Comparação entre supermercados</li>
+                    <li>✓ Sugestão do mercado mais barato</li>
+                    <li>✓ Compra inteligente</li>
+                    <li>✓ Histórico completo de compras</li>
+                    <li>✓ Histórico de alterações de preços</li>
+                    <li>✓ Cálculo de economia</li>
+                    <li>✓ Relatórios e estatísticas</li>
+                    <li>✓ Produtos e mercados favoritos</li>
+                    <li>✓ Notificações e promoções</li>
+                    <li>✓ Preços reais coletados pelo scraper</li>
+                    <li>✓ Faixa estimada com margem de ±5%</li>
+                    <li>✓ Personalização de cores</li>
+                    <li>✓ Suporte prioritário</li>
+                </ul>
+
+                <a id="btnAssinarPremium" class="btn btn-primary btn-block"
+                    href="./checkout.html?plano=premium&ciclo=mensal">
+                    Assinar Premium Mensal
+                </a>
+
+                <p class="plano-observacao">
+                    Pagamento único para o período selecionado, sem renovação automática.
+                </p>
+            </article>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="./js/tema.js"></script>
+    <script type="module" src="./js/assinatura.js"></script>
+</body>
+
+</html>
+

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Gestão de Usuários | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="usuarios">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html" class="active">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Gestão de usuários</h1>
+
+                    <p>
+                        Gerencie contas, planos, cortesias e bloqueios.
+                    </p>
+                </div>
+
+                <button
+                    id="btnAdicionarUsuario"
+                    class="btn btn-primary"
+                    type="button">
+                    + Adicionar usuário
+                </button>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Total de usuários</span>
+                    <strong id="totalUsuarios">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Plano Free</span>
+                    <strong id="usuariosFree">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Premium</span>
+                    <strong id="usuariosPremium">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Cortesia</span>
+                    <strong id="usuariosCortesia">0</strong>
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="buscarAdminUsuario">Buscar</label>
+
+                        <input
+                            type="search"
+                            id="buscarAdminUsuario"
+                            placeholder="Nome ou e-mail">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroPlanoUsuario">Acesso</label>
+
+                        <select id="filtroPlanoUsuario">
+                            <option value="">Todos</option>
+                            <option value="FREE">Free</option>
+                            <option value="PREMIUM">Premium</option>
+                            <option value="CORTESIA">Cortesia</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroCicloUsuario">Ciclo</label>
+
+                        <select id="filtroCicloUsuario">
+                            <option value="">Todos</option>
+                            <option value="MENSAL">Mensal</option>
+                            <option value="TRIMESTRAL">Trimestral</option>
+                            <option value="ANUAL">Anual</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroStatusUsuario">Status</label>
+
+                        <select id="filtroStatusUsuario">
+                            <option value="">Todos</option>
+                            <option value="ATIVO">Ativo</option>
+                            <option value="BLOQUEADO">Bloqueado</option>
+                            <option value="CANCELADO">Cancelado</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Acesso especial</span>
+                        <h2>Conceder cortesia</h2>
+                    </div>
+                </div>
+
+                <form id="formCortesia" class="form">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="cortesiaUsuarioEmail">
+                                E-mail do usuário
+                            </label>
+
+                            <input
+                                type="email"
+                                id="cortesiaUsuarioEmail"
+                                name="email"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cortesiaValidade">
+                                Validade da cortesia
+                            </label>
+
+                            <input
+                                type="date"
+                                id="cortesiaValidade"
+                                name="validade">
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cortesiaMotivo">Motivo</label>
+
+                        <input
+                            type="text"
+                            id="cortesiaMotivo"
+                            name="motivo"
+                            placeholder="Ex.: Parceria ou atendimento">
+                    </div>
+
+                    <label class="checkbox-label" for="cortesiaSemValidade">
+
+                        <input
+                            type="checkbox"
+                            id="cortesiaSemValidade"
+                            name="semValidade">
+
+                        <span>Cortesia sem data de vencimento</span>
+
+                    </label>
+
+                    <button class="btn btn-primary" type="submit">
+                        Conceder cortesia
+                    </button>
+
+                </form>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="table-wrapper">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>E-mail</th>
+                                <th>Perfil</th>
+                                <th>Acesso</th>
+                                <th>Ciclo</th>
+                                <th>Validade</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaAdminUsuarios">
+                            <tr>
+                                <td colspan="8" class="estado-vazio">
+                                    Nenhum usuário encontrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </section>
+
+            <div
+                id="mensagemAdmin"
+                class="mensagem"
+                aria-live="polite"
+                hidden>
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

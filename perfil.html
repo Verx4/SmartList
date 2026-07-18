@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+
+    <title>Meu Perfil | Minha Lista</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/perfil.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="./dashboard.html">Minha lista</a>
+                <a href="./comparacao.html">Comparação</a>
+                <a href="./historico.html">Histórico</a>
+                <a href="./favoritos.html">Favoritos</a>
+                <a href="./relatorios.html">Relatórios</a>
+                <a href="./perfil.html" class="active">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+
+        <section class="page-header">
+            <span class="page-eyebrow">Minha conta</span>
+            <h1>Perfil</h1>
+            <p>Atualize seus dados pessoais e preferências.</p>
+        </section>
+
+        <div class="perfil-grid">
+
+            <aside class="card perfil-resumo">
+                <div class="avatar" id="perfilAvatar">U</div>
+
+                <h2 id="perfilNomeExibicao">Usuário</h2>
+                <p id="perfilEmailExibicao">usuario@exemplo.com</p>
+
+                <span id="perfilPlano" class="status status-ativo">
+                    Plano Free
+                </span>
+
+                <a class="btn btn-primary btn-block" href="./assinatura.html">
+                    Ver planos
+                </a>
+
+                <button
+                    id="btnSair"
+                    class="btn btn-secondary btn-block"
+                    type="button">
+                    Sair da conta
+                </button>
+            </aside>
+
+            <section class="card perfil-form-card">
+                <h2>Dados pessoais</h2>
+
+                <form id="formPerfil" class="form" novalidate>
+
+                    <div class="form-group">
+                        <label for="perfilNome">Nome completo</label>
+                        <input
+                            type="text"
+                            id="perfilNome"
+                            name="nome"
+                            autocomplete="name"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfilEmail">E-mail</label>
+                        <input
+                            type="email"
+                            id="perfilEmail"
+                            name="email"
+                            autocomplete="email"
+                            required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="perfilTelefone">Telefone</label>
+                            <input
+                                type="tel"
+                                id="perfilTelefone"
+                                name="telefone"
+                                placeholder="(00) 00000-0000"
+                                autocomplete="tel">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="perfilCidade">Cidade</label>
+                            <input
+                                type="text"
+                                id="perfilCidade"
+                                name="cidade"
+                                autocomplete="address-level2">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="perfilEstado">Estado</label>
+                        <select id="perfilEstado" name="estado">
+                            <option value="">Selecione</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
+
+                    <fieldset class="form-group">
+                        <legend>Notificações</legend>
+
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="notificarPromocoes"
+                                name="notificarPromocoes">
+                            <span>Receber alertas de promoções</span>
+                        </label>
+
+                        <label class="checkbox-label">
+                            <input
+                                type="checkbox"
+                                id="notificarPrecos"
+                                name="notificarPrecos">
+                            <span>Receber alertas de mudanças de preços</span>
+                        </label>
+                    </fieldset>
+
+                    <button class="btn btn-primary" type="submit">
+                        Salvar alterações
+                    </button>
+
+                    <div
+                        id="mensagemPerfil"
+                        class="mensagem"
+                        aria-live="polite">
+                    </div>
+
+                </form>
+            </section>
+
+        </div>
+
+        <section class="card zona-perigo">
+            <div>
+                <h2>Excluir conta</h2>
+                <p>
+                    Essa ação removerá seus dados pessoais e não poderá ser
+                    desfeita.
+                </p>
+            </div>
+
+            <button
+                id="btnExcluirConta"
+                class="btn btn-danger"
+                type="button">
+                Excluir minha conta
+            </button>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/perfil.js"></script>
+
+</body>
+
+</html>

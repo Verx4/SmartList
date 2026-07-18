@@ -1,0 +1,92 @@
+.auth-body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 35%),
+        #0b1220;
+}
+
+.auth-container {
+    min-height: 100vh;
+    width: min(1100px, calc(100% - 32px));
+    margin: auto;
+    padding: 40px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 460px;
+    gap: 60px;
+    align-items: center;
+}
+
+.auth-container-centralizado {
+    display: flex;
+    justify-content: center;
+}
+
+.auth-container-centralizado .auth-card {
+    width: min(100%, 480px);
+}
+
+.auth-info .brand {
+    display: inline-block;
+    margin-bottom: 70px;
+}
+
+.auth-info h1 {
+    max-width: 620px;
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.05;
+    margin-bottom: 22px;
+}
+
+.auth-info > p {
+    max-width: 580px;
+    color: #94a3b8;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.auth-beneficios {
+    list-style: none;
+    margin-top: 28px;
+    display: grid;
+    gap: 12px;
+}
+
+.auth-beneficios li {
+    color: #cbd5e1;
+}
+
+.auth-card {
+    padding: 32px;
+}
+
+.auth-card-header {
+    margin: 24px 0;
+}
+
+.auth-card-header h1,
+.auth-card-header h2 {
+    margin: 8px 0;
+}
+
+.auth-card-header p {
+    color: #94a3b8;
+}
+
+.auth-link,
+.auth-voltar {
+    margin-top: 20px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+.auth-link a,
+.auth-voltar a,
+.form-options a {
+    color: #60a5fa;
+}
+
+.auth-link a:hover,
+.auth-voltar a:hover,
+.form-options a:hover {
+    color: white;
+}

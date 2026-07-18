@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+BASE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+MAVEN_VERSION=3.9.9
+MAVEN_HOME="$BASE_DIR/.mvn/apache-maven-$MAVEN_VERSION"
+MAVEN_ZIP="$BASE_DIR/.mvn/apache-maven-$MAVEN_VERSION.zip"
+MAVEN_URL="https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$MAVEN_VERSION/apache-maven-$MAVEN_VERSION-bin.zip"
+
+if [ ! -x "$MAVEN_HOME/bin/mvn" ]; then
+  java "$BASE_DIR/.mvn/wrapper/MavenDownloader.java" "$MAVEN_URL" "$MAVEN_ZIP"
+  unzip -q "$MAVEN_ZIP" -d "$BASE_DIR/.mvn"
+  rm -f "$MAVEN_ZIP"
+fi
+
+exec "$MAVEN_HOME/bin/mvn" "$@"

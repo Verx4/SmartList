@@ -1,0 +1,83 @@
+package br.com.minhalista.auth;
+
+import java.time.Instant;
+import java.util.Locale;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.com.minhalista.auth.dto.AuthResponse;
+import br.com.minhalista.auth.dto.CadastroRequest;
+import br.com.minhalista.auth.dto.LoginRequest;
+import br.com.minhalista.auth.dto.UsuarioResponse;
+import br.com.minhalista.common.RegraNegocioException;
+import br.com.minhalista.usuario.Perfil;
+import br.com.minhalista.usuario.TipoAcesso;
+import br.com.minhalista.usuario.Usuario;
+import br.com.minhalista.usuario.UsuarioRepository;
+
+@Service
+public class AuthService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+
+    public AuthService(
+        UsuarioRepository usuarioRepository,
+        PasswordEncoder passwordEncoder,
+        JwtService jwtService
+    ) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
+
+    @Transactional
+    public UsuarioResponse cadastrar(CadastroRequest request) {
+        String email = normalizarEmail(request.email());
+
+        if (usuarioRepository.existsByEmailIgnoreCase(email)) {
+            throw new RegraNegocioException(HttpStatus.CONFLICT, "Este e-mail já está cadastrado.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(request.nome().trim());
+        usuario.setEmail(email);
+        usuario.setSenhaHash(passwordEncoder.encode(request.senha()));
+        usuario.setPerfil(Perfil.USUARIO);
+        usuario.setTipoAcesso(TipoAcesso.FREE);
+        usuario.setAtivo(true);
+        usuario.setAceiteTermosEm(Instant.now());
+        usuario.setAceiteMarketing(Boolean.TRUE.equals(request.aceiteMarketing()));
+
+        return UsuarioResponse.de(usuarioRepository.save(usuario));
+    }
+
+    @Transactional(readOnly = true)
+    public AuthResponse login(LoginRequest request) {
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(normalizarEmail(request.email()))
+            .orElseThrow(this::credenciaisInvalidas);
+
+        if (!usuario.isAtivo() || !passwordEncoder.matches(request.senha(), usuario.getSenhaHash())) {
+            throw credenciaisInvalidas();
+        }
+
+        return new AuthResponse(
+            jwtService.gerarToken(usuario),
+            "Bearer",
+            jwtService.getExpiracaoSegundos(),
+            UsuarioResponse.de(usuario)
+        );
+    }
+
+    private RegraNegocioException credenciaisInvalidas() {
+        return new RegraNegocioException(HttpStatus.UNAUTHORIZED, "E-mail ou senha inválidos.");
+    }
+
+    private String normalizarEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
+}

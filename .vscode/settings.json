@@ -1,0 +1,14 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.maven.enabled": true,
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "C:\\Users\\ferna\\.vscode\\extensions\\redhat.java-1.55.0-win32-x64\\jre\\21.0.11-win32-x86_64",
+            "default": true
+        }
+    ],
+    "java.project.importOnFirstTimeStartup": "automatic",
+    "java.maven.downloadSources": true,
+    "files.encoding": "utf8"
+}

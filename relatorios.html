@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+
+    <title>Relatórios | Minha Lista</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/relatorios.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav">
+                <a href="./dashboard.html">Minha lista</a>
+                <a href="./comparacao.html">Comparação</a>
+                <a href="./historico.html">Histórico</a>
+                <a href="./favoritos.html">Favoritos</a>
+                <a href="./relatorios.html" class="active">Relatórios</a>
+                <a href="./perfil.html">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+
+        <section class="page-header page-header-acoes">
+            <div>
+                <span class="page-eyebrow">Estatísticas</span>
+                <h1>Relatórios</h1>
+                <p>Acompanhe seus gastos e sua economia.</p>
+            </div>
+
+            <div class="acoes-form">
+                <select id="periodoRelatorio" aria-label="Período">
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 3 meses</option>
+                    <option value="180">Últimos 6 meses</option>
+                    <option value="365">Último ano</option>
+                    <option value="todos">Todo o período</option>
+                </select>
+
+                <button
+                    id="btnExportarRelatorio"
+                    class="btn btn-secondary"
+                    type="button">
+                    Exportar relatório
+                </button>
+            </div>
+        </section>
+
+        <section class="grid-resumo">
+
+            <article class="card resumo-card">
+                <span>Total gasto</span>
+                <strong id="totalGasto">R$ 0,00</strong>
+            </article>
+
+            <article class="card resumo-card">
+                <span>Total economizado</span>
+                <strong id="totalEconomizado">R$ 0,00</strong>
+            </article>
+
+            <article class="card resumo-card">
+                <span>Compras realizadas</span>
+                <strong id="comprasRealizadas">0</strong>
+            </article>
+
+            <article class="card resumo-card">
+                <span>Média por compra</span>
+                <strong id="mediaPorCompra">R$ 0,00</strong>
+            </article>
+
+        </section>
+
+        <section class="relatorios-grid">
+
+            <article class="card grafico-card">
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Gastos</span>
+                        <h2>Evolução dos gastos</h2>
+                    </div>
+                </div>
+
+                <div class="grafico-container">
+                    <canvas
+                        id="graficoGastos"
+                        aria-label="Gráfico de gastos">
+                    </canvas>
+                </div>
+            </article>
+
+            <article class="card grafico-card">
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Economia</span>
+                        <h2>Economia por período</h2>
+                    </div>
+                </div>
+
+                <div class="grafico-container">
+                    <canvas
+                        id="graficoEconomia"
+                        aria-label="Gráfico de economia">
+                    </canvas>
+                </div>
+            </article>
+
+        </section>
+
+        <section class="relatorios-grid">
+
+            <article class="card">
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Categorias</span>
+                        <h2>Gastos por categoria</h2>
+                    </div>
+                </div>
+
+                <div id="relatorioCategorias">
+                    <p class="estado-vazio">
+                        Ainda não existem dados suficientes.
+                    </p>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Supermercados</span>
+                        <h2>Economia por supermercado</h2>
+                    </div>
+                </div>
+
+                <div id="relatorioSupermercados">
+                    <p class="estado-vazio">
+                        Ainda não existem dados suficientes.
+                    </p>
+                </div>
+            </article>
+
+        </section>
+
+        <section class="card tabela-card">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">Produtos</span>
+                    <h2>Produtos com maior variação</h2>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Menor preço</th>
+                            <th>Maior preço</th>
+                            <th>Variação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabelaVariacaoPrecos">
+                        <tr>
+                            <td colspan="4" class="estado-vazio">
+                                Nenhuma variação registrada.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/relatorios.js"></script>
+
+</body>
+
+</html>

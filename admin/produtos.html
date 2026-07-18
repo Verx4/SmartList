@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Gestão de Produtos | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="produtos">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html" class="active">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Gestão de produtos</h1>
+
+                    <p>
+                        Cadastre produtos e acompanhe preços coletados.
+                    </p>
+                </div>
+
+                <button
+                    id="btnImportarProdutos"
+                    class="btn btn-secondary"
+                    type="button">
+                    Importar produtos
+                </button>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Produtos</span>
+                    <strong id="totalAdminProdutos">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Com preços</span>
+                    <strong id="produtosComPreco">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Sem preços</span>
+                    <strong id="produtosSemPreco">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Favoritados</span>
+                    <strong id="produtosFavoritados">0</strong>
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Cadastro</span>
+                        <h2>Cadastrar produto</h2>
+                    </div>
+                </div>
+
+                <form id="formAdminProduto" class="form">
+
+                    <input type="hidden" id="adminProdutoId" name="id">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="adminProdutoNome">Nome</label>
+
+                            <input
+                                type="text"
+                                id="adminProdutoNome"
+                                name="nome"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminProdutoCategoria">Categoria</label>
+
+                            <select
+                                id="adminProdutoCategoria"
+                                name="categoria"
+                                required>
+
+                                <option value="">Selecione</option>
+                                <option value="LATICINIOS">Laticínios</option>
+                                <option value="CARNES">Carnes</option>
+                                <option value="HORTIFRUTI">Hortifruti</option>
+                                <option value="PADARIA">Padaria</option>
+                                <option value="BEBIDAS">Bebidas</option>
+                                <option value="MERCEARIA">Mercearia</option>
+                                <option value="LIMPEZA">Limpeza</option>
+                                <option value="HIGIENE">Higiene</option>
+                                <option value="OUTROS">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminProdutoUnidade">Unidade</label>
+
+                            <select id="adminProdutoUnidade" name="unidade">
+                                <option value="UNIDADE">Unidade</option>
+                                <option value="QUILOGRAMA">Quilograma</option>
+                                <option value="GRAMA">Grama</option>
+                                <option value="LITRO">Litro</option>
+                                <option value="MILILITRO">Mililitro</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="acoes-form">
+
+                        <button class="btn btn-primary" type="submit">
+                            Salvar produto
+                        </button>
+
+                        <button
+                            id="btnCancelarEdicaoProduto"
+                            class="btn btn-secondary"
+                            type="button">
+                            Cancelar edição
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="mensagemAdmin"
+                        class="mensagem"
+                        aria-live="polite"
+                        hidden>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <section class="card">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="buscarAdminProduto">Buscar</label>
+
+                        <input
+                            type="search"
+                            id="buscarAdminProduto"
+                            placeholder="Nome do produto">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroAdminCategoria">Categoria</label>
+
+                        <select id="filtroAdminCategoria">
+                            <option value="">Todas</option>
+                            <option value="LATICINIOS">Laticínios</option>
+                            <option value="CARNES">Carnes</option>
+                            <option value="HORTIFRUTI">Hortifruti</option>
+                            <option value="MERCEARIA">Mercearia</option>
+                            <option value="LIMPEZA">Limpeza</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroProdutoPreco">Preço</label>
+
+                        <select id="filtroProdutoPreco">
+                            <option value="">Todos</option>
+                            <option value="COM_PRECO">Com preço</option>
+                            <option value="SEM_PRECO">Sem preço</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="table-wrapper">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Unidade</th>
+                                <th>Menor preço</th>
+                                <th>Margem ±5%</th>
+                                <th>Atualização</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaAdminProdutos">
+                            <tr>
+                                <td colspan="7" class="estado-vazio">
+                                    Nenhum produto cadastrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

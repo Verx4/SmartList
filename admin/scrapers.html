@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Gestão de Scrapers | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="scrapers">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html" class="active">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Gestão dos scrapers</h1>
+
+                    <p>
+                        Monitore a coleta automática de preços.
+                    </p>
+                </div>
+
+                <button
+                    id="btnExecutarTodosScrapers"
+                    class="btn btn-primary"
+                    type="button">
+                    Executar todos
+                </button>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Scrapers ativos</span>
+                    <strong id="scrapersAtivos">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Executando</span>
+                    <strong id="scrapersExecutando">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Com erro</span>
+                    <strong id="scrapersErro">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Preços coletados hoje</span>
+                    <strong id="precosAtualizados">0</strong>
+                </article>
+
+            </section>
+
+            <section class="admin-grid">
+
+                <article class="card">
+
+                    <span class="card-label">Agendamento</span>
+                    <h2>Execução automática</h2>
+
+                    <form id="formAgendamentoScraper" class="form">
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+                                <label for="frequenciaScraper">Frequência</label>
+
+                                <select id="frequenciaScraper" name="frequencia">
+                                    <option value="DIARIO">Diariamente</option>
+                                    <option value="DOIS_DIAS" selected>
+                                        A cada 2 dias
+                                    </option>
+                                    <option value="SEMANAL">Semanalmente</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="horarioScraper">Horário</label>
+
+                                <input
+                                    type="time"
+                                    id="horarioScraper"
+                                    name="horario"
+                                    value="00:00">
+                            </div>
+
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">
+                            Salvar agendamento
+                        </button>
+
+                    </form>
+
+                </article>
+
+                <article class="card">
+
+                    <span class="card-label">Variação estimada</span>
+                    <h2>Margem dos preços</h2>
+
+                    <form id="formMargemScraper" class="form">
+
+                        <div class="form-group">
+
+                            <label for="margemScraper">
+                                Margem de erro percentual
+                            </label>
+
+                            <input
+                                type="number"
+                                id="margemScraper"
+                                name="margemPercentual"
+                                value="5"
+                                min="0"
+                                max="20"
+                                step="0.1"
+                                required>
+
+                        </div>
+
+                        <p class="texto-ajuda">
+                            O preço coletado será preservado. A margem será
+                            apresentada separadamente como uma faixa de ±5%.
+                        </p>
+
+                        <div class="card margem-exemplo">
+
+                            <span>Exemplo para R$ 100,00</span>
+
+                            <strong>
+                                R$ 95,00 até R$ 105,00
+                            </strong>
+
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">
+                            Salvar margem
+                        </button>
+
+                    </form>
+
+                </article>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <span class="card-label">Coleta</span>
+                        <h2>Scrapers cadastrados</h2>
+                    </div>
+
+                    <select
+                        id="filtroStatusScraper"
+                        aria-label="Filtrar status">
+
+                        <option value="">Todos</option>
+                        <option value="ATIVO">Ativos</option>
+                        <option value="EXECUTANDO">Executando</option>
+                        <option value="ERRO">Com erro</option>
+
+                    </select>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Supermercado</th>
+                                <th>Status</th>
+                                <th>Última execução</th>
+                                <th>Produtos</th>
+                                <th>Erros</th>
+                                <th>Confiança</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaScrapers">
+                            <tr>
+                                <td colspan="7" class="estado-vazio">
+                                    Nenhum scraper cadastrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Execuções</span>
+                        <h2>Histórico dos scrapers</h2>
+                    </div>
+                </div>
+
+                <div id="historicoScrapers">
+                    <p class="estado-vazio">
+                        Nenhuma execução registrada.
+                    </p>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

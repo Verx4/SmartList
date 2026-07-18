@@ -1,0 +1,242 @@
+.admin-layout {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    background: var(--cor-fundo, #0b1220);
+}
+
+.admin-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 24px 18px;
+    background: var(--cor-superficie, #131c2f);
+    border-right: 1px solid var(--cor-borda, #26334b);
+}
+
+.admin-logo {
+    display: block;
+    margin-bottom: 24px;
+    color: var(--cor-texto, #ffffff);
+    font-size: 21px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.admin-menu {
+    display: grid;
+    gap: 7px;
+}
+
+.admin-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    border-radius: 10px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.admin-menu a:hover,
+.admin-menu a.ativo {
+    color: #ffffff;
+    background: #2563eb;
+}
+
+.admin-conteudo {
+    min-width: 0;
+    padding: 30px;
+}
+
+.admin-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.admin-cabecalho h1 {
+    margin-bottom: 7px;
+    font-size: 30px;
+}
+
+.admin-cabecalho p {
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.admin-card,
+.admin-secao {
+    background: var(--cor-superficie, #131c2f);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 16px;
+    box-shadow: var(--sombra-card, none);
+}
+
+.admin-card {
+    padding: 20px;
+}
+
+.admin-card span,
+.admin-card small {
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+.admin-card strong {
+    display: block;
+    margin-top: 10px;
+    color: var(--cor-sucesso, #22c55e);
+    font-size: 28px;
+}
+
+.admin-secao {
+    padding: 22px;
+    margin-bottom: 22px;
+}
+
+.admin-secao h2 {
+    margin-bottom: 8px;
+}
+
+.admin-secao-descricao {
+    margin-bottom: 20px;
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+.admin-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+    align-items: end;
+}
+
+.admin-form .campo-form {
+    margin: 0;
+}
+
+.admin-form .campo-form-grande {
+    grid-column: span 2;
+}
+
+.admin-form .acoes-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.admin-tabela-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 12px;
+}
+
+.admin-tabela {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+}
+
+.admin-tabela th,
+.admin-tabela td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--cor-borda, #26334b);
+}
+
+.admin-tabela th {
+    color: var(--cor-texto-secundario, #94a3b8);
+    background: var(--cor-superficie-secundaria, #1f2937);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.admin-tabela tr:last-child td {
+    border-bottom: 0;
+}
+
+.admin-tabela tbody tr:hover {
+    background: var(--cor-superficie-hover, #182338);
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-ok {
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.16);
+}
+
+.status-alerta {
+    color: #fcd34d;
+    background: rgba(245, 158, 11, 0.17);
+}
+
+.status-erro {
+    color: #fca5a5;
+    background: rgba(239, 68, 68, 0.17);
+}
+
+.status-neutro {
+    color: var(--cor-texto-secundario, #94a3b8);
+    background: var(--cor-superficie-secundaria, #1f2937);
+}
+
+.exemplo-margem {
+    margin-top: 18px;
+    padding: 16px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border-left: 4px solid #f59e0b;
+    border-radius: 10px;
+}
+
+.exemplo-margem strong {
+    color: var(--cor-texto, #ffffff);
+}
+
+.aviso-preco-original {
+    margin-top: 12px;
+    color: #86efac;
+    font-size: 14px;
+}
+
+.monitoramento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.monitoramento-card {
+    padding: 18px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 13px;
+}
+
+.monitoramento-card h3 {
+    margin-bottom: 13px;
+    font-size: 16px;
+}
+
+.monitoramento-card p {
+    color: var(--cor-texto-secundario, #94a3b8);
+}

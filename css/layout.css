@@ -1,0 +1,282 @@
+.container {
+    width: min(1100px, calc(100% - 40px));
+    margin: 0 auto;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11, 18, 32, 0.94);
+    border-bottom: 1px solid #1f2937;
+    backdrop-filter: blur(12px);
+}
+
+.header-content {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.main-nav > a:not(.btn) {
+    padding: 9px 11px;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.main-nav > a:not(.btn):hover {
+    color: white;
+    background: #1f2937;
+}
+
+.main-nav > a.active {
+    color: white;
+    background: #1f2937;
+}
+
+.page-main {
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    margin: 7px 0 8px;
+    font-size: clamp(30px, 5vw, 44px);
+}
+
+.page-header p {
+    max-width: 720px;
+    color: #94a3b8;
+}
+
+.page-header-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.page-eyebrow {
+    color: #60a5fa;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.section {
+    padding: 80px 0;
+}
+
+.section-title {
+    max-width: 700px;
+    margin-bottom: 36px;
+}
+
+.section-title h2 {
+    margin-top: 8px;
+    font-size: clamp(28px, 4vw, 42px);
+}
+
+.section-highlight {
+    background: #0f172a;
+    border-top: 1px solid #1f2937;
+    border-bottom: 1px solid #1f2937;
+}
+
+.cta-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.cta-content h2 {
+    margin: 8px 0;
+}
+
+.cta-content p {
+    color: #94a3b8;
+}
+
+.hero {
+    padding: 90px 0;
+    background:
+        radial-gradient(circle at 75% 30%, rgba(37, 99, 235, 0.2), transparent 35%),
+        #0b1220;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
+    gap: 60px;
+    align-items: center;
+}
+
+.hero-content h1 {
+    max-width: 750px;
+    margin: 14px 0 22px;
+    font-size: clamp(42px, 7vw, 72px);
+    line-height: 1.04;
+}
+
+.hero-content > p {
+    max-width: 650px;
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+}
+
+.hero-preview {
+    padding: 28px;
+}
+
+.preview-header,
+.preview-total,
+.preview-economia,
+.preview-mercado {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 17px 0;
+    border-bottom: 1px solid #1f2937;
+}
+
+.hero-preview span {
+    color: #94a3b8;
+}
+
+.preview-total strong {
+    color: #60a5fa;
+}
+
+.preview-economia strong {
+    color: #22c55e;
+}
+
+.preview-mercado {
+    border-bottom: none;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.section-header h2 {
+    margin-top: 4px;
+}
+
+.section-header select {
+    width: auto;
+    min-width: 180px;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+th,
+td {
+    padding: 14px;
+    border-bottom: 1px solid #1f2937;
+    text-align: left;
+}
+
+th {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+td {
+    color: #cbd5e1;
+}
+
+tbody tr:hover {
+    background: rgba(31, 41, 55, 0.45);
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-button {
+    padding: 10px 14px;
+    border: 1px solid #334155;
+    border-radius: 9px;
+    color: #94a3b8;
+    background: #1f2937;
+    cursor: pointer;
+}
+
+.tab-button.active,
+.tab-button:hover {
+    color: white;
+    border-color: #2563eb;
+    background: #2563eb;
+}
+
+.site-footer {
+    padding: 28px 0;
+    color: #94a3b8;
+    background: #0f172a;
+    border-top: 1px solid #1f2937;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.footer-links a:hover {
+    color: white;
+}

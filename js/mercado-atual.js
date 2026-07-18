@@ -1,0 +1,434 @@
+const CHAVE_MERCADO_ATUAL = "mercadoAtual";
+const CHAVE_MERCADOS = "mercadosFrequentes";
+const CHAVE_MERCADOS_ANTIGOS = "mercadosRecentes";
+
+const MERCADOS_INICIAIS = [
+    "Assaí",
+    "Atacadão",
+    "Novo Atacarejo"
+];
+
+
+function limparTexto(valor) {
+
+    return String(valor || "")
+        .trim()
+        .replace(/\s+/g, " ");
+
+}
+
+
+function lerLista(chave) {
+
+    try {
+
+        const dados = JSON.parse(localStorage.getItem(chave));
+
+        return Array.isArray(dados) ? dados : [];
+
+    } catch {
+
+        return [];
+
+    }
+
+}
+
+
+function removerDuplicados(lista) {
+
+    const resultado = [];
+
+    lista.forEach(item => {
+
+        const nome = limparTexto(item);
+
+        if (!nome) {
+
+            return;
+
+        }
+
+        const existe = resultado.some(
+            mercado => mercado.toLocaleLowerCase("pt-BR") === nome.toLocaleLowerCase("pt-BR")
+        );
+
+        if (!existe) {
+
+            resultado.push(nome);
+
+        }
+
+    });
+
+    return resultado;
+
+}
+
+
+function salvarLista(lista) {
+
+    const mercados = removerDuplicados(lista);
+
+    localStorage.setItem(CHAVE_MERCADOS, JSON.stringify(mercados));
+
+    return mercados;
+
+}
+
+
+export function obterMercadoAtual() {
+
+    return limparTexto(localStorage.getItem(CHAVE_MERCADO_ATUAL));
+
+}
+
+
+export function listarMercadosFrequentes() {
+
+    const jaFoiCriada = localStorage.getItem(CHAVE_MERCADOS) !== null;
+
+    const lista = removerDuplicados([
+        ...lerLista(CHAVE_MERCADOS),
+        ...lerLista(CHAVE_MERCADOS_ANTIGOS),
+        ...(jaFoiCriada ? [] : MERCADOS_INICIAIS)
+    ]);
+
+    if (!jaFoiCriada) {
+
+        salvarLista(lista);
+
+    }
+
+    return lista;
+
+}
+
+
+export function adicionarMercadoFrequente(nome) {
+
+    const mercado = limparTexto(nome);
+
+    if (!mercado) {
+
+        return "";
+
+    }
+
+    salvarLista([
+        ...listarMercadosFrequentes(),
+        mercado
+    ]);
+
+    renderizarMercados();
+
+    return mercado;
+
+}
+
+
+export function removerMercadoFrequente(nome) {
+
+    const mercado = limparTexto(nome);
+
+    const lista = listarMercadosFrequentes().filter(
+        item => item.toLocaleLowerCase("pt-BR") !== mercado.toLocaleLowerCase("pt-BR")
+    );
+
+    salvarLista(lista);
+
+    if (
+        obterMercadoAtual().toLocaleLowerCase("pt-BR") ===
+        mercado.toLocaleLowerCase("pt-BR")
+    ) {
+
+        localStorage.removeItem(CHAVE_MERCADO_ATUAL);
+
+    }
+
+    renderizarMercados();
+    atualizarMercadoNoModal();
+
+    return lista;
+
+}
+
+
+export function salvarMercadoAtual(nome) {
+
+    const mercado = adicionarMercadoFrequente(nome);
+
+    if (!mercado) {
+
+        return "";
+
+    }
+
+    localStorage.setItem(CHAVE_MERCADO_ATUAL, mercado);
+
+    renderizarMercados();
+    atualizarMercadoNoModal();
+
+    return mercado;
+
+}
+
+
+export function limparMercadoAtual() {
+
+    localStorage.removeItem(CHAVE_MERCADO_ATUAL);
+    renderizarMercados();
+    atualizarMercadoNoModal();
+
+}
+
+
+function renderizarSelect() {
+
+    const campo = document.getElementById("mercadoAtual");
+
+    if (!campo) {
+
+        return;
+
+    }
+
+    const atual = obterMercadoAtual();
+
+    campo.replaceChildren();
+
+    const opcaoInicial = document.createElement("option");
+    opcaoInicial.value = "";
+    opcaoInicial.textContent = "Selecione o mercado atual";
+    campo.appendChild(opcaoInicial);
+
+    listarMercadosFrequentes().forEach(mercado => {
+
+        const opcao = document.createElement("option");
+        opcao.value = mercado;
+        opcao.textContent = mercado;
+        opcao.selected = mercado === atual;
+        campo.appendChild(opcao);
+
+    });
+
+}
+
+
+function criarMercadoVisual(nome, selecionado) {
+
+    const item = document.createElement("div");
+    item.className = selecionado
+        ? "mercado-frequente-item ativo"
+        : "mercado-frequente-item";
+
+    const selecionar = document.createElement("button");
+    selecionar.type = "button";
+    selecionar.className = "btn-selecionar-mercado";
+    selecionar.dataset.acao = "selecionar";
+    selecionar.dataset.mercado = nome;
+    selecionar.textContent = selecionado ? `✓ ${nome}` : nome;
+
+    const remover = document.createElement("button");
+    remover.type = "button";
+    remover.className = "btn-remover-mercado";
+    remover.dataset.acao = "remover";
+    remover.dataset.mercado = nome;
+    remover.textContent = "×";
+    remover.setAttribute("aria-label", `Remover ${nome}`);
+
+    item.append(selecionar, remover);
+
+    return item;
+
+}
+
+
+function renderizarLista() {
+
+    const container = document.getElementById("listaMercadosFrequentes");
+
+    if (!container) {
+
+        return;
+
+    }
+
+    const mercados = listarMercadosFrequentes();
+    const atual = obterMercadoAtual();
+
+    container.replaceChildren();
+
+    if (!mercados.length) {
+
+        const aviso = document.createElement("p");
+        aviso.className = "mercados-vazio";
+        aviso.textContent = "Nenhum mercado cadastrado.";
+        container.appendChild(aviso);
+        return;
+
+    }
+
+    mercados.forEach(mercado => {
+
+        container.appendChild(
+            criarMercadoVisual(mercado, mercado === atual)
+        );
+
+    });
+
+}
+
+
+export function renderizarMercados() {
+
+    renderizarSelect();
+    renderizarLista();
+
+}
+
+
+export function atualizarMercadoNoModal() {
+
+    const campo = document.getElementById("mercadoModalAtual");
+
+    if (campo) {
+
+        campo.textContent = obterMercadoAtual() || "Nenhum mercado selecionado";
+
+    }
+
+}
+
+
+function mostrarMensagem(texto, tipo = "sucesso") {
+
+    const campo = document.getElementById("mensagemMercado");
+
+    if (!campo) {
+
+        return;
+
+    }
+
+    campo.textContent = texto;
+    campo.className = `mensagem-mercado mensagem-${tipo}`;
+
+}
+
+
+export function configurarMercadoAtual(aoSalvar) {
+
+    const campoAtual = document.getElementById("mercadoAtual");
+    const botaoSalvar = document.getElementById("btnSalvarMercadoAtual");
+    const campoNovo = document.getElementById("novoMercadoFrequente");
+    const botaoAdicionar = document.getElementById("btnAdicionarMercadoFrequente");
+    const lista = document.getElementById("listaMercadosFrequentes");
+    const aplicar = document.getElementById("aplicarMercadoExistentes");
+
+    renderizarMercados();
+    atualizarMercadoNoModal();
+
+    function comunicar(nome) {
+
+        aoSalvar?.({
+            nome,
+            aplicarExistentes: Boolean(aplicar?.checked)
+        });
+
+    }
+
+    if (botaoAdicionar && !botaoAdicionar.dataset.configurado) {
+
+        botaoAdicionar.dataset.configurado = "true";
+
+        botaoAdicionar.addEventListener("click", () => {
+
+            const mercado = adicionarMercadoFrequente(campoNovo?.value);
+
+            if (!mercado) {
+
+                mostrarMensagem("Digite o nome do mercado.", "erro");
+                campoNovo?.focus();
+                return;
+
+            }
+
+            campoNovo.value = "";
+            campoAtual.value = mercado;
+            mostrarMensagem(`${mercado} foi adicionado aos seus mercados.`);
+
+        });
+
+    }
+
+    if (campoNovo && !campoNovo.dataset.configurado) {
+
+        campoNovo.dataset.configurado = "true";
+        campoNovo.addEventListener("keydown", evento => {
+
+            if (evento.key === "Enter") {
+
+                evento.preventDefault();
+                botaoAdicionar?.click();
+
+            }
+
+        });
+
+    }
+
+    if (botaoSalvar && !botaoSalvar.dataset.configurado) {
+
+        botaoSalvar.dataset.configurado = "true";
+        botaoSalvar.addEventListener("click", () => {
+
+            const mercado = salvarMercadoAtual(campoAtual?.value);
+
+            if (!mercado) {
+
+                mostrarMensagem("Selecione um mercado.", "erro");
+                campoAtual?.focus();
+                return;
+
+            }
+
+            mostrarMensagem(`A compra atual está definida para ${mercado}.`);
+            comunicar(mercado);
+
+        });
+
+    }
+
+    if (lista && !lista.dataset.configurado) {
+
+        lista.dataset.configurado = "true";
+        lista.addEventListener("click", evento => {
+
+            const botao = evento.target.closest("[data-acao]");
+
+            if (!botao) {
+
+                return;
+
+            }
+
+            const mercado = botao.dataset.mercado;
+
+            if (botao.dataset.acao === "remover") {
+
+                removerMercadoFrequente(mercado);
+                mostrarMensagem(`${mercado} foi removido.`);
+                return;
+
+            }
+
+            const selecionado = salvarMercadoAtual(mercado);
+            mostrarMensagem(`${selecionado} foi selecionado para esta compra.`);
+            comunicar(selecionado);
+
+        });
+
+    }
+
+}

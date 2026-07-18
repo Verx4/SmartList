@@ -1,0 +1,45 @@
+.documento-legal {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(22px, 5vw, 48px);
+}
+
+.documento-legal section {
+    padding: 24px 0;
+    border-bottom: 1px solid #1f2937;
+}
+
+.documento-legal section:first-child {
+    padding-top: 0;
+}
+
+.documento-legal section:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.documento-legal h2 {
+    margin-bottom: 12px;
+    color: white;
+    font-size: 21px;
+}
+
+.documento-legal p {
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.documento-legal ul {
+    color: #cbd5e1;
+    display: grid;
+    gap: 8px;
+}
+
+.documento-legal a {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+.documento-legal a:hover {
+    color: white;
+}

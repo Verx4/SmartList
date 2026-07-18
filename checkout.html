@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+    <title>Finalizar Assinatura | Minha Lista</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/checkout.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/temas.css">
+</head>
+
+<body>
+    <div id="mensagens" class="mensagens-globais" aria-live="polite"></div>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="./dashboard.html">Minha lista</a>
+                <a href="./assinatura.html">Planos</a>
+                <a href="./perfil.html">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+        <section class="page-header">
+            <span class="page-eyebrow">Checkout seguro</span>
+            <h1>Finalizar assinatura</h1>
+            <p>
+                Confira o plano. Na próxima etapa, você escolherá Pix, cartão ou
+                outro meio disponível diretamente no ambiente seguro do Mercado Pago.
+            </p>
+        </section>
+
+        <div class="checkout-grid">
+            <section class="card checkout-form-card">
+                <h2>Pagamento protegido</h2>
+
+                <form id="formCheckout" class="form">
+                    <div class="texto-seguranca">
+                        <p>
+                            🔒 O Minha Lista não solicita, recebe nem armazena número
+                            de cartão, código de segurança ou senha de pagamento.
+                        </p>
+                        <p>
+                            Seu nome e e-mail de cadastro identificam a assinatura.
+                            Os dados financeiros serão informados apenas ao Mercado Pago.
+                        </p>
+                    </div>
+
+                    <label class="checkbox-label" for="aceitePagamento">
+                        <input
+                            type="checkbox"
+                            id="aceitePagamento"
+                            required>
+
+                        <span>
+                            Confirmo que li as condições da assinatura e aceito
+                            continuar para o Mercado Pago.
+                        </span>
+                    </label>
+
+                    <button
+                        id="btnConfirmarPagamento"
+                        class="btn btn-primary btn-block"
+                        type="submit">
+                        Ir para o Mercado Pago
+                    </button>
+
+                    <div
+                        id="mensagemCheckout"
+                        class="mensagem"
+                        aria-live="polite">
+                    </div>
+                </form>
+            </section>
+
+            <aside id="resumoPlano" class="card checkout-resumo">
+                <span class="card-label">Resumo do pedido</span>
+
+                <h2 id="checkoutPlano">Plano Premium</h2>
+
+                <div class="resumo-linha">
+                    <span>Ciclo</span>
+                    <strong id="checkoutCiclo">Mensal</strong>
+                </div>
+
+                <div class="resumo-linha">
+                    <span>Valor</span>
+                    <strong id="checkoutValorNormal">R$ 9,97</strong>
+                </div>
+
+                <div class="resumo-linha">
+                    <span>Desconto</span>
+                    <strong id="checkoutDesconto">R$ 0,00</strong>
+                </div>
+
+                <div class="resumo-linha resumo-total">
+                    <span>Total</span>
+                    <strong id="checkoutTotal">R$ 9,97</strong>
+                </div>
+
+                <p id="textoRenovacao" class="texto-seguranca">
+                    Acesso por um mês, sem renovação automática.
+                </p>
+
+                <a class="btn btn-secondary btn-block" href="./assinatura.html">
+                    Alterar plano
+                </a>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="./js/tema.js"></script>
+    <script type="module" src="./js/assinatura.js"></script>
+</body>
+
+</html>
+

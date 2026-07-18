@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+backend/.env
+backend/target/
+backend/dados/*.db
+backend/dados/*.trace.db
+*.log
+backend/src/main/resources/application-local.yml

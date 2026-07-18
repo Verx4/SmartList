@@ -1,0 +1,102 @@
+.form {
+    width: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 16px;
+}
+
+.form-group label,
+.form-group legend {
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.search,
+.select-filtro,
+.section-header select,
+.page-header select {
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 13px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    color: white;
+    background: #1f2937;
+    outline: none;
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.search::placeholder {
+    color: #64748b;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.search:focus,
+.select-filtro:focus,
+.section-header select:focus,
+.page-header select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 4px 0 20px;
+    font-size: 13px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 12px 0 20px;
+    color: #cbd5e1;
+    cursor: pointer;
+}
+
+.checkbox-label input {
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    accent-color: #2563eb;
+}
+
+.checkbox-label a {
+    color: #60a5fa;
+}
+
+.acoes-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+fieldset.form-group {
+    padding: 0;
+    border: none;
+}

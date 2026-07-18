@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+
+    <meta
+        name="description"
+        content="Organize sua lista de compras e compare preços entre supermercados.">
+
+    <title>Minha Lista | Economia nas suas compras</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+
+            <a class="brand" href="./index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="#recursos">Recursos</a>
+                <a href="./assinatura.html">Planos</a>
+                <a href="./login.html">Entrar</a>
+                <a class="btn btn-primary" href="./cadastro.html">
+                    Criar conta
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <section class="hero">
+            <div class="container hero-grid">
+
+                <div class="hero-content">
+                    <span class="page-eyebrow">
+                        Economia simples e transparente
+                    </span>
+
+                    <h1>
+                        Sua lista de compras trabalhando a favor do seu bolso.
+                    </h1>
+
+                    <p>
+                        Organize produtos, compare supermercados, acompanhe
+                        preços e descubra onde sua compra custa menos.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a class="btn btn-primary" href="./cadastro.html">
+                            Começar gratuitamente
+                        </a>
+
+                        <a class="btn btn-secondary" href="./dashboard.html">
+                            Testar lista local
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card hero-preview">
+
+                    <div class="preview-header">
+                        <span>Resumo da compra</span>
+                        <strong>12 produtos</strong>
+                    </div>
+
+                    <div class="preview-total">
+                        <span>Total estimado</span>
+                        <strong>R$ 184,50</strong>
+                    </div>
+
+                    <div class="preview-economia">
+                        <span>Economia estimada</span>
+                        <strong>R$ 38,70</strong>
+                    </div>
+
+                    <div class="preview-mercado">
+                        <span>Melhor opção</span>
+                        <strong>Mercado Econômico</strong>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <section id="recursos" class="section">
+            <div class="container">
+
+                <div class="section-title">
+                    <span class="page-eyebrow">Principais recursos</span>
+                    <h2>Decisões melhores antes de chegar ao caixa</h2>
+                </div>
+
+                <div class="grid-cards">
+
+                    <article class="card recurso-card">
+                        <span class="recurso-icon">🔎</span>
+                        <h3>Comparação de preços</h3>
+                        <p>
+                            Compare seus produtos nos supermercados selecionados.
+                        </p>
+                    </article>
+
+                    <article class="card recurso-card">
+                        <span class="recurso-icon">✨</span>
+                        <h3>Compra inteligente</h3>
+                        <p>
+                            Encontre o melhor mercado ou combinação de mercados.
+                        </p>
+                    </article>
+
+                    <article class="card recurso-card">
+                        <span class="recurso-icon">📈</span>
+                        <h3>Histórico completo</h3>
+                        <p>
+                            Acompanhe gastos, economia e alterações de preços.
+                        </p>
+                    </article>
+
+                    <article class="card recurso-card">
+                        <span class="recurso-icon">🔔</span>
+                        <h3>Alertas</h3>
+                        <p>
+                            Receba avisos sobre promoções e mudanças de preços.
+                        </p>
+                    </article>
+
+                    <article class="card recurso-card">
+                        <span class="recurso-icon">❤️</span>
+                        <h3>Favoritos</h3>
+                        <p>
+                            Salve seus produtos e supermercados preferidos.
+                        </p>
+                    </article>
+
+                    <article class="card recurso-card">
+                        <span class="recurso-icon">📊</span>
+                        <h3>Relatórios</h3>
+                        <p>
+                            Visualize seus gastos e sua economia ao longo do tempo.
+                        </p>
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+        <section class="section section-highlight">
+            <div class="container cta-content">
+
+                <div>
+                    <span class="page-eyebrow">Comece agora</span>
+                    <h2>Transforme sua próxima compra.</h2>
+                    <p>
+                        Crie sua lista e acompanhe tudo em um único lugar.
+                    </p>
+                </div>
+
+                <a class="btn btn-primary" href="./cadastro.html">
+                    Criar conta gratuita
+                </a>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+
+            <div>
+                <a class="brand" href="./index.html">
+                    🛒 Minha Lista
+                </a>
+
+                <p>Economia e organização para suas compras.</p>
+            </div>
+
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+
+            <p>© 2026 Minha Lista</p>
+
+        </div>
+    </footer>
+
+</body>
+
+</html>

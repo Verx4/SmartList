@@ -1,0 +1,278 @@
+﻿import { api, ApiError } from "./api.js";
+
+const CICLOS = {
+    mensal: {
+        nome: "Mensal",
+        valorNormal: 9.97,
+        desconto: 0,
+        total: 9.97,
+        periodo: "/mês",
+        renovacao: "Acesso Premium por um mês, sem renovação automática."
+    },
+    trimestral: {
+        nome: "Trimestral",
+        valorNormal: 29.91,
+        desconto: 3.00,
+        total: 26.91,
+        periodo: "/trimestre",
+        renovacao: "Acesso Premium por três meses, sem renovação automática."
+    },
+    anual: {
+        nome: "Anual",
+        valorNormal: 119.64,
+        desconto: 24.00,
+        total: 95.64,
+        periodo: "/ano",
+        renovacao: "Acesso Premium por doze meses, sem renovação automática."
+    }
+};
+
+function formatarMoeda(valor) {
+    return Number(valor || 0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+}
+
+function mostrarMensagem(texto, tipo = "sucesso") {
+    let container = document.getElementById("mensagens");
+
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "mensagens";
+        container.className = "mensagens-globais";
+        container.setAttribute("aria-live", "polite");
+        document.body.prepend(container);
+    }
+
+    const mensagem = document.createElement("div");
+    mensagem.className = `mensagem mensagem-${tipo}`;
+    mensagem.textContent = texto;
+    container.appendChild(mensagem);
+
+    window.setTimeout(() => mensagem.remove(), 7000);
+}
+
+function obterCicloSelecionado() {
+    const selecionado = document.querySelector(
+        'input[name="cicloPremium"]:checked'
+    );
+    const ciclo = selecionado?.value || "mensal";
+    return CICLOS[ciclo] ? ciclo : "mensal";
+}
+
+function atualizarCardPremium() {
+    const ciclo = obterCicloSelecionado();
+    const dados = CICLOS[ciclo];
+    const preco = document.getElementById("precoPremium");
+    const periodo = document.getElementById("periodoPremium");
+    const botao = document.getElementById("btnAssinarPremium");
+
+    if (preco) {
+        preco.textContent = formatarMoeda(dados.total);
+    }
+
+    if (periodo) {
+        periodo.textContent = dados.periodo;
+    }
+
+    if (botao) {
+        botao.textContent = `Assinar Premium ${dados.nome}`;
+
+        if (botao.tagName === "A") {
+            botao.href = `checkout.html?plano=premium&ciclo=${ciclo}`;
+        }
+
+        botao.dataset.ciclo = ciclo;
+    }
+}
+
+function abrirCheckout() {
+    const ciclo = obterCicloSelecionado();
+    window.location.href = `checkout.html?plano=premium&ciclo=${ciclo}`;
+}
+
+function preencherCheckout() {
+    const formulario = document.getElementById("formCheckout");
+
+    if (!formulario) {
+        return;
+    }
+
+    const parametros = new URLSearchParams(window.location.search);
+    const cicloParametro = parametros.get("ciclo") || "mensal";
+    const ciclo = CICLOS[cicloParametro] ? cicloParametro : "mensal";
+    const dados = CICLOS[ciclo];
+
+    formulario.dataset.ciclo = ciclo;
+
+    const campos = {
+        checkoutPlano: "Plano Premium",
+        checkoutCiclo: dados.nome,
+        checkoutValorNormal: formatarMoeda(dados.valorNormal),
+        checkoutDesconto:
+            dados.desconto > 0
+                ? `-${formatarMoeda(dados.desconto)}`
+                : formatarMoeda(0),
+        checkoutTotal: formatarMoeda(dados.total),
+        textoRenovacao: dados.renovacao
+    };
+
+    Object.entries(campos).forEach(([id, valor]) => {
+        const elemento = document.getElementById(id);
+
+        if (elemento) {
+            elemento.textContent = valor;
+        }
+    });
+}
+
+function urlMercadoPagoValida(valor) {
+    try {
+        const url = new URL(valor);
+        const host = url.hostname.toLowerCase();
+
+        return url.protocol === "https:"
+            && (
+                host === "mercadopago.com.br"
+                || host.endsWith(".mercadopago.com.br")
+                || host === "mercadopago.com"
+                || host.endsWith(".mercadopago.com")
+            );
+    } catch {
+        return false;
+    }
+}
+
+async function enviarCheckout(evento) {
+    evento.preventDefault();
+
+    const formulario = evento.currentTarget;
+    const ciclo = formulario.dataset.ciclo || "mensal";
+    const botao = formulario.querySelector('button[type="submit"]');
+    let redirecionando = false;
+
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Preparando pagamento seguro...";
+    }
+
+    try {
+        const resposta = await api.post("/assinaturas/checkout", {
+            ciclo: ciclo.toUpperCase()
+        });
+        const urlPagamento =
+            resposta?.checkoutUrl
+            || resposta?.urlPagamento
+            || resposta?.initPoint;
+
+        if (!urlMercadoPagoValida(urlPagamento)) {
+            throw new Error("O servidor não retornou um endereço seguro do Mercado Pago.");
+        }
+
+        redirecionando = true;
+        window.location.assign(urlPagamento);
+    } catch (erro) {
+        const mensagem =
+            erro instanceof ApiError || erro instanceof Error
+                ? erro.message
+                : "Não foi possível iniciar o pagamento.";
+
+        mostrarMensagem(mensagem, "erro");
+    } finally {
+        if (botao && !redirecionando) {
+            botao.disabled = false;
+            botao.textContent = "Ir para o Mercado Pago";
+        }
+    }
+}
+
+function usuarioLocal() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("usuarioAtual")
+            || localStorage.getItem("usuarioLogado")
+            || "null"
+        );
+    } catch {
+        return null;
+    }
+}
+
+function exibirPlano(usuario, assinatura) {
+    const nomePlano = document.getElementById("nomePlanoAtual");
+    const statusPlano = document.getElementById("statusPlanoAtual");
+    const premium = Boolean(assinatura) || usuario?.tipoAcesso === "PREMIUM";
+    const cortesia = usuario?.tipoAcesso === "CORTESIA";
+
+    if (nomePlano) {
+        nomePlano.textContent = premium
+            ? "Plano Premium"
+            : cortesia
+                ? "Premium Cortesia"
+                : "Plano Free";
+    }
+
+    if (statusPlano) {
+        statusPlano.textContent = premium || cortesia ? "Ativo" : "Ativo";
+    }
+}
+
+async function preencherPlanoAtual() {
+    const usuario = usuarioLocal();
+    exibirPlano(usuario, null);
+
+    try {
+        const assinatura = await api.get("/assinaturas/atual");
+        exibirPlano(usuario, assinatura);
+    } catch {
+        // A página de planos também pode ser visitada antes do login.
+    }
+}
+
+function mostrarRetornoPagamento() {
+    const status = new URLSearchParams(window.location.search).get("pagamento");
+
+    const mensagens = {
+        sucesso:
+            "Pagamento enviado. O Premium será liberado após a confirmação automática do Mercado Pago.",
+        pendente:
+            "Pagamento pendente. Assim que o Mercado Pago confirmar, o Premium será liberado.",
+        falha:
+            "O pagamento não foi concluído. Nenhuma assinatura foi ativada."
+    };
+
+    if (mensagens[status]) {
+        mostrarMensagem(
+            mensagens[status],
+            status === "falha" ? "erro" : "sucesso"
+        );
+    }
+}
+
+async function iniciar() {
+    await preencherPlanoAtual();
+    atualizarCardPremium();
+    preencherCheckout();
+    mostrarRetornoPagamento();
+
+    document
+        .querySelectorAll('input[name="cicloPremium"]')
+        .forEach(opcao => {
+            opcao.addEventListener("change", atualizarCardPremium);
+        });
+
+    const botaoAssinar = document.getElementById("btnAssinarPremium");
+
+    if (botaoAssinar && botaoAssinar.tagName !== "A") {
+        botaoAssinar.addEventListener("click", abrirCheckout);
+    }
+
+    document
+        .getElementById("formCheckout")
+        ?.addEventListener("submit", enviarCheckout);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    void iniciar();
+});

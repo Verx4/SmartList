@@ -1,0 +1,72 @@
+.filtros-comparacao {
+    margin-bottom: 24px;
+}
+
+.opcoes-supermercados {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 54px;
+    padding: 14px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #1f2937;
+    cursor: pointer;
+}
+
+.checkbox-card:hover {
+    border-color: #2563eb;
+}
+
+.checkbox-card input {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+}
+
+.compra-inteligente-card {
+    margin-top: 24px;
+}
+
+.compra-inteligente-card h2 {
+    margin: 6px 0;
+}
+
+.compra-inteligente-card p {
+    color: #94a3b8;
+    margin-bottom: 18px;
+}
+
+#resultadoCompraInteligente {
+    margin-top: 20px;
+}
+
+.resultado-mercado {
+    padding: 16px;
+    border-radius: 12px;
+    background: #1f2937;
+    margin-bottom: 10px;
+}
+
+.resultado-mercado strong {
+    color: #22c55e;
+}
+
+.nivel-alta {
+    color: #22c55e;
+}
+
+.nivel-media {
+    color: #f59e0b;
+}
+
+.nivel-baixa {
+    color: #ef4444;
+}

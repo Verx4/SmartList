@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: minha-lista-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-minha_lista}
+      POSTGRES_USER: ${POSTGRES_USER:-minha_lista}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-minha_lista_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - minha_lista_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-minha_lista} -d ${POSTGRES_DB:-minha_lista}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  minha_lista_postgres:

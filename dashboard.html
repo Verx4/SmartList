@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+    <title>Minha Lista de Compras</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/modal.css">
+    <link rel="stylesheet" href="./css/produtos.css">
+    <link rel="stylesheet" href="./css/historico.css">
+    <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/temas.css">
+</head>
+
+<body>
+    <div id="mensagens" class="mensagens-globais" aria-live="polite"></div>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="./dashboard.html" class="active">Minha lista</a>
+                <a href="./comparacao.html">Comparação</a>
+                <a href="./historico.html">Histórico</a>
+                <a href="./favoritos.html">Favoritos</a>
+                <a href="./relatorios.html">Relatórios</a>
+                <a href="./assinatura.html">Planos</a>
+                <a href="./perfil.html">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+        <section class="dashboard-cabecalho">
+            <div class="identidade-dashboard">
+                <img class="logo-dashboard" src="./assets/logo/logo.png" alt="Logo Minha Lista">
+
+                <span class="saudacao-dashboard">
+                    Olá, <strong id="nomeUsuarioDashboard">Usuário</strong>
+                </span>
+
+                <h1>🛒 Minha Lista</h1>
+                <p>Controle seu orçamento e organize suas compras.</p>
+            </div>
+
+            <div class="dashboard-acoes-topo">
+                <a class="btn btn-secondary" href="./assinatura.html">Ver planos</a>
+                <a class="btn btn-primary" href="./comparacao.html">Comparar preços</a>
+            </div>
+        </section>
+
+        <section class="dashboard-grid-superior">
+            <article id="cardOrcamento" class="orcamento-card orcamento-vazio">
+                <div class="orcamento-topo">
+                    <div>
+                        <h2>💰 Orçamento da compra</h2>
+                        <p>Defina quanto pretende gastar.</p>
+                    </div>
+                </div>
+
+                <div class="orcamento-form">
+                    <label class="sr-only" for="valorOrcamento">Valor do orçamento</label>
+                    <input type="text" id="valorOrcamento" placeholder="Ex.: 500,00" inputmode="decimal">
+                    <button type="button" id="btnSalvarOrcamento" class="btn btn-primary">Salvar</button>
+                    <button type="button" id="btnLimparOrcamento" class="btn btn-secondary">Limpar</button>
+                </div>
+
+                <div class="orcamento-resumo">
+                    <div>
+                        <span>Limite</span>
+                        <strong id="orcamentoLimite">R$ 0,00</strong>
+                    </div>
+                    <div>
+                        <span>Valor da lista</span>
+                        <strong id="orcamentoGasto">R$ 0,00</strong>
+                    </div>
+                    <div>
+                        <span>Disponível</span>
+                        <strong id="orcamentoDisponivel">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="barra-orcamento-cabecalho">
+                    <span>Uso do orçamento</span>
+                    <strong id="orcamentoPercentual">0%</strong>
+                </div>
+
+                <div class="barra-orcamento-trilho" aria-hidden="true">
+                    <div id="barraOrcamento" class="barra-orcamento"></div>
+                </div>
+
+                <p id="mensagemOrcamento" class="mensagem-orcamento">
+                    Defina um orçamento para acompanhar a compra.
+                </p>
+            </article>
+
+            <article class="mercado-atual-card">
+                <div class="mercado-atual-topo">
+                    <div>
+                        <h2>🏪 Meus mercados</h2>
+                        <p>Cadastre uma vez e selecione onde está comprando.</p>
+                    </div>
+                </div>
+
+                <div class="adicionar-mercado-form">
+                    <label class="sr-only" for="novoMercadoFrequente">Nome do mercado</label>
+                    <input type="text" id="novoMercadoFrequente" placeholder="Ex.: Assaí, Atacadão...">
+                    <button type="button" id="btnAdicionarMercadoFrequente" class="btn btn-secondary">
+                        Adicionar
+                    </button>
+                </div>
+
+                <div id="listaMercadosFrequentes" class="lista-mercados-frequentes"></div>
+
+                <div class="mercado-atual-form">
+                    <label class="sr-only" for="mercadoAtual">Mercado da compra atual</label>
+                    <select id="mercadoAtual">
+                        <option value="">Selecione o mercado atual</option>
+                    </select>
+                    <button type="button" id="btnSalvarMercadoAtual" class="btn btn-primary">
+                        Usar este mercado
+                    </button>
+                </div>
+
+                <label class="aplicar-mercado" for="aplicarMercadoExistentes">
+                    <input type="checkbox" id="aplicarMercadoExistentes">
+                    <span>Aplicar esse mercado aos produtos já adicionados</span>
+                </label>
+
+                <p id="mensagemMercado" class="mensagem-mercado" aria-live="polite"></p>
+            </article>
+        </section>
+
+        <section class="card-total">
+            <div>
+                <span>Total da compra</span>
+                <h2 id="totalCompra">R$ 0,00</h2>
+            </div>
+            <div>
+                <span>Última compra</span>
+                <h3 id="ultimaCompra">R$ 0,00</h3>
+            </div>
+            <div>
+                <span>Economia acumulada</span>
+                <h3 id="economiaAcumulada">R$ 0,00</h3>
+            </div>
+        </section>
+
+        <div id="comparacaoCompra" class="comparacao-compra" aria-live="polite">
+            ⚪ Nenhuma compra anterior
+        </div>
+
+        <section class="acoes">
+            <label class="sr-only" for="buscarProduto">Buscar produto</label>
+            <input type="search" id="buscarProduto" class="search" placeholder="🔍 Buscar produto...">
+
+            <select id="filtroCategoria" class="select-filtro" aria-label="Filtrar por categoria">
+                <option value="">Todas as categorias</option>
+                <option value="🥛 Laticínios">🥛 Laticínios</option>
+                <option value="🥩 Carnes">🥩 Carnes</option>
+                <option value="🍎 Hortifruti">🍎 Hortifruti</option>
+                <option value="🍞 Padaria">🍞 Padaria</option>
+                <option value="🥤 Bebidas">🥤 Bebidas</option>
+                <option value="🍚 Mercearia">🍚 Mercearia</option>
+                <option value="🍪 Doces e Snacks">🍪 Doces e Snacks</option>
+                <option value="🧼 Limpeza">🧼 Limpeza</option>
+                <option value="🪥 Higiene">🪥 Higiene</option>
+                <option value="🐶 Pet">🐶 Pet</option>
+                <option value="💊 Farmácia">💊 Farmácia</option>
+                <option value="🥫 Enlatados">🥫 Enlatados</option>
+                <option value="❄️ Congelados">❄️ Congelados</option>
+                <option value="🌶️ Temperos">🌶️ Temperos</option>
+                <option value="📦 Outros">📦 Outros</option>
+            </select>
+
+            <select id="ordenarProdutos" class="select-filtro" aria-label="Ordenar produtos">
+                <option value="nome">Ordenar por nome</option>
+                <option value="categoria">Ordenar por categoria</option>
+                <option value="mercado">Ordenar por mercado</option>
+                <option value="menor-preco">Menor preço</option>
+                <option value="maior-preco">Maior preço</option>
+                <option value="favoritos">Favoritos primeiro</option>
+            </select>
+
+            <button id="btnAdicionarProduto" class="btn btn-primary btn-add" type="button">
+                + Adicionar produto
+            </button>
+        </section>
+
+        <section aria-labelledby="tituloListaProdutos">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">Produtos</span>
+                    <h2 id="tituloListaProdutos">Itens da sua lista</h2>
+                </div>
+                <span id="contadorProdutos" class="contador">0 produtos</span>
+            </div>
+            <div id="listaProdutos"></div>
+        </section>
+
+        <div class="acoes-compra">
+            <button id="btnFinalizarCompra" class="btn btn-primary btn-finalizar" type="button">
+                ✅ Finalizar compra
+            </button>
+            <button id="btnToggleHistorico" class="btn btn-secondary btn-historico" type="button"
+                aria-expanded="false" aria-controls="historicoCompras">
+                📋 Histórico de compras
+            </button>
+        </div>
+
+        <section id="historicoCompras" class="historico-compras" hidden></section>
+        <section id="resumoItens" class="resumo-itens"></section>
+    </main>
+
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalProduto"
+        aria-hidden="true" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <span class="page-eyebrow">Novo item</span>
+                    <h2 id="tituloModalProduto">Adicionar produto</h2>
+                </div>
+                <button id="btnFecharModal" class="btn-fechar-modal" type="button" aria-label="Fechar janela">
+                    ×
+                </button>
+            </div>
+
+            <div class="mercado-modal-info">
+                <span>Mercado desta compra:</span>
+                <strong id="mercadoModalAtual">Nenhum mercado selecionado</strong>
+            </div>
+
+            <form id="formProduto" class="form" novalidate>
+                <div class="form-group">
+                    <label for="novoNome">Nome do produto</label>
+                    <input type="text" id="novoNome" name="nome" placeholder="Ex.: Arroz" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="novaCategoria">Categoria</label>
+                    <select id="novaCategoria" name="categoria">
+                        <option value="automatico">🤖 Automático</option>
+                        <option value="🥛 Laticínios">🥛 Laticínios</option>
+                        <option value="🥩 Carnes">🥩 Carnes</option>
+                        <option value="🍎 Hortifruti">🍎 Hortifruti</option>
+                        <option value="🍞 Padaria">🍞 Padaria</option>
+                        <option value="🥤 Bebidas">🥤 Bebidas</option>
+                        <option value="🍚 Mercearia">🍚 Mercearia</option>
+                        <option value="🍪 Doces e Snacks">🍪 Doces e Snacks</option>
+                        <option value="🧼 Limpeza">🧼 Limpeza</option>
+                        <option value="🪥 Higiene">🪥 Higiene</option>
+                        <option value="🐶 Pet">🐶 Pet</option>
+                        <option value="💊 Farmácia">💊 Farmácia</option>
+                        <option value="🥫 Enlatados">🥫 Enlatados</option>
+                        <option value="❄️ Congelados">❄️ Congelados</option>
+                        <option value="🌶️ Temperos">🌶️ Temperos</option>
+                        <option value="📦 Outros">📦 Outros</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="novoPreco">Preço inicial</label>
+                        <input type="number" id="novoPreco" name="preco" min="0" step="0.01" placeholder="0,00">
+                    </div>
+                    <div class="form-group">
+                        <label for="novaQuantidade">Quantidade</label>
+                        <input type="number" id="novaQuantidade" name="quantidade" value="1" min="1" step="1">
+                    </div>
+                </div>
+
+                <label class="checkbox-label" for="novoFavorito">
+                    <input type="checkbox" id="novoFavorito" name="favorito">
+                    <span>Adicionar aos favoritos</span>
+                </label>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary btn-salvar">Salvar produto</button>
+                    <button type="button" id="btnCancelarProduto" class="btn btn-secondary btn-cancelar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="./js/tema.js"></script>
+    <script type="module" src="./js/app.js"></script>
+</body>
+
+</html>

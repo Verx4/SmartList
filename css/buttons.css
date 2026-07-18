@@ -1,0 +1,103 @@
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 11px 18px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        color 0.2s,
+        transform 0.2s,
+        opacity 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    color: white;
+    background: #2563eb;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: white;
+    background: #1f2937;
+    border-color: #334155;
+}
+
+.btn-secondary:hover {
+    background: #2b3547;
+    border-color: #475569;
+}
+
+.btn-danger {
+    color: white;
+    background: #dc2626;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.btn-warning {
+    color: white;
+    background: #d97706;
+}
+
+.btn-warning:hover {
+    background: #b45309;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-add {
+    white-space: nowrap;
+}
+
+.btn-finalizar,
+.btn-historico {
+    width: 100%;
+    min-height: 54px;
+    font-size: 16px;
+}
+
+.btn-fechar-modal {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 8px;
+    color: #94a3b8;
+    background: #1f2937;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.btn-fechar-modal:hover {
+    color: white;
+    background: #dc2626;
+}

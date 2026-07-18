@@ -1,0 +1,111 @@
+.historico-compras {
+    padding: 22px;
+    margin-top: 20px;
+    border: 1px solid #1f2937;
+    border-radius: 14px;
+    background: #131c2f;
+}
+
+.botoes-historico {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.compra-historico {
+    padding: 18px;
+    margin-bottom: 15px;
+    border-left: 4px solid #2563eb;
+    border-radius: 12px;
+    background: #1f2937;
+}
+
+.compra-historico h3 {
+    color: #60a5fa;
+    margin-bottom: 10px;
+}
+
+.compra-historico ul {
+    margin-top: 10px;
+}
+
+.compra-historico li {
+    margin-bottom: 5px;
+}
+
+.diferenca-compra-aumento {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.diferenca-compra-economia {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.diferenca-compra-primeira {
+    color: #94a3b8;
+    font-weight: bold;
+}
+
+.filtros-historico {
+    margin-bottom: 24px;
+}
+
+.lista-historico {
+    display: grid;
+    gap: 16px;
+}
+
+.historico-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+}
+
+.historico-item-info p {
+    color: #94a3b8;
+}
+
+.historico-item-total {
+    text-align: right;
+}
+
+.historico-item-total strong {
+    display: block;
+    color: #22c55e;
+    font-size: 20px;
+}
+
+.timeline-precos {
+    position: relative;
+    margin-top: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 0 0 22px 28px;
+    border-left: 2px solid #334155;
+}
+
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: -7px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #2563eb;
+}
+
+.timeline-item strong {
+    color: #22c55e;
+}
+
+.categoria-historico {
+    margin: 15px 0 10px;
+    color: #60a5fa;
+    font-weight: bold;
+}

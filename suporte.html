@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+
+    <title>Suporte | Minha Lista</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/suporte.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav">
+                <a href="./dashboard.html">Minha lista</a>
+                <a href="./sugestoes.html">Sugestões</a>
+                <a href="./suporte.html" class="active">Suporte</a>
+                <a href="./perfil.html">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+
+        <section class="page-header">
+            <span class="page-eyebrow">Atendimento</span>
+            <h1>Central de suporte</h1>
+            <p>Encontre respostas ou envie uma solicitação.</p>
+        </section>
+
+        <section class="suporte-grid">
+
+            <article class="card">
+                <h2>Enviar solicitação</h2>
+
+                <form id="formSuporte" class="form" novalidate>
+
+                    <div class="form-group">
+                        <label for="assuntoSuporte">Assunto</label>
+                        <input
+                            type="text"
+                            id="assuntoSuporte"
+                            name="assunto"
+                            placeholder="Informe o assunto"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoriaSuporte">Categoria</label>
+                        <select
+                            id="categoriaSuporte"
+                            name="categoria"
+                            required>
+                            <option value="">Selecione</option>
+                            <option value="conta">Conta e acesso</option>
+                            <option value="pagamento">Pagamento</option>
+                            <option value="lista">Lista de compras</option>
+                            <option value="precos">Preços</option>
+                            <option value="erro">Problema técnico</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prioridadeSuporte">Prioridade</label>
+                        <select
+                            id="prioridadeSuporte"
+                            name="prioridade">
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mensagemSuporte">Mensagem</label>
+                        <textarea
+                            id="mensagemSuporte"
+                            name="mensagem"
+                            rows="6"
+                            placeholder="Descreva sua dúvida ou problema"
+                            required></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">
+                        Enviar solicitação
+                    </button>
+
+                    <div
+                        id="retornoSuporte"
+                        class="mensagem"
+                        aria-live="polite">
+                    </div>
+
+                </form>
+            </article>
+
+            <aside class="card">
+                <h2>Meus atendimentos</h2>
+
+                <div id="listaChamados">
+                    <p class="estado-vazio">
+                        Você ainda não enviou solicitações.
+                    </p>
+                </div>
+            </aside>
+
+        </section>
+
+        <section class="card faq">
+            <h2>Perguntas frequentes</h2>
+
+            <details>
+                <summary>Como adicionar um produto?</summary>
+                <p>
+                    Acesse Minha Lista e clique em “Adicionar produto”.
+                </p>
+            </details>
+
+            <details>
+                <summary>Como comparar preços?</summary>
+                <p>
+                    Abra a página Comparação e selecione os supermercados.
+                </p>
+            </details>
+
+            <details>
+                <summary>Como funciona o plano Premium?</summary>
+                <p>
+                    O Premium libera comparação avançada, relatórios,
+                    notificações e outros recursos.
+                </p>
+            </details>
+
+            <details>
+                <summary>Como excluir minha conta?</summary>
+                <p>
+                    Acesse Perfil e utilize a opção “Excluir minha conta”.
+                </p>
+            </details>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/suporte.js"></script>
+
+</body>
+
+</html>

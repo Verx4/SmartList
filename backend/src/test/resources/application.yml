@@ -1,0 +1,29 @@
+﻿spring:
+  datasource:
+    url: jdbc:h2:mem:minha_lista_teste;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+app:
+  jwt:
+    secret: chave-de-teste-com-mais-de-trinta-e-dois-caracteres
+    expiracao-minutos: 30
+  frontend-url: http://127.0.0.1:5500
+  cors:
+    allowed-origins: http://127.0.0.1:5500
+  admin:
+    nome: ""
+    email: ""
+    senha: ""
+  mercado-pago:
+    access-token: ""
+    webhook-url: ""
+    webhook-secret: ""
+    webhook-tolerancia-minutos: 5
+  scraper:
+    margem-percentual: 5.00
+

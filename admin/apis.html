@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Gestão de APIs | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="apis">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html" class="active">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Gestão de APIs</h1>
+
+                    <p>
+                        Configure as integrações utilizadas pelo sistema.
+                    </p>
+                </div>
+
+                <button
+                    id="btnTestarTodasApis"
+                    class="btn btn-secondary"
+                    type="button">
+                    Testar conexões
+                </button>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>APIs cadastradas</span>
+                    <strong id="totalApis">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Operacionais</span>
+                    <strong id="apisOperacionais">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Com falha</span>
+                    <strong id="apisComFalha">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Requisições hoje</span>
+                    <strong id="requisicoesApisHoje">0</strong>
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Configuração</span>
+                        <h2>Cadastrar integração</h2>
+                    </div>
+                </div>
+
+                <form id="formApi" class="form admin-form">
+
+                    <input type="hidden" id="apiId" name="id">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="apiNome">Nome</label>
+
+                            <input
+                                type="text"
+                                id="apiNome"
+                                name="nome"
+                                placeholder="Ex.: Mercado Pago"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apiTipo">Tipo</label>
+
+                            <select id="apiTipo" name="tipo" required>
+                                <option value="">Selecione</option>
+                                <option value="PAGAMENTO">Pagamento</option>
+                                <option value="LOCALIZACAO">Localização</option>
+                                <option value="PRECOS">Preços</option>
+                                <option value="OCR">Leitura de notas</option>
+                                <option value="NOTIFICACAO">Notificações</option>
+                                <option value="OUTROS">Outros</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apiUrl">Endereço da API</label>
+
+                        <input
+                            type="url"
+                            id="apiUrl"
+                            name="url"
+                            placeholder="https://api.exemplo.com"
+                            required>
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="apiChavePublica">Chave pública</label>
+
+                            <input
+                                type="text"
+                                id="apiChavePublica"
+                                name="chavePublica"
+                                autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apiChaveSecreta">Chave secreta</label>
+
+                            <input
+                                type="password"
+                                id="apiChaveSecreta"
+                                name="chaveSecreta"
+                                autocomplete="new-password">
+                        </div>
+
+                    </div>
+
+                    <label class="checkbox-label" for="apiAtiva">
+                        <input
+                            type="checkbox"
+                            id="apiAtiva"
+                            name="ativa"
+                            checked>
+
+                        <span>Integração ativa</span>
+                    </label>
+
+                    <div class="acoes-form">
+
+                        <button class="btn btn-primary" type="submit">
+                            Salvar integração
+                        </button>
+
+                        <button
+                            id="btnCancelarEdicaoApi"
+                            class="btn btn-secondary"
+                            type="button">
+                            Cancelar edição
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="mensagemAdmin"
+                        class="mensagem"
+                        aria-live="polite"
+                        hidden>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <span class="card-label">Integrações</span>
+                        <h2>APIs cadastradas</h2>
+                    </div>
+
+                    <input
+                        type="search"
+                        id="buscarApi"
+                        placeholder="Buscar integração..."
+                        aria-label="Buscar integração">
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                                <th>Último teste</th>
+                                <th>Tempo de resposta</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaApis">
+                            <tr>
+                                <td colspan="6" class="estado-vazio">
+                                    Nenhuma API cadastrada.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

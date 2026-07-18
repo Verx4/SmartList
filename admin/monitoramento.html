@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Monitoramento | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="monitoramento">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html" class="active">
+                    Monitoramento
+                </a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Monitoramento do sistema</h1>
+
+                    <p>
+                        Acompanhe serviços, recursos e integrações.
+                    </p>
+                </div>
+
+                <button
+                    id="btnAtualizarMonitoramento"
+                    class="btn btn-primary"
+                    type="button">
+                    Atualizar dados
+                </button>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Status geral</span>
+                    <strong id="monitorStatusGeral">Verificando...</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Uso de CPU</span>
+                    <strong id="monitorCpu">0%</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Uso de memória</span>
+                    <strong id="monitorMemoria">0%</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Espaço utilizado</span>
+                    <strong id="monitorDisco">0%</strong>
+                </article>
+
+            </section>
+
+            <section class="admin-grid">
+
+                <article class="card">
+
+                    <h2>Serviços</h2>
+
+                    <div id="listaStatusServicos" class="lista-status">
+
+                        <div class="status-item">
+                            <span>Backend Spring Boot</span>
+                            <strong id="statusBackend">Verificando...</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>PostgreSQL</span>
+                            <strong id="statusBanco">Verificando...</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Serviço de scrapers</span>
+                            <strong id="statusScrapers">Verificando...</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Mercado Pago</span>
+                            <strong id="statusMercadoPago">Verificando...</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Serviço de localização</span>
+                            <strong id="statusLocalizacao">Verificando...</strong>
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <article class="card">
+
+                    <h2>Informações do servidor</h2>
+
+                    <div class="lista-status">
+
+                        <div class="status-item">
+                            <span>Tempo em operação</span>
+                            <strong id="monitorUptime">—</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Requisições hoje</span>
+                            <strong id="monitorRequisicoes">0</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Tempo médio de resposta</span>
+                            <strong id="monitorResposta">0 ms</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Usuários conectados</span>
+                            <strong id="monitorUsuariosOnline">0</strong>
+                        </div>
+
+                        <div class="status-item">
+                            <span>Última atualização</span>
+                            <strong id="monitorUltimaAtualizacao">—</strong>
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Banco de dados</span>
+                        <h2>PostgreSQL</h2>
+                    </div>
+                </div>
+
+                <div class="grid-resumo">
+
+                    <article class="card resumo-card">
+                        <span>Conexões ativas</span>
+                        <strong id="conexoesBanco">0</strong>
+                    </article>
+
+                    <article class="card resumo-card">
+                        <span>Tamanho do banco</span>
+                        <strong id="tamanhoBanco">0 MB</strong>
+                    </article>
+
+                    <article class="card resumo-card">
+                        <span>Consultas lentas</span>
+                        <strong id="consultasLentas">0</strong>
+                    </article>
+
+                    <article class="card resumo-card">
+                        <span>Último backup</span>
+                        <strong id="ultimoBackup">—</strong>
+                    </article>
+
+                </div>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Incidentes</span>
+                        <h2>Alertas recentes</h2>
+                    </div>
+                </div>
+
+                <div id="listaAlertasMonitoramento">
+                    <p class="estado-vazio">
+                        Nenhum alerta registrado.
+                    </p>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/monitoramento.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Logs do Sistema | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="logs">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html">Supermercados</a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html" class="active">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Logs e erros</h1>
+
+                    <p>
+                        Consulte eventos do backend, pagamentos e scrapers.
+                    </p>
+                </div>
+
+                <div class="acoes-form">
+
+                    <button
+                        id="btnExportarLogs"
+                        class="btn btn-secondary"
+                        type="button">
+                        Exportar
+                    </button>
+
+                    <button
+                        id="btnLimparLogs"
+                        class="btn btn-danger"
+                        type="button">
+                        Limpar logs
+                    </button>
+
+                </div>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Informações</span>
+                    <strong id="totalLogsInfo">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Avisos</span>
+                    <strong id="totalLogsAviso">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Erros</span>
+                    <strong id="totalLogsErro">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Erros críticos</span>
+                    <strong id="totalLogsCritico">0</strong>
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="buscarLog">Buscar</label>
+
+                        <input
+                            type="search"
+                            id="buscarLog"
+                            placeholder="Mensagem, usuário ou serviço">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nivelLog">Nível</label>
+
+                        <select id="nivelLog">
+                            <option value="">Todos</option>
+                            <option value="INFO">Informação</option>
+                            <option value="AVISO">Aviso</option>
+                            <option value="ERRO">Erro</option>
+                            <option value="CRITICO">Crítico</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="servicoLog">Serviço</label>
+
+                        <select id="servicoLog">
+                            <option value="">Todos</option>
+                            <option value="BACKEND">Backend</option>
+                            <option value="AUTENTICACAO">Autenticação</option>
+                            <option value="PAGAMENTO">Pagamento</option>
+                            <option value="SCRAPER">Scraper</option>
+                            <option value="BANCO">Banco de dados</option>
+                            <option value="SINCRONIZACAO">Sincronização</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dataLog">Data</label>
+                        <input type="date" id="dataLog">
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="table-wrapper">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data e hora</th>
+                                <th>Nível</th>
+                                <th>Serviço</th>
+                                <th>Usuário</th>
+                                <th>Mensagem</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaLogs">
+                            <tr>
+                                <td colspan="6" class="estado-vazio">
+                                    Nenhum log registrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

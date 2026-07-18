@@ -1,0 +1,140 @@
+.checkout-container {
+    width: min(980px, calc(100% - 30px));
+    margin: 35px auto;
+}
+
+.checkout-cabecalho {
+    margin-bottom: 24px;
+}
+
+.checkout-cabecalho h1 {
+    margin-bottom: 8px;
+}
+
+.checkout-cabecalho p {
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+.checkout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.checkout-card,
+.checkout-resumo {
+    padding: 25px;
+    background: var(--cor-superficie, #131c2f);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 16px;
+    box-shadow: var(--sombra-card, none);
+}
+
+.checkout-card h2,
+.checkout-resumo h2 {
+    margin-bottom: 20px;
+}
+
+.checkout-resumo {
+    position: sticky;
+    top: 20px;
+}
+
+.checkout-linha {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--cor-borda, #26334b);
+}
+
+.checkout-linha span {
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+.checkout-linha strong {
+    text-align: right;
+}
+
+.checkout-linha-total {
+    margin-top: 6px;
+    border-bottom: 0;
+}
+
+.checkout-linha-total strong {
+    color: var(--cor-sucesso, #22c55e);
+    font-size: 25px;
+}
+
+.texto-renovacao {
+    margin-top: 15px;
+    padding: 13px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border-radius: 10px;
+    line-height: 1.5;
+}
+
+.formas-pagamento {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.forma-pagamento {
+    position: relative;
+    cursor: pointer;
+}
+
+.forma-pagamento input {
+    position: absolute;
+    opacity: 0;
+}
+
+.forma-pagamento-conteudo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    transition: 0.2s;
+}
+
+.forma-pagamento input:checked + .forma-pagamento-conteudo {
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, 0.14);
+}
+
+.forma-pagamento input:focus-visible + .forma-pagamento-conteudo {
+    outline: 3px solid rgba(96, 165, 250, 0.35);
+}
+
+.dados-cartao {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 18px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border-radius: 12px;
+}
+
+.dados-cartao[hidden] {
+    display: none;
+}
+
+.dados-cartao .campo-largo {
+    grid-column: 1 / -1;
+}
+
+.checkout-seguranca {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 13px;
+    line-height: 1.5;
+}

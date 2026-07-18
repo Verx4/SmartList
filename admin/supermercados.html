@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.webmanifest">
+    <link rel="icon" href="../assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <link rel="stylesheet" href="../css/pwa.css">
+    <script type="module" src="../js/pwa.js"></script>
+
+    <title>Gestão de Supermercados | Administração</title>
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+
+<body data-admin-page="supermercados">
+
+    <div class="admin-layout">
+
+        <aside class="admin-sidebar">
+
+            <a class="brand" href="../index.html">
+                🛒 Minha Lista
+            </a>
+
+            <nav class="admin-nav" aria-label="Administração">
+                <a href="./index.html">Visão geral</a>
+                <a href="./usuarios.html">Usuários</a>
+                <a href="./produtos.html">Produtos</a>
+                <a href="./supermercados.html" class="active">
+                    Supermercados
+                </a>
+                <a href="./scrapers.html">Scrapers</a>
+                <a href="./apis.html">APIs</a>
+                <a href="./logs.html">Logs</a>
+                <a href="./monitoramento.html">Monitoramento</a>
+                <a href="../dashboard.html">Voltar ao site</a>
+            </nav>
+
+        </aside>
+
+        <main class="admin-main">
+
+            <header class="admin-header">
+
+                <div>
+                    <span class="page-eyebrow">Administração</span>
+                    <h1>Gestão de supermercados</h1>
+
+                    <p>
+                        Cadastre redes, unidades e regiões atendidas.
+                    </p>
+                </div>
+
+            </header>
+
+            <section class="grid-resumo">
+
+                <article class="card resumo-card">
+                    <span>Supermercados</span>
+                    <strong id="totalSupermercados">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Ativos</span>
+                    <strong id="supermercadosAtivos">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Com scraper</span>
+                    <strong id="supermercadosComScraper">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Favoritos dos usuários</span>
+                    <strong id="totalFavoritosMercados">0</strong>
+                </article>
+
+            </section>
+
+            <section class="card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Cadastro</span>
+                        <h2>Cadastrar supermercado</h2>
+                    </div>
+                </div>
+
+                <form id="formAdminSupermercado" class="form">
+
+                    <input type="hidden" id="adminSupermercadoId" name="id">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="adminSupermercadoNome">Nome</label>
+
+                            <input
+                                type="text"
+                                id="adminSupermercadoNome"
+                                name="nome"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminSupermercadoRede">Rede</label>
+
+                            <input
+                                type="text"
+                                id="adminSupermercadoRede"
+                                name="rede"
+                                placeholder="Ex.: Rede Econômica">
+                        </div>
+
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="adminSupermercadoCidade">Cidade</label>
+
+                            <input
+                                type="text"
+                                id="adminSupermercadoCidade"
+                                name="cidade"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminSupermercadoEstado">Estado</label>
+
+                            <input
+                                type="text"
+                                id="adminSupermercadoEstado"
+                                name="estado"
+                                maxlength="2"
+                                placeholder="CE"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminSupermercadoCep">CEP</label>
+
+                            <input
+                                type="text"
+                                id="adminSupermercadoCep"
+                                name="cep"
+                                placeholder="00000-000">
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminSupermercadoSite">Site</label>
+
+                        <input
+                            type="url"
+                            id="adminSupermercadoSite"
+                            name="site"
+                            placeholder="https://www.exemplo.com">
+                    </div>
+
+                    <label class="checkbox-label" for="adminSupermercadoAtivo">
+
+                        <input
+                            type="checkbox"
+                            id="adminSupermercadoAtivo"
+                            name="ativo"
+                            checked>
+
+                        <span>Supermercado ativo</span>
+
+                    </label>
+
+                    <div class="acoes-form">
+
+                        <button class="btn btn-primary" type="submit">
+                            Salvar supermercado
+                        </button>
+
+                        <button
+                            id="btnCancelarEdicaoSupermercado"
+                            class="btn btn-secondary"
+                            type="button">
+                            Cancelar edição
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="mensagemAdmin"
+                        class="mensagem"
+                        aria-live="polite"
+                        hidden>
+                    </div>
+
+                </form>
+
+            </section>
+
+            <section class="card">
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="buscarAdminSupermercado">Buscar</label>
+
+                        <input
+                            type="search"
+                            id="buscarAdminSupermercado"
+                            placeholder="Nome, rede ou cidade">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroEstadoSupermercado">Estado</label>
+
+                        <input
+                            type="text"
+                            id="filtroEstadoSupermercado"
+                            maxlength="2"
+                            placeholder="Todos">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtroStatusSupermercado">Status</label>
+
+                        <select id="filtroStatusSupermercado">
+                            <option value="">Todos</option>
+                            <option value="ATIVO">Ativos</option>
+                            <option value="INATIVO">Inativos</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="table-wrapper">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Supermercado</th>
+                                <th>Rede</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                                <th>Status</th>
+                                <th>Scraper</th>
+                                <th>Favoritos</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaAdminSupermercados">
+                            <tr>
+                                <td colspan="8" class="estado-vazio">
+                                    Nenhum supermercado cadastrado.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/tema.js"></script>
+    <script type="module" src="../js/admin.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+target/
+.idea/
+.vscode/
+*.iml
+.env
+dados/
+.mvn/apache-maven-*/
+.mvn/apache-maven-*.zip
+logs/
+uploads/

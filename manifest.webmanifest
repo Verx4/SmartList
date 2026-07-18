@@ -1,0 +1,70 @@
+{
+  "id": "./",
+  "name": "Minha Lista - Economia nas Compras",
+  "short_name": "Minha Lista",
+  "description": "Organize sua lista de compras e compare preços entre supermercados.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./index.html?origem=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "categories": ["shopping", "finance", "utilities"],
+  "icons": [
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Minha lista",
+      "short_name": "Lista",
+      "description": "Abrir a lista de compras",
+      "url": "./dashboard.html?origem=atalho",
+      "icons": [
+        {
+          "src": "./assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Comparar preços",
+      "short_name": "Comparar",
+      "description": "Comparar os preços da lista",
+      "url": "./comparacao.html?origem=atalho",
+      "icons": [
+        {
+          "src": "./assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

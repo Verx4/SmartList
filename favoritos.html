@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="application-name" content="Minha Lista">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/pwa.css">
+    <script type="module" src="./js/pwa.js"></script>
+
+    <title>Favoritos | Minha Lista</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/buttons.css">
+    <link rel="stylesheet" href="./css/forms.css">
+    <link rel="stylesheet" href="./css/favoritos.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container header-content">
+            <a class="brand" href="./index.html">🛒 Minha Lista</a>
+
+            <nav class="main-nav" aria-label="Navegação principal">
+                <a href="./dashboard.html">Minha lista</a>
+                <a href="./comparacao.html">Comparação</a>
+                <a href="./historico.html">Histórico</a>
+                <a href="./favoritos.html" class="active">Favoritos</a>
+                <a href="./relatorios.html">Relatórios</a>
+                <a href="./perfil.html">Perfil</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-main">
+
+        <section class="page-header">
+            <span class="page-eyebrow">Favoritos</span>
+            <h1>Seus produtos e supermercados favoritos</h1>
+            <p>
+                Encontre rapidamente os itens e estabelecimentos que você
+                acompanha com mais frequência.
+            </p>
+        </section>
+
+        <section class="card favoritos-filtros">
+
+            <input
+                type="search"
+                id="buscarFavorito"
+                class="search"
+                placeholder="🔍 Buscar favorito...">
+
+            <div class="tabs" role="tablist">
+                <button
+                    id="tabProdutosFavoritos"
+                    class="tab-button active"
+                    type="button"
+                    data-tipo="produtos">
+                    Produtos
+                </button>
+
+                <button
+                    id="tabSupermercadosFavoritos"
+                    class="tab-button"
+                    type="button"
+                    data-tipo="supermercados">
+                    Supermercados
+                </button>
+            </div>
+
+        </section>
+
+        <section aria-labelledby="tituloFavoritos">
+
+            <div class="section-header">
+                <div>
+                    <span class="card-label">Itens salvos</span>
+                    <h2 id="tituloFavoritos">Produtos favoritos</h2>
+                </div>
+
+                <span id="contadorFavoritos" class="contador">
+                    0 favoritos
+                </span>
+            </div>
+
+            <div id="listaFavoritos" class="grid-favoritos">
+                <div class="card estado-vazio">
+                    <p>Você ainda não adicionou nenhum favorito.</p>
+                    <a class="btn btn-primary" href="./dashboard.html">
+                        Ver minha lista
+                    </a>
+                </div>
+            </div>
+
+        </section>
+
+        <div
+            id="mensagemFavoritos"
+            class="mensagem"
+            aria-live="polite">
+        </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Minha Lista</p>
+
+            <nav class="footer-links">
+                <a href="./termos.html">Termos</a>
+                <a href="./privacidade.html">Privacidade</a>
+                <a href="./suporte.html">Suporte</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script type="module" src="./js/favoritos.js"></script>
+
+</body>
+
+</html>
