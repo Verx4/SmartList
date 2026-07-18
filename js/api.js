@@ -1,7 +1,15 @@
-const URL_PADRAO_API = "http://localhost:8080/api";
+const AMBIENTE_LOCAL = ["localhost", "127.0.0.1"].includes(
+    window.location.hostname
+);
+
+const URL_PADRAO_API = AMBIENTE_LOCAL
+    ? "http://localhost:8080/api"
+    : "https://smart-list-backend-j4bp.onrender.com/api";
 
 export const API_BASE_URL = (
-    localStorage.getItem("apiBaseUrl") || URL_PADRAO_API
+    AMBIENTE_LOCAL
+        ? localStorage.getItem("apiBaseUrl") || URL_PADRAO_API
+        : URL_PADRAO_API
 ).replace(/\/+$/, "");
 
 
@@ -124,7 +132,7 @@ export async function apiRequest(
     } catch (erro) {
 
         throw new ApiError(
-            "Não foi possível conectar ao backend. Verifique se o Spring Boot está iniciado.",
+            "Não foi possível conectar ao servidor agora. Aguarde alguns segundos e tente novamente.",
             0,
             erro
         );

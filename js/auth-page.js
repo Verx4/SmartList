@@ -51,9 +51,8 @@ function mostrarMensagem(
 function mensagemDoErro(erro) {
     if (erro?.status === 0) {
         return (
-            "O backend ainda não está ligado. "
-            + "Iniciaremos o servidor Spring Boot "
-            + "para habilitar cadastro e login."
+            "O servidor está iniciando ou temporariamente indisponível. "
+            + "Aguarde alguns segundos e tente novamente."
         );
     }
 
