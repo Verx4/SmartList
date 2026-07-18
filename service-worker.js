@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v2`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v2`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v3`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v3`;
 
 const PRECACHE_URLS = [
     "./",
@@ -82,7 +82,15 @@ self.addEventListener("fetch", (event) => {
     ]);
 
     if (destinosEstaticos.has(request.destination)) {
-        event.respondWith(responderRecursoEstatico(request));
+        const precisaEstarAtualizado = ["script", "style"].includes(
+            request.destination
+        );
+
+        event.respondWith(
+            precisaEstarAtualizado
+                ? responderRecursoAtualizavel(request)
+                : responderRecursoEstatico(request)
+        );
     }
 });
 
@@ -117,4 +125,20 @@ async function responderRecursoEstatico(request) {
     }
 
     return response;
+}
+
+async function responderRecursoAtualizavel(request) {
+    try {
+        const response = await fetch(request);
+
+        if (response.ok && response.type === "basic") {
+            const cache = await caches.open(STATIC_CACHE);
+            await cache.put(request, response.clone());
+        }
+
+        return response;
+    } catch (_erro) {
+        return (await caches.match(request, { ignoreSearch: true }))
+            || Response.error();
+    }
 }
