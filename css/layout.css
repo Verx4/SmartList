@@ -13,6 +13,7 @@
 }
 
 .header-content {
+    position: relative;
     min-height: 72px;
     display: flex;
     align-items: center;
@@ -50,6 +51,30 @@
 .main-nav > a.active {
     color: white;
     background: #1f2937;
+}
+
+.mobile-menu-button {
+    display: none;
+    min-height: 44px;
+    padding: 9px 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: white;
+    background: #1f2937;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mobile-menu-button:hover {
+    background: #263449;
+}
+
+.mobile-menu-icon {
+    font-size: 20px;
+    line-height: 1;
 }
 
 .page-main {

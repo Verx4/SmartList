@@ -9,7 +9,74 @@ let reloadingForUpdate = false;
 
 garantirMetadadosPwa();
 configurarInstalacao();
+configurarMenuMovel();
 registrarServiceWorker();
+
+function configurarMenuMovel() {
+    const cabecalho = document.querySelector(".site-header");
+    const conteudo = cabecalho?.querySelector(".header-content");
+    const navegacao = conteudo?.querySelector(".main-nav");
+
+    if (!cabecalho || !conteudo || !navegacao) {
+        return;
+    }
+
+    if (!navegacao.id) {
+        navegacao.id = "menuPrincipal";
+    }
+
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "mobile-menu-button";
+    botao.setAttribute("aria-controls", navegacao.id);
+    botao.setAttribute("aria-expanded", "false");
+    botao.setAttribute("aria-label", "Abrir menu principal");
+    botao.innerHTML = `
+        <span class="mobile-menu-icon" aria-hidden="true">☰</span>
+        <span>Menu</span>
+    `;
+
+    conteudo.insertBefore(botao, navegacao);
+    cabecalho.classList.add("menu-ready");
+
+    function definirEstado(aberto) {
+        cabecalho.classList.toggle("menu-open", aberto);
+        botao.setAttribute("aria-expanded", String(aberto));
+        botao.setAttribute(
+            "aria-label",
+            aberto ? "Fechar menu principal" : "Abrir menu principal"
+        );
+    }
+
+    botao.addEventListener("click", () => {
+        definirEstado(!cabecalho.classList.contains("menu-open"));
+    });
+
+    navegacao.addEventListener("click", (event) => {
+        if (event.target.closest("a")) {
+            definirEstado(false);
+        }
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!cabecalho.contains(event.target)) {
+            definirEstado(false);
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            definirEstado(false);
+            botao.focus();
+        }
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 768) {
+            definirEstado(false);
+        }
+    });
+}
 
 function garantirMetadadosPwa() {
     if (!document.querySelector('link[rel="manifest"]')) {
