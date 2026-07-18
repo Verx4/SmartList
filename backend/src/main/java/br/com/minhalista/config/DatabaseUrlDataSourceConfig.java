@@ -20,14 +20,14 @@ import com.zaxxer.hikari.HikariDataSource;
  * fonte JDBC, sem registrar ou persistir credenciais no projeto.
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = DatabaseUrlDataSourceConfig.DATABASE_URL)
+@ConditionalOnProperty(name = DatabaseUrlDataSourceConfig.DATABASE_URL_PROPERTY)
 public class DatabaseUrlDataSourceConfig {
 
-    static final String DATABASE_URL = "DATABASE_URL";
+    static final String DATABASE_URL_PROPERTY = "database-url";
 
     @Bean
     @Primary
-    DataSource dataSource(@Value("${DATABASE_URL}") String databaseUrl) {
+    DataSource dataSource(@Value("${database-url}") String databaseUrl) {
         CredenciaisBanco credenciais = converter(databaseUrl.trim());
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(credenciais.jdbcUrl());
