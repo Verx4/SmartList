@@ -1,0 +1,7 @@
+target/
+.git/
+.env
+dados/
+logs/
+uploads/
+*.log

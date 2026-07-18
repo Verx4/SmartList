@@ -15,7 +15,7 @@ public class HealthController {
     public Map<String, Object> health() {
         return Map.of(
             "status", "UP",
-            "servico", "minha-lista-backend",
+            "servico", "smart-list-backend",
             "horario", Instant.now()
         );
     }

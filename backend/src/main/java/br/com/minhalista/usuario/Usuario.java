@@ -33,6 +33,15 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true, length = 180)
     private String email;
 
+    @Column(length = 30)
+    private String telefone;
+
+    @Column(length = 100)
+    private String cidade;
+
+    @Column(length = 2)
+    private String estado;
+
     @Column(name = "senha_hash", nullable = false, length = 100)
     private String senhaHash;
 
@@ -52,6 +61,12 @@ public class Usuario implements UserDetails {
 
     @Column(name = "aceite_marketing", nullable = false)
     private boolean aceiteMarketing;
+
+    @Column(name = "notificar_promocoes", nullable = false, columnDefinition = "boolean default false")
+    private boolean notificarPromocoes;
+
+    @Column(name = "notificar_precos", nullable = false, columnDefinition = "boolean default false")
+    private boolean notificarPrecos;
 
     @Column(name = "cortesia_ate")
     private Instant cortesiaAte;
@@ -120,6 +135,30 @@ public class Usuario implements UserDetails {
         this.email = email;
     }
 
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
     public String getSenhaHash() {
         return senhaHash;
     }
@@ -166,6 +205,22 @@ public class Usuario implements UserDetails {
 
     public void setAceiteMarketing(boolean aceiteMarketing) {
         this.aceiteMarketing = aceiteMarketing;
+    }
+
+    public boolean isNotificarPromocoes() {
+        return notificarPromocoes;
+    }
+
+    public void setNotificarPromocoes(boolean notificarPromocoes) {
+        this.notificarPromocoes = notificarPromocoes;
+    }
+
+    public boolean isNotificarPrecos() {
+        return notificarPrecos;
+    }
+
+    public void setNotificarPrecos(boolean notificarPrecos) {
+        this.notificarPrecos = notificarPrecos;
     }
 
     public Instant getCortesiaAte() {

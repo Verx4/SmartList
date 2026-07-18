@@ -8,6 +8,11 @@ public record UsuarioResponse(
     UUID id,
     String nome,
     String email,
+    String telefone,
+    String cidade,
+    String estado,
+    boolean notificarPromocoes,
+    boolean notificarPrecos,
     String perfil,
     String tipoAcesso,
     boolean ativo,
@@ -18,10 +23,15 @@ public record UsuarioResponse(
             usuario.getId(),
             usuario.getNome(),
             usuario.getEmail(),
+            usuario.getTelefone(),
+            usuario.getCidade(),
+            usuario.getEstado(),
+            usuario.isNotificarPromocoes(),
+            usuario.isNotificarPrecos(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
             usuario.isAtivo(),
-            usuario.isAtivo()
+            usuario.temAcessoPremium()
         );
     }
 }

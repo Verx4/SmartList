@@ -1,5 +1,5 @@
 @echo off
-title Minha Lista - Backend local
+title Smart List - Backend local
 cd /d "%~dp0"
 echo Iniciando o backend em http://localhost:8080...
 echo Para encerrar, pressione Ctrl+C.

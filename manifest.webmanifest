@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Minha Lista - Economia nas Compras",
-  "short_name": "Minha Lista",
+  "name": "Smart List - Economia nas Compras",
+  "short_name": "Smart List",
   "description": "Organize sua lista de compras e compare preços entre supermercados.",
   "lang": "pt-BR",
   "dir": "ltr",

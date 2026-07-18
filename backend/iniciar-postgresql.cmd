@@ -1,5 +1,5 @@
 @echo off
-title Minha Lista - Backend com PostgreSQL
+title Smart List - Backend com PostgreSQL
 cd /d "%~dp0"
 where docker >nul 2>nul
 if errorlevel 1 (

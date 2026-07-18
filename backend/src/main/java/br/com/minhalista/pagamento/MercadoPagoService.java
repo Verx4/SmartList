@@ -68,8 +68,8 @@ public class MercadoPagoService {
         Map<String, Object> corpo = new LinkedHashMap<>();
         corpo.put("items", List.of(Map.of(
             "id", "premium-" + assinatura.getCiclo().name().toLowerCase(),
-            "title", "Minha Lista Premium " + assinatura.getCiclo().getNome(),
-            "description", "Acesso aos recursos Premium do Minha Lista",
+            "title", "Smart List Premium " + assinatura.getCiclo().getNome(),
+            "description", "Acesso aos recursos Premium do Smart List",
             "quantity", 1,
             "currency_id", "BRL",
             "unit_price", assinatura.getValor()

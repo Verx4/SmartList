@@ -57,7 +57,7 @@ function exibirBotaoInstalar() {
     installButton.type = "button";
     installButton.className = "pwa-install-button";
     installButton.textContent = "Instalar aplicativo";
-    installButton.setAttribute("aria-label", "Instalar Minha Lista neste dispositivo");
+    installButton.setAttribute("aria-label", "Instalar Smart List neste dispositivo");
 
     installButton.addEventListener("click", async () => {
         if (!installEvent) {

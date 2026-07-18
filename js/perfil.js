@@ -1,166 +1,124 @@
 import { api } from "./api.js";
-import { usuarioAtual } from "./auth.js";
-import { baixarJSON } from "./utils.js";
+import { exigirAutenticacao, sair, usuarioAtual } from "./auth.js";
 
-function mensagem(
-    texto,
-    tipo = "sucesso"
-) {
-    const area =
-        document.getElementById(
-            "mensagens"
-        );
+function exibirMensagem(texto, tipo = "sucesso") {
+    const area = document.getElementById("mensagemPerfil");
 
     if (!area) {
-        alert(texto);
         return;
     }
 
     area.textContent = texto;
-    area.dataset.tipo = tipo;
+    const classes = {
+        erro: "mensagem-erro",
+        aviso: "mensagem-aviso",
+        sucesso: "mensagem-sucesso"
+    };
+
+    area.classList.remove("mensagem-sucesso", "mensagem-erro", "mensagem-aviso");
+    area.classList.add(classes[tipo] || classes.sucesso);
     area.hidden = false;
 }
 
-const usuario =
-    usuarioAtual();
+function nomeDoPlano(usuario) {
+    if (usuario?.tipoAcesso === "PREMIUM") {
+        return "Plano Premium";
+    }
 
-const formulario =
-    document.getElementById(
-        "formPerfil"
-    );
+    if (usuario?.tipoAcesso === "CORTESIA") {
+        return "Plano Cortesia";
+    }
 
-if (formulario && usuario) {
-    formulario.elements.nome.value =
-        usuario.nome || "";
-
-    formulario.elements.email.value =
-        usuario.email || "";
-
-    formulario.elements.cidade.value =
-        usuario.cidade || "";
+    return "Plano Free";
 }
 
-formulario?.addEventListener(
-    "submit",
-    async evento => {
+function preencherPerfil(usuario) {
+    const formulario = document.getElementById("formPerfil");
+
+    if (!formulario || !usuario) {
+        return;
+    }
+
+    formulario.elements.nome.value = usuario.nome || "";
+    formulario.elements.email.value = usuario.email || "";
+    formulario.elements.telefone.value = usuario.telefone || "";
+    formulario.elements.cidade.value = usuario.cidade || "";
+    formulario.elements.estado.value = usuario.estado || "";
+    formulario.elements.notificarPromocoes.checked = Boolean(usuario.notificarPromocoes);
+    formulario.elements.notificarPrecos.checked = Boolean(usuario.notificarPrecos);
+
+    const nome = document.getElementById("perfilNomeExibicao");
+    const email = document.getElementById("perfilEmailExibicao");
+    const avatar = document.getElementById("perfilAvatar");
+    const plano = document.getElementById("perfilPlano");
+
+    if (nome) {
+        nome.textContent = usuario.nome || "Usuário";
+    }
+
+    if (email) {
+        email.textContent = usuario.email || "";
+    }
+
+    if (avatar) {
+        avatar.textContent = (usuario.nome || "U").trim().charAt(0).toUpperCase();
+    }
+
+    if (plano) {
+        plano.textContent = nomeDoPlano(usuario);
+    }
+}
+
+exigirAutenticacao();
+
+const formulario = document.getElementById("formPerfil");
+preencherPerfil(usuarioAtual());
+
+if (formulario) {
+    api.get("/usuarios/me")
+        .then(usuario => {
+            localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+            preencherPerfil(usuario);
+        })
+        .catch(erro => exibirMensagem(erro.message, "erro"));
+
+    formulario.addEventListener("submit", async evento => {
         evento.preventDefault();
 
+        const botao = formulario.querySelector('button[type="submit"]');
+        const textoOriginal = botao?.textContent;
+
+        if (botao) {
+            botao.disabled = true;
+            botao.textContent = "Salvando...";
+        }
+
         try {
-            const atualizado =
-                await api.put(
-                    "/usuarios/me",
+            const usuario = await api.put("/usuarios/me", {
+                nome: formulario.elements.nome.value,
+                telefone: formulario.elements.telefone.value,
+                cidade: formulario.elements.cidade.value,
+                estado: formulario.elements.estado.value,
+                notificarPromocoes: formulario.elements.notificarPromocoes.checked,
+                notificarPrecos: formulario.elements.notificarPrecos.checked
+            });
 
-                    Object.fromEntries(
-                        new FormData(
-                            evento.currentTarget
-                        )
-                    )
-                );
-
-            localStorage.setItem(
-                "usuarioAtual",
-                JSON.stringify(atualizado)
-            );
-
-            mensagem(
-                "Dados atualizados."
-            );
+            localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+            preencherPerfil(usuario);
+            exibirMensagem("Dados atualizados com sucesso.");
         } catch (erro) {
-            mensagem(
-                erro.message,
-                "erro"
-            );
-        }
-    }
-);
-
-document
-    .getElementById(
-        "formNotificacoes"
-    )
-    ?.addEventListener(
-        "submit",
-        async evento => {
-            evento.preventDefault();
-
-            try {
-                await api.put(
-                    "/usuarios/me/notificacoes",
-
-                    Object.fromEntries(
-                        new FormData(
-                            evento.currentTarget
-                        )
-                    )
-                );
-
-                mensagem(
-                    "Preferências salvas."
-                );
-            } catch (erro) {
-                mensagem(
-                    erro.message,
-                    "erro"
-                );
+            exibirMensagem(erro.message, "erro");
+        } finally {
+            if (botao) {
+                botao.disabled = false;
+                botao.textContent = textoOriginal;
             }
         }
-    );
+    });
+}
 
-document
-    .getElementById(
-        "btnExportarDados"
-    )
-    ?.addEventListener(
-        "click",
-        async () => {
-            try {
-                const dados =
-                    await api.get(
-                        "/usuarios/me/exportacao"
-                    );
+document.getElementById("btnSair")?.addEventListener("click", sair);
 
-                baixarJSON(
-                    dados,
-                    "meus-dados.json"
-                );
-            } catch (erro) {
-                mensagem(
-                    erro.message,
-                    "erro"
-                );
-            }
-        }
-    );
-
-document
-    .getElementById(
-        "btnExcluirConta"
-    )
-    ?.addEventListener(
-        "click",
-        async () => {
-            if (
-                !confirm(
-                    "Deseja solicitar a exclusão da conta?"
-                )
-            ) {
-                return;
-            }
-
-            try {
-                await api.post(
-                    "/usuarios/me/exclusao",
-                    {}
-                );
-
-                mensagem(
-                    "Solicitação de exclusão enviada."
-                );
-            } catch (erro) {
-                mensagem(
-                    erro.message,
-                    "erro"
-                );
-            }
-        }
-    );
+document.getElementById("btnExcluirConta")?.addEventListener("click", () => {
+    exibirMensagem("A exclusão de conta estará disponível em breve.", "aviso");
+});

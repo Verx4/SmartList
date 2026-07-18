@@ -1,4 +1,4 @@
-# Backend do Minha Lista
+# Backend do Smart List
 
 API Spring Boot do projeto MeuPrimeiroSite, com cadastro, login JWT, listas,
 mercados, planos, administração, scrapers e Checkout Pro do Mercado Pago.

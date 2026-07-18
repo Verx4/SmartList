@@ -14,8 +14,8 @@
     <groupId>br.com.minhalista</groupId>
     <artifactId>backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Minha Lista - Backend</name>
-    <description>API do sistema Minha Lista</description>
+    <name>Smart List - Backend</name>
+    <description>API do sistema Smart List</description>
 
     <properties>
         <java.version>21</java.version>
