@@ -88,6 +88,25 @@ export async function apiRequest(
     } = {}
 ) {
 
+    const controlador = new AbortController();
+    let expirou = false;
+    const limiteEspera = window.setTimeout(() => {
+        expirou = true;
+        controlador.abort();
+    }, 60000);
+
+    if (signal) {
+        if (signal.aborted) {
+            controlador.abort();
+        } else {
+            signal.addEventListener(
+                "abort",
+                () => controlador.abort(),
+                { once: true }
+            );
+        }
+    }
+
     const cabecalhos = {
         Accept: "application/json",
         ...headers
@@ -125,11 +144,19 @@ export async function apiRequest(
                     : body instanceof FormData
                         ? body
                         : JSON.stringify(body),
-            signal
+            signal: controlador.signal
 
         });
 
     } catch (erro) {
+
+        if (expirou) {
+            throw new ApiError(
+                "O servidor demorou mais de 60 segundos para responder. Aguarde um momento e tente novamente.",
+                408,
+                erro
+            );
+        }
 
         throw new ApiError(
             "Não foi possível conectar ao servidor agora. Aguarde alguns segundos e tente novamente.",
@@ -137,6 +164,8 @@ export async function apiRequest(
             erro
         );
 
+    } finally {
+        window.clearTimeout(limiteEspera);
     }
 
     const dados = await lerResposta(response);

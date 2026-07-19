@@ -119,8 +119,20 @@ function configurarLogin() {
                 "Entrando..."
             );
 
+            const avisoServidor = window.setTimeout(() => {
+                alterarEstadoBotao(
+                    formulario,
+                    true,
+                    "Servidor iniciando..."
+                );
+                mostrarMensagem(
+                    "O servidor está iniciando. Isso pode levar até um minuto.",
+                    "info"
+                );
+            }, 8000);
+
             try {
-                await entrar(
+                const usuario = await entrar(
                     dados.get("email"),
                     dados.get("senha"),
                     dados.get("lembrar") === "on"
@@ -133,7 +145,9 @@ function configurarLogin() {
                 );
 
                 window.location.assign(
-                    "./dashboard.html"
+                    String(usuario?.perfil || "").toUpperCase() === "ADMIN"
+                        ? "./admin/index.html"
+                        : "./dashboard.html"
                 );
             } catch (erro) {
                 mostrarMensagem(
@@ -141,6 +155,7 @@ function configurarLogin() {
                     "erro"
                 );
             } finally {
+                window.clearTimeout(avisoServidor);
                 alterarEstadoBotao(
                     formulario,
                     false,

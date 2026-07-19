@@ -12,6 +12,7 @@ public record UsuarioAdminResponse(
     String perfil,
     String tipoAcesso,
     String ciclo,
+    boolean assinaturaAtiva,
     boolean ativo,
     Instant cortesiaAte,
     Instant criadoEm
@@ -24,6 +25,7 @@ public record UsuarioAdminResponse(
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
             ciclo,
+            ciclo != null,
             usuario.isAtivo(),
             usuario.getCortesiaAte(),
             usuario.getCriadoEm()

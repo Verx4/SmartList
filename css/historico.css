@@ -16,13 +16,13 @@
 .compra-historico {
     padding: 18px;
     margin-bottom: 15px;
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid var(--cor-primaria, #2563eb);
     border-radius: 12px;
     background: #1f2937;
 }
 
 .compra-historico h3 {
-    color: #60a5fa;
+    color: var(--cor-destaque, #60a5fa);
     margin-bottom: 10px;
 }
 
@@ -97,7 +97,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #2563eb;
+    background: var(--cor-primaria, #2563eb);
 }
 
 .timeline-item strong {
@@ -106,6 +106,6 @@
 
 .categoria-historico {
     margin: 15px 0 10px;
-    color: #60a5fa;
+    color: var(--cor-destaque, #60a5fa);
     font-weight: bold;
 }

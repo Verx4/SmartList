@@ -52,7 +52,7 @@
 .relatorio-barra-valor {
     height: 100%;
     border-radius: 10px;
-    background: #2563eb;
+    background: var(--cor-primaria, #2563eb);
 }
 
 .relatorio-barra-valor.economia {

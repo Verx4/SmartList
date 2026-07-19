@@ -1,158 +1,259 @@
 (function () {
-
     "use strict";
 
-    const CHAVE_TEMA = "temaPreferido";
+    if (window.TemaMinhaLista?.paletasPremium) {
+        return;
+    }
 
-    const TEMAS_VALIDOS = [
+    const CHAVE_APARENCIA = "aparenciaPreferida";
+    const APARENCIA_PADRAO = "padrao";
+    const APARENCIAS_VALIDAS = [
         "padrao",
         "claro",
-        "escuro"
+        "escuro",
+        "amarelo",
+        "vermelho",
+        "verde",
+        "roxo"
     ];
+    const APARENCIAS_PREMIUM = new Set([
+        "amarelo",
+        "vermelho",
+        "verde",
+        "roxo"
+    ]);
+    const CONFIGURACOES = {
+        padrao: { paleta: "azul", tema: "escuro", corNavegador: "#0b1220" },
+        claro: { paleta: "claro", tema: "claro", corNavegador: "#f3f6fb" },
+        escuro: { paleta: "preto", tema: "escuro", corNavegador: "#050505" },
+        amarelo: { paleta: "amarelo", tema: "escuro", corNavegador: "#171305" },
+        vermelho: { paleta: "vermelho", tema: "escuro", corNavegador: "#18090b" },
+        verde: { paleta: "verde", tema: "escuro", corNavegador: "#07150f" },
+        roxo: { paleta: "roxo", tema: "escuro", corNavegador: "#120a1f" }
+    };
 
-
-    function obterPreferenciaSistema() {
-
-        return window.matchMedia("(prefers-color-scheme: light)").matches
-            ? "claro"
-            : "escuro";
-
+    function obterUsuario() {
+        try {
+            return JSON.parse(localStorage.getItem("usuarioAtual")) || null;
+        } catch (_erro) {
+            return null;
+        }
     }
 
+    function possuiCoresPremium(usuario = obterUsuario()) {
+        const tipoAcesso = String(usuario?.tipoAcesso || "").toUpperCase();
 
-    function obterTemaPreferido() {
-
-        const tema = localStorage.getItem(CHAVE_TEMA);
-
-        return TEMAS_VALIDOS.includes(tema)
-            ? tema
-            : "padrao";
-
+        return tipoAcesso === "PREMIUM"
+            || tipoAcesso === "CORTESIA"
+            || usuario?.assinaturaAtiva === true;
     }
 
+    function migrarPreferenciaAnterior() {
+        const anterior = localStorage.getItem("paletaPreferida");
+        const migracoes = {
+            azul: "padrao",
+            preto: "escuro",
+            amarelo: "amarelo",
+            vermelho: "vermelho",
+            verde: "verde",
+            roxo: "roxo"
+        };
 
-    function obterTemaAplicado(preferencia = obterTemaPreferido()) {
-
-        return preferencia === "padrao"
-            ? obterPreferenciaSistema()
-            : preferencia;
-
+        return migracoes[anterior] || APARENCIA_PADRAO;
     }
 
+    function obterAparenciaSalva() {
+        const aparencia = localStorage.getItem(CHAVE_APARENCIA)
+            || migrarPreferenciaAnterior();
 
-    function aplicarTema(preferencia, salvar = true) {
+        return APARENCIAS_VALIDAS.includes(aparencia)
+            ? aparencia
+            : APARENCIA_PADRAO;
+    }
 
-        const preferenciaValida = TEMAS_VALIDOS.includes(preferencia)
-            ? preferencia
-            : "padrao";
+    function obterAparenciaPermitida() {
+        const aparencia = obterAparenciaSalva();
 
-        const temaAplicado = obterTemaAplicado(preferenciaValida);
+        return APARENCIAS_PREMIUM.has(aparencia) && !possuiCoresPremium()
+            ? APARENCIA_PADRAO
+            : aparencia;
+    }
 
-        document.documentElement.dataset.theme = temaAplicado;
-        document.documentElement.dataset.temaPreferido = preferenciaValida;
+    function atualizarCorNavegador(cor) {
+        const meta = document.querySelector('meta[name="theme-color"]');
+
+        if (meta) {
+            meta.content = cor;
+        }
+    }
+
+    function atualizarOpcaoAtiva(aparencia) {
+        document.querySelectorAll("[data-aparencia]").forEach((opcao) => {
+            const ativa = opcao.dataset.aparencia === aparencia;
+            opcao.classList.toggle("ativa", ativa);
+            opcao.setAttribute("aria-pressed", String(ativa));
+        });
+    }
+
+    function aplicarAparencia(aparencia, salvar = true) {
+        const aparenciaValida = APARENCIAS_VALIDAS.includes(aparencia)
+            ? aparencia
+            : APARENCIA_PADRAO;
+        const permitida = APARENCIAS_PREMIUM.has(aparenciaValida)
+            && !possuiCoresPremium()
+            ? APARENCIA_PADRAO
+            : aparenciaValida;
+        const configuracao = CONFIGURACOES[permitida];
+
+        document.documentElement.dataset.theme = configuracao.tema;
+        document.documentElement.dataset.palette = configuracao.paleta;
+        document.documentElement.dataset.aparencia = permitida;
+        document.documentElement.dataset.coresPremium = String(possuiCoresPremium());
+        atualizarCorNavegador(configuracao.corNavegador);
+        atualizarOpcaoAtiva(permitida);
 
         if (salvar) {
-
-            localStorage.setItem(CHAVE_TEMA, preferenciaValida);
-
+            localStorage.setItem(CHAVE_APARENCIA, permitida);
         }
 
-        const seletor = document.getElementById("seletorTemaGlobal");
+        window.dispatchEvent(new CustomEvent("temaalterado", {
+            detail: {
+                preferencia: permitida,
+                tema: configuracao.tema,
+                paleta: configuracao.paleta,
+                premium: possuiCoresPremium()
+            }
+        }));
 
-        if (seletor) {
-
-            seletor.value = preferenciaValida;
-
-        }
-
-        window.dispatchEvent(
-            new CustomEvent("temaalterado", {
-                detail: {
-                    preferencia: preferenciaValida,
-                    tema: temaAplicado
-                }
-            })
-        );
-
+        return permitida;
     }
 
+    function linhaOpcao(valor, icone, titulo, descricao, premium = false) {
+        const bloqueada = premium && !possuiCoresPremium();
+
+        return [
+            `<button type="button" class="opcao-aparencia`,
+            bloqueada ? " bloqueada" : "",
+            `" data-aparencia="`, valor, `"`,
+            bloqueada ? " disabled" : "",
+            ` aria-pressed="false">`,
+            `<span class="icone-opcao-aparencia" aria-hidden="true">`, icone, "</span>",
+            `<span class="texto-opcao-aparencia"><strong>`, titulo, "</strong>",
+            "<small>", descricao, "</small></span>",
+            premium
+                ? `<span class="selo-opcao-premium">` + (bloqueada ? "🔒" : "Premium") + "</span>"
+                : "",
+            "</button>"
+        ].join("");
+    }
+
+    function fecharMenu(controle) {
+        const botao = controle.querySelector("#botaoTemaGlobal");
+        const menu = controle.querySelector("#menuTemaGlobal");
+
+        menu.hidden = true;
+        botao.setAttribute("aria-expanded", "false");
+        controle.classList.remove("aberto");
+    }
 
     function criarControleTema() {
-
-        if (document.getElementById("controleTemaGlobal")) {
-
+        if (!document.body || document.getElementById("controleTemaGlobal")) {
             return;
-
         }
 
         const controle = document.createElement("div");
-
         controle.id = "controleTemaGlobal";
         controle.className = "controle-tema-global";
-
-        controle.innerHTML = `
-            <label for="seletorTemaGlobal">
-                <span aria-hidden="true">🎨</span>
-                <span class="texto-controle-tema">Tema</span>
-            </label>
-
-            <select
-                id="seletorTemaGlobal"
-                aria-label="Selecionar tema do site"
-            >
-                <option value="padrao">Padrão do sistema</option>
-                <option value="claro">Claro</option>
-                <option value="escuro">Escuro</option>
-            </select>
-        `;
+        const opcoesPremium = possuiCoresPremium()
+            ? [
+                `<div class="divisor-menu-tema"></div>`,
+                `<p class="titulo-menu-tema">Cores Premium</p>`,
+                linhaOpcao("amarelo", "🟡", "Amarelo", "Modelo completo amarelo", true),
+                linhaOpcao("vermelho", "🔴", "Vermelho", "Modelo completo vermelho", true),
+                linhaOpcao("verde", "🟢", "Verde", "Modelo completo verde", true),
+                linhaOpcao("roxo", "🟣", "Roxo", "Modelo completo roxo", true)
+            ]
+            : [];
+        controle.innerHTML = [
+            `<button type="button" id="botaoTemaGlobal" class="botao-tema-global"`,
+            ` aria-label="Abrir opções de aparência" aria-controls="menuTemaGlobal"`,
+            ` aria-expanded="false">🎨</button>`,
+            `<div id="menuTemaGlobal" class="menu-tema-global" hidden>`,
+            `<p class="titulo-menu-tema">Aparência</p>`,
+            linhaOpcao("padrao", "🔵", "Padrão do app", "Volta às cores originais"),
+            linhaOpcao("claro", "☀️", "Modo claro", "Interface branca"),
+            linhaOpcao("escuro", "🌙", "Modo escuro", "Interface preta"),
+            ...opcoesPremium,
+            "</div>"
+        ].join("");
 
         document.body.appendChild(controle);
 
-        const seletor = document.getElementById("seletorTemaGlobal");
+        const botao = controle.querySelector("#botaoTemaGlobal");
+        const menu = controle.querySelector("#menuTemaGlobal");
 
-        seletor.value = obterTemaPreferido();
-
-        seletor.addEventListener("change", function () {
-
-            aplicarTema(seletor.value);
-
+        botao.addEventListener("click", () => {
+            const abrir = menu.hidden;
+            menu.hidden = !abrir;
+            botao.setAttribute("aria-expanded", String(abrir));
+            controle.classList.toggle("aberto", abrir);
         });
 
+        menu.addEventListener("click", (evento) => {
+            const opcao = evento.target.closest("[data-aparencia]");
+
+            if (!opcao || opcao.disabled) {
+                return;
+            }
+
+            aplicarAparencia(opcao.dataset.aparencia);
+            fecharMenu(controle);
+            botao.focus();
+        });
+
+        document.addEventListener("click", (evento) => {
+            if (!controle.contains(evento.target)) {
+                fecharMenu(controle);
+            }
+        });
+
+        document.addEventListener("keydown", (evento) => {
+            if (evento.key === "Escape" && !menu.hidden) {
+                fecharMenu(controle);
+                botao.focus();
+            }
+        });
+
+        atualizarOpcaoAtiva(obterAparenciaPermitida());
     }
 
-
-    const mediaTema = window.matchMedia(
-        "(prefers-color-scheme: light)"
-    );
-
-    mediaTema.addEventListener("change", function () {
-
-        if (obterTemaPreferido() === "padrao") {
-
-            aplicarTema("padrao", false);
-
-        }
-
-    });
-
-
-    aplicarTema(obterTemaPreferido(), false);
-
-
-    document.addEventListener("DOMContentLoaded", function () {
-
+    function atualizarAcesso() {
+        document.getElementById("controleTemaGlobal")?.remove();
+        aplicarAparencia(obterAparenciaSalva(), false);
         criarControleTema();
-        aplicarTema(obterTemaPreferido(), false);
+    }
 
+    aplicarAparencia(obterAparenciaPermitida(), false);
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", criarControleTema, { once: true });
+    } else {
+        criarControleTema();
+    }
+
+    window.addEventListener("storage", function (evento) {
+        if (evento.key === "usuarioAtual" || evento.key === CHAVE_APARENCIA) {
+            atualizarAcesso();
+        }
     });
-
+    window.addEventListener("usuarioatualizado", atualizarAcesso);
 
     window.TemaMinhaLista = {
-
-        aplicar: aplicarTema,
-        obterPreferencia: obterTemaPreferido,
-        obterTemaAplicado
-
+        aplicar: aplicarAparencia,
+        obterPreferencia: obterAparenciaPermitida,
+        obterTemaAplicado: obterAparenciaPermitida,
+        obterPaleta: obterAparenciaPermitida,
+        possuiCoresPremium,
+        paletasPremium: true
     };
-
 })();
