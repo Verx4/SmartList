@@ -104,7 +104,7 @@
 }
 
 .page-eyebrow {
-    color: #60a5fa;
+    color: var(--cor-destaque, #60a5fa);
     font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
@@ -149,7 +149,7 @@
 .hero {
     padding: 90px 0;
     background:
-        radial-gradient(circle at 75% 30%, rgba(37, 99, 235, 0.2), transparent 35%),
+        radial-gradient(circle at 75% 30%, rgba(var(--cor-primaria-rgb, 37, 99, 235), 0.2), transparent 35%),
         #0b1220;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .preview-total strong {
-    color: #60a5fa;
+    color: var(--cor-destaque, #60a5fa);
 }
 
 .preview-economia strong {
@@ -278,8 +278,8 @@ tbody tr:hover {
 .tab-button.active,
 .tab-button:hover {
     color: white;
-    border-color: #2563eb;
-    background: #2563eb;
+    border-color: var(--cor-primaria, #2563eb);
+    background: var(--cor-primaria, #2563eb);
 }
 
 .site-footer {

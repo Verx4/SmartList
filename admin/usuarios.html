@@ -63,14 +63,15 @@
                     </p>
                 </div>
 
-                <button
-                    id="btnAdicionarUsuario"
-                    class="btn btn-primary"
-                    type="button">
-                    + Adicionar usuário
-                </button>
-
             </header>
+
+            <section class="admin-aviso-assinatura" role="note">
+                <strong>Atenção às assinaturas pagas</strong>
+                <p>
+                    Alterar um usuário com assinatura ativa não cancela cobranças
+                    no Mercado Pago. O sistema solicitará uma confirmação adicional.
+                </p>
+            </section>
 
             <section class="grid-resumo">
 
@@ -138,7 +139,6 @@
                             <option value="">Todos</option>
                             <option value="ATIVO">Ativo</option>
                             <option value="BLOQUEADO">Bloqueado</option>
-                            <option value="CANCELADO">Cancelado</option>
                         </select>
                     </div>
 
@@ -172,14 +172,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="cortesiaValidade">
-                                Validade da cortesia
+                            <label for="cortesiaDias">
+                                Duração em dias
                             </label>
 
                             <input
-                                type="date"
-                                id="cortesiaValidade"
-                                name="validade">
+                                type="number"
+                                id="cortesiaDias"
+                                name="dias"
+                                min="1"
+                                max="3650"
+                                value="30"
+                                required>
                         </div>
 
                     </div>
@@ -191,25 +195,50 @@
                             type="text"
                             id="cortesiaMotivo"
                             name="motivo"
-                            placeholder="Ex.: Parceria ou atendimento">
+                            maxlength="300"
+                            placeholder="Ex.: Parceria ou atendimento"
+                            required>
                     </div>
-
-                    <label class="checkbox-label" for="cortesiaSemValidade">
-
-                        <input
-                            type="checkbox"
-                            id="cortesiaSemValidade"
-                            name="semValidade">
-
-                        <span>Cortesia sem data de vencimento</span>
-
-                    </label>
 
                     <button class="btn btn-primary" type="submit">
                         Conceder cortesia
                     </button>
 
                 </form>
+
+            </section>
+
+            <section class="card tabela-card">
+
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Auditoria</span>
+                        <h2>Histórico de alterações de acesso</h2>
+                        <p>Últimas 100 alterações realizadas por administradores.</p>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Usuário</th>
+                                <th>Alteração</th>
+                                <th>Administrador</th>
+                                <th>Motivo</th>
+                                <th>Assinatura ativa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAuditoriaAcesso">
+                            <tr>
+                                <td colspan="6" class="estado-vazio">
+                                    Nenhuma alteração registrada.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
             </section>
 

@@ -2,15 +2,45 @@ const appRoot = new URL("../", import.meta.url);
 const serviceWorkerUrl = new URL("service-worker.js", appRoot);
 const manifestUrl = new URL("manifest.webmanifest", appRoot);
 const iconUrl = new URL("assets/icons/icon-192.png", appRoot);
+const themeStyleUrl = new URL("css/temas.css", appRoot);
+const themeScriptUrl = new URL("js/tema.js", appRoot);
 
 let installEvent = null;
 let installButton = null;
 let reloadingForUpdate = false;
 
 garantirMetadadosPwa();
+carregarAparencia();
 configurarInstalacao();
 configurarMenuMovel();
 registrarServiceWorker();
+
+function carregarAparencia() {
+    const estilosCarregados = Array.from(
+        document.querySelectorAll('link[rel="stylesheet"]')
+    ).some((link) => {
+        try {
+            return new URL(link.href).pathname === themeStyleUrl.pathname;
+        } catch (_erro) {
+            return false;
+        }
+    });
+
+    if (!estilosCarregados) {
+        const estilos = document.createElement("link");
+        estilos.rel = "stylesheet";
+        estilos.href = themeStyleUrl.href;
+        estilos.dataset.smartListThemes = "true";
+        document.head.append(estilos);
+    }
+
+    if (!window.TemaMinhaLista && !window.TemaMinhaListaCarregando) {
+        window.TemaMinhaListaCarregando = import(themeScriptUrl.href)
+            .catch((erro) => {
+                console.warn("Não foi possível carregar as opções de aparência.", erro);
+            });
+    }
+}
 
 function configurarMenuMovel() {
     const cabecalho = document.querySelector(".site-header");

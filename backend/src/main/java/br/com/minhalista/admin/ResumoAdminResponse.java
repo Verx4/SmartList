@@ -8,6 +8,7 @@ public record ResumoAdminResponse(
     long assinaturasMensais,
     long assinaturasTrimestrais,
     long assinaturasAnuais,
+    long totalListas,
     long totalProdutos,
     long totalSupermercados,
     long totalExecucoesScraper

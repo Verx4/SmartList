@@ -78,6 +78,9 @@ if (formulario) {
     api.get("/usuarios/me")
         .then(usuario => {
             localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+            window.dispatchEvent(new CustomEvent("usuarioatualizado", {
+                detail: { usuario }
+            }));
             preencherPerfil(usuario);
         })
         .catch(erro => exibirMensagem(erro.message, "erro"));
@@ -104,6 +107,9 @@ if (formulario) {
             });
 
             localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+            window.dispatchEvent(new CustomEvent("usuarioatualizado", {
+                detail: { usuario }
+            }));
             preencherPerfil(usuario);
             exibirMensagem("Dados atualizados com sucesso.");
         } catch (erro) {

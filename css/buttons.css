@@ -34,12 +34,12 @@
 }
 
 .btn-primary {
-    color: white;
-    background: #2563eb;
+    color: var(--cor-texto-botao, white);
+    background: var(--cor-primaria, #2563eb);
 }
 
 .btn-primary:hover {
-    background: #1d4ed8;
+    background: var(--cor-primaria-hover, #1d4ed8);
 }
 
 .btn-secondary {

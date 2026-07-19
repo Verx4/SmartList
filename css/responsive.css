@@ -1,5 +1,6 @@
 @media (max-width: 1050px) {
     .admin-grid,
+    .grid-resumo,
     .monitoramento-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -11,6 +12,28 @@
 
 
 @media (max-width: 900px) {
+    .hero-grid,
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-grid {
+        gap: 34px;
+    }
+
+    .hero-preview {
+        width: min(100%, 620px);
+    }
+
+    .auth-container {
+        width: min(100%, 560px);
+        gap: 26px;
+    }
+
+    .auth-info {
+        display: none;
+    }
+
     .admin-layout {
         display: block;
     }
@@ -23,18 +46,21 @@
         border-bottom: 1px solid var(--cor-borda, #26334b);
     }
 
-    .admin-menu {
+    .admin-menu,
+    .admin-nav {
         display: flex;
         overflow-x: auto;
         padding-bottom: 6px;
     }
 
-    .admin-menu a {
+    .admin-menu a,
+    .admin-nav a {
         flex: 0 0 auto;
         white-space: nowrap;
     }
 
-    .admin-conteudo {
+    .admin-conteudo,
+    .admin-main {
         padding: 22px;
     }
 
@@ -56,7 +82,81 @@
 
 @media (max-width: 768px) {
     .container {
-        padding: 15px;
+        width: 100%;
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .hero {
+        padding: 44px 0 52px;
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+    }
+
+    .hero-content,
+    .hero-preview {
+        min-width: 0;
+    }
+
+    .hero-content h1 {
+        max-width: none;
+        margin: 12px 0 18px;
+        font-size: clamp(38px, 11vw, 54px);
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+
+    .hero-content > p {
+        font-size: 16px;
+    }
+
+    .hero-preview {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .auth-container {
+        display: flex;
+        width: 100%;
+        min-height: 100dvh;
+        padding: 20px 16px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-card,
+    .auth-container-centralizado .auth-card {
+        width: min(100%, 480px);
+        padding: 24px;
+    }
+
+    .auth-card-header {
+        margin: 8px 0 20px;
+    }
+
+    .perfil-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .perfil-grid > *,
+    .perfil-form-card,
+    .perfil-form-card .form {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .zona-perigo {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .zona-perigo .btn {
+        width: 100%;
     }
 
     .site-header .header-content {
@@ -125,6 +225,7 @@
 
     .dashboard-cabecalho,
     .admin-cabecalho,
+    .admin-header,
     .plano-atual {
         flex-direction: column;
         align-items: stretch;
@@ -202,6 +303,7 @@
     }
 
     .admin-grid,
+    .grid-resumo,
     .monitoramento-grid,
     .cards-grid {
         grid-template-columns: 1fr;
@@ -227,12 +329,71 @@
 
 
 @media (max-width: 540px) {
-    .admin-conteudo {
+    .form-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(36px, 11.5vw, 46px);
+        line-height: 1.08;
+    }
+
+    .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+    }
+
+    .preview-header,
+    .preview-total,
+    .preview-economia,
+    .preview-mercado {
+        gap: 12px;
+        padding: 14px 0;
+    }
+
+    .hero-preview strong {
+        text-align: right;
+    }
+
+    .auth-container {
+        padding: 12px;
+    }
+
+    .auth-card,
+    .auth-container-centralizado .auth-card {
+        padding: 20px 18px;
+        border-radius: 16px;
+    }
+
+    .auth-card-header h1,
+    .auth-card-header h2 {
+        font-size: 26px;
+    }
+
+    .form-options {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .auth-link,
+    .auth-voltar {
+        margin-top: 16px;
+    }
+
+    .admin-conteudo,
+    .admin-main {
         padding: 15px;
     }
 
     .admin-secao,
     .admin-card,
+    .resumo-card,
     .checkout-card,
     .checkout-resumo,
     .card-plano,

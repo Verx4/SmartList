@@ -67,9 +67,9 @@
 
 .btn-votar {
     padding: 8px 12px;
-    border: 1px solid #2563eb;
+    border: 1px solid var(--cor-primaria, #2563eb);
     border-radius: 8px;
-    color: #60a5fa;
+    color: var(--cor-destaque, #60a5fa);
     background: transparent;
     cursor: pointer;
 }
@@ -77,5 +77,5 @@
 .btn-votar:hover,
 .btn-votar.votado {
     color: white;
-    background: #2563eb;
+    background: var(--cor-primaria, #2563eb);
 }

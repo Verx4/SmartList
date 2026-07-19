@@ -51,8 +51,8 @@
 .select-filtro:focus,
 .section-header select:focus,
 .page-header select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    border-color: var(--cor-primaria, #2563eb);
+    box-shadow: 0 0 0 3px rgba(var(--cor-primaria-rgb, 37, 99, 235), 0.18);
 }
 
 .form-row {
@@ -82,11 +82,11 @@
     width: 18px;
     height: 18px;
     margin-top: 1px;
-    accent-color: #2563eb;
+    accent-color: var(--cor-primaria, #2563eb);
 }
 
 .checkbox-label a {
-    color: #60a5fa;
+    color: var(--cor-destaque, #60a5fa);
 }
 
 .acoes-form {

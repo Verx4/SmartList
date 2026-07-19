@@ -1,5 +1,6 @@
 package br.com.minhalista.admin;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,9 +34,26 @@ public class AdminController {
         return service.usuarios();
     }
 
+    @GetMapping("/usuarios/auditoria")
+    public List<HistoricoAcessoResponse> auditoriaAcessos() {
+        return service.auditoriaAcessos();
+    }
+
+    @PatchMapping("/usuarios/{id}/acesso")
+    public AlterarAcessoResponse alterarAcesso(
+        @PathVariable UUID id,
+        @Valid @RequestBody AlterarAcessoRequest request,
+        Principal principal
+    ) {
+        return service.alterarAcesso(id, request, principal.getName());
+    }
+
     @PostMapping("/usuarios/cortesia")
-    public UsuarioAdminResponse concederCortesia(@Valid @RequestBody CortesiaRequest request) {
-        return service.concederCortesia(request);
+    public AlterarAcessoResponse concederCortesia(
+        @Valid @RequestBody CortesiaRequest request,
+        Principal principal
+    ) {
+        return service.concederCortesia(request, principal.getName());
     }
 
     @PatchMapping("/usuarios/{id}/bloqueio")

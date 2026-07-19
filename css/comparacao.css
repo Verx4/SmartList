@@ -22,13 +22,13 @@
 }
 
 .checkbox-card:hover {
-    border-color: #2563eb;
+    border-color: var(--cor-primaria, #2563eb);
 }
 
 .checkbox-card input {
     width: 18px;
     height: 18px;
-    accent-color: #2563eb;
+    accent-color: var(--cor-primaria, #2563eb);
 }
 
 .compra-inteligente-card {
