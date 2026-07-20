@@ -4,6 +4,8 @@ const manifestUrl = new URL("manifest.webmanifest", appRoot);
 const iconUrl = new URL("assets/icons/icon-192.png", appRoot);
 const themeStyleUrl = new URL("css/temas.css", appRoot);
 const themeScriptUrl = new URL("js/tema.js", appRoot);
+const dashboardStyleUrl = new URL("css/dashboard-mobile-v2.css", appRoot);
+const dashboardScriptUrl = new URL("js/dashboard-mobile-v2.js", appRoot);
 
 let installEvent = null;
 let installButton = null;
@@ -11,9 +13,40 @@ let reloadingForUpdate = false;
 
 garantirMetadadosPwa();
 carregarAparencia();
+carregarDashboardCompacto();
 configurarInstalacao();
 configurarMenuMovel();
 registrarServiceWorker();
+
+function carregarDashboardCompacto() {
+    const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+
+    if (paginaAtual !== "dashboard.html") {
+        return;
+    }
+
+    const estiloExiste = Array.from(
+        document.querySelectorAll('link[rel="stylesheet"]')
+    ).some((link) => {
+        try {
+            return new URL(link.href).pathname === dashboardStyleUrl.pathname;
+        } catch (_erro) {
+            return false;
+        }
+    });
+
+    if (!estiloExiste) {
+        const estilo = document.createElement("link");
+        estilo.rel = "stylesheet";
+        estilo.href = dashboardStyleUrl.href;
+        estilo.dataset.smartListDashboardV2 = "true";
+        document.head.append(estilo);
+    }
+
+    import(dashboardScriptUrl.href).catch((erro) => {
+        console.warn("Não foi possível carregar o novo dashboard mobile.", erro);
+    });
+}
 
 function carregarAparencia() {
     const estilosCarregados = Array.from(
@@ -189,10 +222,8 @@ function registrarServiceWorker() {
                 serviceWorkerUrl,
                 { scope: appRoot.pathname }
             );
-
             ativarAtualizacao(registration);
             registration.addEventListener("updatefound", () => ativarAtualizacao(registration));
-
             window.setInterval(() => registration.update(), 60 * 60 * 1000);
         } catch (erro) {
             console.warn("Não foi possível ativar o modo aplicativo.", erro);
@@ -215,7 +246,6 @@ function ativarAtualizacao(registration) {
     }
 
     const worker = registration.installing;
-
     if (!worker) {
         return;
     }
