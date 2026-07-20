@@ -33,11 +33,18 @@
     };
 
     function obterUsuario() {
-        try {
-            return JSON.parse(localStorage.getItem("usuarioAtual")) || null;
-        } catch (_erro) {
-            return null;
+        for (const chave of ["usuarioAtual", "usuarioLogado"]) {
+            try {
+                const usuario = JSON.parse(localStorage.getItem(chave));
+                if (usuario) {
+                    return usuario;
+                }
+            } catch (_erro) {
+                // Continua procurando outra chave de sessão.
+            }
         }
+
+        return null;
     }
 
     function possuiCoresPremium(usuario = obterUsuario()) {
@@ -161,6 +168,10 @@
             return;
         }
 
+        if (!obterUsuario()) {
+            return;
+        }
+
         const controle = document.createElement("div");
         controle.id = "controleTemaGlobal";
         controle.className = "controle-tema-global";
@@ -242,7 +253,11 @@
     }
 
     window.addEventListener("storage", function (evento) {
-        if (evento.key === "usuarioAtual" || evento.key === CHAVE_APARENCIA) {
+        if (
+            evento.key === "usuarioAtual"
+            || evento.key === "usuarioLogado"
+            || evento.key === CHAVE_APARENCIA
+        ) {
             atualizarAcesso();
         }
     });
