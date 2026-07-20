@@ -60,13 +60,13 @@ function prepararMercado() {
     const trigger = document.createElement("button");
     trigger.type = "button";
     trigger.className = "mercado-compacto-trigger";
-    trigger.innerHTML = `<span>📍 Selecione o mercado</span><b>⌄</b>`;
+    trigger.innerHTML = `<span>📍 Adicione o mercado</span><b>⌄</b>`;
     grid.insertAdjacentElement("beforebegin", trigger);
 
     const atualizar = () => {
         const nome = select.options[select.selectedIndex]?.text?.trim();
         const selecionado = Boolean(select.value);
-        trigger.querySelector("span").textContent = selecionado ? `📍 ${nome}` : "📍 Selecione o mercado";
+        trigger.querySelector("span").textContent = selecionado ? `📍 ${nome}` : "📍 Adicione o mercado";
         if (selecionado && !card.classList.contains("mercado-editando")) {
             card.classList.add("mercado-recolhido");
             grid.classList.add("mercado-configurado");
@@ -113,6 +113,30 @@ function prepararBotaoAdicionar() {
     if (!botao) return;
     botao.setAttribute("aria-label", "Adicionar produto");
     botao.setAttribute("title", "Adicionar produto");
+
+    if (!document.getElementById("ajusteBotaoAdicionar")) {
+        const estilo = document.createElement("style");
+        estilo.id = "ajusteBotaoAdicionar";
+        estilo.textContent = `
+            body.dashboard-mobile-ready #btnAdicionarProduto {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                line-height: 1 !important;
+                text-align: center !important;
+            }
+
+            body.dashboard-mobile-ready #btnAdicionarProduto::before {
+                display: block;
+                width: 1em;
+                height: 1em;
+                line-height: 0.88;
+                text-align: center;
+                transform: translateY(-1px);
+            }
+        `;
+        document.head.appendChild(estilo);
+    }
 }
 
 function prepararHortifruti() {
