@@ -261,3 +261,134 @@
 .categoria-resumo span {
     color: var(--cor-texto-secundario, #94a3b8);
 }
+
+/* =========================
+   MOBILE — cards compactos
+========================= */
+@media (max-width: 768px) {
+    .produto {
+        display: block;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+
+    .produto-titulo-linha {
+        gap: 8px;
+    }
+
+    .info-produto h3 {
+        margin-bottom: 4px;
+        font-size: 18px;
+    }
+
+    .categoria-produto {
+        padding: 3px 8px;
+        margin-bottom: 6px;
+        font-size: 11px;
+    }
+
+    .supermercado-produto {
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+
+    .btn-favorito-produto {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        font-size: 20px;
+    }
+
+    .info-anterior {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+
+    .box-anterior {
+        min-width: 0;
+        padding: 6px;
+    }
+
+    .box-anterior small {
+        margin-bottom: 2px;
+        font-size: 10px;
+    }
+
+    .box-anterior strong {
+        font-size: 12px;
+    }
+
+    .diferenca {
+        margin: 5px 0;
+        font-size: 12px;
+    }
+
+    .campos-produto {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .campo-produto {
+        min-width: 0;
+    }
+
+    .info-produto label,
+    .peso-container label {
+        margin: 4px 0 3px;
+        font-size: 11px;
+    }
+
+    .info-produto input,
+    .info-produto select,
+    .input-peso {
+        width: 100%;
+        min-height: 36px;
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+
+    .peso-container {
+        margin-top: 0;
+    }
+
+    .qtd {
+        gap: 5px;
+    }
+
+    .qtd button {
+        width: 30px;
+        height: 30px;
+        font-size: 15px;
+    }
+
+    .qtd span {
+        min-width: 24px;
+        font-size: 13px;
+    }
+
+    .subtotal {
+        min-width: 0;
+        margin-top: 8px;
+        text-align: left;
+    }
+
+    .subtotal small {
+        margin-bottom: 2px;
+        font-size: 11px;
+    }
+
+    .subtotal strong {
+        font-size: 15px;
+    }
+
+    .btn-excluir {
+        width: 100%;
+        margin-top: 8px;
+        padding: 8px;
+        font-size: 13px;
+    }
+}
