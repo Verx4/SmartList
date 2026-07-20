@@ -6,6 +6,8 @@ const themeStyleUrl = new URL("css/temas.css", appRoot);
 const themeScriptUrl = new URL("js/tema.js", appRoot);
 const dashboardStyleUrl = new URL("css/dashboard-mobile-v2.css", appRoot);
 const dashboardScriptUrl = new URL("js/dashboard-mobile-v2.js", appRoot);
+const dashboardV3StyleUrl = new URL("css/dashboard-mobile-v3.css", appRoot);
+const dashboardV3ScriptUrl = new URL("js/dashboard-mobile-v3.js", appRoot);
 
 let installEvent = null;
 let installButton = null;
@@ -25,27 +27,36 @@ function carregarDashboardCompacto() {
         return;
     }
 
+    adicionarEstiloDashboard(dashboardStyleUrl, "smartListDashboardV2");
+    adicionarEstiloDashboard(dashboardV3StyleUrl, "smartListDashboardV3");
+
+    import(dashboardScriptUrl.href)
+        .then(() => import(dashboardV3ScriptUrl.href))
+        .catch((erro) => {
+            console.warn("Não foi possível carregar o novo dashboard mobile.", erro);
+        });
+}
+
+function adicionarEstiloDashboard(url, dataAttribute) {
     const estiloExiste = Array.from(
         document.querySelectorAll('link[rel="stylesheet"]')
     ).some((link) => {
         try {
-            return new URL(link.href).pathname === dashboardStyleUrl.pathname;
+            return new URL(link.href).pathname === url.pathname;
         } catch (_erro) {
             return false;
         }
     });
 
-    if (!estiloExiste) {
-        const estilo = document.createElement("link");
-        estilo.rel = "stylesheet";
-        estilo.href = dashboardStyleUrl.href;
-        estilo.dataset.smartListDashboardV2 = "true";
-        document.head.append(estilo);
+    if (estiloExiste) {
+        return;
     }
 
-    import(dashboardScriptUrl.href).catch((erro) => {
-        console.warn("Não foi possível carregar o novo dashboard mobile.", erro);
-    });
+    const estilo = document.createElement("link");
+    estilo.rel = "stylesheet";
+    estilo.href = url.href;
+    estilo.dataset[dataAttribute] = "true";
+    document.head.append(estilo);
 }
 
 function carregarAparencia() {
