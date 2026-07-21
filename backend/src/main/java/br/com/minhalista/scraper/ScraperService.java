@@ -1,4 +1,3 @@
-
 package br.com.minhalista.scraper;
 
 import java.math.BigDecimal;
@@ -12,6 +11,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,14 @@ public class ScraperService {
     private final PrecoColetadoRepository precoRepository;
     private final List<FontePrecoMercado> fontes;
 
+    public ScraperService(
+        ExecucaoScraperRepository execucaoRepository,
+        PrecoColetadoRepository precoRepository
+    ) {
+        this(execucaoRepository, precoRepository, List.of());
+    }
+
+    @Autowired
     public ScraperService(
         ExecucaoScraperRepository execucaoRepository,
         PrecoColetadoRepository precoRepository,
