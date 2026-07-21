@@ -1,37 +1,70 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071525"><meta name="application-name" content="Smart List"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/icons/icon-192.png" type="image/png"><link rel="apple-touch-icon" href="./assets/icons/icon-192.png"><link rel="stylesheet" href="./css/pwa.css"><script type="module" src="./js/pwa.js"></script>
-<title>Comparação | Smart List</title><link rel="stylesheet" href="./css/global.css"><link rel="stylesheet" href="./css/layout.css"><link rel="stylesheet" href="./css/cards.css"><link rel="stylesheet" href="./css/buttons.css"><link rel="stylesheet" href="./css/forms.css"><link rel="stylesheet" href="./css/comparacao.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#071525">
+    <title>Comparar mercados | Smart List</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/comparar-embalagens.css">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/temas.css">
+    <link rel="stylesheet" href="./css/comparacao-lista-v2.css?v=1">
+    <link rel="stylesheet" href="./css/comparacao-embalagens-padrao.css?v=1">
 </head>
-<body class="comparacao-page">
-<header class="comparacao-topbar"><a class="comparacao-brand" href="./inicio.html" aria-label="Ir para o início"><strong>Smart <span>List</span></strong></a><a class="comparacao-menu" href="./menu.html"><span>Menu</span></a></header>
-<main class="comparacao-container">
-<section class="comparacao-cabecalho"><h1>Comparação</h1><p>Compare embalagens e preços entre supermercados.</p></section>
-<nav class="comparacao-abas" aria-label="Tipos de comparação"><a href="./comparar-embalagens.html"><span>Embalagens</span></a><a class="ativa" href="./comparacao.html" aria-current="page"><span>Mercados</span></a></nav>
-<section class="mercados-intro"><h2>Comparar mercados</h2><p>Selecione os mercados e escolha como deseja comparar.</p></section>
-<section class="card filtros-comparacao"><form id="formComparacao" class="form comparacao-form">
-<div class="form-group"><label for="produtoComparacao">Produto</label><input type="search" id="produtoComparacao" name="produto" placeholder="Ex.: Arroz, leite ou café"></div>
-<div class="form-group"><label for="cidadeComparacao">Cidade ou região</label><input type="text" id="cidadeComparacao" name="cidade" placeholder="Digite sua cidade ou região"></div>
-<fieldset class="form-group mercados-fieldset"><legend>Selecione os mercados</legend><div id="listaSupermercados" class="opcoes-supermercados">
-<label class="mercado-opcao"><input type="checkbox" name="supermercados" value="Verde Frut"><span class="mercado-check"></span><strong>Verde Frut</strong></label>
-<label class="mercado-opcao"><input type="checkbox" name="supermercados" value="Assaí"><span class="mercado-check"></span><strong>Assaí</strong></label>
-<label class="mercado-opcao"><input type="checkbox" name="supermercados" value="Atacadão"><span class="mercado-check"></span><strong>Atacadão</strong></label>
-<label class="mercado-opcao"><input type="checkbox" name="supermercados" value="Novo Atacarejo"><span class="mercado-check"></span><strong>Novo Atacarejo</strong></label>
-<label class="mercado-opcao"><input type="checkbox" name="supermercados" value="Carrefour"><span class="mercado-check"></span><strong>Carrefour</strong></label>
-<label class="mercado-opcao"><input type="checkbox" name="supermercados" value="Mateus"><span class="mercado-check"></span><strong>Mateus</strong></label>
-</div><div class="atalhos-mercados"><button type="button" id="btnSelecionarTodos">Selecionar todos</button><button type="button" id="btnLimparSelecao">Limpar seleção</button></div><p id="mensagemSelecaoMercados" class="mensagem-selecao" aria-live="polite">Escolha 2 mercados para comparar.</p></fieldset>
-<fieldset class="modo-comparacao"><legend>Como deseja comparar?</legend><div class="modo-grid">
-<label class="modo-card ativo"><input type="radio" name="modoMercados" value="dois" checked><span class="radio-visual"></span><span><strong>Comparar dois mercados</strong><small>Selecione exatamente dois mercados.</small></span></label>
-<label class="modo-card"><input type="radio" name="modoMercados" value="todos"><span class="radio-visual"></span><span><strong>Comparar todos os mercados</strong><small>Use todos os mercados selecionados.</small></span></label>
-</div></fieldset>
-<div class="acoes-form comparacao-acoes"><button class="btn btn-primary" type="submit">Comparar preços</button><button id="btnLimparComparacao" class="btn btn-secondary" type="reset">Limpar filtros</button></div>
-</form></section>
-<section id="resumoComparacao" class="card resumo-unico" aria-live="polite"><div class="resumo-titulo"><span>Resumo da comparação</span></div><div class="resumo-grid"><div><span>Melhor mercado</span><strong id="melhorSupermercado">—</strong></div><div><span>Menor total</span><strong id="menorTotal">R$ 0,00</strong></div><div><span>Economia</span><strong id="economiaEstimada">R$ 0,00</strong></div><div><span>Confiança</span><strong id="nivelConfianca">—</strong></div></div></section>
-<details class="card detalhes-comparacao"><summary>Ver detalhes dos preços</summary><div class="section-header"><div><span class="card-label">Resultados</span><h2>Preços encontrados</h2></div><select id="ordenacaoComparacao" aria-label="Ordenar resultados"><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option><option value="produto">Nome do produto</option><option value="supermercado">Supermercado</option></select></div><div id="resultadoComparacao" class="table-wrapper"><table><thead><tr><th>Produto</th><th>Supermercado</th><th>Preço</th><th>Margem estimada</th><th>Confiança</th><th>Atualização</th></tr></thead><tbody id="corpoTabelaComparacao"><tr><td colspan="6" class="estado-vazio">Faça uma pesquisa para comparar os preços.</td></tr></tbody></table></div></details>
-<details class="card compra-inteligente-card"><summary>Compra inteligente</summary><div><h2>Melhor combinação de supermercados</h2><p>Veja onde comprar cada item para aumentar sua economia.</p></div><button id="btnCompraInteligente" class="btn btn-primary" type="button">Calcular combinação</button><div id="resultadoCompraInteligente"></div></details>
-</main>
-<nav class="mobile-bottom-nav" aria-label="Navegação principal"><a href="./inicio.html"><span>⌂</span><small>Início</small></a><a href="./dashboard.html"><span>☷</span><small>Lista</small></a><a class="ativo" href="./comparacao.html" aria-current="page"><span>↔</span><small>Comparação</small></a><a href="./historico.html"><span>◷</span><small>Histórico</small></a><a href="./menu.html"><span>☰</span><small>Menu</small></a></nav>
-<script type="module" src="./js/comparacao.js"></script><script src="./js/comparacao-ui.js"></script><script>document.getElementById('btnSelecionarTodos')?.addEventListener('click',()=>document.querySelectorAll('input[name="supermercados"]').forEach(i=>i.checked=true));document.getElementById('btnLimparSelecao')?.addEventListener('click',()=>document.querySelectorAll('input[name="supermercados"]').forEach(i=>i.checked=false));</script>
-</body></html>
+<body class="embalagens-page mercados-page">
+    <main class="embalagens-app comparacao-lista-shell">
+        <header class="embalagens-header">
+            <a class="icon-button" href="./inicio.html" aria-label="Voltar">←</a>
+            <h1>Comparação</h1>
+            <button id="ajudaMercados" class="help-button" type="button" aria-label="Ajuda">?</button>
+        </header>
+        <nav class="comparison-tabs" aria-label="Tipos de comparação">
+            <a href="./comparar-embalagens.html">Embalagens</a>
+            <a class="active" href="./comparacao.html" aria-current="page">Mercados</a>
+        </nav>
+
+        <section class="comparacao-lista-cabecalho">
+            <small>Comparação da sua lista</small>
+            <h1>Onde a compra fica mais barata?</h1>
+            <p>Usamos apenas preços reais encontrados para os itens que você salvou.</p>
+        </section>
+
+        <aside class="aviso-margem" role="note">
+            <strong>Margem de ±5%</strong>
+            <span>O preço pode variar por loja, estoque e horário. Itens sem preço não entram no total.</span>
+        </aside>
+
+        <form id="formComparacaoLista" class="comparacao-config">
+            <div class="resumo-lista-comparacao">
+                <div><span>Itens na lista</span><strong id="quantidadeItensComparacao">0</strong></div>
+                <a href="./dashboard.html">Editar lista</a>
+            </div>
+            <label for="cidadeComparacao">Cidade ou região</label>
+            <input id="cidadeComparacao" name="cidade" type="text" maxlength="100" placeholder="Ex.: Recife">
+
+            <fieldset>
+                <legend>Mercados para consultar</legend>
+                <div class="atalhos-redes"><button id="selecionarRedes" type="button">Selecionar todos</button><button id="limparRedes" type="button">Limpar</button></div>
+                <div id="redesComparacao" class="redes-comparacao" aria-live="polite"><p>Carregando redes...</p></div>
+            </fieldset>
+
+            <button id="btnCompararLista" class="comparar-lista-botao" type="submit">Comparar minha lista</button>
+            <p id="mensagemComparacao" class="mensagem-comparacao" aria-live="polite"></p>
+        </form>
+
+        <section id="resultadoComparacaoLista" class="resultado-comparacao-lista" hidden>
+            <header><div><small>Resultado</small><h2 id="tituloMelhorMercado">Comparação concluída</h2></div><span id="atualizacaoComparacao"></span></header>
+            <div id="cardsMercadosComparacao" class="cards-mercados-comparacao"></div>
+        </section>
+    </main>
+
+    <script src="./js/tema.js"></script>
+    <script type="module" src="./js/comparacao.js?v=2"></script>
+    <script src="./js/mobile-nav.js"></script>
+    <script>document.getElementById('ajudaMercados')?.addEventListener('click',()=>alert('Selecione os mercados e compare os preços disponíveis de todos os itens da sua lista. Os valores podem variar em ±5%.'));</script>
+</body>
+</html>
+

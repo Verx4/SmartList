@@ -1,4 +1,6 @@
 const CHAVE_PRODUTOS = "produtos";
+const CHAVE_LISTAS_SALVAS = "listasSalvas";
+const CHAVE_LISTA_ATUAL = "listaAtualId";
 
 
 function criarId() {
@@ -114,9 +116,23 @@ export function listarProdutos() {
 
     try {
 
-        const dados = JSON.parse(
-            localStorage.getItem(CHAVE_PRODUTOS)
-        );
+        const listaAtual = obterListaAtualSalva();
+        const espelho = lerJson(CHAVE_PRODUTOS, null);
+        const produtosDaLista = listaAtual?.produtos || [];
+        const dados = Array.isArray(espelho) && JSON.stringify(espelho) !== JSON.stringify(produtosDaLista)
+            ? espelho.map(normalizarProduto)
+            : produtosDaLista;
+
+        if (dados !== produtosDaLista) {
+            const { listas, idAtual } = carregarListas();
+            const atual = listas.find(item => item.id === idAtual);
+            if (atual) {
+                atual.produtos = dados;
+                atual.atualizadoEm = new Date().toISOString();
+                gravarListas(listas, idAtual);
+            }
+        }
+        localStorage.setItem(CHAVE_PRODUTOS, JSON.stringify(dados));
 
         return Array.isArray(dados)
             ? dados.map(normalizarProduto)
@@ -139,6 +155,15 @@ export function salvarProdutos(produtos = []) {
         CHAVE_PRODUTOS,
         JSON.stringify(lista)
     );
+
+    const { listas, idAtual } = carregarListas();
+    const atual = listas.find(item => item.id === idAtual);
+    if (atual) {
+        atual.produtos = lista;
+        atual.mercado = textoSeguro(localStorage.getItem("mercadoAtual"));
+        atual.atualizadoEm = new Date().toISOString();
+        gravarListas(listas, idAtual);
+    }
 
     window.dispatchEvent(
         new CustomEvent("produtosalterados", {
@@ -444,3 +469,150 @@ export function zerarPrecosDaLista() {
     return salvarProdutos(produtos);
 
 }
+
+
+function nomeListaSeguro(valor, padrao = "Minha lista") {
+
+    return textoSeguro(valor).slice(0, 80) || padrao;
+
+}
+
+
+function lerJson(chave, padrao) {
+
+    try {
+
+        const valor = JSON.parse(localStorage.getItem(chave));
+        return valor ?? padrao;
+
+    } catch {
+
+        return padrao;
+
+    }
+
+}
+
+
+function gravarListas(listas, idAtual) {
+
+    localStorage.setItem(CHAVE_LISTAS_SALVAS, JSON.stringify(listas));
+    localStorage.setItem(CHAVE_LISTA_ATUAL, String(idAtual));
+
+}
+
+
+function carregarListas() {
+
+    let listas = lerJson(CHAVE_LISTAS_SALVAS, []);
+
+    if (!Array.isArray(listas) || !listas.length) {
+
+        const produtosAntigos = lerJson(CHAVE_PRODUTOS, []);
+        const inicial = {
+            id: criarId(),
+            nome: "Minha lista",
+            mercado: textoSeguro(localStorage.getItem("mercadoAtual")),
+            produtos: Array.isArray(produtosAntigos)
+                ? produtosAntigos.map(normalizarProduto)
+                : [],
+            criadoEm: new Date().toISOString(),
+            atualizadoEm: new Date().toISOString()
+        };
+        listas = [inicial];
+        gravarListas(listas, inicial.id);
+
+    }
+
+    listas = listas.map(lista => ({
+        id: String(lista.id || criarId()),
+        nome: nomeListaSeguro(lista.nome),
+        mercado: textoSeguro(lista.mercado),
+        produtos: Array.isArray(lista.produtos)
+            ? lista.produtos.map(normalizarProduto)
+            : [],
+        criadoEm: lista.criadoEm || new Date().toISOString(),
+        atualizadoEm: lista.atualizadoEm || new Date().toISOString()
+    }));
+
+    let idAtual = String(localStorage.getItem(CHAVE_LISTA_ATUAL) || "");
+    if (!listas.some(lista => lista.id === idAtual)) {
+        idAtual = listas[0].id;
+        gravarListas(listas, idAtual);
+    }
+
+    return { listas, idAtual };
+
+}
+
+
+export function listarListasSalvas() {
+
+    const { listas, idAtual } = carregarListas();
+    return listas.map(lista => ({
+        ...lista,
+        atual: lista.id === idAtual
+    }));
+
+}
+
+
+export function obterListaAtualSalva() {
+
+    const { listas, idAtual } = carregarListas();
+    return listas.find(lista => lista.id === idAtual) || listas[0];
+
+}
+
+
+export function criarListaSalva(nome, opcoes = {}) {
+
+    const { listas, idAtual } = carregarListas();
+    const agora = new Date().toISOString();
+    const novaLista = {
+        id: criarId(),
+        nome: nomeListaSeguro(nome, `Lista ${listas.length + 1}`),
+        mercado: textoSeguro(opcoes.mercado),
+        produtos: [],
+        criadoEm: agora,
+        atualizadoEm: agora
+    };
+    listas.push(novaLista);
+
+    const deveAtivar = opcoes.ativar !== false;
+    gravarListas(listas, deveAtivar ? novaLista.id : idAtual);
+    if (deveAtivar) {
+        localStorage.setItem(CHAVE_PRODUTOS, "[]");
+        if (novaLista.mercado) localStorage.setItem("mercadoAtual", novaLista.mercado);
+        else localStorage.removeItem("mercadoAtual");
+    }
+
+    return { ...novaLista, atual: deveAtivar };
+
+}
+
+
+export function selecionarListaSalva(id) {
+
+    const { listas, idAtual } = carregarListas();
+    const atual = listas.find(lista => lista.id === idAtual);
+    if (atual) {
+        atual.mercado = textoSeguro(localStorage.getItem("mercadoAtual"));
+        atual.atualizadoEm = new Date().toISOString();
+    }
+
+    const escolhida = listas.find(lista => lista.id === String(id));
+    if (!escolhida) return null;
+
+    gravarListas(listas, escolhida.id);
+    localStorage.setItem(CHAVE_PRODUTOS, JSON.stringify(escolhida.produtos));
+    if (escolhida.mercado) localStorage.setItem("mercadoAtual", escolhida.mercado);
+    else localStorage.removeItem("mercadoAtual");
+
+    window.dispatchEvent(new CustomEvent("listaatualalterada", {
+        detail: { lista: escolhida }
+    }));
+    return escolhida;
+
+}
+
