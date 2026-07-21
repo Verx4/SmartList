@@ -1,4 +1,3 @@
-
 const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL"
@@ -84,7 +83,8 @@ document.getElementById("ultimaCompraInicio").textContent = ultima
 const CHAVES_DADOS = [
     "produtos", "historicoCompras", "ultimaCompra", "economiaAcumulada",
     "favoritos", "preferencias", "orcamentoCompra", "mercadoAtual",
-    "mercadosFrequentes", "mercadosRecentes", "sugestoesLocais"
+    "mercadosFrequentes", "mercadosRecentes", "sugestoesLocais",
+    "listasSalvas", "listaAtualId"
 ];
 const overlay = document.getElementById("confirmarLimpeza");
 document.getElementById("btnTemaInicio").addEventListener("click", evento => {
