@@ -82,4 +82,3 @@ public class DataInitializer implements ApplicationRunner {
         repository.save(usuario);
     }
 }
-
