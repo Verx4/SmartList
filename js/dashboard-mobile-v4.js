@@ -33,7 +33,6 @@ function atualizarProdutoLocalV4(id,alteracoes){
 function criarEditorItemV4(){
     let overlay=document.getElementById('itemEditOverlay');
     if(overlay)return overlay;
-
     overlay=document.createElement('div');
     overlay.id='itemEditOverlay';
     overlay.className='item-edit-overlay';
@@ -58,7 +57,6 @@ function criarEditorItemV4(){
                 <button type="button" class="item-edit-delete">Remover item</button>
             </div>
         </section>`;
-
     document.body.appendChild(overlay);
     const fechar=()=>{
         overlay.hidden=true;
@@ -66,7 +64,6 @@ function criarEditorItemV4(){
         overlay._botaoExcluir=null;
         document.body.style.overflow='';
     };
-
     overlay.querySelector('.item-edit-close')?.addEventListener('click',fechar);
     overlay.addEventListener('click',evento=>{if(evento.target===overlay)fechar()});
     overlay.querySelector('.item-edit-save')?.addEventListener('click',()=>{
@@ -120,6 +117,6 @@ import('./categorias-v2.js?v=2');
 
 const dashboardV6Css=document.createElement('link');
 dashboardV6Css.rel='stylesheet';
-dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=3';
+dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=4';
 document.head.appendChild(dashboardV6Css);
-import('./dashboard-mobile-v6.js?v=3');
+import('./dashboard-mobile-v6.js?v=4');
