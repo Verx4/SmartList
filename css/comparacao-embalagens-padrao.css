@@ -1,0 +1,44 @@
+.mercados-page .comparacao-lista-shell {
+    width: min(100%, 880px);
+    padding: 22px 18px 110px;
+}
+
+.mercados-page .comparison-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.mercados-page .comparison-tabs a {
+    padding: 16px;
+    color: var(--cor-texto-secundario);
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: 14px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.05rem;
+}
+
+.mercados-page .comparison-tabs a.active {
+    color: #fff;
+    background: linear-gradient(90deg, #237eff, #2f6aeb);
+    border-color: #2f6aeb;
+}
+
+.mercados-page .mercado-resultado.melhor > header span {
+    color: #63d22f;
+}
+
+.mercados-page .comparar-lista-botao {
+    color: #fff;
+    background: linear-gradient(90deg, #237eff, #2796ff);
+}
+
+@media (max-width: 700px) {
+    .mercados-page .comparacao-lista-shell {
+        padding: 16px 12px 110px;
+    }
+}
+
