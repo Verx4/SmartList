@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +12,7 @@
     <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
     <link rel="stylesheet" href="./css/pwa.css">
     <script type="module" src="./js/pwa.js"></script>
-
     <title>Comparação de Preços | Smart List</title>
-
     <link rel="stylesheet" href="./css/global.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/cards.css">
@@ -24,13 +21,10 @@
     <link rel="stylesheet" href="./css/comparacao.css">
     <link rel="stylesheet" href="./css/responsive.css">
 </head>
-
 <body>
-
     <header class="site-header">
         <div class="container header-content">
             <a class="brand" href="./index.html">🛒 Smart List</a>
-
             <nav class="main-nav" aria-label="Navegação principal">
                 <a href="./dashboard.html">Minha lista</a>
                 <a href="./comparacao.html" class="active">Comparação</a>
@@ -41,203 +35,73 @@
             </nav>
         </div>
     </header>
-
     <main class="container page-main">
-
         <section class="page-header">
             <span class="page-eyebrow">Comparação</span>
             <h1>Compare preços entre supermercados</h1>
-            <p>
-                Selecione sua região e os supermercados que deseja comparar.
-            </p>
+            <p>Selecione sua região e os supermercados que deseja comparar.</p>
+            <div class="acoes-form" style="margin-top: 1rem;">
+                <a class="btn btn-primary" href="./comparar-embalagens.html">⚖ Comparar embalagens</a>
+            </div>
         </section>
-
         <section class="card filtros-comparacao">
-
             <form id="formComparacao" class="form">
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="produtoComparacao">
-                            Produto
-                        </label>
-
-                        <input
-                            type="search"
-                            id="produtoComparacao"
-                            name="produto"
-                            placeholder="Ex.: Arroz, leite ou café">
+                        <label for="produtoComparacao">Produto</label>
+                        <input type="search" id="produtoComparacao" name="produto" placeholder="Ex.: Arroz, leite ou café">
                     </div>
-
                     <div class="form-group">
-                        <label for="cidadeComparacao">
-                            Cidade ou região
-                        </label>
-
-                        <input
-                            type="text"
-                            id="cidadeComparacao"
-                            name="cidade"
-                            placeholder="Digite sua cidade">
+                        <label for="cidadeComparacao">Cidade ou região</label>
+                        <input type="text" id="cidadeComparacao" name="cidade" placeholder="Digite sua cidade">
                     </div>
                 </div>
-
                 <fieldset class="form-group">
                     <legend>Supermercados</legend>
-
-                    <div
-                        id="listaSupermercados"
-                        class="opcoes-supermercados">
-
-                        <label class="checkbox-card">
-                            <input
-                                type="checkbox"
-                                name="supermercados"
-                                value="Mercado Econômico"
-                                checked>
-                            <span>🏪 Mercado Econômico</span>
-                        </label>
-
-                        <label class="checkbox-card">
-                            <input
-                                type="checkbox"
-                                name="supermercados"
-                                value="Super Preço"
-                                checked>
-                            <span>🛒 Super Preço</span>
-                        </label>
-
-                        <label class="checkbox-card">
-                            <input
-                                type="checkbox"
-                                name="supermercados"
-                                value="Atacado Central"
-                                checked>
-                            <span>📦 Atacado Central</span>
-                        </label>
+                    <div id="listaSupermercados" class="opcoes-supermercados">
+                        <label class="checkbox-card"><input type="checkbox" name="supermercados" value="Mercado Econômico" checked><span>🏪 Mercado Econômico</span></label>
+                        <label class="checkbox-card"><input type="checkbox" name="supermercados" value="Super Preço" checked><span>🛒 Super Preço</span></label>
+                        <label class="checkbox-card"><input type="checkbox" name="supermercados" value="Atacado Central" checked><span>📦 Atacado Central</span></label>
                     </div>
                 </fieldset>
-
                 <div class="acoes-form">
-                    <button class="btn btn-primary" type="submit">
-                        🔍 Comparar preços
-                    </button>
-
-                    <button
-                        id="btnLimparComparacao"
-                        class="btn btn-secondary"
-                        type="reset">
-                        Limpar filtros
-                    </button>
+                    <button class="btn btn-primary" type="submit">🔍 Comparar preços</button>
+                    <button id="btnLimparComparacao" class="btn btn-secondary" type="reset">Limpar filtros</button>
                 </div>
-
             </form>
-
         </section>
-
-        <section
-            id="resumoComparacao"
-            class="grid-resumo"
-            aria-live="polite">
-
-            <article class="card resumo-card">
-                <span>Melhor supermercado</span>
-                <strong id="melhorSupermercado">—</strong>
-            </article>
-
-            <article class="card resumo-card">
-                <span>Menor total</span>
-                <strong id="menorTotal">R$ 0,00</strong>
-            </article>
-
-            <article class="card resumo-card">
-                <span>Economia estimada</span>
-                <strong id="economiaEstimada">R$ 0,00</strong>
-            </article>
-
-            <article class="card resumo-card">
-                <span>Nível de confiança</span>
-                <strong id="nivelConfianca">—</strong>
-            </article>
-
+        <section id="resumoComparacao" class="grid-resumo" aria-live="polite">
+            <article class="card resumo-card"><span>Melhor supermercado</span><strong id="melhorSupermercado">—</strong></article>
+            <article class="card resumo-card"><span>Menor total</span><strong id="menorTotal">R$ 0,00</strong></article>
+            <article class="card resumo-card"><span>Economia estimada</span><strong id="economiaEstimada">R$ 0,00</strong></article>
+            <article class="card resumo-card"><span>Nível de confiança</span><strong id="nivelConfianca">—</strong></article>
         </section>
-
         <section class="card tabela-card">
-
             <div class="section-header">
-                <div>
-                    <span class="card-label">Resultados</span>
-                    <h2>Preços encontrados</h2>
-                </div>
-
+                <div><span class="card-label">Resultados</span><h2>Preços encontrados</h2></div>
                 <select id="ordenacaoComparacao" aria-label="Ordenar resultados">
-                    <option value="menor-preco">Menor preço</option>
-                    <option value="maior-preco">Maior preço</option>
-                    <option value="produto">Nome do produto</option>
-                    <option value="supermercado">Supermercado</option>
+                    <option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option><option value="produto">Nome do produto</option><option value="supermercado">Supermercado</option>
                 </select>
             </div>
-
             <div id="resultadoComparacao" class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Supermercado</th>
-                            <th>Preço</th>
-                            <th>Margem estimada</th>
-                            <th>Confiança</th>
-                            <th>Atualização</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="corpoTabelaComparacao">
-                        <tr>
-                            <td colspan="6" class="estado-vazio">
-                                Faça uma pesquisa para comparar os preços.
-                            </td>
-                        </tr>
-                    </tbody>
+                    <thead><tr><th>Produto</th><th>Supermercado</th><th>Preço</th><th>Margem estimada</th><th>Confiança</th><th>Atualização</th></tr></thead>
+                    <tbody id="corpoTabelaComparacao"><tr><td colspan="6" class="estado-vazio">Faça uma pesquisa para comparar os preços.</td></tr></tbody>
                 </table>
             </div>
-
         </section>
-
         <section class="card compra-inteligente-card">
-            <div>
-                <span class="card-label">Compra inteligente</span>
-                <h2>Melhor combinação de supermercados</h2>
-                <p>
-                    Descubra onde comprar cada item para aumentar sua economia.
-                </p>
-            </div>
-
-            <button
-                id="btnCompraInteligente"
-                class="btn btn-primary"
-                type="button">
-                Calcular combinação
-            </button>
-
+            <div><span class="card-label">Compra inteligente</span><h2>Melhor combinação de supermercados</h2><p>Descubra onde comprar cada item para aumentar sua economia.</p></div>
+            <button id="btnCompraInteligente" class="btn btn-primary" type="button">Calcular combinação</button>
             <div id="resultadoCompraInteligente"></div>
         </section>
-
     </main>
-
     <footer class="site-footer">
         <div class="container footer-content">
             <p>© 2026 Smart List</p>
-
-            <nav class="footer-links">
-                <a href="./termos.html">Termos</a>
-                <a href="./privacidade.html">Privacidade</a>
-                <a href="./suporte.html">Suporte</a>
-            </nav>
+            <nav class="footer-links"><a href="./termos.html">Termos</a><a href="./privacidade.html">Privacidade</a><a href="./suporte.html">Suporte</a></nav>
         </div>
     </footer>
-
     <script type="module" src="./js/comparacao.js"></script>
-
 </body>
-
 </html>
