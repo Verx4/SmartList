@@ -126,3 +126,9 @@ mobileCss.rel='stylesheet';
 mobileCss.href='./css/mobile-app.css';
 document.head.appendChild(mobileCss);
 import('./mobile-nav.js');
+
+const dashboardV5Css=document.createElement('link');
+dashboardV5Css.rel='stylesheet';
+dashboardV5Css.href='./css/dashboard-mobile-v5.css?v=1';
+document.head.appendChild(dashboardV5Css);
+import('./dashboard-mobile-v5.js?v=1');
