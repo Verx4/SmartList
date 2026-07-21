@@ -184,34 +184,45 @@
 }
 
 .inicio-grafico {
-    display: flex;
-    height: 96px;
-    align-items: flex-end;
-    gap: 7px;
+    display: grid;
+    min-height: 96px;
+    gap: 9px;
     margin: 11px 0 9px;
     padding-top: 5px;
 }
 
-.inicio-grafico > div {
+.inicio-categoria-linha {
     display: grid;
-    flex: 1;
-    height: 100%;
-    align-items: end;
-    grid-template-rows: 1fr auto;
-    gap: 4px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3px 8px;
 }
 
-.inicio-grafico i {
-    display: block;
-    min-height: 8px;
-    background: linear-gradient(180deg, var(--cor-destaque), var(--cor-primaria));
-    border-radius: 6px 6px 2px 2px;
+.inicio-categoria-linha span,
+.inicio-categoria-linha strong {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.inicio-grafico small {
+.inicio-categoria-linha strong {
     color: var(--cor-texto-secundario);
-    font-size: 9px;
-    text-align: center;
+}
+
+.inicio-categoria-linha > i {
+    display: block;
+    height: 7px;
+    grid-column: 1 / -1;
+    overflow: hidden;
+    background: var(--cor-superficie-secundaria);
+    border-radius: 999px;
+}
+
+.inicio-categoria-linha b {
+    display: block;
+    height: 100%;
+    background: linear-gradient(180deg, var(--cor-destaque), var(--cor-primaria));
+    border-radius: inherit;
 }
 
 .inicio-grafico p {
