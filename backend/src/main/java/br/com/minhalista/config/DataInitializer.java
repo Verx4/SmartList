@@ -48,7 +48,12 @@ public class DataInitializer implements ApplicationRunner {
 
         String emailNormalizado = email.trim().toLowerCase(Locale.ROOT);
 
-        if (repository.existsByEmailIgnoreCase(emailNormalizado)) {
+        Usuario usuarioExistente = repository
+            .findByEmailIgnoreCase(emailNormalizado)
+            .orElse(null);
+
+        if (usuarioExistente != null) {
+            promoverAdministrador(usuarioExistente);
             return;
         }
 
@@ -62,5 +67,18 @@ public class DataInitializer implements ApplicationRunner {
         admin.setAtivo(true);
         admin.setAceiteTermosEm(Instant.now());
         repository.save(admin);
+    }
+
+    private void promoverAdministrador(Usuario usuario) {
+        if (usuario.getPerfil() == Perfil.ADMIN) {
+            return;
+        }
+
+        usuario.setSenhaHash(passwordEncoder.encode(senha));
+        usuario.setPerfil(Perfil.ADMIN);
+        usuario.setTipoAcesso(TipoAcesso.CORTESIA);
+        usuario.setCortesiaAte(Instant.parse("2999-12-31T23:59:59Z"));
+        usuario.setAtivo(true);
+        repository.save(usuario);
     }
 }
