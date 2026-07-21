@@ -1,40 +1,5 @@
-.pwa-install-button {
-    position: fixed;
-    right: max(18px, env(safe-area-inset-right));
-    bottom: max(18px, env(safe-area-inset-bottom));
-    z-index: 10000;
-    min-height: 44px;
-    padding: 11px 18px;
-    color: #ffffff;
-    font-weight: 700;
-    cursor: pointer;
-    background: var(--cor-primaria, #2563eb);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 999px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
-}
-
-.pwa-install-button:hover {
-    background: var(--cor-primaria-hover, #1d4ed8);
-    transform: translateY(-1px);
-}
-
-.pwa-install-button:disabled {
-    cursor: wait;
-    opacity: 0.7;
-}
-
-@media (max-width: 520px) {
-    .pwa-install-button {
-        right: 14px;
-        bottom: max(14px, env(safe-area-inset-bottom));
-        left: 14px;
-        width: calc(100% - 28px);
-    }
-}
-
-@media (display-mode: standalone) {
-    .pwa-install-button {
-        display: none;
-    }
-}
+.pwa-install-button{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:10000;min-height:44px;padding:11px 18px;color:#fff;font-weight:700;cursor:pointer;background:var(--cor-primaria,#2563eb);border:1px solid rgba(255,255,255,.18);border-radius:999px;box-shadow:0 12px 30px rgba(0,0,0,.32)}.pwa-install-button:hover{background:var(--cor-primaria-hover,#1d4ed8);transform:translateY(-1px)}.pwa-install-button:disabled{cursor:wait;opacity:.7}@media(display-mode:standalone){.pwa-install-button{display:none}}
+/* Ajustes finais da lista Smart List */
+.categoria-produto{display:none!important}.campos-produto .campo-produto:has([data-campo="categoria"]){display:none!important}.info-anterior{grid-template-columns:1fr!important}.info-anterior .box-anterior:nth-child(2){display:none!important}.box-anterior{padding:8px 10px!important}.box-anterior small,.box-anterior strong{display:inline!important}.box-anterior small{margin-right:6px}.acoes-compra{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;position:sticky;bottom:78px;z-index:25;padding:10px;margin:16px -4px 0;background:rgba(7,21,37,.96);border:1px solid #26364e;border-radius:14px;backdrop-filter:blur(14px)}.acoes-compra .btn{width:100%;min-height:48px;padding:10px 8px;font-size:14px}.orcamento-card{padding:16px!important}.orcamento-topo{margin-bottom:10px!important}.orcamento-topo p{display:none}.orcamento-resumo{grid-template-columns:1fr 1fr!important;gap:8px!important}.orcamento-resumo div{padding:9px!important}.orcamento-resumo div:nth-child(3){grid-column:1/-1}.barra-orcamento-trilho{height:12px!important}.card-total{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:10px 0 14px!important}.card-total>div{padding:10px!important}.card-total>div:first-child{grid-column:1/-1;border:1px solid #2563eb;border-radius:12px}.card-total>div:first-child h2{font-size:24px!important}.dashboard-grid-superior{gap:12px!important}.mercado-atual-card{padding:16px!important}.produto{padding:14px!important}.produto-titulo-linha h3{margin-top:0!important}.produto .supermercado-produto{margin:5px 0!important}.produto .diferenca{margin:7px 0!important}.produto .btn-excluir{font-size:0!important}.produto .btn-excluir::after{content:"✎";font-size:18px}.produto .btn-excluir{width:42px;height:42px;padding:0!important;border-radius:10px!important}
+@media(max-width:768px){.pwa-install-button{right:14px;bottom:max(14px,env(safe-area-inset-bottom));left:14px;width:calc(100% - 28px)}.dashboard-cabecalho{margin-bottom:12px!important}.dashboard-acoes-topo{width:100%}.dashboard-acoes-topo .btn{flex:1}.acoes{display:grid!important;grid-template-columns:1fr 1fr!important}.acoes .search{grid-column:1/-1}.acoes select{min-width:0!important;width:100%}.orcamento-form,.mercado-atual-form,.adicionar-mercado-form{flex-direction:row!important}.orcamento-form .btn,.mercado-atual-form .btn,.adicionar-mercado-form .btn{padding-inline:10px}.acoes-compra{grid-template-columns:1fr 1fr!important}.card-total>div:nth-child(n+2){font-size:13px}}
+@media(max-width:390px){.acoes-compra .btn{font-size:12px}.orcamento-form{display:grid!important;grid-template-columns:1fr 1fr}.orcamento-form input{grid-column:1/-1}.card-total{grid-template-columns:1fr}.card-total>div:first-child{grid-column:auto}}
