@@ -1,12 +1,14 @@
+
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v5`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v5`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v6`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v6`;
 
 const PRECACHE_URLS = [
     "./",
     "./index.html",
     "./login.html",
     "./cadastro.html",
+    "./inicio.html",
     "./offline.html",
     "./manifest.webmanifest",
     "./css/global.css",
@@ -16,9 +18,11 @@ const PRECACHE_URLS = [
     "./css/auth.css",
     "./css/responsive.css",
     "./css/temas.css",
+    "./css/inicio.css",
     "./css/pwa.css",
     "./js/pwa.js",
     "./js/tema.js",
+    "./js/inicio.js",
     "./assets/logo/logo.png",
     "./assets/icons/icon-192.png",
     "./assets/icons/icon-512.png",
@@ -143,3 +147,4 @@ async function responderRecursoAtualizavel(request) {
             || Response.error();
     }
 }
+
