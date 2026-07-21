@@ -120,3 +120,5 @@ dashboardV6Css.rel='stylesheet';
 dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=5';
 document.head.appendChild(dashboardV6Css);
 import('./dashboard-mobile-v6.js?v=5');
+import('./scanner-nota.js?v=2');
+import('./listas-salvas-ui.js?v=1');
