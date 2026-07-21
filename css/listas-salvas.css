@@ -1,5 +1,6 @@
 .listas-salvas-card {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
@@ -36,6 +37,12 @@
 
 .listas-salvas-controles .btn { min-height: 48px; white-space: nowrap; }
 
+.listas-salvas-nova[hidden] { display: none; }
+.listas-salvas-nova { flex: 0 0 100%; display: grid; gap: 7px; }
+.listas-salvas-nova label { color: var(--text-muted, #9aa8be); font-size: .85rem; font-weight: 700; }
+.listas-salvas-nova > div { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+.listas-salvas-nova input { min-width: 0; min-height: 48px; padding: 0 13px; border: 1px solid var(--border, #334155); border-radius: 14px; color: var(--text, #f8fafc); background: var(--surface, #1e293b); font: inherit; }
+
 @media (max-width: 720px) {
     .listas-salvas-card,
     .listas-salvas-controles {
@@ -47,5 +54,7 @@
     .listas-salvas-controles { gap: 10px; }
     .listas-salvas-controles select { width: 100%; max-width: none; min-width: 0; }
     .listas-salvas-controles .btn { width: 100%; }
+    .listas-salvas-nova > div { grid-template-columns: 1fr 1fr; }
+    .listas-salvas-nova input { grid-column: 1 / -1; }
 }
 
