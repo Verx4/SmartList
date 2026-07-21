@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b1220">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#071525">
     <meta name="application-name" content="Smart List">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,75 +12,103 @@
     <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
     <link rel="stylesheet" href="./css/pwa.css">
     <script type="module" src="./js/pwa.js"></script>
-    <title>Comparação de Preços | Smart List</title>
+    <title>Comparação | Smart List</title>
     <link rel="stylesheet" href="./css/global.css">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/cards.css">
     <link rel="stylesheet" href="./css/buttons.css">
     <link rel="stylesheet" href="./css/forms.css">
     <link rel="stylesheet" href="./css/comparacao.css">
-    <link rel="stylesheet" href="./css/responsive.css">
 </head>
-<body>
-    <header class="site-header">
-        <div class="container header-content">
-            <a class="brand" href="./index.html">🛒 Smart List</a>
-            <nav class="main-nav" aria-label="Navegação principal">
-                <a href="./dashboard.html">Minha lista</a>
-                <a href="./comparacao.html" class="active">Comparação</a>
-                <a href="./historico.html">Histórico</a>
-                <a href="./favoritos.html">Favoritos</a>
-                <a href="./relatorios.html">Relatórios</a>
-                <a href="./perfil.html">Perfil</a>
-            </nav>
-        </div>
+<body class="comparacao-page">
+    <header class="comparacao-topbar">
+        <a class="comparacao-brand" href="./inicio.html" aria-label="Ir para o início">🛒 <strong>Smart <span>List</span></strong></a>
+        <a class="comparacao-menu" href="./menu.html">☰ <span>Menu</span></a>
     </header>
-    <main class="container page-main">
-        <section class="page-header">
-            <span class="page-eyebrow">Comparação</span>
-            <h1>Compare preços entre supermercados</h1>
-            <p>Selecione sua região e os supermercados que deseja comparar.</p>
-            <div class="acoes-form" style="margin-top: 1rem;">
-                <a class="btn btn-primary" href="./comparar-embalagens.html">⚖ Comparar embalagens</a>
-            </div>
+
+    <main class="comparacao-container">
+        <section class="comparacao-cabecalho">
+            <h1>⚖ Comparação</h1>
+            <p>Compare embalagens e preços entre supermercados.</p>
         </section>
+
+        <nav class="comparacao-abas" aria-label="Tipos de comparação">
+            <a href="./comparar-embalagens.html">⚖ <span>Embalagens</span></a>
+            <a class="ativa" href="./comparacao.html" aria-current="page">🛒 <span>Mercados</span></a>
+        </nav>
+
+        <section class="mercados-intro">
+            <h2>🛒 Comparar mercados</h2>
+            <p>Compare os preços do mesmo produto em diferentes supermercados e escolha a melhor opção.</p>
+        </section>
+
         <section class="card filtros-comparacao">
-            <form id="formComparacao" class="form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="produtoComparacao">Produto</label>
-                        <input type="search" id="produtoComparacao" name="produto" placeholder="Ex.: Arroz, leite ou café">
-                    </div>
-                    <div class="form-group">
-                        <label for="cidadeComparacao">Cidade ou região</label>
-                        <input type="text" id="cidadeComparacao" name="cidade" placeholder="Digite sua cidade">
-                    </div>
+            <form id="formComparacao" class="form comparacao-form">
+                <div class="form-group">
+                    <label for="produtoComparacao">Produto</label>
+                    <div class="campo-com-icone"><span>⌕</span><input type="search" id="produtoComparacao" name="produto" placeholder="Ex.: Arroz, leite ou café"></div>
                 </div>
-                <fieldset class="form-group">
-                    <legend>Supermercados</legend>
+
+                <div class="form-group">
+                    <label for="cidadeComparacao">Cidade ou região</label>
+                    <div class="campo-com-icone"><span>⌖</span><input type="text" id="cidadeComparacao" name="cidade" placeholder="Digite sua cidade ou região"></div>
+                </div>
+
+                <fieldset class="form-group mercados-fieldset">
+                    <legend>Selecione os mercados</legend>
                     <div id="listaSupermercados" class="opcoes-supermercados">
-                        <label class="checkbox-card"><input type="checkbox" name="supermercados" value="Mercado Econômico" checked><span>🏪 Mercado Econômico</span></label>
-                        <label class="checkbox-card"><input type="checkbox" name="supermercados" value="Super Preço" checked><span>🛒 Super Preço</span></label>
-                        <label class="checkbox-card"><input type="checkbox" name="supermercados" value="Atacado Central" checked><span>📦 Atacado Central</span></label>
+                        <label class="mercado-opcao mercado-verde-frut"><input type="checkbox" name="supermercados" value="Verde Frut"><span class="mercado-check"></span><span class="mercado-logo">VF</span><strong>Verde Frut</strong></label>
+                        <label class="mercado-opcao mercado-assai"><input type="checkbox" name="supermercados" value="Assaí"><span class="mercado-check"></span><span class="mercado-logo">A</span><strong>Assaí</strong></label>
+                        <label class="mercado-opcao mercado-atacadao"><input type="checkbox" name="supermercados" value="Atacadão"><span class="mercado-check"></span><span class="mercado-logo">AT</span><strong>Atacadão</strong></label>
+                        <label class="mercado-opcao mercado-novo"><input type="checkbox" name="supermercados" value="Novo Atacarejo"><span class="mercado-check"></span><span class="mercado-logo">NA</span><strong>Novo Atacarejo</strong></label>
+                        <label class="mercado-opcao mercado-carrefour"><input type="checkbox" name="supermercados" value="Carrefour"><span class="mercado-check"></span><span class="mercado-logo">C</span><strong>Carrefour</strong></label>
+                        <label class="mercado-opcao mercado-mateus"><input type="checkbox" name="supermercados" value="Mateus"><span class="mercado-check"></span><span class="mercado-logo">M</span><strong>Mateus</strong></label>
+                    </div>
+                    <p id="mensagemSelecaoMercados" class="mensagem-selecao" aria-live="polite">Escolha 2 mercados para comparar.</p>
+                </fieldset>
+
+                <fieldset class="modo-comparacao">
+                    <legend>Como deseja comparar?</legend>
+                    <div class="modo-grid">
+                        <label class="modo-card ativo">
+                            <input type="radio" name="modoMercados" value="dois" checked>
+                            <span class="radio-visual"></span>
+                            <span class="modo-icone">🏪 VS 🏪</span>
+                            <strong>Comparar dois mercados</strong>
+                            <small>Escolha exatamente 2 mercados para comparar</small>
+                        </label>
+                        <label class="modo-card">
+                            <input type="radio" name="modoMercados" value="todos">
+                            <span class="radio-visual"></span>
+                            <span class="modo-icone">🏪🏪</span>
+                            <strong>Comparar todos os mercados</strong>
+                            <small>Compara o produto em todos os mercados da lista</small>
+                        </label>
                     </div>
                 </fieldset>
-                <div class="acoes-form">
-                    <button class="btn btn-primary" type="submit">🔍 Comparar preços</button>
-                    <button id="btnLimparComparacao" class="btn btn-secondary" type="reset">Limpar filtros</button>
+
+                <div class="acoes-form comparacao-acoes">
+                    <button class="btn btn-primary" type="submit">⌕ Comparar preços</button>
+                    <button id="btnLimparComparacao" class="btn btn-secondary" type="reset">♲ Limpar filtros</button>
                 </div>
             </form>
         </section>
+
         <section id="resumoComparacao" class="grid-resumo" aria-live="polite">
             <article class="card resumo-card"><span>Melhor supermercado</span><strong id="melhorSupermercado">—</strong></article>
             <article class="card resumo-card"><span>Menor total</span><strong id="menorTotal">R$ 0,00</strong></article>
             <article class="card resumo-card"><span>Economia estimada</span><strong id="economiaEstimada">R$ 0,00</strong></article>
             <article class="card resumo-card"><span>Nível de confiança</span><strong id="nivelConfianca">—</strong></article>
         </section>
+
         <section class="card tabela-card">
             <div class="section-header">
                 <div><span class="card-label">Resultados</span><h2>Preços encontrados</h2></div>
                 <select id="ordenacaoComparacao" aria-label="Ordenar resultados">
-                    <option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option><option value="produto">Nome do produto</option><option value="supermercado">Supermercado</option>
+                    <option value="menor-preco">Menor preço</option>
+                    <option value="maior-preco">Maior preço</option>
+                    <option value="produto">Nome do produto</option>
+                    <option value="supermercado">Supermercado</option>
                 </select>
             </div>
             <div id="resultadoComparacao" class="table-wrapper">
@@ -90,18 +118,23 @@
                 </table>
             </div>
         </section>
+
         <section class="card compra-inteligente-card">
             <div><span class="card-label">Compra inteligente</span><h2>Melhor combinação de supermercados</h2><p>Descubra onde comprar cada item para aumentar sua economia.</p></div>
             <button id="btnCompraInteligente" class="btn btn-primary" type="button">Calcular combinação</button>
             <div id="resultadoCompraInteligente"></div>
         </section>
     </main>
-    <footer class="site-footer">
-        <div class="container footer-content">
-            <p>© 2026 Smart List</p>
-            <nav class="footer-links"><a href="./termos.html">Termos</a><a href="./privacidade.html">Privacidade</a><a href="./suporte.html">Suporte</a></nav>
-        </div>
-    </footer>
+
+    <nav class="mobile-bottom-nav" aria-label="Navegação principal">
+        <a href="./inicio.html"><span>⌂</span><small>Início</small></a>
+        <a href="./dashboard.html"><span>☷</span><small>Lista</small></a>
+        <a class="ativo" href="./comparacao.html" aria-current="page"><span>⚖</span><small>Comparação</small></a>
+        <a href="./historico.html"><span>◷</span><small>Histórico</small></a>
+        <a href="./menu.html"><span>☰</span><small>Menu</small></a>
+    </nav>
+
     <script type="module" src="./js/comparacao.js"></script>
+    <script src="./js/comparacao-ui.js"></script>
 </body>
 </html>
