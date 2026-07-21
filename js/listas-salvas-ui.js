@@ -36,6 +36,10 @@ function ativarGerenciadorDeListas() {
                 ${listas.map(lista => `<option value="${escapar(lista.id)}" ${lista.atual ? "selected" : ""}>${escapar(lista.nome)} · ${lista.produtos.length} item(ns)</option>`).join("")}
             </select>
             <button type="button" class="btn btn-primary" id="criarNovaLista">+ Nova lista</button>
+        </div>
+        <div class="listas-salvas-nova" hidden>
+            <label for="nomeNovaLista">Nome da nova lista</label>
+            <div><input id="nomeNovaLista" type="text" maxlength="80" placeholder="Ex.: Compra do mês"><button type="button" class="btn btn-primary" id="salvarNovaLista">Criar</button><button type="button" class="btn btn-secondary" id="cancelarNovaLista">Cancelar</button></div>
         </div>`;
 
     referencia.before(gerenciador);
@@ -45,8 +49,26 @@ function ativarGerenciadorDeListas() {
     });
 
     gerenciador.querySelector("#criarNovaLista").addEventListener("click", () => {
-        const nome = window.prompt("Qual será o nome da nova lista?", `Lista ${listas.length + 1}`);
-        if (nome === null) return;
+        const formulario = gerenciador.querySelector(".listas-salvas-nova");
+        formulario.hidden = false;
+        const campo = formulario.querySelector("input");
+        campo.value = `Lista ${listas.length + 1}`;
+        campo.focus();
+    });
+
+    gerenciador.querySelector("#cancelarNovaLista").addEventListener("click", () => {
+        gerenciador.querySelector(".listas-salvas-nova").hidden = true;
+    });
+
+    gerenciador.querySelector("#salvarNovaLista").addEventListener("click", () => {
+        const campo = gerenciador.querySelector("#nomeNovaLista");
+        const nome = campo.value.trim();
+        if (!nome) {
+            campo.setCustomValidity("Digite um nome para a nova lista.");
+            campo.reportValidity();
+            return;
+        }
+        campo.setCustomValidity("");
         criarListaSalva(nome, { ativar: true });
         window.location.reload();
     });
