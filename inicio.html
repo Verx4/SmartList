@@ -1,1 +1,76 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07182d"><title>Início | Smart List</title><link rel="manifest" href="./manifest.webmanifest"><link rel="stylesheet" href="./css/global.css"><link rel="stylesheet" href="./css/mobile-app.css"><link rel="stylesheet" href="./css/temas.css"></head><body><main class="app-shell"><header class="app-topbar"><div class="app-brand"><span class="smart">Smart</span> <span class="list">List</span></div><div style="display:flex;gap:10px;align-items:center"><a href="./menu.html#temas" aria-label="Abrir opções de tema" title="Temas" style="display:grid;width:42px;height:42px;place-items:center;text-decoration:none;background:#10243d;border:1px solid #29445f;border-radius:11px">🎨</a><a href="./menu.html" aria-label="Abrir menu" style="display:grid;width:42px;height:42px;place-items:center;text-decoration:none;background:#10243d;border:1px solid #29445f;border-radius:11px">☰</a></div></header><section><h1 id="saudacaoInicio">Olá! 👋</h1><p>Aqui está o resumo das suas compras.</p></section><div class="dashboard-grid"><article class="metric-card"><span>Gasto deste mês</span><strong id="gastoMes">R$ 0,00</strong><small id="variacaoMes">Sem compras registradas</small></article><article class="metric-card"><span>Total de itens</span><strong id="totalItensInicio">0</strong><small>Itens comprados no histórico</small></article><article class="chart-card wide"><h2>Evolução dos gastos</h2><p>Últimas compras registradas</p><div id="graficoGastos" class="chart-bars" aria-label="Gráfico de gastos"></div></article><article class="chart-card wide"><h2>Gastos por categoria</h2><div id="categoriasInicio"></div></article></div></main><script src="./js/tema.js"></script><script type="module" src="./js/inicio.js"></script><script src="./js/mobile-nav.js"></script></body></html>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#07182d">
+    <title>Início | Smart List</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/inicio.css?v=1">
+    <link rel="stylesheet" href="./css/temas.css">
+</head>
+<body>
+    <main class="app-shell inicio-shell">
+        <header class="app-topbar inicio-topbar">
+            <a class="app-brand" href="./inicio.html"><span class="smart">Smart</span> <span class="list">List</span></a>
+            <div class="inicio-topbar-acoes">
+                <button id="btnTemaInicio" type="button" aria-label="Abrir opções de tema" title="Temas">🎨</button>
+                <a href="./menu.html" aria-label="Abrir menu" title="Menu">☰</a>
+            </div>
+        </header>
+
+        <section class="inicio-saudacao">
+            <div><small>Resumo de hoje</small><h1 id="saudacaoInicio">Olá! 👋</h1></div>
+            <a class="inicio-lista-atalho" href="./dashboard.html">Abrir lista <span>→</span></a>
+        </section>
+
+        <section class="inicio-destaque" aria-label="Resumo mensal">
+            <div class="inicio-destaque-topo"><span>Gasto neste mês</span><small id="mesReferencia"></small></div>
+            <strong id="gastoMes">R$ 0,00</strong>
+            <div class="inicio-destaque-rodape"><span id="variacaoMes" class="inicio-variacao neutra">Sem compras registradas</span><span id="mediaCompra">Média R$ 0,00</span></div>
+        </section>
+
+        <section class="inicio-metricas" aria-label="Indicadores das compras">
+            <article><span>Compras no mês</span><strong id="comprasMes">0</strong></article>
+            <article><span>Economia no mês</span><strong id="economiaMes">R$ 0,00</strong></article>
+            <article><span>Itens na lista</span><strong id="itensLista">0</strong></article>
+        </section>
+
+        <section class="inicio-painel">
+            <header><div><small>Últimas compras</small><h2>Evolução dos gastos</h2></div><a href="./historico.html">Ver histórico</a></header>
+            <div id="graficoGastos" class="inicio-grafico" aria-label="Gráfico das últimas compras"></div>
+            <div class="inicio-insights">
+                <div><span>Categoria principal</span><strong id="categoriaPrincipal">Sem dados</strong></div>
+                <div><span>Última compra</span><strong id="ultimaCompraInicio">—</strong></div>
+            </div>
+        </section>
+
+        <section class="inicio-acoes" aria-label="Ações rápidas">
+            <a href="./dashboard.html">＋ Adicionar itens</a>
+            <a href="./comparar-embalagens.html">⚖ Comparar preços</a>
+        </section>
+
+        <details class="inicio-dados">
+            <summary>Seus dados e armazenamento</summary>
+            <div><p>Apague a lista, o histórico, os gastos, os mercados e os itens salvos neste aparelho.</p><button id="btnLimparDados" type="button">Limpar todos os dados</button></div>
+        </details>
+    </main>
+
+    <div id="confirmarLimpeza" class="limpeza-overlay" hidden>
+        <section role="alertdialog" aria-modal="true" aria-labelledby="limpezaTitulo">
+            <span aria-hidden="true">🗑️</span>
+            <h2 id="limpezaTitulo">Limpar todos os dados?</h2>
+            <p>A lista, o histórico, os gastos e os mercados deste aparelho serão apagados. Sua conta e seu plano não serão alterados.</p>
+            <div><button type="button" class="limpeza-cancelar">Cancelar</button><button type="button" class="limpeza-confirmar">Sim, limpar tudo</button></div>
+        </section>
+    </div>
+
+    <script src="./js/tema.js"></script>
+    <script type="module" src="./js/inicio.js?v=1"></script>
+    <script src="./js/mobile-nav.js"></script>
+</body>
+</html>
+
