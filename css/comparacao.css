@@ -1,34 +1,306 @@
+.comparacao-page {
+    min-height: 100vh;
+    padding-bottom: 92px;
+    color: #f8fafc;
+    background: #071525;
+}
+
+.comparacao-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    min-height: 72px;
+    padding: 12px 20px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: rgba(7, 21, 37, 0.96);
+    border-bottom: 1px solid #26364e;
+    backdrop-filter: blur(14px);
+}
+
+.comparacao-brand,
+.comparacao-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #f8fafc;
+    text-decoration: none;
+}
+
+.comparacao-brand {
+    font-size: 24px;
+}
+
+.comparacao-brand span {
+    color: #4ade80;
+}
+
+.comparacao-menu {
+    min-height: 46px;
+    padding: 10px 15px;
+    background: #111d30;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    font-weight: 800;
+}
+
+.comparacao-container {
+    width: min(100%, 920px);
+    padding: 24px 20px 48px;
+    margin: 0 auto;
+}
+
+.comparacao-cabecalho h1,
+.mercados-intro h2 {
+    margin: 0 0 7px;
+}
+
+.comparacao-cabecalho p,
+.mercados-intro p {
+    color: #a8b4c8;
+}
+
+.comparacao-abas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 22px 0;
+    overflow: hidden;
+    border: 1px solid #334155;
+    border-radius: 13px;
+}
+
+.comparacao-abas a {
+    display: flex;
+    min-height: 58px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #60a5fa;
+    text-decoration: none;
+    font-weight: 800;
+}
+
+.comparacao-abas a.ativa {
+    color: #4ade80;
+    background: rgba(34, 197, 94, 0.09);
+    box-shadow: inset 0 0 0 1px #22c55e;
+}
+
+.mercados-intro {
+    margin-bottom: 16px;
+}
+
 .filtros-comparacao {
+    padding: 18px;
     margin-bottom: 24px;
+    background: #101c2f;
+    border: 1px solid #334155;
+    border-radius: 17px;
+}
+
+.comparacao-form {
+    display: grid;
+    gap: 18px;
+}
+
+.comparacao-form .form-group {
+    margin: 0;
+}
+
+.campo-com-icone {
+    position: relative;
+}
+
+.campo-com-icone > span {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    z-index: 1;
+    color: #9fb0c7;
+    font-size: 24px;
+    transform: translateY(-50%);
+}
+
+.campo-com-icone input {
+    width: 100%;
+    min-height: 58px;
+    padding-left: 50px;
+    color: #fff;
+    background: #1f2b3d;
+    border: 1px solid #3b4a62;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.mercados-fieldset,
+.modo-comparacao {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.mercados-fieldset legend,
+.modo-comparacao legend,
+.comparacao-form label {
+    margin-bottom: 9px;
+    color: #e2e8f0;
+    font-weight: 800;
 }
 
 .opcoes-supermercados {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 10px;
+    grid-template-columns: 1fr;
+    overflow: hidden;
+    background: #101b2d;
+    border: 1px solid #334155;
+    border-radius: 13px;
 }
 
-.checkbox-card {
-    display: flex;
+.mercado-opcao {
+    display: grid;
+    grid-template-columns: 30px 46px 1fr;
+    min-height: 67px;
+    padding: 8px 14px;
     align-items: center;
-    gap: 10px;
-    min-height: 54px;
-    padding: 14px;
-    border: 1px solid #334155;
-    border-radius: 10px;
-    background: #1f2937;
+    gap: 12px;
+    border-bottom: 1px solid #2d3a50;
     cursor: pointer;
 }
 
-.checkbox-card:hover {
-    border-color: var(--cor-primaria, #2563eb);
+.mercado-opcao:last-child {
+    border-bottom: 0;
 }
 
-.checkbox-card input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--cor-primaria, #2563eb);
+.mercado-opcao input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mercado-check {
+    width: 25px;
+    height: 25px;
+    border: 2px solid #64748b;
+    border-radius: 6px;
+}
+
+.mercado-opcao input:checked + .mercado-check {
+    background: #2563eb;
+    border-color: #60a5fa;
+    box-shadow: inset 0 0 0 5px #101c2f;
+}
+
+.mercado-logo {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    background: #f8fafc;
+    border-radius: 50%;
+    color: #071525;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.mercado-opcao strong {
+    font-size: 20px;
+}
+
+.mercado-verde-frut strong { color: #4ade80; }
+.mercado-assai strong { color: #fb923c; }
+.mercado-atacadao strong { color: #f87171; }
+.mercado-novo strong { color: #60a5fa; }
+.mercado-carrefour strong { color: #facc15; }
+.mercado-mateus strong { color: #c084fc; }
+
+.mensagem-selecao {
+    min-height: 22px;
+    margin: 9px 0 0;
+    color: #93c5fd;
+    font-size: 13px;
+}
+
+.mensagem-selecao.erro {
+    color: #fca5a5;
+}
+
+.modo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.modo-card {
+    position: relative;
+    display: grid;
+    min-height: 154px;
+    padding: 18px 14px 14px 48px;
+    align-content: start;
+    gap: 7px;
+    background: #101b2d;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    cursor: pointer;
+}
+
+.modo-card input {
+    position: absolute;
+    opacity: 0;
+}
+
+.radio-visual {
+    position: absolute;
+    top: 18px;
+    left: 15px;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #475569;
+    border-radius: 50%;
+}
+
+.modo-card.ativo {
+    border-color: #3b82f6;
+    box-shadow: inset 0 0 0 1px #3b82f6;
+}
+
+.modo-card.ativo .radio-visual {
+    border: 6px solid #3b82f6;
+    background: #fff;
+}
+
+.modo-icone {
+    color: #60a5fa;
+    font-size: 22px;
+}
+
+.modo-card strong {
+    font-size: 17px;
+}
+
+.modo-card small {
+    color: #a8b4c8;
+    line-height: 1.4;
+}
+
+.comparacao-acoes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.comparacao-acoes .btn {
+    width: 100%;
+    min-height: 55px;
+    font-size: 17px;
+}
+
+.grid-resumo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
 }
 
 .compra-inteligente-card {
@@ -40,8 +312,8 @@
 }
 
 .compra-inteligente-card p {
-    color: #94a3b8;
     margin-bottom: 18px;
+    color: #94a3b8;
 }
 
 #resultadoCompraInteligente {
@@ -50,23 +322,74 @@
 
 .resultado-mercado {
     padding: 16px;
-    border-radius: 12px;
-    background: #1f2937;
     margin-bottom: 10px;
+    background: #1f2937;
+    border-radius: 12px;
 }
 
-.resultado-mercado strong {
-    color: #22c55e;
+.mobile-bottom-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    min-height: 76px;
+    padding: 8px max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    background: rgba(5, 18, 34, 0.98);
+    border-top: 1px solid #31415a;
+    backdrop-filter: blur(16px);
 }
 
-.nivel-alta {
-    color: #22c55e;
+.mobile-bottom-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    color: #9fb0c7;
+    text-decoration: none;
 }
 
-.nivel-media {
-    color: #f59e0b;
+.mobile-bottom-nav a span {
+    font-size: 23px;
 }
 
-.nivel-baixa {
-    color: #ef4444;
+.mobile-bottom-nav a small {
+    font-size: 11px;
+}
+
+.mobile-bottom-nav a.ativo {
+    color: #60a5fa;
+}
+
+@media (max-width: 640px) {
+    .comparacao-container {
+        padding: 20px 14px 42px;
+    }
+
+    .modo-grid,
+    .grid-resumo {
+        grid-template-columns: 1fr;
+    }
+
+    .modo-card {
+        min-height: 130px;
+    }
+
+    .tabela-card {
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-bottom-nav {
+        right: 50%;
+        left: auto;
+        width: min(100%, 920px);
+        transform: translateX(50%);
+        border-right: 1px solid #31415a;
+        border-left: 1px solid #31415a;
+    }
 }
