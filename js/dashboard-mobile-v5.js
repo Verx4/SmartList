@@ -5,6 +5,7 @@ function prepararListaMobileV5() {
     prepararMercadoV5();
     prepararOrcamentoV5();
     prepararAcoesV5();
+    removerIconeLocalizacaoV5();
 }
 
 function removerElementosAntigosV5() {
@@ -128,6 +129,26 @@ function prepararAcoesV5() {
     if (finalizar) {
         finalizar.textContent = "✅ Finalizar compra";
     }
+}
+
+function removerIconeLocalizacaoV5() {
+    if (document.getElementById("semIconeLocalizacaoMercadoV5")) return;
+
+    const estilo = document.createElement("style");
+    estilo.id = "semIconeLocalizacaoMercadoV5";
+    estilo.textContent = `
+        @media (max-width: 768px) {
+            body.dashboard-mobile-ready .mercado-atual-form::before {
+                display: none !important;
+                content: none !important;
+            }
+
+            body.dashboard-mobile-ready #mercadoAtual {
+                padding-left: 15px !important;
+            }
+        }
+    `;
+    document.head.appendChild(estilo);
 }
 
 if (document.readyState === "loading") {
