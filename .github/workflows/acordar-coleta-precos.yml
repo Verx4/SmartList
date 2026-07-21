@@ -1,0 +1,21 @@
+
+name: Acordar coleta de preços
+
+on:
+  schedule:
+    # 05:55 UTC corresponde a 02:55 no horário de Brasília.
+    - cron: "55 5 * * *"
+  workflow_dispatch:
+
+jobs:
+  acordar-servidor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Acordar API antes da coleta das 03:00
+        run: |
+          curl --fail --silent --show-error \
+            --retry 12 --retry-all-errors --retry-delay 10 \
+            --max-time 180 \
+            https://smart-list-backend-j4bp.onrender.com/api/health
+
