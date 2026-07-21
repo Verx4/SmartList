@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -198,10 +197,6 @@
                 <option value="maior-preco">Maior preço</option>
                 <option value="favoritos">Favoritos primeiro</option>
             </select>
-
-            <button id="btnAdicionarProduto" class="btn btn-primary btn-add" type="button">
-                + Adicionar produto
-            </button>
         </section>
 
         <section aria-labelledby="tituloListaProdutos">
@@ -219,13 +214,11 @@
             <button id="btnFinalizarCompra" class="btn btn-primary btn-finalizar" type="button">
                 ✅ Finalizar compra
             </button>
-            <button id="btnToggleHistorico" class="btn btn-secondary btn-historico" type="button"
-                aria-expanded="false" aria-controls="historicoCompras">
-                📋 Histórico de compras
+            <button id="btnAdicionarProduto" class="btn btn-secondary btn-historico" type="button">
+                ＋ Adicionar item
             </button>
         </div>
 
-        <section id="historicoCompras" class="historico-compras" hidden></section>
         <section id="resumoItens" class="resumo-itens"></section>
     </main>
 
@@ -313,5 +306,4 @@
     <script src="./js/tema.js"></script>
     <script type="module" src="./js/app.js"></script>
 </body>
-
 </html>
