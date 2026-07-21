@@ -1,204 +1,49 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#0b1220">
-    <meta name="application-name" content="Smart List">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Histórico | Smart List</title>
     <link rel="manifest" href="./manifest.webmanifest">
-    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
-    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
-    <link rel="stylesheet" href="./css/pwa.css">
-    <script type="module" src="./js/pwa.js"></script>
-
-    <title>Histórico de Compras | Smart List</title>
-
     <link rel="stylesheet" href="./css/global.css">
-    <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/cards.css">
-    <link rel="stylesheet" href="./css/buttons.css">
-    <link rel="stylesheet" href="./css/forms.css">
-    <link rel="stylesheet" href="./css/historico.css">
-    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/temas.css">
+    <link rel="stylesheet" href="./css/historico-v2.css?v=1">
 </head>
-
 <body>
+    <main class="historico-shell">
+        <header class="historico-topo"><a href="./inicio.html"><span>Smart</span> List</a><a href="./menu.html" aria-label="Abrir menu">☰</a></header>
+        <section class="historico-cabecalho"><small>Suas compras</small><h1>Histórico</h1><p>Acompanhe para onde o dinheiro foi e toque em uma categoria para ver os itens.</p></section>
 
-    <header class="site-header">
-        <div class="container header-content">
-            <a class="brand" href="./index.html">🛒 Smart List</a>
-
-            <nav class="main-nav" aria-label="Navegação principal">
-                <a href="./dashboard.html">Minha lista</a>
-                <a href="./comparacao.html">Comparação</a>
-                <a href="./historico.html" class="active">Histórico</a>
-                <a href="./favoritos.html">Favoritos</a>
-                <a href="./relatorios.html">Relatórios</a>
-                <a href="./perfil.html">Perfil</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="container page-main">
-
-        <section class="page-header">
-            <span class="page-eyebrow">Histórico</span>
-            <h1>Histórico de compras</h1>
-            <p>
-                Consulte seus gastos, economias e alterações de preços.
-            </p>
+        <section class="historico-resumo" aria-label="Resumo do histórico">
+            <article><span>Total gasto</span><strong id="historicoTotalGasto">R$ 0,00</strong></article>
+            <article><span>Economia</span><strong id="historicoTotalEconomizado">R$ 0,00</strong></article>
+            <article><span>Compras</span><strong id="historicoQuantidadeCompras">0</strong></article>
+            <article><span>Média</span><strong id="historicoMediaCompra">R$ 0,00</strong></article>
         </section>
 
-        <section class="grid-resumo">
-
-            <article class="card resumo-card">
-                <span>Total gasto</span>
-                <strong id="historicoTotalGasto">R$ 0,00</strong>
-            </article>
-
-            <article class="card resumo-card">
-                <span>Total economizado</span>
-                <strong id="historicoTotalEconomizado">R$ 0,00</strong>
-            </article>
-
-            <article class="card resumo-card">
-                <span>Compras realizadas</span>
-                <strong id="historicoQuantidadeCompras">0</strong>
-            </article>
-
-            <article class="card resumo-card">
-                <span>Média por compra</span>
-                <strong id="historicoMediaCompra">R$ 0,00</strong>
-            </article>
-
+        <section class="historico-grafico-card">
+            <header><div><small>Distribuição</small><h2>Gastos por categoria</h2></div><span>Toque para detalhar</span></header>
+            <div id="graficoCategoriasHistorico" class="grafico-categorias-historico"></div>
         </section>
 
-        <section class="card filtros-historico">
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="buscarHistorico">Buscar</label>
-                    <input
-                        type="search"
-                        id="buscarHistorico"
-                        placeholder="Produto ou supermercado">
-                </div>
-
-                <div class="form-group">
-                    <label for="dataInicialHistorico">Data inicial</label>
-                    <input
-                        type="date"
-                        id="dataInicialHistorico">
-                </div>
-
-                <div class="form-group">
-                    <label for="dataFinalHistorico">Data final</label>
-                    <input
-                        type="date"
-                        id="dataFinalHistorico">
-                </div>
-
-                <div class="form-group">
-                    <label for="ordenarHistorico">Ordenar</label>
-
-                    <select id="ordenarHistorico">
-                        <option value="recentes">Mais recentes</option>
-                        <option value="antigas">Mais antigas</option>
-                        <option value="maior-total">Maior valor</option>
-                        <option value="menor-total">Menor valor</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="acoes-form">
-                <button
-                    id="btnFiltrarHistorico"
-                    class="btn btn-primary"
-                    type="button">
-                    Aplicar filtros
-                </button>
-
-                <button
-                    id="btnExportarHistorico"
-                    class="btn btn-secondary"
-                    type="button">
-                    Exportar histórico
-                </button>
-
-                <button
-                    id="btnLimparHistorico"
-                    class="btn btn-danger"
-                    type="button">
-                    Limpar histórico
-                </button>
-            </div>
-
+        <section id="detalheCategoriaHistorico" class="detalhe-categoria-historico" hidden>
+            <header><div><small>Categoria selecionada</small><h2 id="nomeCategoriaHistorico"></h2></div><strong id="totalCategoriaHistorico"></strong></header>
+            <div id="itensCategoriaHistorico"></div>
         </section>
 
-        <section aria-labelledby="tituloListaHistorico">
-
-            <div class="section-header">
-                <div>
-                    <span class="card-label">Compras</span>
-                    <h2 id="tituloListaHistorico">Compras realizadas</h2>
-                </div>
-
-                <span id="contadorHistorico" class="contador">
-                    0 compras
-                </span>
-            </div>
-
-            <div id="listaHistorico" class="lista-historico">
-                <div class="card estado-vazio">
-                    <p>Nenhuma compra foi finalizada ainda.</p>
-                    <a class="btn btn-primary" href="./dashboard.html">
-                        Ir para minha lista
-                    </a>
-                </div>
-            </div>
-
+        <section class="compras-historico-v2">
+            <header><div><small>Compras</small><h2>Lista completa</h2></div><div><button id="btnExportarHistorico" type="button">Exportar</button><button id="btnLimparHistorico" type="button">Zerar</button></div></header>
+            <label class="busca-historico"><span>Buscar item ou mercado</span><input id="buscarHistorico" type="search" placeholder="Ex.: arroz ou Atacadão"></label>
+            <div id="listaHistorico" class="lista-historico-v2"></div>
         </section>
-
-        <section class="card">
-            <div class="section-header">
-                <div>
-                    <span class="card-label">Preços</span>
-                    <h2>Timeline de alterações</h2>
-                </div>
-
-                <select
-                    id="produtoTimeline"
-                    aria-label="Selecionar produto">
-                    <option value="">Selecione um produto</option>
-                </select>
-            </div>
-
-            <div id="timelinePrecos" class="timeline-precos">
-                <p class="estado-vazio">
-                    Selecione um produto para visualizar as alterações.
-                </p>
-            </div>
-        </section>
-
     </main>
 
-    <footer class="site-footer">
-        <div class="container footer-content">
-            <p>© 2026 Smart List</p>
-
-            <nav class="footer-links">
-                <a href="./termos.html">Termos</a>
-                <a href="./privacidade.html">Privacidade</a>
-                <a href="./suporte.html">Suporte</a>
-            </nav>
-        </div>
-    </footer>
-
-    <script type="module" src="./js/historico-page.js"></script>
-
+    <script src="./js/tema.js"></script>
+    <script type="module" src="./js/historico-page.js?v=2"></script>
+    <script src="./js/mobile-nav.js"></script>
 </body>
-
 </html>
+
