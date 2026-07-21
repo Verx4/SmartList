@@ -43,6 +43,15 @@ function atualizarProdutoV6(id, alteracoes) {
     return true;
 }
 
+function iconeLapisV6() {
+    return `
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+        </svg>
+    `;
+}
+
 function prepararItensCompactosV6() {
     const lista = document.getElementById("listaProdutos");
     if (!lista) return;
@@ -57,26 +66,14 @@ function prepararItensCompactosV6() {
 
             produto.classList.toggle("produto-por-peso", produtoVendidoPorPesoV6(dados));
 
-            if (!produto.querySelector(".produto-check")) {
-                const check = document.createElement("input");
-                check.type = "checkbox";
-                check.className = "produto-check";
-                check.setAttribute("aria-label", "Marcar item como comprado");
-                check.checked = Boolean(dados?.comprado);
-                produto.classList.toggle("produto-comprado", check.checked);
-
-                check.addEventListener("change", () => {
-                    produto.classList.toggle("produto-comprado", check.checked);
-                    atualizarProdutoV6(id, { comprado: check.checked });
-                });
-
-                produto.prepend(check);
-            }
+            produto.querySelectorAll(".produto-check, input[type='checkbox']").forEach(check => check.remove());
+            produto.classList.remove("produto-comprado");
 
             const botaoEditar = produto.querySelector(".btn-excluir");
             if (botaoEditar) {
                 botaoEditar.setAttribute("aria-label", "Editar item");
                 botaoEditar.setAttribute("title", "Editar nome, valor ou remover item");
+                botaoEditar.innerHTML = iconeLapisV6();
             }
         });
     };
