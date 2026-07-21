@@ -84,4 +84,3 @@ class DataInitializerTest {
         verify(repository, never()).save(admin);
     }
 }
-
