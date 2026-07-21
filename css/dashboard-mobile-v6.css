@@ -43,6 +43,23 @@
     overflow: hidden !important;
   }
 
+  body.dashboard-mobile-ready #listaProdutos .produto::before,
+  body.dashboard-mobile-ready #listaProdutos .produto::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .produto > :not(.info-produto):not(.qtd):not(.subtotal):not(.btn-excluir) {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    pointer-events: none !important;
+  }
+
   body.dashboard-mobile-ready #listaProdutos .produto input[type="checkbox"],
   body.dashboard-mobile-ready #listaProdutos .produto-check,
   body.dashboard-mobile-ready #listaProdutos .check-produto,
