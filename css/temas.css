@@ -1,3 +1,4 @@
+
 :root,
 html[data-palette="azul"] {
     color-scheme: dark;
@@ -138,6 +139,25 @@ html[data-palette="roxo"] {
     --cor-destaque: #c084fc;
     --cor-destaque-rgb: 192, 132, 252;
     --cor-texto-botao: #ffffff;
+}
+
+html[data-palette="personalizada"] {
+    color-scheme: dark;
+    --cor-fundo: #071520;
+    --cor-fundo-rgb: 7, 21, 32;
+    --cor-superficie: #0b2230;
+    --cor-superficie-rgb: 11, 34, 48;
+    --cor-superficie-secundaria: #123244;
+    --cor-superficie-hover: #174257;
+    --cor-texto: #ffffff;
+    --cor-texto-secundario: #b7c2d0;
+    --cor-borda: #2e5b70;
+    --cor-primaria: #0ea5e9;
+    --cor-primaria-hover: #0284c7;
+    --cor-primaria-rgb: 14, 165, 233;
+    --cor-destaque: #7dd3fc;
+    --cor-destaque-rgb: 125, 211, 252;
+    --cor-texto-botao: #071018;
 }
 
 html[data-palette] {
@@ -395,6 +415,46 @@ html[data-palette] .btn-primary:hover {
     background: var(--cor-borda);
 }
 
+.cor-personalizada-premium {
+    display: grid;
+    gap: 7px;
+    padding: 9px;
+    color: var(--cor-texto);
+    background: var(--cor-superficie-secundaria);
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+}
+
+.cor-personalizada-premium > label {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.cor-personalizada-premium > div {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 8px;
+}
+
+.cor-personalizada-premium input[type="color"] {
+    width: 52px;
+    height: 38px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+.cor-personalizada-premium button {
+    color: var(--cor-texto-botao);
+    background: var(--cor-primaria);
+    border: 0;
+    border-radius: 8px;
+    font-weight: 800;
+}
+
+body:has(.inicio-shell) .controle-tema-global > .botao-tema-global {
+    display: none;
+}
+
 button,
 a,
 input,
@@ -434,3 +494,4 @@ button:disabled {
         max-height: min(510px, calc(100vh - 80px));
     }
 }
+
