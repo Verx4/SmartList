@@ -51,14 +51,14 @@ function criarEditorItemV4(){
                 <input id="itemEditName" type="text" maxlength="80" autocomplete="off">
             </div>
 
-            <div class="item-edit-field">
+            <div class="item-edit-field item-edit-field-preco">
                 <label for="itemEditPrice">Valor do produto</label>
                 <input id="itemEditPrice" type="number" min="0" step="0.01" inputmode="decimal">
             </div>
 
             <div class="item-edit-actions">
-                <button type="button" class="item-edit-save">Salvar alterações</button>
-                <button type="button" class="item-edit-delete">Excluir item</button>
+                <button type="button" class="item-edit-save">Salvar nome</button>
+                <button type="button" class="item-edit-delete">Remover item</button>
             </div>
         </section>`;
 
@@ -133,3 +133,9 @@ dashboardV5Css.href='./css/dashboard-mobile-v5.css?v=1';
 document.head.appendChild(dashboardV5Css);
 import('./dashboard-mobile-v5.js?v=1');
 import('./categorias-v2.js?v=1');
+
+const dashboardV6Css=document.createElement('link');
+dashboardV6Css.rel='stylesheet';
+dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=1';
+document.head.appendChild(dashboardV6Css);
+import('./dashboard-mobile-v6.js?v=1');
