@@ -45,17 +45,14 @@ function criarEditorItemV4(){
                 <h2 id="itemEditTitle">Editar item</h2>
                 <button type="button" class="item-edit-close" aria-label="Fechar">×</button>
             </header>
-
             <div class="item-edit-field">
                 <label for="itemEditName">Nome do item</label>
                 <input id="itemEditName" type="text" maxlength="80" autocomplete="off">
             </div>
-
             <div class="item-edit-field item-edit-field-preco">
                 <label for="itemEditPrice">Valor do produto</label>
                 <input id="itemEditPrice" type="number" min="0" step="0.01" inputmode="decimal">
             </div>
-
             <div class="item-edit-actions">
                 <button type="button" class="item-edit-save">Salvar nome</button>
                 <button type="button" class="item-edit-delete">Remover item</button>
@@ -63,7 +60,6 @@ function criarEditorItemV4(){
         </section>`;
 
     document.body.appendChild(overlay);
-
     const fechar=()=>{
         overlay.hidden=true;
         overlay._produto=null;
@@ -72,24 +68,18 @@ function criarEditorItemV4(){
     };
 
     overlay.querySelector('.item-edit-close')?.addEventListener('click',fechar);
-    overlay.addEventListener('click',evento=>{
-        if(evento.target===overlay)fechar();
-    });
-
+    overlay.addEventListener('click',evento=>{if(evento.target===overlay)fechar()});
     overlay.querySelector('.item-edit-save')?.addEventListener('click',()=>{
         const produto=overlay._produto;
         const id=produto?.dataset.produtoId;
         const nome=overlay.querySelector('#itemEditName')?.value.trim();
         const valor=Number(overlay.querySelector('#itemEditPrice')?.value||0);
-
         if(!id||!nome||!Number.isFinite(valor)||valor<0)return;
-
         if(atualizarProdutoLocalV4(id,{nome,preco:valor})){
             fechar();
             window.location.reload();
         }
     });
-
     overlay.querySelector('.item-edit-delete')?.addEventListener('click',()=>{
         const botaoExcluir=overlay._botaoExcluir;
         fechar();
@@ -97,11 +87,7 @@ function criarEditorItemV4(){
         botaoExcluir.dataset.permitirExclusao='true';
         botaoExcluir.click();
     });
-
-    document.addEventListener('keydown',evento=>{
-        if(evento.key==='Escape'&&!overlay.hidden)fechar();
-    });
-
+    document.addEventListener('keydown',evento=>{if(evento.key==='Escape'&&!overlay.hidden)fechar()});
     return overlay;
 }
 
@@ -109,7 +95,6 @@ function abrirEditorItemV4(produto,botaoExcluir){
     const overlay=criarEditorItemV4();
     const nome=produto.querySelector('h3')?.textContent?.trim()||'Editar item';
     const preco=produto.querySelector('[data-campo="preco"]')?.value||'0';
-
     overlay._produto=produto;
     overlay._botaoExcluir=botaoExcluir;
     overlay.querySelector('#itemEditTitle').textContent='Editar item';
@@ -117,7 +102,6 @@ function abrirEditorItemV4(produto,botaoExcluir){
     overlay.querySelector('#itemEditPrice').value=preco;
     overlay.hidden=false;
     document.body.style.overflow='hidden';
-
     setTimeout(()=>overlay.querySelector('#itemEditName')?.focus(),30);
 }
 
@@ -129,13 +113,13 @@ import('./mobile-nav.js');
 
 const dashboardV5Css=document.createElement('link');
 dashboardV5Css.rel='stylesheet';
-dashboardV5Css.href='./css/dashboard-mobile-v5.css?v=1';
+dashboardV5Css.href='./css/dashboard-mobile-v5.css?v=2';
 document.head.appendChild(dashboardV5Css);
-import('./dashboard-mobile-v5.js?v=1');
-import('./categorias-v2.js?v=1');
+import('./dashboard-mobile-v5.js?v=2');
+import('./categorias-v2.js?v=2');
 
 const dashboardV6Css=document.createElement('link');
 dashboardV6Css.rel='stylesheet';
-dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=1';
+dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=3';
 document.head.appendChild(dashboardV6Css);
-import('./dashboard-mobile-v6.js?v=1');
+import('./dashboard-mobile-v6.js?v=3');
