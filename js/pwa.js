@@ -8,6 +8,8 @@ const dashboardStyleUrl = new URL("css/dashboard-mobile-v2.css", appRoot);
 const dashboardScriptUrl = new URL("js/dashboard-mobile-v2.js", appRoot);
 const dashboardV3StyleUrl = new URL("css/dashboard-mobile-v3.css", appRoot);
 const dashboardV3ScriptUrl = new URL("js/dashboard-mobile-v3.js", appRoot);
+const dashboardV4StyleUrl = new URL("css/dashboard-mobile-v4.css", appRoot);
+const dashboardV4ScriptUrl = new URL("js/dashboard-mobile-v4.js", appRoot);
 
 let installEvent = null;
 let installButton = null;
@@ -29,9 +31,11 @@ function carregarDashboardCompacto() {
 
     adicionarEstiloDashboard(dashboardStyleUrl, "smartListDashboardV2");
     adicionarEstiloDashboard(dashboardV3StyleUrl, "smartListDashboardV3");
+    adicionarEstiloDashboard(dashboardV4StyleUrl, "smartListDashboardV4");
 
     import(dashboardScriptUrl.href)
         .then(() => import(dashboardV3ScriptUrl.href))
+        .then(() => import(dashboardV4ScriptUrl.href))
         .catch((erro) => {
             console.warn("Não foi possível carregar o novo dashboard mobile.", erro);
         });
