@@ -117,6 +117,6 @@ import('./categorias-v2.js?v=2');
 
 const dashboardV6Css=document.createElement('link');
 dashboardV6Css.rel='stylesheet';
-dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=4';
+dashboardV6Css.href='./css/dashboard-mobile-v6.css?v=5';
 document.head.appendChild(dashboardV6Css);
-import('./dashboard-mobile-v6.js?v=4');
+import('./dashboard-mobile-v6.js?v=5');
