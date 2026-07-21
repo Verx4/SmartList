@@ -1,5 +1,20 @@
-/* Smart List — cartões compactos e organizados da lista mobile */
+/* Smart List — cartões compactos e padronizados da lista mobile */
 @media (max-width: 768px) {
+  body.dashboard-mobile-ready .section-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin: 10px 0 14px !important;
+    padding: 0 !important;
+  }
+
+  body.dashboard-mobile-ready .section-header h2 {
+    margin: 0 !important;
+    font-size: 26px !important;
+    line-height: 1.1 !important;
+  }
+
   body.dashboard-mobile-ready #listaProdutos {
     display: grid !important;
     gap: 10px !important;
@@ -25,19 +40,29 @@
     border-radius: 15px !important;
     background: #0b1626 !important;
     box-shadow: none !important;
+    overflow: hidden !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .produto-check,
-  body.dashboard-mobile-ready #listaProdutos .produto > input[type="checkbox"],
   body.dashboard-mobile-ready #listaProdutos .produto input[type="checkbox"],
+  body.dashboard-mobile-ready #listaProdutos .produto-check,
+  body.dashboard-mobile-ready #listaProdutos .check-produto,
+  body.dashboard-mobile-ready #listaProdutos .item-check,
+  body.dashboard-mobile-ready #listaProdutos [data-acao="marcar"],
+  body.dashboard-mobile-ready #listaProdutos .btn-favorito-produto,
+  body.dashboard-mobile-ready #listaProdutos .produto-titulo-linha > button:not(.btn-excluir),
   body.dashboard-mobile-ready #listaProdutos .campos-produto,
   body.dashboard-mobile-ready #listaProdutos .categoria-produto,
   body.dashboard-mobile-ready #listaProdutos .supermercado-produto,
-  body.dashboard-mobile-ready #listaProdutos .btn-favorito-produto,
   body.dashboard-mobile-ready #listaProdutos .box-anterior:nth-child(2),
   body.dashboard-mobile-ready #listaProdutos .peso-container,
   body.dashboard-mobile-ready #listaProdutos .subtotal small {
     display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .info-produto {
@@ -84,9 +109,7 @@
     white-space: nowrap !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .box-anterior small::after {
-    content: ":";
-  }
+  body.dashboard-mobile-ready #listaProdutos .box-anterior small::after { content: ":"; }
 
   body.dashboard-mobile-ready #listaProdutos .box-anterior strong {
     overflow: hidden !important;
@@ -112,6 +135,8 @@
     border-radius: 11px !important;
     background: #0e1a2b !important;
     transform: none !important;
+    position: relative !important;
+    z-index: 2 !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .qtd button {
@@ -122,6 +147,8 @@
     background: transparent !important;
     border: 0 !important;
     font-size: 23px !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .qtd span {
@@ -164,12 +191,14 @@
     border-radius: 9px !important;
     overflow: visible !important;
     font-size: 0 !important;
+    position: relative !important;
+    z-index: 3 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .btn-excluir::before,
-  body.dashboard-mobile-ready #listaProdutos .btn-excluir::after {
-    content: none !important;
-  }
+  body.dashboard-mobile-ready #listaProdutos .btn-excluir::after { content: none !important; }
 
   body.dashboard-mobile-ready #listaProdutos .btn-excluir svg {
     display: block !important;
@@ -180,6 +209,7 @@
     stroke-width: 2 !important;
     stroke-linecap: round !important;
     stroke-linejoin: round !important;
+    pointer-events: none !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .diferenca {
@@ -202,6 +232,8 @@
 }
 
 @media (max-width: 390px) {
+  body.dashboard-mobile-ready .section-header h2 { font-size: 24px !important; }
+
   body.dashboard-mobile-ready #listaProdutos .produto {
     grid-template-columns: minmax(0, 1fr) 96px 34px !important;
     column-gap: 8px !important;
@@ -209,9 +241,7 @@
     padding: 12px 10px !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .produto h3 {
-    font-size: 17px !important;
-  }
+  body.dashboard-mobile-ready #listaProdutos .produto h3 { font-size: 17px !important; }
 
   body.dashboard-mobile-ready #listaProdutos .qtd {
     grid-template-columns: 31px 34px 31px !important;
@@ -219,21 +249,12 @@
     min-width: 96px !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .qtd button {
-    width: 31px !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .subtotal {
-    min-width: 96px !important;
-  }
+  body.dashboard-mobile-ready #listaProdutos .qtd button { width: 31px !important; }
+  body.dashboard-mobile-ready #listaProdutos .subtotal { min-width: 96px !important; }
 
   body.dashboard-mobile-ready #listaProdutos .box-anterior small,
   body.dashboard-mobile-ready #listaProdutos .box-anterior strong,
-  body.dashboard-mobile-ready #listaProdutos .diferenca {
-    font-size: 12px !important;
-  }
+  body.dashboard-mobile-ready #listaProdutos .diferenca { font-size: 12px !important; }
 
-  body.dashboard-mobile-ready #listaProdutos .subtotal strong {
-    font-size: 15px !important;
-  }
+  body.dashboard-mobile-ready #listaProdutos .subtotal strong { font-size: 15px !important; }
 }
