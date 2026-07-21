@@ -45,9 +45,16 @@ function iconeLapisV6() {
     return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>`;
 }
 
-function limparMarcacoesV6(produto) {
-    produto.querySelectorAll(".produto-check, input[type='checkbox'], .check-produto, .item-check, [data-acao='marcar']").forEach(elemento => elemento.remove());
-    produto.classList.remove("produto-comprado");
+function limparControlesExtrasV6(produto) {
+    produto.querySelectorAll("input[type='checkbox'], .produto-check, .check-produto, .item-check, [data-acao='marcar'], .btn-favorito-produto").forEach(elemento => elemento.remove());
+
+    produto.querySelectorAll("button").forEach(botao => {
+        const ehQuantidade = Boolean(botao.closest(".qtd"));
+        const ehEdicao = botao.classList.contains("btn-excluir");
+        if (!ehQuantidade && !ehEdicao) botao.remove();
+    });
+
+    produto.classList.remove("produto-comprado", "produto-favorito");
 }
 
 function aplicarVisualV6() {
@@ -59,7 +66,7 @@ function aplicarVisualV6() {
         const id = produto.dataset.produtoId;
         const dados = produtosSalvos.find(item => String(item.id) === String(id));
         produto.classList.toggle("produto-por-peso", produtoVendidoPorPesoV6(dados));
-        limparMarcacoesV6(produto);
+        limparControlesExtrasV6(produto);
 
         const botaoEditar = produto.querySelector(".btn-excluir");
         if (botaoEditar) {
@@ -86,7 +93,7 @@ function prepararItensCompactosV6() {
 
     agendar();
     new MutationObserver(mudancas => {
-        if (mudancas.some(mudanca => mudanca.addedNodes.length || mudanca.removedNodes.length)) agendar();
+        if (mudancas.some(mudanca => mudanca.addedNodes.length > 0)) agendar();
     }).observe(lista, { childList: true, subtree: true });
 }
 
