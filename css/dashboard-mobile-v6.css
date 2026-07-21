@@ -1,232 +1,57 @@
-/* Smart List — cartões compactos e responsivos da lista ativa */
+/* Smart List — cartões organizados da lista ativa */
 @media (max-width: 768px) {
   body.dashboard-mobile-ready #listaProdutos {
-    width: 100%;
-    max-width: 100%;
     overflow: hidden;
     border: 1px solid #30445e;
-    border-radius: 16px;
+    border-radius: 18px;
     background: #0b1626;
   }
 
   body.dashboard-mobile-ready #listaProdutos .produto {
     display: grid !important;
-    grid-template-columns: 40px minmax(0, 1fr) 40px !important;
+    grid-template-columns: 42px minmax(0, 1fr) 42px !important;
     grid-template-areas:
-      "check info edit"
-      "check controls controls" !important;
+      "check info editar"
+      "check controles subtotal" !important;
     align-items: center !important;
-    column-gap: 10px !important;
-    row-gap: 10px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
+    column-gap: 12px !important;
+    row-gap: 12px !important;
+    min-height: 132px !important;
     margin: 0 !important;
-    padding: 14px 12px !important;
+    padding: 18px 14px !important;
     border: 0 !important;
     border-bottom: 1px solid #2a3b52 !important;
     border-radius: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
-    overflow: hidden !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .produto:last-child {
     border-bottom: 0 !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .produto-check {
-    grid-area: check !important;
-    align-self: center !important;
-    width: 34px !important;
-    height: 34px !important;
-    min-width: 34px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    border: 3px solid #91a0b8 !important;
-    border-radius: 8px !important;
-    background: transparent !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .produto-check:checked {
-    border-color: #22c55e !important;
-    background: #22c55e !important;
-    box-shadow: inset 0 0 0 6px #0b1626 !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .info-produto {
-    grid-area: info !important;
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .produto-titulo-linha {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .produto h3 {
-    display: block !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 0 5px !important;
-    overflow: hidden !important;
-    color: #fff !important;
-    font-size: 18px !important;
-    font-weight: 750 !important;
-    line-height: 1.2 !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .categoria-produto,
-  body.dashboard-mobile-ready #listaProdutos .supermercado-produto,
-  body.dashboard-mobile-ready #listaProdutos .btn-favorito-produto,
-  body.dashboard-mobile-ready #listaProdutos .campos-produto,
-  body.dashboard-mobile-ready #listaProdutos .peso-container,
-  body.dashboard-mobile-ready #listaProdutos .diferenca,
-  body.dashboard-mobile-ready #listaProdutos .box-anterior:nth-child(2),
-  body.dashboard-mobile-ready #listaProdutos .subtotal small,
-  body.dashboard-mobile-ready #listaProdutos .info-produto > input,
-  body.dashboard-mobile-ready #listaProdutos .info-produto > button {
+  body.dashboard-mobile-ready #listaProdutos .produto > input[type="checkbox"]:not(.produto-check),
+  body.dashboard-mobile-ready #listaProdutos .produto .campos-produto input[type="checkbox"] {
     display: none !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .info-anterior {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  body.dashboard-mobile-ready .produto-check {
+    grid-area: check;
+    align-self: center;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    appearance: none;
+    border: 3px solid #91a0b8;
+    border-radius: 9px;
+    background: transparent;
+    cursor: pointer;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .box-anterior:first-child {
-    display: flex !important;
-    align-items: baseline !important;
-    flex-wrap: nowrap !important;
-    gap: 4px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border: 0 !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .box-anterior small {
-    flex: 0 0 auto !important;
-    color: #aab8ca !important;
-    font-size: 13px !important;
-    line-height: 1.25 !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .box-anterior small::after {
-    content: ":";
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .box-anterior strong {
-    min-width: 0 !important;
-    overflow: hidden !important;
-    color: #60a5fa !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    line-height: 1.25 !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .qtd {
-    grid-area: controls !important;
-    justify-self: start !important;
-    display: grid !important;
-    grid-template-columns: 38px 38px 38px !important;
-    align-items: center !important;
-    width: 114px !important;
-    min-width: 114px !important;
-    min-height: 48px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 1px solid #30445e !important;
-    border-radius: 12px !important;
-    background: #0e1a2b !important;
-    transform: none !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .qtd button {
-    width: 38px !important;
-    height: 46px !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    color: #d7e0ec !important;
-    background: transparent !important;
-    border: 0 !important;
-    font-size: 25px !important;
-    line-height: 1 !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .qtd span {
-    color: #fff !important;
-    font-size: 17px !important;
-    font-weight: 700 !important;
-    text-align: center !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .subtotal {
-    grid-area: controls !important;
-    justify-self: end !important;
-    align-self: center !important;
-    min-width: 82px !important;
-    max-width: calc(100% - 126px) !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    text-align: right !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .subtotal strong {
-    display: block !important;
-    overflow: hidden !important;
-    color: #fff !important;
-    font-size: 17px !important;
-    line-height: 1.2 !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .btn-excluir {
-    grid-area: edit !important;
-    justify-self: end !important;
-    align-self: start !important;
-    display: grid !important;
-    place-items: center !important;
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    color: transparent !important;
-    background: transparent !important;
-    border: 0 !important;
-    font-size: 0 !important;
-  }
-
-  body.dashboard-mobile-ready #listaProdutos .btn-excluir::after {
-    content: "✎";
-    display: grid !important;
-    place-items: center !important;
-    width: 38px !important;
-    height: 38px !important;
-    color: #dbe7f7 !important;
-    font-size: 25px !important;
-    line-height: 1 !important;
-    transform: rotate(-8deg) !important;
+  body.dashboard-mobile-ready .produto-check:checked {
+    border-color: #22c55e;
+    background: #22c55e;
+    box-shadow: inset 0 0 0 7px #0b1626;
   }
 
   body.dashboard-mobile-ready .produto.produto-comprado {
@@ -237,52 +62,190 @@
     text-decoration: line-through;
   }
 
-  body.dashboard-mobile-ready .item-edit-sheet .item-edit-field-preco {
+  body.dashboard-mobile-ready #listaProdutos .info-produto {
+    grid-area: info;
+    min-width: 0 !important;
+    align-self: end;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .produto-titulo-linha {
+    display: block !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .produto h3 {
+    margin: 0 0 5px !important;
+    overflow: hidden;
+    color: #fff !important;
+    font-size: 19px !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .categoria-produto,
+  body.dashboard-mobile-ready #listaProdutos .supermercado-produto,
+  body.dashboard-mobile-ready #listaProdutos .btn-favorito-produto,
+  body.dashboard-mobile-ready #listaProdutos .campos-produto,
+  body.dashboard-mobile-ready #listaProdutos .peso-container,
+  body.dashboard-mobile-ready #listaProdutos .diferenca,
+  body.dashboard-mobile-ready #listaProdutos .box-anterior:nth-child(2),
+  body.dashboard-mobile-ready #listaProdutos .subtotal small {
+    display: none !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .info-anterior {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .box-anterior {
+    display: flex !important;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .box-anterior small {
+    color: #aab8ca !important;
+    font-size: 13px !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .box-anterior small::after {
+    content: ":";
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .box-anterior strong {
+    color: #60a5fa !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .qtd {
+    grid-area: controles;
+    justify-self: start;
+    display: grid !important;
+    grid-template-columns: 42px 42px 42px !important;
+    align-items: center !important;
+    min-height: 54px !important;
+    padding: 0 !important;
+    border: 1px solid #30445e !important;
+    border-radius: 13px !important;
+    background: #0e1a2b !important;
+    transform: none !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .qtd button {
+    width: 42px !important;
+    height: 52px !important;
+    padding: 0 !important;
+    color: #d7e0ec !important;
+    background: transparent !important;
+    border: 0 !important;
+    font-size: 26px !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .qtd span {
+    color: #fff !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    text-align: center;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .produto-por-peso .qtd::after {
+    content: "kg";
+    position: absolute;
+    margin: 77px 0 0 47px;
+    color: #8fa2ba;
+    font-size: 11px;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .subtotal {
+    grid-area: subtotal;
+    justify-self: end;
+    min-width: 86px;
+    margin: 0 !important;
+    text-align: right !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .subtotal strong {
+    color: #fff !important;
+    font-size: 18px !important;
+    white-space: nowrap;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .btn-excluir {
+    grid-area: editar;
+    justify-self: end;
+    align-self: start;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    color: transparent !important;
+    background: transparent !important;
+    border: 0 !important;
+    font-size: 0 !important;
+  }
+
+  body.dashboard-mobile-ready #listaProdutos .btn-excluir::after {
+    content: "✎";
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    color: #dbe7f7;
+    font-size: 27px;
+    line-height: 1;
+    transform: rotate(-8deg);
+  }
+
+  body.dashboard-mobile-ready .item-edit-sheet .item-edit-field-preco,
+  body.dashboard-mobile-ready .item-edit-sheet .item-edit-field-peso {
+    display: block !important;
+  }
+
+  body.dashboard-mobile-ready .item-edit-sheet .item-edit-field-peso[hidden] {
     display: none !important;
   }
 }
 
 @media (max-width: 390px) {
   body.dashboard-mobile-ready #listaProdutos .produto {
-    grid-template-columns: 36px minmax(0, 1fr) 36px !important;
-    column-gap: 8px !important;
-    padding: 13px 10px !important;
+    grid-template-columns: 36px minmax(0, 1fr) 38px !important;
+    column-gap: 9px !important;
+    row-gap: 10px !important;
+    min-height: 126px !important;
+    padding: 15px 10px !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .produto-check {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
+  body.dashboard-mobile-ready .produto-check {
+    width: 32px;
+    height: 32px;
   }
 
   body.dashboard-mobile-ready #listaProdutos .produto h3 {
     font-size: 17px !important;
   }
 
-  body.dashboard-mobile-ready #listaProdutos .box-anterior small,
-  body.dashboard-mobile-ready #listaProdutos .box-anterior strong {
-    font-size: 12px !important;
-  }
-
   body.dashboard-mobile-ready #listaProdutos .qtd {
-    grid-template-columns: 34px 34px 34px !important;
-    width: 102px !important;
-    min-width: 102px !important;
-    min-height: 44px !important;
+    grid-template-columns: 36px 36px 36px !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .qtd button {
-    width: 34px !important;
-    height: 42px !important;
-    font-size: 23px !important;
+    width: 36px !important;
   }
 
   body.dashboard-mobile-ready #listaProdutos .subtotal {
-    max-width: calc(100% - 112px) !important;
-    min-width: 72px !important;
+    min-width: 72px;
   }
 
   body.dashboard-mobile-ready #listaProdutos .subtotal strong {
-    font-size: 15px !important;
+    font-size: 16px !important;
   }
 }
