@@ -1,680 +1,113 @@
+
 import { api, ApiError } from "./api.js";
 
+const REDES_PADRAO = [
+    ["Pão de Açúcar", true], ["Atacadão", true], ["Recife Atacarejo", true],
+    ["Assaí", false], ["Novo Atacarejo", false], ["Mix Mateus", false],
+    ["Verde Frut", false], ["Deskontão", false], ["Carrefour", false], ["GBarbosa", false]
+].map(([nome, coletaPublica]) => ({ nome, coletaPublica, situacao: coletaPublica ? "Coleta pública" : "Preço pode vir de nota fiscal" }));
 
-/*
- * O preço original coletado pelo scraper é preservado.
- * A margem de 5% é calculada separadamente apenas
- * para mostrar uma faixa estimada ao usuário.
- */
+const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const escapar = valor => String(valor ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+const ler = (chave, padrao) => {
+    try { return JSON.parse(localStorage.getItem(chave)) ?? padrao; } catch (_erro) { return padrao; }
+};
 
-const MARGEM_PERCENTUAL = 5;
-const MARGEM_DECIMAL = 0.05;
+const produtos = ler("produtos", []);
+const usuario = ler("usuarioAtual", ler("usuarioLogado", {}));
+const itens = (Array.isArray(produtos) ? produtos : []).slice(0, 80).map(produto => ({
+    nome: String(produto.nome || "").trim(),
+    quantidade: Math.max(0.01, Number(produto.peso) > 0 ? Number(produto.peso) : Number(produto.quantidade) || 1)
+})).filter(item => item.nome);
 
-let resultadosAtuais = [];
+document.getElementById("quantidadeItensComparacao").textContent = String(itens.length);
+document.getElementById("cidadeComparacao").value = usuario?.cidade || "";
 
-
-function numeroSeguro(valor) {
-
-    const numero = Number(valor);
-
-    return Number.isFinite(numero)
-        ? numero
-        : 0;
-
-}
-
-
-function formatarMoeda(valor) {
-
-    return numeroSeguro(valor).toLocaleString(
-        "pt-BR",
-        {
-            style: "currency",
-            currency: "BRL"
-        }
-    );
-
-}
-
-
-function formatarData(valor) {
-
-    if (!valor) {
-
-        return "Não informada";
-
+async function carregarRedes() {
+    let redes = REDES_PADRAO;
+    try {
+        const resposta = await api.get("/comparacoes/redes");
+        if (Array.isArray(resposta) && resposta.length) redes = resposta;
+    } catch (_erro) {
+        // A lista local mantém a tela utilizável enquanto o servidor inicia.
     }
-
-    const data = new Date(valor);
-
-    return Number.isNaN(data.getTime())
-        ? String(valor)
-        : data.toLocaleString("pt-BR");
-
+    renderizarRedes(redes);
 }
 
-
-function escaparHTML(valor) {
-
-    return String(valor ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
+function renderizarRedes(redes) {
+    document.getElementById("redesComparacao").innerHTML = redes.map(rede => `
+        <label class="rede-opcao ${rede.coletaPublica ? "disponivel" : "aguardando"}">
+            <input type="checkbox" name="mercados" value="${escapar(rede.nome)}" ${rede.coletaPublica ? "checked" : ""}>
+            <span><strong>${escapar(rede.nome)}</strong><small>${escapar(rede.situacao)}</small></span>
+        </label>
+    `).join("");
 }
 
-
-function calcularFaixa(precoOriginal) {
-
-    const preco = numeroSeguro(precoOriginal);
-
-    return {
-
-        minimo:
-            preco * (1 - MARGEM_DECIMAL),
-
-        maximo:
-            preco * (1 + MARGEM_DECIMAL)
-
-    };
-
+function selecionados() {
+    return Array.from(document.querySelectorAll('input[name="mercados"]:checked')).map(campo => campo.value);
 }
 
-
-function mostrarMensagem(
-    mensagem,
-    tipo = "erro"
-) {
-
-    let container =
-        document.getElementById("mensagens");
-
-    if (!container) {
-
-        container = document.createElement("div");
-
-        container.id = "mensagens";
-        container.className = "mensagens-globais";
-
-        document.body.prepend(container);
-
-    }
-
-    const aviso = document.createElement("div");
-
-    aviso.className =
-        `mensagem mensagem-${tipo}`;
-
-    aviso.textContent = mensagem;
-
-    container.appendChild(aviso);
-
-    window.setTimeout(
-        () => aviso.remove(),
-        5500
-    );
-
+function mensagem(texto, erro = false) {
+    const elemento = document.getElementById("mensagemComparacao");
+    elemento.textContent = texto;
+    elemento.className = `mensagem-comparacao ${erro ? "erro" : ""}`;
 }
 
-
-function obterSupermercadosSelecionados() {
-
-    return Array.from(
-        document.querySelectorAll(
-            'input[name="supermercados"]:checked'
-        )
-    )
-        .map(campo => campo.value)
-        .filter(Boolean);
-
-}
-
-
-function normalizarResultados(resposta) {
-
-    const dados =
-        resposta?.resultados ||
-        resposta?.precos ||
-        resposta?.itens ||
-        resposta ||
-        [];
-
-    if (!Array.isArray(dados)) {
-
-        return [];
-
-    }
-
-    return dados.map(item => {
-
-        const precoOriginal =
-            numeroSeguro(
-                item.precoOriginal ??
-                item.preco ??
-                item.valor
-            );
-
-        return {
-
-            produto:
-                item.produto?.nome ||
-                item.nomeProduto ||
-                item.produto ||
-                "Produto",
-
-            supermercado:
-                item.supermercado?.nome ||
-                item.nomeSupermercado ||
-                item.supermercado ||
-                "Supermercado",
-
-            precoOriginal,
-
-            confianca:
-                item.nivelConfianca ||
-                item.confianca ||
-                "Não informada",
-
-            atualizadoEm:
-                item.atualizadoEm ||
-                item.dataColeta ||
-                item.coletadoEm,
-
-            cidade:
-                item.cidade ||
-                item.regiao ||
-                ""
-
-        };
-
-    });
-
-}
-
-
-function renderizarTabela(resultados) {
-
-    const corpo =
-        document.getElementById(
-            "corpoTabelaComparacao"
-        );
-
-    const container =
-        document.getElementById(
-            "resultadoComparacao"
-        );
-
-    if (!corpo) {
-
-        return;
-
-    }
-
-    if (container) {
-
-        container.hidden = false;
-
-    }
-
-    if (!resultados.length) {
-
-        corpo.innerHTML = `
-
-            <tr>
-
-                <td colspan="6">
-                    Nenhum preço real foi encontrado para essa pesquisa.
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-    corpo.innerHTML = resultados.map(item => {
-
-        const faixa =
-            calcularFaixa(item.precoOriginal);
-
-        return `
-
-            <tr>
-
-                <td>
-                    ${escaparHTML(item.produto)}
-                </td>
-
-                <td>
-                    ${escaparHTML(item.supermercado)}
-                </td>
-
-                <td class="preco-original">
-                    ${formatarMoeda(item.precoOriginal)}
-                </td>
-
-                <td>
-                    <span class="faixa-preco">
-                        ${formatarMoeda(faixa.minimo)}
-                        até
-                        ${formatarMoeda(faixa.maximo)}
-                    </span>
-
-                    <small class="margem-preco">
-                        Margem estimada de ±${MARGEM_PERCENTUAL}%
-                    </small>
-                </td>
-
-                <td>
-                    <span class="confianca confianca-${String(item.confianca).toLowerCase()}">
-                        ${escaparHTML(item.confianca)}
-                    </span>
-                </td>
-
-                <td>
-                    ${escaparHTML(formatarData(item.atualizadoEm))}
-                </td>
-
-            </tr>
-
-        `;
-
-    }).join("");
-
-}
-
-
-function atualizarResumo(resposta, resultados) {
-
-    const ordenados =
-        [...resultados].sort(
-            (a, b) =>
-                a.precoOriginal -
-                b.precoOriginal
-        );
-
-    const melhor =
-        resposta?.melhorSupermercado ||
-        resposta?.melhorOpcao ||
-        ordenados[0]?.supermercado ||
-        "Não encontrado";
-
-    const menorTotal =
-        numeroSeguro(
-            resposta?.menorTotal ??
-            resposta?.totalMelhorOpcao ??
-            ordenados[0]?.precoOriginal
-        );
-
-    const economia =
-        numeroSeguro(
-            resposta?.economiaEstimada ??
-            resposta?.economia
-        );
-
-    const confianca =
-        resposta?.nivelConfianca ||
-        resposta?.confianca ||
-        ordenados[0]?.confianca ||
-        "Não informada";
-
-    const campos = {
-
-        melhorSupermercado: melhor,
-
-        menorTotal:
-            formatarMoeda(menorTotal),
-
-        economiaEstimada:
-            formatarMoeda(economia),
-
-        nivelConfianca:
-            confianca
-
-    };
-
-    Object.entries(campos).forEach(
-        ([id, valor]) => {
-
-            const elemento =
-                document.getElementById(id);
-
-            if (elemento) {
-
-                elemento.textContent = valor;
-
-            }
-
-        }
-    );
-
-}
-
-
-function ordenarResultados() {
-
-    const tipo =
-        document.getElementById(
-            "ordenacaoComparacao"
-        )?.value || "menor-preco";
-
-    const lista =
-        [...resultadosAtuais];
-
-    if (tipo === "maior-preco") {
-
-        lista.sort(
-            (a, b) =>
-                b.precoOriginal -
-                a.precoOriginal
-        );
-
-    } else if (tipo === "supermercado") {
-
-        lista.sort(
-            (a, b) =>
-                a.supermercado.localeCompare(
-                    b.supermercado,
-                    "pt-BR"
-                )
-        );
-
-    } else {
-
-        lista.sort(
-            (a, b) =>
-                a.precoOriginal -
-                b.precoOriginal
-        );
-
-    }
-
-    renderizarTabela(lista);
-
-}
-
-
-async function pesquisarComparacao(evento) {
-
+document.getElementById("selecionarRedes").addEventListener("click", () => {
+    document.querySelectorAll('input[name="mercados"]').forEach(campo => { campo.checked = true; });
+});
+document.getElementById("limparRedes").addEventListener("click", () => {
+    document.querySelectorAll('input[name="mercados"]').forEach(campo => { campo.checked = false; });
+});
+
+document.getElementById("formComparacaoLista").addEventListener("submit", async evento => {
     evento.preventDefault();
+    const mercados = selecionados();
+    if (!itens.length) return mensagem("Adicione itens à lista antes de comparar.", true);
+    if (!mercados.length) return mensagem("Selecione pelo menos um mercado.", true);
 
-    const produto =
-        document.getElementById(
-            "produtoComparacao"
-        )?.value.trim();
-
-    const cidade =
-        document.getElementById(
-            "cidadeComparacao"
-        )?.value.trim();
-
-    const supermercados =
-        obterSupermercadosSelecionados();
-
-    if (!produto) {
-
-        mostrarMensagem(
-            "Digite o produto que deseja pesquisar."
-        );
-
-        return;
-
-    }
-
-    if (!supermercados.length) {
-
-        mostrarMensagem(
-            "Selecione pelo menos um supermercado."
-        );
-
-        return;
-
-    }
-
-    const botao =
-        evento.currentTarget.querySelector(
-            'button[type="submit"]'
-        );
-
-    if (botao) {
-
-        botao.disabled = true;
-        botao.textContent =
-            "Buscando preços reais...";
-
-    }
-
+    const botao = document.getElementById("btnCompararLista");
+    botao.disabled = true;
+    botao.textContent = "Coletando preços...";
+    mensagem("A primeira consulta pode levar alguns segundos.");
     try {
-
-        const resposta =
-            await api.post(
-                "/comparacoes",
-                {
-
-                    produto,
-                    cidade,
-                    supermercados,
-
-                    /*
-                     * O backend também deverá fixar
-                     * essa margem em 5%.
-                     */
-
-                    margemPercentual:
-                        MARGEM_PERCENTUAL
-
-                }
-            );
-
-        resultadosAtuais =
-            normalizarResultados(resposta);
-
-        atualizarResumo(
-            resposta,
-            resultadosAtuais
-        );
-
-        ordenarResultados();
-
+        const resposta = await api.post("/comparacoes/lista", {
+            itens,
+            mercados,
+            cidade: document.getElementById("cidadeComparacao").value.trim()
+        });
+        renderizarResultado(resposta);
+        mensagem(resposta.aviso || "Comparação concluída.");
     } catch (erro) {
-
-        resultadosAtuais = [];
-
-        renderizarTabela([]);
-
-        mostrarMensagem(
-            erro instanceof ApiError
-                ? erro.message
-                : "Não foi possível pesquisar os preços."
-        );
-
+        mensagem(erro instanceof ApiError ? erro.message : "Não foi possível comparar agora.", true);
     } finally {
-
-        if (botao) {
-
-            botao.disabled = false;
-            botao.textContent =
-                "Comparar preços";
-
-        }
-
+        botao.disabled = false;
+        botao.textContent = "Comparar minha lista";
     }
+});
 
+function renderizarResultado(resposta) {
+    const secao = document.getElementById("resultadoComparacaoLista");
+    const mercados = Array.isArray(resposta?.mercados) ? resposta.mercados : [];
+    document.getElementById("tituloMelhorMercado").textContent = resposta?.melhorMercado
+        ? `${resposta.melhorMercado} tem o menor total completo`
+        : "Ainda não há cobertura completa da lista";
+    document.getElementById("atualizacaoComparacao").textContent = new Date(resposta?.atualizadoEm || Date.now()).toLocaleString("pt-BR");
+    document.getElementById("cardsMercadosComparacao").innerHTML = mercados.map(mercado => {
+        const melhor = mercado.mercado === resposta?.melhorMercado;
+        const detalhes = (mercado.itens || []).map(item => `
+            <tr><td><strong>${escapar(item.itemLista)}</strong><small>${escapar(item.produtoEncontrado)}</small></td><td>${item.quantidade}</td><td>${moeda(item.precoUnitario)}</td><td>${moeda(item.subtotal)}</td></tr>
+        `).join("");
+        return `<article class="mercado-resultado ${melhor ? "melhor" : ""}">
+            <header><div><span>${melhor ? "Melhor compra" : `${mercado.coberturaPercentual}% da lista`}</span><h3>${escapar(mercado.mercado)}</h3></div><strong>${mercado.itensEncontrados ? moeda(mercado.total) : "Indisponível"}</strong></header>
+            <div class="faixa-mercado"><span>Faixa com margem</span><strong>${mercado.itensEncontrados ? `${moeda(mercado.totalMinimo)} a ${moeda(mercado.totalMaximo)}` : "—"}</strong></div>
+            <p>${escapar(mercado.situacao)}</p>
+            ${detalhes ? `<details><summary>Ver ${mercado.itensEncontrados} preço(s) encontrado(s)</summary><div class="tabela-precos"><table><thead><tr><th>Item</th><th>Qtd.</th><th>Preço</th><th>Subtotal</th></tr></thead><tbody>${detalhes}</tbody></table></div></details>` : ""}
+        </article>`;
+    }).join("") || "<p>Nenhum preço foi encontrado.</p>";
+    secao.hidden = false;
+    secao.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+carregarRedes();
 
-async function buscarCompraInteligente() {
-
-    const cidade =
-        document.getElementById(
-            "cidadeComparacao"
-        )?.value.trim();
-
-    const supermercados =
-        obterSupermercadosSelecionados();
-
-    const resultado =
-        document.getElementById(
-            "resultadoCompraInteligente"
-        );
-
-    if (!supermercados.length) {
-
-        mostrarMensagem(
-            "Selecione os supermercados para calcular a compra inteligente."
-        );
-
-        return;
-
-    }
-
-    try {
-
-        const resposta =
-            await api.post(
-                "/comparacoes/compra-inteligente",
-                {
-
-                    cidade,
-                    supermercados,
-                    margemPercentual:
-                        MARGEM_PERCENTUAL
-
-                }
-            );
-
-        if (resultado) {
-
-            const economia =
-                numeroSeguro(
-                    resposta?.economiaEstimada ??
-                    resposta?.economia
-                );
-
-            resultado.hidden = false;
-
-            resultado.innerHTML = `
-
-                <h3>✨ Melhor combinação encontrada</h3>
-
-                <p>
-                    ${escaparHTML(
-                        resposta?.descricao ||
-                        resposta?.mensagem ||
-                        "A combinação foi calculada com os preços disponíveis."
-                    )}
-                </p>
-
-                <strong>
-                    Economia estimada:
-                    ${formatarMoeda(economia)}
-                </strong>
-
-                <small>
-                    Os valores exibem faixa estimada de ±5%,
-                    sem modificar o preço original coletado.
-                </small>
-
-            `;
-
-        }
-
-    } catch (erro) {
-
-        mostrarMensagem(
-            erro instanceof ApiError
-                ? erro.message
-                : "Não foi possível calcular a compra inteligente."
-        );
-
-    }
-
-}
-
-
-function limparComparacao() {
-
-    resultadosAtuais = [];
-
-    document
-        .getElementById("formComparacao")
-        ?.reset();
-
-    const corpo =
-        document.getElementById(
-            "corpoTabelaComparacao"
-        );
-
-    if (corpo) {
-
-        corpo.innerHTML = "";
-
-    }
-
-    const container =
-        document.getElementById(
-            "resultadoComparacao"
-        );
-
-    if (container) {
-
-        container.hidden = true;
-
-    }
-
-    const compraInteligente =
-        document.getElementById(
-            "resultadoCompraInteligente"
-        );
-
-    if (compraInteligente) {
-
-        compraInteligente.hidden = true;
-        compraInteligente.innerHTML = "";
-
-    }
-
-}
-
-
-function iniciar() {
-
-    document
-        .getElementById("formComparacao")
-        ?.addEventListener(
-            "submit",
-            pesquisarComparacao
-        );
-
-    document
-        .getElementById("ordenacaoComparacao")
-        ?.addEventListener(
-            "change",
-            ordenarResultados
-        );
-
-    document
-        .getElementById("btnLimparComparacao")
-        ?.addEventListener(
-            "click",
-            limparComparacao
-        );
-
-    document
-        .getElementById("btnCompraInteligente")
-        ?.addEventListener(
-            "click",
-            buscarCompraInteligente
-        );
-
-}
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    iniciar
-);
