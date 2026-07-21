@@ -132,3 +132,4 @@ dashboardV5Css.rel='stylesheet';
 dashboardV5Css.href='./css/dashboard-mobile-v5.css?v=1';
 document.head.appendChild(dashboardV5Css);
 import('./dashboard-mobile-v5.js?v=1');
+import('./categorias-v2.js?v=1');
