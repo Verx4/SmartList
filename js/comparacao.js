@@ -1,4 +1,3 @@
-
 import { api, ApiError } from "./api.js";
 
 const REDES_PADRAO = [
@@ -110,4 +109,3 @@ function renderizarResultado(resposta) {
 }
 
 carregarRedes();
-
