@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 import java.time.Instant;
@@ -11,4 +10,3 @@ public record ComparacaoListaResponse(
     List<MercadoComparacaoResponse> mercados
 ) {
 }
-
