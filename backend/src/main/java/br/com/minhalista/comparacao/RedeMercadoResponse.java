@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 public record RedeMercadoResponse(
@@ -7,4 +6,3 @@ public record RedeMercadoResponse(
     String situacao
 ) {
 }
-
