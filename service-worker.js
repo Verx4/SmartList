@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v8`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v8`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v9`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v9`;
 
 const PRECACHE_URLS = [
     "./",
@@ -8,7 +8,11 @@ const PRECACHE_URLS = [
     "./login.html",
     "./cadastro.html",
     "./inicio.html",
+    "./menu.html",
+    "./comparar-embalagens.html",
     "./comparacao.html",
+    "./sugestoes.html",
+    "./suporte.html",
     "./historico.html",
     "./offline.html",
     "./manifest.webmanifest",
@@ -19,6 +23,8 @@ const PRECACHE_URLS = [
     "./css/auth.css",
     "./css/responsive.css",
     "./css/temas.css",
+    "./css/mobile-app.css",
+    "./css/comparar-embalagens.css",
     "./css/inicio.css",
     "./css/comparacao-lista-v2.css",
     "./css/comparacao-embalagens-padrao.css",
@@ -28,6 +34,8 @@ const PRECACHE_URLS = [
     "./css/pwa.css",
     "./js/pwa.js",
     "./js/tema.js",
+    "./js/mobile-nav.js",
+    "./js/comparar-embalagens.js",
     "./js/inicio.js",
     "./js/comparacao.js",
     "./js/historico-page.js",
@@ -157,4 +165,3 @@ async function responderRecursoAtualizavel(request) {
             || Response.error();
     }
 }
-
