@@ -57,4 +57,3 @@
     .listas-salvas-nova > div { grid-template-columns: 1fr 1fr; }
     .listas-salvas-nova input { grid-column: 1 / -1; }
 }
-
