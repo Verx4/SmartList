@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 import java.math.BigDecimal;
@@ -200,4 +199,3 @@ public class ComparacaoService {
         }
     }
 }
-
