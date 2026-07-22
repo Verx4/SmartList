@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 import java.util.List;
@@ -20,4 +19,3 @@ public record ComparacaoListaRequest(
     String cidade
 ) {
 }
-
