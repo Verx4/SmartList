@@ -1,4 +1,3 @@
-
 :root,
 html[data-palette="azul"] {
     color-scheme: dark;
@@ -415,6 +414,10 @@ html[data-palette] .btn-primary:hover {
     background: var(--cor-borda);
 }
 
+body:has(.app-bottom-nav) .controle-tema-global {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
 .cor-personalizada-premium {
     display: grid;
     gap: 7px;
@@ -481,6 +484,10 @@ button:disabled {
     .controle-tema-global {
         right: 10px;
         bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+
+    body:has(.app-bottom-nav) .controle-tema-global {
+        bottom: calc(82px + env(safe-area-inset-bottom));
     }
 
     .botao-tema-global {
