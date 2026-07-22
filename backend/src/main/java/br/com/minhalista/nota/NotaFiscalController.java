@@ -25,4 +25,3 @@ public class NotaFiscalController {
         return ResponseEntity.ok(service.consultar(request.url()));
     }
 }
-
