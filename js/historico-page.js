@@ -1,4 +1,3 @@
-
 const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const escapar = valor => String(valor ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const normalizar = valor => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -82,4 +81,3 @@ document.getElementById("btnExportarHistorico").addEventListener("click", () => 
 });
 
 renderizarCompras();
-
