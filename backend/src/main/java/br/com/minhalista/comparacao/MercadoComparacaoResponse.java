@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 import java.math.BigDecimal;
@@ -17,4 +16,3 @@ public record MercadoComparacaoResponse(
     List<ItemPrecoComparacaoResponse> itens
 ) {
 }
-
