@@ -55,4 +55,3 @@ public class FonteAtacarejoRecife implements FontePrecoMercado {
         return resultados;
     }
 }
-
