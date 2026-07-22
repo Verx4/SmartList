@@ -9,4 +9,3 @@ public record FontePrecoResultado(
     String urlFonte
 ) {
 }
-

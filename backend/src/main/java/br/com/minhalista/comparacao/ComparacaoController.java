@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 import java.util.List;
@@ -45,4 +44,3 @@ public class ComparacaoController {
         usuarioService.exigirPremium(usuario);
     }
 }
-

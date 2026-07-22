@@ -57,4 +57,3 @@ class NotaFiscalServiceTest {
             .hasMessage("O QR Code não aponta para um portal fiscal oficial.");
     }
 }
-

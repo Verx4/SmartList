@@ -20,4 +20,3 @@ public interface FontePrecoMercado {
 
     List<FontePrecoResultado> buscar(String produto, String cidade) throws IOException;
 }
-

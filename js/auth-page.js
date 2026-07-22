@@ -3,8 +3,24 @@ import {
     entrar,
     solicitarRecuperacao
 } from "./auth.js";
-
+import { verificarApi } from "./api.js";
 let temporizadorMensagem = null;
+const STATUS_SERVIDOR_TRANSITORIO = new Set([0, 408, 502, 503, 504]);
+
+function aguardar(milissegundos) {
+    return new Promise(resolve => window.setTimeout(resolve, milissegundos));
+}
+
+async function entrarComReconexao(email, senha, manterConectado, aoReconectar) {
+    try {
+        return await entrar(email, senha, manterConectado);
+    } catch (erro) {
+        if (!STATUS_SERVIDOR_TRANSITORIO.has(Number(erro?.status))) throw erro;
+        aoReconectar();
+        await aguardar(3500);
+        return entrar(email, senha, manterConectado);
+    }
+}
 
 function mostrarMensagem(
     texto,
@@ -132,11 +148,22 @@ function configurarLogin() {
             }, 8000);
 
             try {
-                const usuario = await entrar(
+                const usuario = await entrarComReconexao(
                     dados.get("email"),
                     dados.get("senha"),
                     dados.get("lembrar") === "on"
-                    || dados.get("manterConectado") === "on"
+                    || dados.get("manterConectado") === "on",
+                    () => {
+                        alterarEstadoBotao(
+                            formulario,
+                            true,
+                            "Reconectando..."
+                        );
+                        mostrarMensagem(
+                            "O servidor está quase pronto. O acesso será repetido automaticamente.",
+                            "info"
+                        );
+                    }
                 );
 
                 mostrarMensagem(
@@ -327,6 +354,8 @@ function configurarRecuperacao() {
 }
 
 function iniciar() {
+    // Acorda o serviço gratuito do Render enquanto a pessoa preenche o formulário.
+    verificarApi().catch(() => false);
     configurarLogin();
     configurarCadastro();
     configurarRecuperacao();

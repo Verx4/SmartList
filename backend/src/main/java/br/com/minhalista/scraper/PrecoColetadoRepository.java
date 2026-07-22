@@ -1,4 +1,3 @@
-
 package br.com.minhalista.scraper;
 
 import java.util.List;
@@ -17,4 +16,3 @@ public interface PrecoColetadoRepository extends JpaRepository<PrecoColetado, UU
     @Query("select distinct p.produto from PrecoColetado p order by p.produto")
     List<String> encontrarProdutosMonitorados(Pageable pagina);
 }
-

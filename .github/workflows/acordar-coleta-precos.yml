@@ -1,4 +1,3 @@
-
 name: Acordar coleta de preços
 
 on:
@@ -18,4 +17,3 @@ jobs:
             --retry 12 --retry-all-errors --retry-delay 10 \
             --max-time 180 \
             https://smart-list-backend-j4bp.onrender.com/api/health
-

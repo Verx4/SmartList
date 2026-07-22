@@ -93,7 +93,7 @@ export async function apiRequest(
     const limiteEspera = window.setTimeout(() => {
         expirou = true;
         controlador.abort();
-    }, 60000);
+    }, 90000);
 
     if (signal) {
         if (signal.aborted) {
@@ -152,7 +152,7 @@ export async function apiRequest(
 
         if (expirou) {
             throw new ApiError(
-                "O servidor demorou mais de 60 segundos para responder. Aguarde um momento e tente novamente.",
+                "O servidor demorou mais de 90 segundos para responder. Aguarde um momento e tente novamente.",
                 408,
                 erro
             );

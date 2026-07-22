@@ -426,4 +426,3 @@ public class NotaFiscalService {
     private record DocumentoRemoto(URI uri, String html) {
     }
 }
-

@@ -1,4 +1,3 @@
-
 package br.com.minhalista.comparacao;
 
 import java.math.BigDecimal;
@@ -20,4 +19,3 @@ public record ItemListaComparacaoRequest(
     BigDecimal quantidade
 ) {
 }
-

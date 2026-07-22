@@ -106,4 +106,3 @@ function fecharConfirmacao() {
     overlay.hidden = true;
     document.body.style.overflow = "";
 }
-

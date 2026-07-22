@@ -58,4 +58,3 @@ public class FonteAtacadao implements FontePrecoMercado {
         return resultados;
     }
 }
-

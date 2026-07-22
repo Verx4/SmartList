@@ -50,4 +50,3 @@ class FonteMercadoParserTest {
         assertThat(resultados.getFirst().preco()).isEqualByComparingTo("18.85");
     }
 }
-

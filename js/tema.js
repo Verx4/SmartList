@@ -228,8 +228,14 @@
         controle.classList.remove("aberto");
     }
 
+    function deveExibirControleTema() {
+        return document.body
+            && !document.body.classList.contains("sem-controle-tema")
+            && document.body.dataset.controleTema !== "oculto";
+    }
+
     function criarControleTema() {
-        if (!document.body || document.getElementById("controleTemaGlobal")) {
+        if (!deveExibirControleTema() || document.getElementById("controleTemaGlobal")) {
             return;
         }
 
@@ -345,4 +351,3 @@
         paletasPremium: true
     };
 })();
-
