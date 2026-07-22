@@ -615,4 +615,3 @@ export function selecionarListaSalva(id) {
     return escolhida;
 
 }
-
