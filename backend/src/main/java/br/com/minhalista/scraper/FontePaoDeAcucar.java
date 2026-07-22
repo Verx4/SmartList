@@ -50,4 +50,3 @@ public class FontePaoDeAcucar implements FontePrecoMercado {
         return resultados;
     }
 }
-
