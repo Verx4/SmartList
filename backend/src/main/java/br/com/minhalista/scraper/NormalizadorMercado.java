@@ -14,4 +14,3 @@ final class NormalizadorMercado {
         return semAcentos.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
     }
 }
-
