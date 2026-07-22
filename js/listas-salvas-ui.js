@@ -79,4 +79,3 @@ function escapar(valor) {
     elemento.textContent = String(valor ?? "");
     return elemento.innerHTML;
 }
-
