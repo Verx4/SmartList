@@ -177,7 +177,12 @@ async function abrirScannerNota() {
         try {
             const leitor = await criarLeitorQr(canvas);
             stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } },
+                video: {
+                    facingMode: { ideal: "environment" },
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 },
+                    advanced: [{ focusMode: "continuous" }]
+                },
                 audio: false
             });
             video.srcObject = stream;
@@ -220,7 +225,7 @@ async function abrirScannerNota() {
             const valor = await leitor(fonte);
             fonte.close?.();
             if (valor) consultar(valor);
-            else mostrarErro("Nenhum QR Code foi encontrado nessa imagem.");
+            else mostrarErro("Não foi possível ler o QR Code. Aproxime a câmera, mantenha a nota reta e evite sombras ou reflexos.");
         } catch (erro) {
             mostrarErro("Não foi possível analisar essa imagem. Tente outra foto.");
         }
@@ -311,30 +316,129 @@ function importarSelecionados(modal, nota, fechar, criarNova) {
 }
 
 async function criarLeitorQr(canvas) {
+    let detectorNativo = null;
+
     if ("BarcodeDetector" in window) {
         try {
-            const detector = new BarcodeDetector({ formats: ["qr_code"] });
-            return async fonte => (await detector.detect(fonte))[0]?.rawValue || "";
+            detectorNativo = new BarcodeDetector({ formats: ["qr_code"] });
         } catch (_erro) {
-            // Usa o leitor compatível com Safari abaixo.
+            detectorNativo = null;
         }
     }
 
-    await carregarJsQr();
+    try {
+        await carregarJsQr();
+    } catch (erro) {
+        if (!detectorNativo) throw erro;
+    }
+
     const contexto = canvas.getContext("2d", { willReadFrequently: true });
+
     return async fonte => {
+        if (detectorNativo) {
+            try {
+                const resultado = await detectorNativo.detect(fonte);
+                const valor = resultado[0]?.rawValue || "";
+                if (valor) return valor;
+            } catch (_erro) {
+                // Continua no leitor compatível quando o detector nativo falha.
+            }
+        }
+
+        if (!window.jsQR) return "";
+
         const largura = fonte.videoWidth || fonte.width || fonte.naturalWidth;
         const altura = fonte.videoHeight || fonte.height || fonte.naturalHeight;
         if (!largura || !altura) return "";
-        const escala = Math.min(1, 1280 / Math.max(largura, altura));
-        canvas.width = Math.max(1, Math.round(largura * escala));
-        canvas.height = Math.max(1, Math.round(altura * escala));
-        contexto.drawImage(fonte, 0, 0, canvas.width, canvas.height);
-        const pixels = contexto.getImageData(0, 0, canvas.width, canvas.height);
-        return window.jsQR(pixels.data, pixels.width, pixels.height, {
-            inversionAttempts: "attemptBoth"
-        })?.data || "";
+
+        const ladoCentral = Math.min(largura, altura) * 0.92;
+        const regioes = [
+            { x: 0, y: 0, largura, altura, alvo: 1600, limiares: [112, 144, 176] },
+            {
+                x: (largura - ladoCentral) / 2,
+                y: (altura - ladoCentral) / 2,
+                largura: ladoCentral,
+                altura: ladoCentral,
+                alvo: 1600,
+                limiares: [112, 144, 176]
+            }
+        ];
+
+        if (!fonte.videoWidth) adicionarRegioesDeBusca(regioes, largura, altura);
+
+        for (const regiao of regioes) {
+            const maiorLado = Math.max(regiao.largura, regiao.altura);
+            const escala = Math.min(3, regiao.alvo / maiorLado);
+            canvas.width = Math.max(1, Math.round(regiao.largura * escala));
+            canvas.height = Math.max(1, Math.round(regiao.altura * escala));
+            contexto.drawImage(
+                fonte,
+                regiao.x,
+                regiao.y,
+                regiao.largura,
+                regiao.altura,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            const pixels = contexto.getImageData(0, 0, canvas.width, canvas.height);
+            const valorDireto = decodificarPixelsQr(pixels);
+            if (valorDireto) return valorDireto;
+
+            for (const limiar of regiao.limiares) {
+                const realcados = realcarContraste(pixels, limiar);
+                const valorRealcado = decodificarPixelsQr(realcados);
+                if (valorRealcado) return valorRealcado;
+            }
+        }
+
+        return "";
     };
+}
+
+function adicionarRegioesDeBusca(regioes, largura, altura) {
+    const lado = Math.min(largura, altura) * 0.35;
+    const espacoX = largura - lado;
+    const espacoY = altura - lado;
+
+    for (const passoY of [0, 1 / 3, 2 / 3, 1]) {
+        for (const passoX of [0, 0.5, 1]) {
+            regioes.push({
+                x: espacoX * passoX,
+                y: espacoY * passoY,
+                largura: lado,
+                altura: lado,
+                alvo: 900,
+                limiares: [144]
+            });
+        }
+    }
+}
+
+function decodificarPixelsQr(pixels) {
+    return window.jsQR(pixels.data, pixels.width, pixels.height, {
+        inversionAttempts: "attemptBoth"
+    })?.data || "";
+}
+
+function realcarContraste(pixels, limiar) {
+    const dados = new Uint8ClampedArray(pixels.data);
+
+    for (let indice = 0; indice < dados.length; indice += 4) {
+        const luminosidade = (
+            dados[indice] * 299
+            + dados[indice + 1] * 587
+            + dados[indice + 2] * 114
+        ) / 1000;
+        const valor = luminosidade >= limiar ? 255 : 0;
+        dados[indice] = valor;
+        dados[indice + 1] = valor;
+        dados[indice + 2] = valor;
+    }
+
+    return new ImageData(dados, pixels.width, pixels.height);
 }
 
 function carregarJsQr() {
@@ -345,7 +449,10 @@ function carregarJsQr() {
         script.src = URL_JS_QR;
         script.crossOrigin = "anonymous";
         script.onload = resolve;
-        script.onerror = () => reject(new Error("Leitor QR indisponível"));
+        script.onerror = () => {
+            window._jsQrCarregando = null;
+            reject(new Error("Leitor QR indisponível"));
+        };
         document.head.appendChild(script);
     });
     return window._jsQrCarregando;
@@ -389,4 +496,3 @@ function escaparHtml(valor) {
     elemento.textContent = String(valor || "Produto");
     return elemento.innerHTML;
 }
-
