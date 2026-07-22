@@ -9,4 +9,3 @@ public record ConsultaNotaRequest(
     String url
 ) {
 }
-
