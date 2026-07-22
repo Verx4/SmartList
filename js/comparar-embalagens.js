@@ -104,3 +104,4 @@ document.querySelectorAll('#formEmbalagens input, #formEmbalagens select').forEa
 $('trocarEmbalagens').addEventListener('click', trocar);
 $('novaComparacao').addEventListener('click', limpar);
 calcular();
+
