@@ -11,9 +11,43 @@
     text-decoration: none;
 }
 
+.inicio-marca {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 9px;
+}
+
+.inicio-marca img {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    object-fit: cover;
+    background: #03060b;
+    border: 1px solid var(--cor-borda);
+    border-radius: 11px;
+}
+
+.inicio-marca > span {
+    white-space: nowrap;
+}
+
 .inicio-topbar-acoes {
     display: flex;
     gap: 8px;
+}
+
+@media (max-width: 380px) {
+    .inicio-marca {
+        gap: 7px;
+        font-size: 21px;
+    }
+
+    .inicio-marca img {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+    }
 }
 
 .inicio-topbar-acoes a,
@@ -29,6 +63,17 @@
     border-radius: 12px;
     font: inherit;
     text-decoration: none;
+}
+
+.inicio-topbar-acoes .admin-retorno-inicio {
+    width: auto;
+    min-width: 48px;
+    padding: 0 9px;
+    color: #ffffff;
+    background: #16a34a;
+    border-color: #16a34a;
+    font-size: 12px;
+    font-weight: 900;
 }
 
 .inicio-saudacao {
@@ -393,4 +438,3 @@
         text-align: center;
     }
 }
-

@@ -303,8 +303,10 @@ function importarSelecionados(modal, nota, fechar, criarNova) {
         adicionarProduto({
             nome: item.nome,
             categoria: inferirCategoria(item.nome),
-            preco: Math.max(0, Number(item.valorUnitario || 0)),
-            quantidade: porPeso ? 1 : Math.max(1, Math.round(quantidade)),
+            precos: [{
+                valor: Math.max(0, Number(item.valorUnitario || 0)),
+                quantidade: porPeso ? quantidade : Math.max(1, Math.round(quantidade))
+            }],
             peso: porPeso ? quantidade : 0,
             supermercado: mercado,
             favorito: false

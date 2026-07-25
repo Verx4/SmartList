@@ -409,9 +409,33 @@
         flex-direction: column;
     }
 
-    .orcamento-resumo,
-    .acoes-compra {
+    .orcamento-resumo {
         grid-template-columns: 1fr;
+    }
+
+    .acoes-compra {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 420px) {
+    .acoes-compra {
+        gap: 8px;
+    }
+
+    .acoes-compra .btn {
+        min-height: 50px;
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+
+    .card-total {
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .card-total-item {
+        padding: 11px 12px;
     }
 }
 

@@ -17,7 +17,9 @@
 
 .admin-logo,
 .admin-sidebar .brand {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 24px;
     color: var(--cor-texto, #ffffff);
     font-size: 21px;
@@ -25,10 +27,36 @@
     text-decoration: none;
 }
 
+.admin-brand img {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.admin-menu-toggle {
+    display: none;
+}
+
 .admin-menu,
 .admin-nav {
     display: grid;
-    gap: 7px;
+    gap: 14px;
+}
+
+.admin-nav-grupo {
+    display: grid;
+    gap: 5px;
+}
+
+.admin-nav-grupo > p {
+    margin: 0 10px 3px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .admin-menu a,
@@ -43,12 +71,29 @@
     transition: 0.2s;
 }
 
+.admin-nav-icone {
+    width: 22px;
+    text-align: center;
+}
+
 .admin-menu a:hover,
 .admin-menu a.ativo,
 .admin-nav a:hover,
 .admin-nav a.active {
     color: #ffffff;
     background: var(--cor-primaria, #2563eb);
+}
+
+.admin-nav .admin-abrir-app {
+    justify-content: center;
+    margin-top: 3px;
+    color: #ffffff;
+    background: #16a34a;
+    font-weight: 800;
+}
+
+.admin-nav .admin-abrir-app:hover {
+    background: #15803d;
 }
 
 .admin-conteudo,
@@ -303,4 +348,50 @@
 
 .admin-main table {
     min-width: 900px;
+}
+
+.admin-header .admin-header-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-header .admin-header-acoes .btn {
+    width: auto;
+}
+
+.admin-feedback-lista {
+    display: grid;
+    gap: 12px;
+}
+
+.admin-feedback {
+    padding: 16px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 13px;
+}
+
+.admin-feedback-topo,
+.admin-feedback-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-feedback h3 {
+    margin: 8px 0 6px;
+    font-size: 17px;
+}
+
+.admin-feedback p {
+    color: var(--cor-texto-secundario, #94a3b8);
+    overflow-wrap: anywhere;
+}
+
+.admin-feedback-rodape {
+    margin-top: 12px;
+    font-size: 13px;
 }

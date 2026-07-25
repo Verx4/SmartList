@@ -19,12 +19,19 @@
 }
 
 .card-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 25px;
-    padding: 25px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 14px;
     margin-bottom: 15px;
+}
+
+.card-total-item {
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 13px;
 }
 
 .card-total span {
@@ -32,14 +39,11 @@
     font-size: 14px;
 }
 
-.card-total h2 {
-    margin-top: 8px;
-    color: var(--cor-sucesso, #22c55e);
-}
-
+.card-total h2,
 .card-total h3 {
     margin-top: 8px;
-    color: var(--cor-destaque, #60a5fa);
+    color: var(--cor-sucesso, #22c55e);
+    font-size: clamp(20px, 3vw, 26px);
 }
 
 .cards-grid {

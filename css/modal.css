@@ -12,10 +12,9 @@
 
 .modal-content {
     width: min(100%, 500px);
-    max-height: calc(100dvh - 40px);
+    max-height: calc(100vh - 40px);
     padding: 25px;
     overflow-y: auto;
-    overscroll-behavior: contain;
     border: 1px solid #334155;
     border-radius: 16px;
     background: #131c2f;
@@ -35,14 +34,9 @@
 }
 
 .modal-buttons {
-    position: sticky;
-    bottom: -1px;
-    z-index: 2;
     display: flex;
     gap: 10px;
-    margin: 18px -4px -4px;
-    padding: 12px 4px 4px;
-    background: linear-gradient(180deg, rgba(19, 28, 47, 0), #131c2f 28%);
+    margin-top: 18px;
 }
 
 .modal-buttons .btn {
@@ -51,65 +45,4 @@
 
 body.modal-aberto {
     overflow: hidden;
-}
-
-@media (max-width: 768px) {
-    .modal {
-        align-items: flex-end;
-        padding: 0;
-    }
-
-    .modal-content {
-        width: 100%;
-        max-width: none;
-        max-height: calc(100dvh - env(safe-area-inset-top) - 12px);
-        padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
-        border-right: 0;
-        border-bottom: 0;
-        border-left: 0;
-        border-radius: 22px 22px 0 0;
-    }
-
-    .modal-header {
-        position: sticky;
-        top: -18px;
-        z-index: 3;
-        margin: -18px -18px 16px;
-        padding: 18px;
-        background: #131c2f;
-        border-bottom: 1px solid #26334b;
-    }
-
-    .modal-header h2 {
-        font-size: 22px;
-    }
-
-    .modal-content .form-group {
-        margin-bottom: 14px;
-    }
-
-    .modal-content input,
-    .modal-content select {
-        min-height: 48px;
-    }
-
-    .modal-buttons {
-        bottom: calc(-18px - env(safe-area-inset-bottom));
-        margin-right: -18px;
-        margin-bottom: calc(-18px - env(safe-area-inset-bottom));
-        margin-left: -18px;
-        padding: 16px 18px calc(16px + env(safe-area-inset-bottom));
-        background: #131c2f;
-        border-top: 1px solid #26334b;
-    }
-
-    .modal-buttons .btn {
-        min-height: 48px;
-    }
-}
-
-@media (max-width: 420px) {
-    .modal-buttons {
-        flex-direction: column;
-    }
 }

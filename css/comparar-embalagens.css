@@ -16,7 +16,7 @@
 .embalagens-app {
     width: min(100%, 880px);
     margin: auto;
-    padding: 18px 16px 24px;
+    padding: max(18px, calc(env(safe-area-inset-top) + 10px)) 16px 24px;
 }
 
 .embalagens-header {

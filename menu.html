@@ -1,1 +1,63 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07182d"><title>Menu | Smart List</title><link rel="stylesheet" href="./css/global.css"><link rel="stylesheet" href="./css/mobile-app.css"><link rel="stylesheet" href="./css/temas.css"></head><body><main class="app-shell"><header class="app-topbar"><div class="app-brand"><span class="smart">Smart</span> <span class="list">List</span></div></header><section class="menu-card"><h1 id="nomeMenu">Usuário</h1><p id="emailMenu">Sua conta Smart List</p></section><section class="menu-list" aria-label="Opções da conta"><a href="./perfil.html"><span>👤 Perfil</span><b>›</b></a><a href="./assinatura.html"><span>👑 Escolha seu plano</span><b>›</b></a><a href="./sugestoes.html"><span>💬 Sugestões e feedback</span><b>›</b></a><a href="./suporte.html"><span>❔ Central de ajuda</span><b>›</b></a><a href="./termos.html"><span>📄 Termos de uso</span><b>›</b></a><a href="./privacidade.html"><span>🔒 Política de privacidade</span><b>›</b></a><a href="./perfil.html"><span>⚙️ Configurações</span><b>›</b></a><button id="sairConta" class="danger" type="button"><span>↪ Sair da conta</span><b>›</b></button></section></main><script>try{const u=JSON.parse(localStorage.getItem('usuarioAtual')||localStorage.getItem('usuarioLogado')||'{}');document.getElementById('nomeMenu').textContent=u.nome||u.name||'Usuário';document.getElementById('emailMenu').textContent=u.email||'Sua conta Smart List'}catch{}document.getElementById('sairConta').onclick=()=>{localStorage.removeItem('usuarioAtual');localStorage.removeItem('usuarioLogado');location.href='./login.html'};</script><script src="./js/tema.js"></script><script src="./js/mobile-nav.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#07182d">
+    <title>Menu | Smart List</title>
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/temas.css">
+</head>
+<body>
+    <main class="app-shell">
+        <header class="app-topbar">
+            <div class="app-brand">
+                <span class="smart">Smart</span> <span class="list">List</span>
+            </div>
+        </header>
+
+        <section class="menu-card">
+            <h1 id="nomeMenu">Usuário</h1>
+            <p id="emailMenu">Sua conta Smart List</p>
+        </section>
+
+        <section class="menu-list" aria-label="Opções da conta">
+            <a href="./perfil.html"><span>👤 Perfil</span><b>›</b></a>
+            <a href="./assinatura.html"><span>👑 Escolha seu plano</span><b>›</b></a>
+            <a href="./sugestoes.html"><span>💬 Sugestões e feedback</span><b>›</b></a>
+            <a href="./suporte.html"><span>❔ Central de ajuda</span><b>›</b></a>
+            <a href="./termos.html"><span>📄 Termos de uso</span><b>›</b></a>
+            <a href="./privacidade.html"><span>🔒 Política de privacidade</span><b>›</b></a>
+            <a href="./perfil.html"><span>⚙️ Configurações</span><b>›</b></a>
+            <button id="sairConta" class="danger" type="button">
+                <span>↪ Sair da conta</span><b>›</b>
+            </button>
+        </section>
+    </main>
+
+    <script>
+        try {
+            const usuario = JSON.parse(
+                localStorage.getItem("usuarioAtual")
+                || localStorage.getItem("usuarioLogado")
+                || "{}"
+            );
+            document.getElementById("nomeMenu").textContent =
+                usuario.nome || usuario.name || "Usuário";
+            document.getElementById("emailMenu").textContent =
+                usuario.email || "Sua conta Smart List";
+        } catch {
+            // Mantém os textos padrão.
+        }
+
+        document.getElementById("sairConta").onclick = () => {
+            localStorage.removeItem("usuarioAtual");
+            localStorage.removeItem("usuarioLogado");
+            location.href = "./login.html";
+        };
+    </script>
+    <script src="./js/tema.js"></script>
+    <script src="./js/mobile-nav.js"></script>
+</body>
+</html>

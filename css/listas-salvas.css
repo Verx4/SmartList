@@ -1,4 +1,6 @@
 .listas-salvas-card {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -38,7 +40,8 @@
 .listas-salvas-controles .btn { min-height: 48px; white-space: nowrap; }
 
 .listas-salvas-nova[hidden] { display: none; }
-.listas-salvas-nova { flex: 0 0 100%; display: grid; gap: 7px; }
+.listas-salvas-nova { flex: 0 0 100%; display: grid; gap: 9px; }
+.listas-salvas-nova > strong { font-size: 1.05rem; }
 .listas-salvas-nova label { color: var(--text-muted, #9aa8be); font-size: .85rem; font-weight: 700; }
 .listas-salvas-nova > div { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
 .listas-salvas-nova input { min-width: 0; min-height: 48px; padding: 0 13px; border: 1px solid var(--border, #334155); border-radius: 14px; color: var(--text, #f8fafc); background: var(--surface, #1e293b); font: inherit; }
@@ -56,4 +59,34 @@
     .listas-salvas-controles .btn { width: 100%; }
     .listas-salvas-nova > div { grid-template-columns: 1fr 1fr; }
     .listas-salvas-nova input { grid-column: 1 / -1; }
+
+    .listas-salvas-card.criando-lista::before {
+        content: "";
+        position: fixed;
+        z-index: 2050;
+        inset: 0;
+        background: rgb(2 8 23 / 76%);
+        backdrop-filter: blur(3px);
+    }
+
+    .listas-salvas-card.criando-lista .listas-salvas-nova {
+        position: fixed;
+        z-index: 2060;
+        top: max(16px, env(safe-area-inset-top));
+        left: 50%;
+        width: min(420px, calc(100vw - 28px));
+        max-height: calc(100dvh - 32px - env(safe-area-inset-top));
+        padding: 16px;
+        overflow-y: auto;
+        transform: translateX(-50%);
+        background: var(--card, #111c30);
+        border: 1px solid var(--border, #334155);
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgb(0 0 0 / 55%);
+    }
+
+    body.criando-lista-aberta .app-bottom-nav {
+        visibility: hidden;
+        pointer-events: none;
+    }
 }

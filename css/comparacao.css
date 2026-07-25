@@ -1,1 +1,72 @@
-.comparacao-page{min-height:100vh;padding-bottom:92px;color:#f8fafc;background:#071525}.comparacao-topbar{position:sticky;top:0;z-index:30;display:flex;min-height:68px;padding:12px 18px;align-items:center;justify-content:space-between;background:rgba(7,21,37,.96);border-bottom:1px solid #26364e;backdrop-filter:blur(14px)}.comparacao-brand,.comparacao-menu{display:inline-flex;align-items:center;color:#f8fafc;text-decoration:none}.comparacao-brand{font-size:23px}.comparacao-brand span{color:#4ade80}.comparacao-menu{padding:9px 14px;background:#111d30;border:1px solid #334155;border-radius:11px;font-weight:800}.comparacao-container{width:min(100%,920px);padding:20px 16px 44px;margin:0 auto}.comparacao-cabecalho h1,.mercados-intro h2{margin:0 0 6px}.comparacao-cabecalho p,.mercados-intro p{margin:0;color:#a8b4c8}.comparacao-abas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.comparacao-abas a{display:flex;min-height:45px;align-items:center;justify-content:center;color:#a8b4c8;background:#101c2f;border:1px solid #334155;border-radius:11px;text-decoration:none;font-weight:800}.comparacao-abas a.ativa{color:#fff;background:#2563eb;border-color:#2563eb}.mercados-intro{margin-bottom:13px}.filtros-comparacao{padding:15px;margin-bottom:16px;background:#101c2f;border:1px solid #334155;border-radius:16px}.comparacao-form{display:grid;gap:14px}.comparacao-form .form-group{margin:0}.comparacao-form label,.mercados-fieldset legend,.modo-comparacao legend{display:block;margin-bottom:7px;color:#e2e8f0;font-weight:800}.comparacao-form input[type="search"],.comparacao-form input[type="text"]{width:100%;min-height:48px;padding:11px 13px;color:#fff;background:#1f2b3d;border:1px solid #3b4a62;border-radius:11px;font-size:16px}.mercados-fieldset,.modo-comparacao{padding:0;margin:0;border:0}.opcoes-supermercados{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mercado-opcao{display:grid;grid-template-columns:24px 1fr;min-height:48px;padding:10px 12px;align-items:center;gap:9px;background:#101b2d;border:1px solid #334155;border-radius:10px;cursor:pointer}.mercado-opcao input{position:absolute;opacity:0}.mercado-check{width:22px;height:22px;border:2px solid #64748b;border-radius:6px}.mercado-opcao input:checked+.mercado-check{background:#2563eb;border-color:#60a5fa;box-shadow:inset 0 0 0 4px #101c2f}.mercado-opcao strong{color:#f8fafc;font-size:15px}.atalhos-mercados{display:flex;gap:8px;margin-top:9px}.atalhos-mercados button{flex:1;min-height:38px;color:#bfdbfe;background:#13243b;border:1px solid #315174;border-radius:9px;font-weight:700;cursor:pointer}.mensagem-selecao{min-height:18px;margin:7px 0 0;color:#93c5fd;font-size:13px}.mensagem-selecao.erro{color:#fca5a5}.modo-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modo-card{position:relative;display:grid;grid-template-columns:24px 1fr;min-height:88px;padding:13px;align-items:start;gap:9px;background:#101b2d;border:1px solid #334155;border-radius:11px;cursor:pointer}.modo-card input{position:absolute;opacity:0}.radio-visual{width:22px;height:22px;border:2px solid #475569;border-radius:50%}.modo-card.ativo{border-color:#3b82f6;box-shadow:inset 0 0 0 1px #3b82f6}.modo-card.ativo .radio-visual{border:6px solid #3b82f6;background:#fff}.modo-card strong,.modo-card small{display:block}.modo-card strong{font-size:15px}.modo-card small{margin-top:4px;color:#a8b4c8;line-height:1.35}.comparacao-acoes{display:grid;grid-template-columns:1fr 1fr;gap:9px}.comparacao-acoes .btn{width:100%;min-height:48px}.resumo-unico{padding:16px;margin-bottom:14px;background:#101c2f;border:1px solid #334155;border-radius:16px}.resumo-titulo{margin-bottom:12px;color:#e2e8f0;font-weight:800}.resumo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.resumo-grid div{padding:11px;background:#13243b;border-radius:10px}.resumo-grid span{display:block;margin-bottom:5px;color:#9fb0c7;font-size:12px}.resumo-grid strong{font-size:17px}.detalhes-comparacao,.compra-inteligente-card{padding:0;margin-bottom:14px;overflow:hidden;background:#101c2f;border:1px solid #334155;border-radius:16px}.detalhes-comparacao summary,.compra-inteligente-card summary{padding:15px 16px;cursor:pointer;font-weight:800;list-style:none}.detalhes-comparacao summary::after,.compra-inteligente-card summary::after{content:"+";float:right;color:#60a5fa}.detalhes-comparacao[open] summary::after,.compra-inteligente-card[open] summary::after{content:"−"}.detalhes-comparacao>.section-header,.detalhes-comparacao>.table-wrapper,.compra-inteligente-card>div,.compra-inteligente-card>button{margin:0 16px 16px}.compra-inteligente-card h2{margin:0 0 5px;font-size:19px}.compra-inteligente-card p{margin:0;color:#94a3b8}.table-wrapper{overflow:auto}.resultado-mercado{padding:14px;margin-bottom:9px;background:#1f2937;border-radius:11px}.mobile-bottom-nav{position:fixed;right:0;bottom:0;left:0;z-index:50;display:grid;grid-template-columns:repeat(5,1fr);min-height:76px;padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(5,18,34,.98);border-top:1px solid #31415a;backdrop-filter:blur(16px)}.mobile-bottom-nav a{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:#9fb0c7;text-decoration:none}.mobile-bottom-nav a span{font-size:21px}.mobile-bottom-nav a small{font-size:11px}.mobile-bottom-nav a.ativo{color:#60a5fa}@media(max-width:640px){.comparacao-container{padding:16px 12px 38px}.opcoes-supermercados,.modo-grid{grid-template-columns:1fr}.comparacao-acoes{grid-template-columns:1fr 1fr}.resumo-grid{grid-template-columns:1fr 1fr}.mercado-opcao{min-height:45px}.modo-card{min-height:76px}.section-header{align-items:flex-start;gap:8px}.section-header select{max-width:130px}}@media(max-width:380px){.resumo-grid,.comparacao-acoes{grid-template-columns:1fr}.atalhos-mercados{flex-direction:column}}@media(min-width:769px){.mobile-bottom-nav{right:50%;left:auto;width:min(100%,920px);transform:translateX(50%);border-right:1px solid #31415a;border-left:1px solid #31415a}}
+.filtros-comparacao {
+    margin-bottom: 24px;
+}
+
+.opcoes-supermercados {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.checkbox-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 54px;
+    padding: 14px;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    background: #1f2937;
+    cursor: pointer;
+}
+
+.checkbox-card:hover {
+    border-color: var(--cor-primaria, #2563eb);
+}
+
+.checkbox-card input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--cor-primaria, #2563eb);
+}
+
+.compra-inteligente-card {
+    margin-top: 24px;
+}
+
+.compra-inteligente-card h2 {
+    margin: 6px 0;
+}
+
+.compra-inteligente-card p {
+    color: #94a3b8;
+    margin-bottom: 18px;
+}
+
+#resultadoCompraInteligente {
+    margin-top: 20px;
+}
+
+.resultado-mercado {
+    padding: 16px;
+    border-radius: 12px;
+    background: #1f2937;
+    margin-bottom: 10px;
+}
+
+.resultado-mercado strong {
+    color: #22c55e;
+}
+
+.nivel-alta {
+    color: #22c55e;
+}
+
+.nivel-media {
+    color: #f59e0b;
+}
+
+.nivel-baixa {
+    color: #ef4444;
+}

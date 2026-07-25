@@ -23,14 +23,15 @@ document.getElementById("quantidadeItensComparacao").textContent = String(itens.
 document.getElementById("cidadeComparacao").value = usuario?.cidade || "";
 
 async function carregarRedes() {
-    let redes = REDES_PADRAO;
+    renderizarRedes(REDES_PADRAO);
     try {
         const resposta = await api.get("/comparacoes/redes");
-        if (Array.isArray(resposta) && resposta.length) redes = resposta;
+        if (Array.isArray(resposta) && resposta.length) {
+            renderizarRedes(resposta);
+        }
     } catch (_erro) {
         // A lista local mantém a tela utilizável enquanto o servidor inicia.
     }
-    renderizarRedes(redes);
 }
 
 function renderizarRedes(redes) {

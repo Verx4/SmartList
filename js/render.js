@@ -87,6 +87,12 @@ function ehHortifruti(produto) {
 
 export function calcularSubtotalProduto(produto) {
 
+    if (Array.isArray(produto.precos) && produto.precos.length) {
+
+        return resumirProduto(produto).total;
+
+    }
+
     const preco = numeroSeguro(produto.preco);
     const quantidade = Math.max(
         0,
@@ -185,7 +191,7 @@ function montarDiferencaPreco(produto) {
 }
 
 
-function montarProduto(produto) {
+function montarProdutoLegado(produto) {
 
     const subtotal =
         calcularSubtotalProduto(produto);
@@ -199,10 +205,16 @@ function montarProduto(produto) {
             ? "produto-favorito"
             : "";
 
+    const semHistorico =
+        numeroSeguro(produto.ultimoPreco) <= 0 &&
+        !String(produto.ultimoSupermercado || "").trim()
+            ? "produto-sem-historico"
+            : "";
+
     return `
 
         <article
-            class="produto ${favorito}"
+            class="produto ${favorito} ${semHistorico}"
             data-produto-id="${escaparHTML(produto.id)}"
         >
 
@@ -395,6 +407,130 @@ function montarProduto(produto) {
 }
 
 
+const precosAbertos = new Set();
+const produtosEmEdicao = new Set();
+
+
+function montarLinhaPreco(preco, indice, nomeProduto) {
+
+    const subtotal = preco.valor * preco.quantidade;
+
+    return `
+        <div class="preco-cadastrado" data-preco-id="${escaparHTML(preco.id)}">
+            <label class="preco-valor-campo">
+                <span>Valor (R$)</span>
+                <input type="number" min="0" step="0.01" inputmode="decimal"
+                    value="${preco.valor}" data-campo-preco="valor"
+                    aria-label="Valor do preço ${indice + 1} de ${escaparHTML(nomeProduto)}">
+            </label>
+            <div class="preco-quantidade-campo">
+                <span>Quantidade</span>
+                <div class="controle-quantidade-preco">
+                    <button type="button" data-acao-preco="diminuir" aria-label="Diminuir quantidade">−</button>
+                    <strong data-quantidade-preco>${preco.quantidade}</strong>
+                    <button type="button" data-acao-preco="aumentar" aria-label="Aumentar quantidade">+</button>
+                </div>
+            </div>
+            <div class="preco-subtotal-campo">
+                <span>Subtotal (R$)</span>
+                <strong data-subtotal-preco>${formatarMoeda(subtotal)}</strong>
+            </div>
+            <button type="button" class="excluir-preco" data-acao-preco="excluir"
+                aria-label="Excluir preço ${indice + 1}">🗑</button>
+        </div>
+    `;
+
+}
+
+
+function montarProduto(produto) {
+
+    const resumo = resumirProduto(produto);
+    const aberto = precosAbertos.has(String(produto.id));
+    const editando = produtosEmEdicao.has(String(produto.id));
+    const quantidadePrecos = resumo.precos.length;
+    const rotuloPrecos = `${quantidadePrecos} ${quantidadePrecos === 1 ? "preço" : "preços"}`;
+
+    return `
+        <article class="produto produto-multivalores ${produto.favorito ? "produto-favorito" : ""}"
+            data-produto-id="${escaparHTML(produto.id)}">
+            <header class="produto-resumo-compacto">
+                <div class="produto-identidade-compacta">
+                    <button type="button" class="btn-favorito-produto ${produto.favorito ? "ativo" : ""}"
+                        data-acao="favoritar" aria-label="${produto.favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}">
+                        ${produto.favorito ? "★" : "☆"}
+                    </button>
+                    <div><h3>${escaparHTML(produto.nome)}</h3><small>${escaparHTML(produto.categoria)}</small></div>
+                </div>
+                <button type="button" class="alternar-precos" data-acao="alternar-precos"
+                    aria-expanded="${aberto}" aria-label="${aberto ? "Fechar" : "Abrir"} preços cadastrados">
+                    <strong>${rotuloPrecos}</strong><span aria-hidden="true">${aberto ? "⌃" : "⌄"}</span>
+                </button>
+                <div class="metrica-produto"><span>Qtd. total</span><strong data-total-quantidade>${resumo.quantidadeTotal}</strong></div>
+                <div class="metrica-produto metrica-total"><span>Total do item</span><strong data-total-produto>${formatarMoeda(resumo.total)}</strong></div>
+                <button type="button" class="editar-produto" data-acao="editar" aria-label="Editar ${escaparHTML(produto.nome)}">✎</button>
+            </header>
+
+            ${editando ? `
+                <section class="editar-produto-painel" aria-label="Editar produto">
+                    <label><span>Nome do produto</span><input type="text" data-editar="nome" maxlength="100" value="${escaparHTML(produto.nome)}"></label>
+                    <label><span>Categoria</span><select data-editar="categoria">${montarOpcoesCategoria(produto.categoria)}</select></label>
+                    <div class="editar-produto-acoes">
+                        <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alterações</button>
+                        <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>
+                        <button type="button" class="btn btn-danger" data-acao="excluir">Excluir produto</button>
+                    </div>
+                </section>
+            ` : ""}
+
+            ${aberto ? `
+                <section class="precos-produto" aria-label="Preços cadastrados de ${escaparHTML(produto.nome)}">
+                    <div class="precos-produto-topo"><h4>Preços cadastrados</h4><button type="button" data-acao="adicionar-preco">+ Adicionar preço</button></div>
+                    <div class="precos-cabecalho" aria-hidden="true"><span>Valor (R$)</span><span>Quantidade</span><span>Subtotal (R$)</span><span></span></div>
+                    <div class="precos-lista">${resumo.precos.map((preco, indice) => montarLinhaPreco(preco, indice, produto.nome)).join("")}</div>
+                    <footer class="resumo-precos-produto">
+                        <div><span>Qtd. total</span><strong data-resumo-quantidade>${resumo.quantidadeTotal} ${resumo.quantidadeTotal === 1 ? "unidade" : "unidades"}</strong></div>
+                        <div><span>Total do item</span><strong data-resumo-total>${formatarMoeda(resumo.total)}</strong></div>
+                        <div><span>Média por unidade</span><strong data-resumo-media>${formatarMoeda(resumo.media)}</strong></div>
+                    </footer>
+                </section>
+            ` : ""}
+        </article>
+    `;
+
+}
+
+
+function atualizarResumoVisualProduto(elemento) {
+
+    const linhas = [...elemento.querySelectorAll(".preco-cadastrado")];
+    let quantidadeTotal = 0;
+    let total = 0;
+
+    linhas.forEach(linha => {
+        const valor = Math.max(0, numeroSeguro(linha.querySelector('[data-campo-preco="valor"]')?.value));
+        const quantidade = Math.max(0, numeroSeguro(linha.querySelector("[data-quantidade-preco]")?.textContent));
+        const subtotal = valor * quantidade;
+        quantidadeTotal += quantidade;
+        total += subtotal;
+        const subtotalElemento = linha.querySelector("[data-subtotal-preco]");
+        if (subtotalElemento) subtotalElemento.textContent = formatarMoeda(subtotal);
+    });
+
+    const media = quantidadeTotal > 0 ? total / quantidadeTotal : 0;
+    const atualizar = (seletor, valor) => {
+        const alvo = elemento.querySelector(seletor);
+        if (alvo) alvo.textContent = valor;
+    };
+    atualizar("[data-total-quantidade]", String(quantidadeTotal));
+    atualizar("[data-total-produto]", formatarMoeda(total));
+    atualizar("[data-resumo-quantidade]", `${quantidadeTotal} ${quantidadeTotal === 1 ? "unidade" : "unidades"}`);
+    atualizar("[data-resumo-total]", formatarMoeda(total));
+    atualizar("[data-resumo-media]", formatarMoeda(media));
+
+}
+
+
 export function renderizarProdutos(
     produtos = [],
     acoes = {}
@@ -440,6 +576,79 @@ export function renderizarProdutos(
 
             const id =
                 elemento.dataset.produtoId;
+
+            elemento
+                .querySelector('[data-acao="alternar-precos"]')
+                ?.addEventListener("click", () => {
+                    if (precosAbertos.has(String(id))) precosAbertos.delete(String(id));
+                    else precosAbertos.add(String(id));
+                    renderizarProdutos(produtos, acoes);
+                });
+
+            elemento
+                .querySelector('[data-acao="editar"]')
+                ?.addEventListener("click", () => {
+                    produtosEmEdicao.add(String(id));
+                    precosAbertos.add(String(id));
+                    renderizarProdutos(produtos, acoes);
+                });
+
+            elemento
+                .querySelector('[data-acao="cancelar-edicao"]')
+                ?.addEventListener("click", () => {
+                    produtosEmEdicao.delete(String(id));
+                    renderizarProdutos(produtos, acoes);
+                });
+
+            elemento
+                .querySelector('[data-acao="salvar-edicao"]')
+                ?.addEventListener("click", () => {
+                    const campoNome = elemento.querySelector('[data-editar="nome"]');
+                    const nome = campoNome?.value.trim();
+                    if (!nome) {
+                        campoNome?.setCustomValidity("Digite o nome do produto.");
+                        campoNome?.reportValidity();
+                        return;
+                    }
+                    campoNome.setCustomValidity("");
+                    produtosEmEdicao.delete(String(id));
+                    acoes.aoSalvarEdicao?.(id, {
+                        nome,
+                        categoria: elemento.querySelector('[data-editar="categoria"]')?.value
+                    });
+                });
+
+            elemento
+                .querySelector('[data-acao="adicionar-preco"]')
+                ?.addEventListener("click", () => {
+                    precosAbertos.add(String(id));
+                    acoes.aoAdicionarPreco?.(id);
+                });
+
+            elemento.querySelectorAll(".preco-cadastrado").forEach(linha => {
+                const precoId = linha.dataset.precoId;
+
+                linha.querySelector('[data-acao-preco="diminuir"]')
+                    ?.addEventListener("click", () =>
+                        acoes.aoAlterarQuantidadePreco?.(id, precoId, -1)
+                    );
+
+                linha.querySelector('[data-acao-preco="aumentar"]')
+                    ?.addEventListener("click", () =>
+                        acoes.aoAlterarQuantidadePreco?.(id, precoId, 1)
+                    );
+
+                linha.querySelector('[data-acao-preco="excluir"]')
+                    ?.addEventListener("click", () =>
+                        acoes.aoExcluirPreco?.(id, precoId)
+                    );
+
+                linha.querySelector('[data-campo-preco="valor"]')
+                    ?.addEventListener("input", evento => {
+                        acoes.aoAlterarValorPreco?.(id, precoId, evento.target.value);
+                        atualizarResumoVisualProduto(elemento);
+                    });
+            });
 
             elemento
                 .querySelector('[data-acao="aumentar"]')
@@ -760,5 +969,48 @@ export function renderizarHistorico(
         `).join("")}
 
     `;
+
+}
+
+
+function obterPrecosProduto(produto = {}) {
+
+    if (Array.isArray(produto.precos) && produto.precos.length) {
+
+        return produto.precos.map((preco, indice) => ({
+            id: String(preco.id || indice),
+            valor: Math.max(0, numeroSeguro(preco.valor)),
+            quantidade: Math.max(0, numeroSeguro(preco.quantidade))
+        }));
+
+    }
+
+    return [{
+        id: "preco-inicial",
+        valor: Math.max(0, numeroSeguro(produto.preco)),
+        quantidade: Math.max(0, numeroSeguro(produto.quantidade))
+    }];
+
+}
+
+
+function resumirProduto(produto = {}) {
+
+    const precos = obterPrecosProduto(produto);
+    const quantidadeTotal = precos.reduce(
+        (soma, preco) => soma + preco.quantidade,
+        0
+    );
+    const total = precos.reduce(
+        (soma, preco) => soma + (preco.valor * preco.quantidade),
+        0
+    );
+
+    return {
+        precos,
+        quantidadeTotal,
+        total,
+        media: quantidadeTotal > 0 ? total / quantidadeTotal : 0
+    };
 
 }

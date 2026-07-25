@@ -23,7 +23,38 @@ function ehHortifruti(produto) {
 }
 
 
+function resumirPrecos(produto = {}) {
+
+    const precos = Array.isArray(produto.precos) ? produto.precos : [];
+    const quantidade = precos.reduce(
+        (total, item) => total + Math.max(0, numeroSeguro(item.quantidade)),
+        0
+    );
+    const subtotal = precos.reduce(
+        (total, item) => total + (
+            Math.max(0, numeroSeguro(item.valor)) *
+            Math.max(0, numeroSeguro(item.quantidade))
+        ),
+        0
+    );
+
+    return {
+        precos,
+        quantidade,
+        subtotal,
+        media: quantidade > 0 ? subtotal / quantidade : 0
+    };
+
+}
+
+
 function calcularSubtotal(produto) {
+
+    if (Array.isArray(produto.precos) && produto.precos.length) {
+
+        return resumirPrecos(produto).subtotal;
+
+    }
 
     const preco = Math.max(
         0,
@@ -108,9 +139,7 @@ export function finalizarCompra(produtos = []) {
     }
 
     const itensValidos = produtos.filter(
-        produto =>
-            numeroSeguro(produto.preco) > 0 &&
-            numeroSeguro(produto.quantidade) > 0
+        produto => calcularSubtotal(produto) > 0
     );
 
     if (!itensValidos.length) {
@@ -121,18 +150,23 @@ export function finalizarCompra(produtos = []) {
 
     }
 
-    const itens = itensValidos.map(produto => ({
+    const itens = itensValidos.map(produto => {
 
-        id: produto.id,
-        nome: produto.nome,
-        categoria: produto.categoria,
-        supermercado: produto.supermercado,
-        preco: numeroSeguro(produto.preco),
-        quantidade: numeroSeguro(produto.quantidade),
-        peso: numeroSeguro(produto.peso),
-        subtotal: calcularSubtotal(produto)
+        const resumo = resumirPrecos(produto);
 
-    }));
+        return {
+            id: produto.id,
+            nome: produto.nome,
+            categoria: produto.categoria,
+            supermercado: produto.supermercado,
+            precos: resumo.precos.map(item => ({ ...item })),
+            preco: resumo.precos.length ? resumo.media : numeroSeguro(produto.preco),
+            quantidade: resumo.precos.length ? resumo.quantidade : numeroSeguro(produto.quantidade),
+            peso: numeroSeguro(produto.peso),
+            subtotal: calcularSubtotal(produto)
+        };
+
+    });
 
     const total = itens.reduce(
         (soma, item) => soma + item.subtotal,
@@ -205,7 +239,13 @@ export function finalizarCompra(produtos = []) {
                 produto.ultimoSupermercado ||
                 "",
 
-            preco: 0,
+            precos: Array.isArray(produto.precos) && produto.precos.length
+                ? produto.precos.map(preco => ({
+                    ...preco,
+                    valor: 0,
+                    quantidade: 0
+                }))
+                : [{ valor: 0, quantidade: 0 }],
 
             peso:
                 ehHortifruti(produto)

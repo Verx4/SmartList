@@ -29,7 +29,7 @@ public class ComparacaoService {
 
     private static final BigDecimal FATOR_MINIMO = new BigDecimal("0.95");
     private static final BigDecimal FATOR_MAXIMO = new BigDecimal("1.05");
-    private static final Duration VALIDADE_CACHE = Duration.ofHours(20);
+    private static final Duration VALIDADE_CACHE = Duration.ofDays(7);
     private static final List<RedeMercadoResponse> REDES = List.of(
         new RedeMercadoResponse("Pão de Açúcar", true, "Preço público da loja online"),
         new RedeMercadoResponse("Atacadão", true, "Preço público conforme a loja disponível"),

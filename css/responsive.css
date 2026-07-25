@@ -39,29 +39,77 @@
     }
 
     .admin-sidebar {
-        position: static;
+        position: sticky;
+        z-index: 100;
+        top: 0;
         width: 100%;
         height: auto;
+        padding: max(12px, env(safe-area-inset-top)) 16px 12px;
         border-right: 0;
         border-bottom: 1px solid var(--cor-borda, #26334b);
     }
 
-    .admin-menu,
-    .admin-nav {
-        display: flex;
-        overflow-x: auto;
-        padding-bottom: 6px;
+    .admin-sidebar .admin-brand {
+        width: max-content;
+        max-width: calc(100% - 104px);
+        margin: 0;
     }
 
-    .admin-menu a,
+    .admin-menu-toggle {
+        position: absolute;
+        top: max(12px, env(safe-area-inset-top));
+        right: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 8px 14px;
+        color: var(--cor-texto, #ffffff);
+        background: var(--cor-superficie-secundaria, #1f2937);
+        border: 1px solid var(--cor-borda, #26334b);
+        border-radius: 11px;
+        font: inherit;
+        font-weight: 800;
+    }
+
+    .admin-menu,
+    .admin-nav {
+        display: none;
+        max-height: calc(100vh - 84px);
+        margin-top: 12px;
+        padding: 12px;
+        overflow-y: auto;
+        background: var(--cor-fundo, #0b1220);
+        border: 1px solid var(--cor-borda, #26334b);
+        border-radius: 14px;
+    }
+
+    .admin-sidebar.admin-menu-aberto .admin-nav {
+        display: grid;
+    }
+
+    .admin-nav-grupo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-nav-grupo > p {
+        grid-column: 1 / -1;
+    }
+
     .admin-nav a {
-        flex: 0 0 auto;
-        white-space: nowrap;
+        min-width: 0;
+        padding: 10px;
+        white-space: normal;
     }
 
     .admin-conteudo,
     .admin-main {
         padding: 22px;
+    }
+
+    .admin-header {
+        align-items: stretch;
     }
 
     .admin-form {
@@ -232,8 +280,11 @@
     }
 
     .card-total {
-        flex-direction: column;
-        align-items: flex-start;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card-total-item:last-child {
+        grid-column: 1 / -1;
     }
 
     .acoes {
@@ -246,20 +297,31 @@
     }
 
     .produto {
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .info-produto {
+        grid-column: 1 / -1;
     }
 
     .qtd {
-        margin-top: 5px;
+        grid-column: 1;
+        margin-top: 0;
     }
 
     .subtotal {
-        text-align: left;
+        grid-column: 2;
+        min-width: 0;
+        text-align: right;
     }
 
     .btn-excluir {
-        width: 100%;
+        grid-column: 3;
+        width: auto;
+        padding: 10px 12px;
     }
 
     .info-produto input,
@@ -272,7 +334,25 @@
 
     .campos-produto {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(90px, 0.85fr) minmax(0, 1.15fr);
+        gap: 8px;
+    }
+
+    .info-anterior {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .box-anterior {
+        min-width: 0;
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .produto-sem-historico .info-anterior,
+    .produto-sem-historico .diferenca {
+        display: none;
     }
 
     .modal-content {
@@ -402,15 +482,71 @@
     }
 
     .produto {
-        padding: 15px;
+        gap: 10px;
+        padding: 13px;
+        margin-bottom: 10px;
     }
 
     .produto-titulo-linha {
         gap: 8px;
     }
 
+    .categoria-produto {
+        margin-bottom: 6px;
+        padding: 3px 8px;
+    }
+
+    .info-produto h3 {
+        margin-bottom: 5px;
+        font-size: 20px;
+    }
+
+    .supermercado-produto {
+        margin-bottom: 7px;
+    }
+
     .box-anterior {
-        width: 100%;
+        width: auto;
+    }
+
+    .diferenca {
+        margin: 6px 0 8px;
+        font-size: 12px;
+    }
+
+    .info-produto label,
+    .peso-container label {
+        margin: 5px 0 4px;
+        font-size: 12px;
+    }
+
+    .info-produto input,
+    .info-produto select,
+    .input-peso {
+        min-height: 42px;
+        padding: 8px;
+    }
+
+    .qtd {
+        gap: 6px;
+    }
+
+    .qtd button {
+        width: 42px;
+        height: 42px;
+    }
+
+    .qtd span {
+        min-width: 24px;
+    }
+
+    .subtotal small {
+        margin-bottom: 2px;
+        font-size: 11px;
+    }
+
+    .subtotal strong {
+        font-size: 16px;
     }
 
     .controle-tema-global {
@@ -430,5 +566,55 @@
         top: 10px;
         right: 10px;
         width: calc(100% - 20px);
+    }
+}
+
+@media (max-width: 520px) {
+    .admin-main {
+        padding: 18px 14px;
+    }
+
+    .admin-header {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .admin-header h1 {
+        font-size: clamp(26px, 8vw, 34px);
+        overflow-wrap: anywhere;
+    }
+
+    .admin-nav-grupo {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-resumo,
+    .admin-grid,
+    .monitoramento-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .resumo-card,
+    .admin-card {
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .resumo-card strong,
+    .admin-card strong {
+        font-size: 24px;
+    }
+
+    .admin-main > .card,
+    .admin-main > .grid-resumo {
+        margin-bottom: 14px;
+    }
+
+    .admin-feedback-topo,
+    .admin-feedback-rodape {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

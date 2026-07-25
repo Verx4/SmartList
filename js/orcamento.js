@@ -64,6 +64,18 @@ function produtoEhPorPeso(produto) {
 
 function calcularSubtotal(produto) {
 
+    if (Array.isArray(produto.precos) && produto.precos.length) {
+
+        return produto.precos.reduce(
+            (total, item) => total + (
+                Math.max(0, numeroSeguro(item.valor)) *
+                Math.max(0, numeroSeguro(item.quantidade))
+            ),
+            0
+        );
+
+    }
+
     const preco = numeroSeguro(produto.preco);
     const quantidade = Math.max(0, numeroSeguro(produto.quantidade));
     const peso = Math.max(0, numeroSeguro(produto.peso));

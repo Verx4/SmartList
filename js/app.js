@@ -7,6 +7,10 @@ import {
     removerProduto,
     alterarQuantidade,
     atualizarPreco,
+    adicionarPrecoCadastrado,
+    atualizarPrecoCadastrado,
+    alterarQuantidadePreco,
+    removerPrecoCadastrado,
     atualizarPeso,
     alternarFavorito,
     aplicarSupermercadoAProdutos,
@@ -361,6 +365,44 @@ function atualizarTela() {
 
             },
 
+            aoAdicionarPreco(id) {
+
+                adicionarPrecoCadastrado(id);
+                atualizarTela();
+
+            },
+
+            aoAlterarValorPreco(id, precoId, valor) {
+
+                atualizarPrecoCadastrado(id, precoId, { valor });
+                produtos = listarProdutos();
+                renderizarTotais(produtos, historico);
+                renderizarOrcamento(produtos);
+
+            },
+
+            aoAlterarQuantidadePreco(id, precoId, variacao) {
+
+                alterarQuantidadePreco(id, precoId, variacao);
+                atualizarTela();
+
+            },
+
+            aoExcluirPreco(id, precoId) {
+
+                removerPrecoCadastrado(id, precoId);
+                atualizarTela();
+
+            },
+
+            aoSalvarEdicao(id, alteracoes) {
+
+                atualizarProduto(id, alteracoes);
+                notificar("Produto atualizado.");
+                atualizarTela();
+
+            },
+
             aoAlterarPeso(id, peso) {
 
                 atualizarPeso(id, peso);
@@ -498,7 +540,7 @@ function limparFormularioProduto() {
 
     if (quantidade) {
 
-        quantidade.value = "1";
+        quantidade.value = "0";
 
     }
 
@@ -528,13 +570,10 @@ function salvarNovoProduto(evento) {
     const preco =
         Number(elemento("novoPreco")?.value || 0);
 
-    const quantidade =
-        Math.max(
-            1,
-            Number(
-                elemento("novaQuantidade")?.value || 1
-            )
-        );
+    const quantidade = Math.max(
+        0,
+        Number(elemento("novaQuantidade")?.value || 0)
+    );
 
     const favorito =
         Boolean(elemento("novoFavorito")?.checked);
@@ -584,8 +623,10 @@ function salvarNovoProduto(evento) {
 
         nome,
         categoria,
-        preco: Math.max(0, preco),
-        quantidade,
+        precos: [{
+            valor: Math.max(0, preco),
+            quantidade
+        }],
         peso: 0,
         supermercado,
         favorito

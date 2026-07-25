@@ -230,6 +230,10 @@
 
     function deveExibirControleTema() {
         return document.body
+            && (
+                document.body.querySelector(".inicio-shell")
+                || document.body.dataset.controleTema === "global"
+            )
             && !document.body.classList.contains("sem-controle-tema")
             && document.body.dataset.controleTema !== "oculto";
     }
@@ -245,14 +249,9 @@
         const opcoesPremium = possuiCoresPremium()
             ? [
                 `<div class="divisor-menu-tema"></div>`,
-                `<p class="titulo-menu-tema">Cores Premium</p>`,
-                linhaOpcao("amarelo", "🟡", "Amarelo", "Modelo completo amarelo", true),
-                linhaOpcao("vermelho", "🔴", "Vermelho", "Modelo completo vermelho", true),
-                linhaOpcao("verde", "🟢", "Verde", "Modelo completo verde", true),
-                linhaOpcao("roxo", "🟣", "Roxo", "Modelo completo roxo", true),
-                `<div class="cor-personalizada-premium"><label for="corTemaPersonalizada">Qualquer cor</label>`,
+                `<div class="cor-personalizada-premium"><label for="corTemaPersonalizada">Escolha seu novo tema</label>`,
                 `<div><input id="corTemaPersonalizada" type="color" value="`, corPersonalizada(), `">`,
-                `<button id="aplicarCorPersonalizada" type="button">Aplicar cor</button></div></div>`
+                `<button id="aplicarCorPersonalizada" type="button">APLICAR TEMA</button></div></div>`
             ]
             : [];
         controle.innerHTML = [

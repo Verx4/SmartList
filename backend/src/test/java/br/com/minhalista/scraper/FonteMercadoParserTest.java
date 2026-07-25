@@ -23,6 +23,21 @@ class FonteMercadoParserTest {
     }
 
     @Test
+    void extraiPaoDeAcucarQuandoPrecoEstaNoCard() {
+        var documento = Jsoup.parse("""
+            <article class="product-card"><h3>Feijão Carioca 1kg</h3>
+              <a href="/produto/22/feijao">Ver produto</a><strong>R$ 8,49</strong>
+            </article>
+            """, "https://www.paodeacucar.com/busca?terms=feijao");
+
+        var resultados = new FontePaoDeAcucar().extrair(documento);
+
+        assertThat(resultados).hasSize(1);
+        assertThat(resultados.getFirst().produto()).isEqualTo("Feijão Carioca 1kg");
+        assertThat(resultados.getFirst().preco()).isEqualByComparingTo("8.49");
+    }
+
+    @Test
     void extraiPrecoDoRecifeAtacarejo() {
         var documento = Jsoup.parse("""
             <div class="product-card__info" data-nome="ARROZ PARBOILIZADO 1KG" data-preco="4.99">
@@ -48,5 +63,19 @@ class FonteMercadoParserTest {
 
         assertThat(resultados).hasSize(1);
         assertThat(resultados.getFirst().preco()).isEqualByComparingTo("18.85");
+    }
+
+    @Test
+    void extraiAtacadaoComLinkDeProdutoSemDataTestId() {
+        var documento = Jsoup.parse("""
+            <div class="product-card"><h3>Feijão Preto 1kg</h3>
+              <a href="/feijao-preto-123/p">Feijão Preto 1kg</a><span>R$ 7,25</span>
+            </div>
+            """, "https://www.atacadao.com.br/loja/avenida-recife?q=feijao");
+
+        var resultados = new FonteAtacadao().extrair(documento, documento.baseUri());
+
+        assertThat(resultados).hasSize(1);
+        assertThat(resultados.getFirst().preco()).isEqualByComparingTo("7.25");
     }
 }

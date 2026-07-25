@@ -429,7 +429,7 @@ body:has(.app-bottom-nav) .controle-tema-global {
 }
 
 .cor-personalizada-premium > label {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 800;
 }
 
@@ -447,11 +447,19 @@ body:has(.app-bottom-nav) .controle-tema-global {
 }
 
 .cor-personalizada-premium button {
+    min-height: 38px;
+    padding: 7px 12px;
     color: var(--cor-texto-botao);
     background: var(--cor-primaria);
     border: 0;
     border-radius: 8px;
+    font-size: 12px;
     font-weight: 800;
+}
+
+body:not(:has(.inicio-shell)) .controle-tema-global,
+body.embalagens-page .controle-tema-global {
+    display: none !important;
 }
 
 body:has(.inicio-shell) .controle-tema-global > .botao-tema-global {
@@ -501,4 +509,3 @@ button:disabled {
         max-height: min(510px, calc(100vh - 80px));
     }
 }
-

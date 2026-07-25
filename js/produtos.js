@@ -55,6 +55,8 @@ function booleanoSeguro(valor) {
 
 export function normalizarProduto(produto = {}) {
 
+    const resumoPrecos = resumirPrecosProduto(produto);
+
     return {
 
         id: String(produto.id || criarId()),
@@ -67,15 +69,11 @@ export function normalizarProduto(produto = {}) {
             textoSeguro(produto.categoria) ||
             "📦 Outros",
 
-        preco: Math.max(
-            0,
-            numeroSeguro(produto.preco)
-        ),
+        precos: resumoPrecos.precos,
 
-        quantidade: Math.max(
-            1,
-            Math.trunc(numeroSeguro(produto.quantidade, 1))
-        ),
+        preco: resumoPrecos.media,
+
+        quantidade: resumoPrecos.quantidadeTotal,
 
         peso: Math.max(
             0,
@@ -257,27 +255,117 @@ export function alterarQuantidade(id, variacao) {
 
     }
 
-    return atualizarProduto(id, {
+    const primeiroPreco = produto.precos[0];
 
-        quantidade: Math.max(
-            1,
-            produto.quantidade + Number(variacao || 0)
-        )
-
-    });
+    return atualizarPrecoCadastrado(
+        id,
+        primeiroPreco.id,
+        {
+            quantidade: Math.max(
+                0,
+                primeiroPreco.quantidade + Number(variacao || 0)
+            )
+        }
+    );
 
 }
 
 
 export function atualizarPreco(id, preco) {
 
+    const produto = listarProdutos().find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!produto) return null;
+
+    return atualizarPrecoCadastrado(
+        id,
+        produto.precos[0].id,
+        { valor: preco }
+    );
+
+}
+
+
+export function adicionarPrecoCadastrado(id) {
+
+    const produto = listarProdutos().find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!produto) return null;
+
     return atualizarProduto(id, {
+        precos: [
+            ...produto.precos,
+            normalizarPrecoCadastrado({ valor: 0, quantidade: 0 })
+        ]
+    });
 
-        preco: Math.max(
+}
+
+
+export function atualizarPrecoCadastrado(id, precoId, alteracoes = {}) {
+
+    const produto = listarProdutos().find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!produto) return null;
+
+    const precos = produto.precos.map(preco =>
+        String(preco.id) === String(precoId)
+            ? normalizarPrecoCadastrado({
+                ...preco,
+                ...alteracoes,
+                id: preco.id
+            })
+            : preco
+    );
+
+    return atualizarProduto(id, { precos });
+
+}
+
+
+export function alterarQuantidadePreco(id, precoId, variacao) {
+
+    const produto = listarProdutos().find(
+        item => String(item.id) === String(id)
+    );
+    const preco = produto?.precos.find(
+        item => String(item.id) === String(precoId)
+    );
+
+    if (!produto || !preco) return null;
+
+    return atualizarPrecoCadastrado(id, precoId, {
+        quantidade: Math.max(
             0,
-            numeroSeguro(preco)
+            preco.quantidade + Number(variacao || 0)
         )
+    });
 
+}
+
+
+export function removerPrecoCadastrado(id, precoId) {
+
+    const produto = listarProdutos().find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!produto) return null;
+
+    const restantes = produto.precos.filter(
+        preco => String(preco.id) !== String(precoId)
+    );
+
+    return atualizarProduto(id, {
+        precos: restantes.length
+            ? restantes
+            : [normalizarPrecoCadastrado({ valor: 0, quantidade: 0 })]
     });
 
 }
@@ -453,7 +541,11 @@ export function zerarPrecosDaLista() {
                 produto.supermercado ||
                 produto.ultimoSupermercado,
 
-            preco: 0,
+            precos: produto.precos.map(preco => ({
+                ...preco,
+                valor: 0,
+                quantidade: 0
+            })),
 
             peso: String(produto.categoria)
                 .toLowerCase()
@@ -467,6 +559,64 @@ export function zerarPrecosDaLista() {
     );
 
     return salvarProdutos(produtos);
+
+}
+
+
+function normalizarPrecoCadastrado(preco = {}) {
+
+    return {
+        ...preco,
+        id: String(preco.id || criarId()),
+        valor: Math.max(0, numeroSeguro(preco.valor)),
+        quantidade: Math.max(
+            0,
+            numeroSeguro(preco.quantidade)
+        )
+    };
+
+}
+
+
+function normalizarPrecosDoProduto(produto = {}) {
+
+    const recebidos = Array.isArray(produto.precos)
+        ? produto.precos
+        : [];
+
+    const origem = recebidos.length
+        ? recebidos
+        : [{
+            valor: Math.max(0, numeroSeguro(produto.preco)),
+            quantidade: Math.max(
+                0,
+                numeroSeguro(produto.quantidade)
+            )
+        }];
+
+    return origem.map(normalizarPrecoCadastrado);
+
+}
+
+
+export function resumirPrecosProduto(produto = {}) {
+
+    const precos = normalizarPrecosDoProduto(produto);
+    const quantidadeTotal = precos.reduce(
+        (total, item) => total + item.quantidade,
+        0
+    );
+    const total = precos.reduce(
+        (soma, item) => soma + (item.valor * item.quantidade),
+        0
+    );
+
+    return {
+        precos,
+        quantidadeTotal,
+        total,
+        media: quantidadeTotal > 0 ? total / quantidadeTotal : 0
+    };
 
 }
 

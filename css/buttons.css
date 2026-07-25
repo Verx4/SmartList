@@ -80,7 +80,8 @@
 }
 
 .btn-finalizar,
-.btn-historico {
+.btn-historico,
+.btn-adicionar-item-compra {
     width: 100%;
     min-height: 54px;
     font-size: 16px;
@@ -100,33 +101,4 @@
 .btn-fechar-modal:hover {
     color: white;
     background: #dc2626;
-}
-
-@media (max-width: 768px) {
-    .acoes .btn-add {
-        position: fixed;
-        right: 16px;
-        bottom: calc(88px + env(safe-area-inset-bottom));
-        z-index: 700;
-        width: 56px;
-        min-width: 56px;
-        height: 56px;
-        min-height: 56px;
-        padding: 0;
-        overflow: hidden;
-        border-radius: 50%;
-        font-size: 0;
-        line-height: 1;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
-    }
-
-    .acoes .btn-add::before {
-        content: "+";
-        font-size: 30px;
-        font-weight: 400;
-    }
-
-    body.modal-aberto .acoes .btn-add {
-        display: none;
-    }
 }

@@ -33,11 +33,24 @@ function limparErro() {
   $('erroComparacao').hidden = true;
 }
 
+function zerarResultado() {
+  $('quantidadeNecessaria').textContent = '0 unidades';
+  $('descricaoQuantidade').textContent = 'preencha as duas embalagens';
+  $('textoCusto').textContent = 'Custo total:';
+  $('custoEquivalente').textContent = moeda.format(0);
+  $('melhorOpcao').textContent = 'Preencha os valores para comparar';
+  $('economiaValor').textContent = moeda.format(0);
+  $('economiaPercentual').textContent = '0%';
+  $('precoUnitarioA').textContent = `${moeda.format(0)} / unidade`;
+  $('precoUnitarioB').textContent = `${moeda.format(0)} / unidade`;
+}
+
 function calcular() {
   const a = dados('A');
   const b = dados('B');
 
   if (!a.quantidade || !b.quantidade || !a.preco || !b.preco) {
+    zerarResultado();
     mostrarErro('Preencha quantidades e preços maiores que zero.');
     return;
   }
@@ -85,15 +98,15 @@ function trocar() {
   calcular();
 }
 
-function limpar() {
-  $('pesoA').value = 1600;
+function limpar(focar = true) {
+  $('pesoA').value = 0;
   $('unidadeA').value = 'g';
-  $('precoA').value = 19;
-  $('pesoB').value = 400;
+  $('precoA').value = 0;
+  $('pesoB').value = 0;
   $('unidadeB').value = 'g';
-  $('precoB').value = 6;
+  $('precoB').value = 0;
   calcular();
-  $('pesoA').focus();
+  if (focar) $('pesoA').focus();
 }
 
 document.querySelectorAll('#formEmbalagens input, #formEmbalagens select').forEach((campo) => {
@@ -102,6 +115,5 @@ document.querySelectorAll('#formEmbalagens input, #formEmbalagens select').forEa
 });
 
 $('trocarEmbalagens').addEventListener('click', trocar);
-$('novaComparacao').addEventListener('click', limpar);
-calcular();
-
+$('novaComparacao').addEventListener('click', () => limpar(true));
+limpar(false);

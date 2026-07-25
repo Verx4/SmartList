@@ -15,7 +15,7 @@ function ativarGerenciadorDeListas() {
     if (!document.querySelector('link[data-listas-salvas="true"]')) {
         const estilo = document.createElement("link");
         estilo.rel = "stylesheet";
-        estilo.href = "./css/listas-salvas.css?v=1";
+        estilo.href = "./css/listas-salvas.css?v=2";
         estilo.dataset.listasSalvas = "true";
         document.head.appendChild(estilo);
     }
@@ -37,7 +37,8 @@ function ativarGerenciadorDeListas() {
             </select>
             <button type="button" class="btn btn-primary" id="criarNovaLista">+ Nova lista</button>
         </div>
-        <div class="listas-salvas-nova" hidden>
+        <div class="listas-salvas-nova" role="dialog" aria-modal="true" aria-labelledby="tituloNovaLista" hidden>
+            <strong id="tituloNovaLista">Criar nova lista</strong>
             <label for="nomeNovaLista">Nome da nova lista</label>
             <div><input id="nomeNovaLista" type="text" maxlength="80" placeholder="Ex.: Compra do mês"><button type="button" class="btn btn-primary" id="salvarNovaLista">Criar</button><button type="button" class="btn btn-secondary" id="cancelarNovaLista">Cancelar</button></div>
         </div>`;
@@ -50,15 +51,25 @@ function ativarGerenciadorDeListas() {
 
     gerenciador.querySelector("#criarNovaLista").addEventListener("click", () => {
         const formulario = gerenciador.querySelector(".listas-salvas-nova");
+        gerenciador.classList.add("criando-lista");
+        document.body.classList.add("criando-lista-aberta");
         formulario.hidden = false;
         const campo = formulario.querySelector("input");
         campo.value = `Lista ${listas.length + 1}`;
-        campo.focus();
+        requestAnimationFrame(() => {
+            campo.focus();
+            campo.select();
+        });
     });
 
-    gerenciador.querySelector("#cancelarNovaLista").addEventListener("click", () => {
+    const fecharFormulario = () => {
         gerenciador.querySelector(".listas-salvas-nova").hidden = true;
-    });
+        gerenciador.classList.remove("criando-lista");
+        document.body.classList.remove("criando-lista-aberta");
+        gerenciador.querySelector("#criarNovaLista").focus();
+    };
+
+    gerenciador.querySelector("#cancelarNovaLista").addEventListener("click", fecharFormulario);
 
     gerenciador.querySelector("#salvarNovaLista").addEventListener("click", () => {
         const campo = gerenciador.querySelector("#nomeNovaLista");
@@ -71,6 +82,19 @@ function ativarGerenciadorDeListas() {
         campo.setCustomValidity("");
         criarListaSalva(nome, { ativar: true });
         window.location.reload();
+    });
+
+    gerenciador.querySelector("#nomeNovaLista").addEventListener("keydown", evento => {
+        if (evento.key === "Enter") {
+            evento.preventDefault();
+            gerenciador.querySelector("#salvarNovaLista").click();
+        }
+    });
+
+    document.addEventListener("keydown", evento => {
+        if (evento.key === "Escape" && gerenciador.classList.contains("criando-lista")) {
+            fecharFormulario();
+        }
     });
 }
 
