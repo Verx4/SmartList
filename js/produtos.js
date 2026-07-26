@@ -553,9 +553,9 @@ export function zerarPrecosDaLista() {
                 quantidade: 0
             })),
 
-            peso: String(produto.categoria)
-                .toLowerCase()
-                .includes("hortifruti")
+            peso: /(hortifruti|verdura|legume|fruta)/i.test(
+                String(produto.categoria)
+            )
                 ? 0
                 : produto.peso,
 
@@ -608,6 +608,24 @@ function normalizarPrecosDoProduto(produto = {}) {
 export function resumirPrecosProduto(produto = {}) {
 
     const precos = normalizarPrecosDoProduto(produto);
+    const porPeso = /(hortifruti|verdura|legume|fruta)/i.test(
+        String(produto.categoria || "")
+    );
+
+    if (porPeso) {
+
+        const peso = Math.max(0, numeroSeguro(produto.peso));
+        const valorKg = Math.max(0, numeroSeguro(precos[0]?.valor));
+
+        return {
+            precos,
+            quantidadeTotal: peso,
+            total: valorKg * peso,
+            media: valorKg
+        };
+
+    }
+
     const quantidadeTotal = precos.reduce(
         (total, item) => total + item.quantidade,
         0

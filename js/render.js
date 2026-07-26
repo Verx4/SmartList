@@ -78,9 +78,9 @@ function escaparHTML(valor) {
 
 function ehHortifruti(produto) {
 
-    return String(produto.categoria || "")
-        .toLowerCase()
-        .includes("hortifruti");
+    return /(hortifruti|verdura|legume|fruta)/i.test(
+        String(produto.categoria || "")
+    );
 
 }
 
@@ -473,19 +473,22 @@ function atualizarPrecoPrincipal(produto, quantidadeInformada, valorInformado) {
 function montarProduto(produto) {
 
     const resumo = resumirProduto(produto);
+    const porPeso = ehHortifruti(produto);
     const aberto = precosAbertos.has(String(produto.id));
     const editando = produtosEmEdicao.has(String(produto.id));
-    const quantidadePrecos = resumo.precos.length;
-    const rotuloPrecos = `${quantidadePrecos} ${quantidadePrecos === 1 ? "preço" : "preços"}`;
+    const quantidadePrecos = porPeso ? 1 : resumo.precos.length;
+    const rotuloPrecos = porPeso
+        ? "Preço por kg"
+        : `${quantidadePrecos} ${quantidadePrecos === 1 ? "preço" : "preços"}`;
     const ultimoPreco = Math.max(0, numeroSeguro(produto.ultimoPreco));
     const ultimaQuantidade = Math.max(0, numeroSeguro(produto.ultimaQuantidade));
     const possuiUltimaCompra = ultimoPreco > 0 || ultimaQuantidade > 0;
     const precoPrincipal = resumo.precos[0];
-    const precosAdicionais = resumo.precos.slice(1);
+    const precosAdicionais = porPeso ? [] : resumo.precos.slice(1);
 
     return `
         <article class="produto produto-multivalores"
-            data-produto-id="${escaparHTML(produto.id)}">
+            data-produto-id="${escaparHTML(produto.id)}" data-por-peso="${porPeso}">
             <header class="produto-resumo-compacto">
                 <div class="produto-identidade-compacta">
                     <div>
@@ -502,15 +505,18 @@ function montarProduto(produto) {
                     <strong>${rotuloPrecos}</strong>
                 </div>
                 <div class="metrica-produto">
-                    <span>${editando && precosAdicionais.length ? "Qtd. principal" : "Qtd. total"}</span>
-                    ${editando ? `
+                    <span>${porPeso ? "Peso (kg)" : editando && precosAdicionais.length ? "Qtd. principal" : "Qtd. total"}</span>
+                    ${editando && porPeso ? `
+                        <input class="editar-peso-total" type="number" min="0" step="0.001" inputmode="decimal"
+                            data-editar="peso" value="${numeroSeguro(produto.peso)}" aria-label="Peso em kg de ${escaparHTML(produto.nome)}">
+                    ` : editando ? `
                         <div class="editar-quantidade-total">
                             <button type="button" data-acao-edicao="diminuir-quantidade" aria-label="Diminuir quantidade total">−</button>
                             <input type="number" min="0" step="1" inputmode="numeric" data-editar="quantidade-total"
                                 value="${precoPrincipal.quantidade}" aria-label="Quantidade principal de ${escaparHTML(produto.nome)}">
                             <button type="button" data-acao-edicao="aumentar-quantidade" aria-label="Aumentar quantidade total">+</button>
                         </div>
-                    ` : `<strong data-total-quantidade>${resumo.quantidadeTotal}</strong>`}
+                    ` : `<strong data-total-quantidade>${formatarQuantidade(resumo.quantidadeTotal)}${porPeso ? " kg" : ""}</strong>`}
                 </div>
                 <div class="metrica-produto metrica-total">
                     <span>Total</span>
@@ -523,19 +529,19 @@ function montarProduto(produto) {
                 <section class="editar-produto-painel" aria-label="Editar produto">
                     <label><span>Nome do produto</span><input type="text" data-editar="nome" maxlength="100" value="${escaparHTML(produto.nome)}"></label>
                     <label><span>Categoria</span><select data-editar="categoria">${montarOpcoesCategoria(produto.categoria)}</select></label>
-                    <label><span>Valor unitário (R$)</span><input class="editar-valor-unitario" type="number" min="0" step="0.01" inputmode="decimal"
+                    <label><span>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="number" min="0" step="0.01" inputmode="decimal"
                         data-editar="valor-unitario" value="${precoPrincipal.valor.toFixed(2)}"
                         aria-label="Valor unitário de ${escaparHTML(produto.nome)}"></label>
                     <div class="editar-produto-acoes">
                         <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alterações</button>
                         <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>
-                        <button type="button" class="btn btn-secondary" data-acao="abrir-precos">+ Adicionar preço</button>
+                        ${porPeso ? "" : `<button type="button" class="btn btn-secondary" data-acao="abrir-precos">+ Adicionar preço</button>`}
                         <button type="button" class="btn btn-danger" data-acao="excluir">Excluir produto</button>
                     </div>
                 </section>
             ` : ""}
 
-            ${editando || aberto ? `
+            ${!porPeso && (editando || aberto) ? `
                 <section class="precos-produto" ${aberto ? "" : "hidden"} aria-label="Preços adicionais de ${escaparHTML(produto.nome)}">
                     <div class="precos-produto-topo"><h4>Preços adicionais</h4><button type="button" data-acao="adicionar-preco">+ Outro preço</button></div>
                     <div class="precos-cabecalho" aria-hidden="true"><span>Valor (R$)</span><span>Quantidade</span><span>Subtotal (R$)</span><span></span></div>
@@ -552,8 +558,12 @@ function atualizarResumoVisualProduto(elemento) {
 
     const linhas = [...elemento.querySelectorAll(".preco-cadastrado")];
     const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
+    const campoPeso = elemento.querySelector('[data-editar="peso"]');
     const campoValorUnitario = elemento.querySelector('[data-editar="valor-unitario"]');
-    let quantidadeTotal = Math.max(0, numeroSeguro(campoQuantidadeTotal?.value));
+    const porPeso = elemento.dataset.porPeso === "true";
+    let quantidadeTotal = Math.max(0, numeroSeguro(
+        porPeso ? campoPeso?.value : campoQuantidadeTotal?.value
+    ));
     let total = quantidadeTotal * Math.max(0, numeroSeguro(campoValorUnitario?.value));
 
     linhas.forEach(linha => {
@@ -570,8 +580,8 @@ function atualizarResumoVisualProduto(elemento) {
         const alvo = elemento.querySelector(seletor);
         if (alvo) alvo.textContent = valor;
     };
-    if (!campoQuantidadeTotal) {
-        atualizar("[data-total-quantidade]", String(quantidadeTotal));
+    if (!campoQuantidadeTotal && !campoPeso) {
+        atualizar("[data-total-quantidade]", `${formatarQuantidade(quantidadeTotal)}${porPeso ? " kg" : ""}`);
     }
     atualizar("[data-total-produto]", formatarMoeda(total));
 
@@ -580,7 +590,10 @@ function atualizarResumoVisualProduto(elemento) {
 
 function sincronizarPrecosComResumoEditavel(elemento, produto) {
 
-    const quantidade = elemento.querySelector('[data-editar="quantidade-total"]')?.value;
+    const porPeso = elemento.dataset.porPeso === "true";
+    const quantidade = porPeso
+        ? obterPrecosProduto(produto)[0]?.quantidade
+        : elemento.querySelector('[data-editar="quantidade-total"]')?.value;
     const valorUnitario = elemento.querySelector('[data-editar="valor-unitario"]')?.value;
     const precos = atualizarPrecoPrincipal(produto, quantidade, valorUnitario);
     const precosPorId = new Map(
@@ -618,9 +631,13 @@ function obterAlteracoesDaEdicao(elemento, produto) {
 
     campoNome.setCustomValidity("");
 
+    const categoria = elemento.querySelector('[data-editar="categoria"]')?.value;
+    const porPeso = ehHortifruti({ categoria });
     let quantidadeTotal = Math.max(
         0,
-        Math.floor(numeroSeguro(elemento.querySelector('[data-editar="quantidade-total"]')?.value))
+        porPeso
+            ? numeroSeguro(obterPrecosProduto(produto || {})[0]?.quantidade)
+            : Math.floor(numeroSeguro(elemento.querySelector('[data-editar="quantidade-total"]')?.value))
     );
     const valorUnitario = Math.max(
         0,
@@ -629,7 +646,10 @@ function obterAlteracoesDaEdicao(elemento, produto) {
 
     return {
         nome,
-        categoria: elemento.querySelector('[data-editar="categoria"]')?.value,
+        categoria,
+        peso: porPeso
+            ? Math.max(0, numeroSeguro(elemento.querySelector('[data-editar="peso"]')?.value))
+            : 0,
         precos: atualizarPrecoPrincipal(produto || {}, quantidadeTotal, valorUnitario)
     };
 
@@ -709,6 +729,7 @@ export function renderizarProdutos(
                 });
 
             const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
+            const campoPeso = elemento.querySelector('[data-editar="peso"]');
             const campoValorUnitario = elemento.querySelector('[data-editar="valor-unitario"]');
 
             elemento
@@ -737,6 +758,11 @@ export function renderizarProdutos(
             });
 
             campoValorUnitario?.addEventListener("input", () => {
+                sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
+            });
+
+            campoPeso?.addEventListener("input", () => {
+                campoPeso.value = String(Math.max(0, numeroSeguro(campoPeso.value)));
                 sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
             });
 
@@ -1131,6 +1157,16 @@ function obterPrecosProduto(produto = {}) {
 function resumirProduto(produto = {}) {
 
     const precos = obterPrecosProduto(produto);
+    if (ehHortifruti(produto)) {
+        const peso = Math.max(0, numeroSeguro(produto.peso));
+        const valorKg = Math.max(0, numeroSeguro(precos[0]?.valor));
+        return {
+            precos,
+            quantidadeTotal: peso,
+            total: valorKg * peso,
+            media: valorKg
+        };
+    }
     const quantidadeTotal = precos.reduce(
         (soma, preco) => soma + preco.quantidade,
         0

@@ -55,14 +55,27 @@ function formatarMoeda(valor) {
 
 function produtoEhPorPeso(produto) {
 
-    return String(produto.categoria || "")
-        .toLowerCase()
-        .includes("hortifruti");
+    return /(hortifruti|verdura|legume|fruta)/i.test(
+        String(produto.categoria || "")
+    );
 
 }
 
 
 function calcularSubtotal(produto) {
+
+    if (produtoEhPorPeso(produto)) {
+
+        const valorKg = Math.max(0, numeroSeguro(
+            produto.precos?.[0]?.valor ?? produto.preco
+        ));
+        const peso = Math.max(0, numeroSeguro(produto.peso));
+
+        return valorKg > 0 && peso > 0
+            ? valorKg * peso
+            : 0;
+
+    }
 
     if (Array.isArray(produto.precos) && produto.precos.length) {
 

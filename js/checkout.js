@@ -16,9 +16,9 @@ function numeroSeguro(valor) {
 
 function ehHortifruti(produto) {
 
-    return String(produto.categoria || "")
-        .toLowerCase()
-        .includes("hortifruti");
+    return /(hortifruti|verdura|legume|fruta)/i.test(
+        String(produto.categoria || "")
+    );
 
 }
 
@@ -49,6 +49,19 @@ function resumirPrecos(produto = {}) {
 
 
 function calcularSubtotal(produto) {
+
+    if (ehHortifruti(produto)) {
+
+        const valorKg = Math.max(0, numeroSeguro(
+            produto.precos?.[0]?.valor ?? produto.preco
+        ));
+        const peso = Math.max(0, numeroSeguro(produto.peso));
+
+        return valorKg > 0 && peso > 0
+            ? valorKg * peso
+            : 0;
+
+    }
 
     if (Array.isArray(produto.precos) && produto.precos.length) {
 
@@ -153,6 +166,10 @@ export function finalizarCompra(produtos = []) {
     const itens = itensValidos.map(produto => {
 
         const resumo = resumirPrecos(produto);
+        const porPeso = ehHortifruti(produto);
+        const valorKg = Math.max(0, numeroSeguro(
+            produto.precos?.[0]?.valor ?? produto.preco
+        ));
 
         return {
             id: produto.id,
@@ -160,8 +177,8 @@ export function finalizarCompra(produtos = []) {
             categoria: produto.categoria,
             supermercado: produto.supermercado,
             precos: resumo.precos.map(item => ({ ...item })),
-            preco: resumo.precos.length ? resumo.media : numeroSeguro(produto.preco),
-            quantidade: resumo.precos.length ? resumo.quantidade : numeroSeguro(produto.quantidade),
+            preco: porPeso ? valorKg : resumo.precos.length ? resumo.media : numeroSeguro(produto.preco),
+            quantidade: porPeso ? 0 : resumo.precos.length ? resumo.quantidade : numeroSeguro(produto.quantidade),
             peso: numeroSeguro(produto.peso),
             subtotal: calcularSubtotal(produto)
         };
@@ -230,7 +247,9 @@ export function finalizarCompra(produtos = []) {
             const resumo = resumirPrecos(produto);
             const comprado = calcularSubtotal(produto) > 0;
             const precoComprado =
-                resumo.quantidade > 0
+                ehHortifruti(produto)
+                    ? Math.max(0, numeroSeguro(produto.precos?.[0]?.valor ?? produto.preco))
+                    : resumo.quantidade > 0
                     ? resumo.media
                     : numeroSeguro(produto.preco);
             const quantidadeComprada =
