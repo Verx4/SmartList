@@ -496,6 +496,12 @@ export function ordenarProdutos(
 
     const lista = [...produtos];
 
+    if (ordenacao === "adicao") {
+
+        return lista;
+
+    }
+
     const comparadores = {
 
         nome: (a, b) =>
