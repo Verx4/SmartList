@@ -21,7 +21,10 @@ const CATEGORIAS = [
 
 function numeroSeguro(valor) {
 
-    const numero = Number(valor);
+    const valorNormalizado = typeof valor === "string"
+        ? valor.trim().replace(/\s/g, "").replace(",", ".")
+        : valor;
+    const numero = Number(valorNormalizado);
 
     return Number.isFinite(numero)
         ? numero
@@ -507,7 +510,7 @@ function montarProduto(produto) {
                 <div class="metrica-produto">
                     <span>${porPeso ? "Peso (kg)" : editando && precosAdicionais.length ? "Qtd. principal" : "Qtd. total"}</span>
                     ${editando && porPeso ? `
-                        <input class="editar-peso-total" type="number" min="0" step="0.001" inputmode="decimal"
+                        <input class="editar-peso-total" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
                             data-editar="peso" value="${numeroSeguro(produto.peso)}" aria-label="Peso em kg de ${escaparHTML(produto.nome)}">
                     ` : editando ? `
                         <div class="editar-quantidade-total">
@@ -529,7 +532,7 @@ function montarProduto(produto) {
                 <section class="editar-produto-painel" aria-label="Editar produto">
                     <label><span>Nome do produto</span><input type="text" data-editar="nome" maxlength="100" value="${escaparHTML(produto.nome)}"></label>
                     <label><span>Categoria</span><select data-editar="categoria">${montarOpcoesCategoria(produto.categoria)}</select></label>
-                    <label><span>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="number" min="0" step="0.01" inputmode="decimal"
+                    <label><span>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
                         data-editar="valor-unitario" value="${precoPrincipal.valor.toFixed(2)}"
                         aria-label="Valor unitário de ${escaparHTML(produto.nome)}"></label>
                     <div class="editar-produto-acoes">
@@ -762,7 +765,6 @@ export function renderizarProdutos(
             });
 
             campoPeso?.addEventListener("input", () => {
-                campoPeso.value = String(Math.max(0, numeroSeguro(campoPeso.value)));
                 sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
             });
 
