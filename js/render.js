@@ -498,7 +498,7 @@ function montarProduto(produto) {
                         ` : `<small class="produto-sem-ultima-compra">Sem compra finalizada</small>`}
                     </div>
                 </div>
-                ${!porPeso && quantidadePrecos > 1 ? `
+                ${editando && !porPeso && quantidadePrecos > 1 ? `
                     <button type="button" class="alternar-precos acionavel" data-acao="alternar-precos"
                         aria-expanded="${aberto}" aria-controls="precos-${escaparHTML(produto.id)}">
                         ${aberto ? "Ocultar" : "Ver"} ${rotuloPrecos}
