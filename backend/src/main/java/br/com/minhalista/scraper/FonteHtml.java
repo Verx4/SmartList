@@ -25,4 +25,17 @@ final class FonteHtml {
             .followRedirects(true)
             .get();
     }
+
+    static Document carregarPost(String url, String campo, String valor) throws IOException {
+        return Jsoup.connect(url)
+            .userAgent(NAVEGADOR)
+            .header("Accept", "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8")
+            .header("Accept-Language", "pt-BR,pt;q=0.9")
+            .timeout(15_000)
+            .maxBodySize(2_500_000)
+            .followRedirects(true)
+            .data(campo, valor)
+            .post();
+    }
 }
+

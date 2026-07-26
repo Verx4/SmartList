@@ -34,12 +34,38 @@ public class ComparacaoService {
         new RedeMercadoResponse("Pão de Açúcar", true, "Preço público da loja online"),
         new RedeMercadoResponse("Atacadão", true, "Preço público conforme a loja disponível"),
         new RedeMercadoResponse("Recife Atacarejo", true, "Preço público para Recife"),
-        new RedeMercadoResponse("Assaí", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Deskontão", true, "Preço público para a Região Metropolitana do Recife"),
+        new RedeMercadoResponse("Carrefour", true, "Preço público da loja online"),
         new RedeMercadoResponse("Novo Atacarejo", false, "Aguardando preço público ou nota fiscal"),
         new RedeMercadoResponse("Mix Mateus", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Assaí Atacadista", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Arco-Mix", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Econômico Atacadão", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Atacado dos Presentes", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Makro", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Extra Mercado", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Rede Tem Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Veneza Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Bonanza Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Supermercado da Família", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("KarneKeijo", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Rende Mais Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Recibom", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Supermercados Melodia", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Fênix Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Econômico Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Boas Compras", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Mercadinho D. Helder", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Trevo Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Supermercado Pernambucano", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("MP Supermercado", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Supermercado Campeão", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Supermercado La Roque", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("J&A Supermercado", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Costa e Souza Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("Lealdade Supermercados", false, "Aguardando preço público ou nota fiscal"),
+        new RedeMercadoResponse("O Supermercado da Carne", false, "Aguardando preço público ou nota fiscal"),
         new RedeMercadoResponse("Verde Frut", false, "Aguardando preço público ou nota fiscal"),
-        new RedeMercadoResponse("Deskontão", false, "Aguardando preço público ou nota fiscal"),
-        new RedeMercadoResponse("Carrefour", false, "Aguardando preço público ou nota fiscal"),
         new RedeMercadoResponse("GBarbosa", false, "Aguardando preço público ou nota fiscal")
     );
 
@@ -133,6 +159,7 @@ public class ComparacaoService {
         Map<String, PrecoColetadoResponse> recentes = new LinkedHashMap<>();
         scraperService.pesquisar(produto).stream()
             .filter(preco -> preco.coletadoEm() != null && preco.coletadoEm().isAfter(limite))
+            .filter(preco -> scraperService.produtoCompativel(produto, preco.produto()))
             .filter(preco -> selecionados.contains(chave(preco.mercado())))
             .sorted(Comparator.comparing(PrecoColetadoResponse::coletadoEm).reversed())
             .forEach(preco -> recentes.putIfAbsent(chave(preco.mercado()), preco));
@@ -169,10 +196,11 @@ public class ComparacaoService {
     }
 
     private String chave(String valor) {
-        return Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD)
+        String normalizada = Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD)
             .replaceAll("\\p{M}", "")
             .toLowerCase(Locale.ROOT)
             .replaceAll("[^a-z0-9]", "");
+        return "assaiatacadista".equals(normalizada) ? "assai" : normalizada;
     }
 
     private record ItemColetado(
@@ -199,3 +227,4 @@ public class ComparacaoService {
         }
     }
 }
+

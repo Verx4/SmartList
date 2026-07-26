@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v27`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v27`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v28`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v28`;
 
 const PRECACHE_URLS = [
     "./",
@@ -44,6 +44,7 @@ const PRECACHE_URLS = [
     "./js/comparar-embalagens.js",
     "./js/inicio.js",
     "./js/comparacao.js",
+    "./js/localizacao-mercados.js",
     "./js/historico-page.js",
     "./js/scanner-nota.js",
     "./js/listas-salvas-ui.js",
@@ -173,3 +174,4 @@ async function responderRecursoAtualizavel(request) {
             || Response.error();
     }
 }
+
