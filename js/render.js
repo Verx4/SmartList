@@ -443,6 +443,18 @@ function montarLinhaPreco(preco, indice, nomeProduto) {
 }
 
 
+function formatarQuantidade(valor) {
+
+    return numeroSeguro(valor).toLocaleString(
+        "pt-BR",
+        {
+            maximumFractionDigits: 3
+        }
+    );
+
+}
+
+
 function montarProduto(produto) {
 
     const resumo = resumirProduto(produto);
@@ -450,23 +462,30 @@ function montarProduto(produto) {
     const editando = produtosEmEdicao.has(String(produto.id));
     const quantidadePrecos = resumo.precos.length;
     const rotuloPrecos = `${quantidadePrecos} ${quantidadePrecos === 1 ? "preço" : "preços"}`;
+    const ultimoPreco = Math.max(0, numeroSeguro(produto.ultimoPreco));
+    const ultimaQuantidade = Math.max(0, numeroSeguro(produto.ultimaQuantidade));
+    const possuiUltimaCompra = ultimoPreco > 0 || ultimaQuantidade > 0;
 
     return `
-        <article class="produto produto-multivalores ${produto.favorito ? "produto-favorito" : ""}"
+        <article class="produto produto-multivalores"
             data-produto-id="${escaparHTML(produto.id)}">
             <header class="produto-resumo-compacto">
                 <div class="produto-identidade-compacta">
-                    <button type="button" class="btn-favorito-produto ${produto.favorito ? "ativo" : ""}"
-                        data-acao="favoritar" aria-label="${produto.favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}">
-                        ${produto.favorito ? "★" : "☆"}
-                    </button>
-                    <div><h3>${escaparHTML(produto.nome)}</h3><small>${escaparHTML(produto.categoria)}</small></div>
+                    <div>
+                        <h3>${escaparHTML(produto.nome)}</h3>
+                        ${possuiUltimaCompra ? `
+                            <div class="produto-ultima-compra" aria-label="Dados da última compra">
+                                <span>Último preço <strong>${formatarMoeda(ultimoPreco)}</strong></span>
+                                <span>Última qtd. <strong>${formatarQuantidade(ultimaQuantidade)}</strong></span>
+                            </div>
+                        ` : `<small class="produto-sem-ultima-compra">Sem compra finalizada</small>`}
+                    </div>
                 </div>
                 <div class="alternar-precos" aria-label="${rotuloPrecos}">
                     <strong>${rotuloPrecos}</strong>
                 </div>
                 <div class="metrica-produto"><span>Qtd. total</span><strong data-total-quantidade>${resumo.quantidadeTotal}</strong></div>
-                <div class="metrica-produto metrica-total"><span>Total do item</span><strong data-total-produto>${formatarMoeda(resumo.total)}</strong></div>
+                <div class="metrica-produto metrica-total"><span>Total</span><strong data-total-produto>${formatarMoeda(resumo.total)}</strong></div>
                 <button type="button" class="editar-produto" data-acao="editar" aria-label="Editar ${escaparHTML(produto.nome)}">✎</button>
             </header>
 
@@ -659,12 +678,6 @@ export function renderizarProdutos(
                 .querySelector('[data-acao="excluir"]')
                 ?.addEventListener("click", () =>
                     acoes.aoExcluir?.(id)
-                );
-
-            elemento
-                .querySelector('[data-acao="favoritar"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoFavoritar?.(id)
                 );
 
             elemento

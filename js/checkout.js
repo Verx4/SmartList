@@ -225,14 +225,34 @@ export function finalizarCompra(produtos = []) {
     );
 
     const produtosAtualizados =
-        produtos.map(produto => ({
+        produtos.map(produto => {
+
+            const resumo = resumirPrecos(produto);
+            const comprado = calcularSubtotal(produto) > 0;
+            const precoComprado =
+                resumo.quantidade > 0
+                    ? resumo.media
+                    : numeroSeguro(produto.preco);
+            const quantidadeComprada =
+                resumo.quantidade > 0
+                    ? resumo.quantidade
+                    : ehHortifruti(produto) && numeroSeguro(produto.peso) > 0
+                        ? numeroSeguro(produto.peso)
+                        : numeroSeguro(produto.quantidade);
+
+            return {
 
             ...produto,
 
             ultimoPreco:
-                numeroSeguro(produto.preco) > 0
-                    ? numeroSeguro(produto.preco)
+                comprado && precoComprado > 0
+                    ? precoComprado
                     : numeroSeguro(produto.ultimoPreco),
+
+            ultimaQuantidade:
+                comprado
+                    ? quantidadeComprada
+                    : numeroSeguro(produto.ultimaQuantidade),
 
             ultimoSupermercado:
                 produto.supermercado ||
@@ -255,7 +275,9 @@ export function finalizarCompra(produtos = []) {
             atualizadoEm:
                 new Date().toISOString()
 
-        }));
+            };
+
+        });
 
     return {
 

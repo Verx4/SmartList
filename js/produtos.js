@@ -93,6 +93,11 @@ export function normalizarProduto(produto = {}) {
             numeroSeguro(produto.ultimoPreco)
         ),
 
+        ultimaQuantidade: Math.max(
+            0,
+            numeroSeguro(produto.ultimaQuantidade)
+        ),
+
         ultimoSupermercado: textoSeguro(
             produto.ultimoSupermercado
         ),
