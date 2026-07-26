@@ -105,7 +105,7 @@ public class ScraperService {
             try {
                 fonte.buscar(consulta, cidade).stream()
                     .max(Comparator.comparingInt(resultado -> relevancia(consulta, resultado.produto())))
-                    .filter(resultado -> relevancia(consulta, resultado.produto()) > 0)
+                    .filter(resultado -> produtoCompativel(consulta, resultado.produto()))
                     .map(resultado -> registrarPreco(new PrecoColetadoRequest(
                         resultado.produto(),
                         resultado.mercado(),
@@ -123,20 +123,50 @@ public class ScraperService {
     }
 
     private int relevancia(String consulta, String encontrado) {
+        if (!produtoCompativel(consulta, encontrado)) {
+            return Integer.MIN_VALUE;
+        }
         Set<String> termosConsulta = termos(consulta);
         Set<String> termosEncontrados = termos(encontrado);
         int comuns = (int) termosConsulta.stream().filter(termosEncontrados::contains).count();
-        return comuns * 100 - Math.abs(termosEncontrados.size() - termosConsulta.size());
+        String consultaNormalizada = normalizar(consulta);
+        String encontradoNormalizado = normalizar(encontrado);
+        int inicioExato = encontradoNormalizado.startsWith(consultaNormalizada) ? 200 : 0;
+        return inicioExato + comuns * 100 - Math.abs(termosEncontrados.size() - termosConsulta.size());
+    }
+
+    public boolean produtoCompativel(String consulta, String encontrado) {
+        List<String> consultaOrdenada = termosOrdenados(consulta);
+        List<String> encontradoOrdenado = termosOrdenados(encontrado);
+        if (consultaOrdenada.isEmpty() || encontradoOrdenado.isEmpty()) return false;
+        if (consultaOrdenada.size() > 1) {
+            return encontradoOrdenado.containsAll(consultaOrdenada);
+        }
+        String termo = consultaOrdenada.getFirst();
+        int limite = Math.min(2, encontradoOrdenado.size());
+        return encontradoOrdenado.subList(0, limite).contains(termo);
     }
 
     private Set<String> termos(String valor) {
-        String limpo = Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD)
-            .replaceAll("\\p{M}", "")
-            .toLowerCase(Locale.ROOT);
+        String limpo = normalizar(valor);
         return List.of(limpo.split("[^a-z0-9]+"))
             .stream()
             .filter(termo -> !termo.isBlank())
             .collect(Collectors.toSet());
+    }
+
+    private List<String> termosOrdenados(String valor) {
+        return List.of(normalizar(valor).split("[^a-z0-9]+"))
+            .stream()
+            .filter(termo -> !termo.isBlank())
+            .toList();
+    }
+
+    private String normalizar(String valor) {
+        return Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "")
+            .toLowerCase(Locale.ROOT)
+            .trim();
     }
 
     @Transactional
@@ -174,3 +204,4 @@ public class ScraperService {
             .toList();
     }
 }
+

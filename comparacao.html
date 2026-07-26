@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/comparacao-lista-v2.css?v=1">
+    <link rel="stylesheet" href="./css/comparacao-lista-v2.css?v=2">
     <link rel="stylesheet" href="./css/comparacao-embalagens-padrao.css?v=1">
 </head>
 <body class="embalagens-page mercados-page sem-controle-tema">
@@ -43,6 +43,16 @@
             </div>
             <label for="cidadeComparacao">Cidade ou região</label>
             <input id="cidadeComparacao" name="cidade" type="text" maxlength="100" placeholder="Ex.: Recife">
+            <div class="localizacao-comparacao">
+                <button id="usarMinhaLocalizacao" type="button">📍 Usar minha localização</button>
+                <div>
+                    <strong id="statusLocalizacao" aria-live="polite">Localização ainda não solicitada.</strong>
+                    <small>Usada somente nesta consulta; não será salva.</small>
+                </div>
+            </div>
+            <p class="atribuicao-mapa">
+                Endereços por <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a>.
+            </p>
 
             <fieldset>
                 <legend>Mercados para consultar</legend>
@@ -61,8 +71,9 @@
     </main>
 
     <script src="./js/tema.js"></script>
-    <script type="module" src="./js/comparacao.js?v=2"></script>
+    <script type="module" src="./js/comparacao.js?v=3"></script>
     <script src="./js/mobile-nav.js"></script>
     <script>document.getElementById('ajudaMercados')?.addEventListener('click',()=>alert('Selecione os mercados e compare os preços disponíveis de todos os itens da sua lista. Os valores podem variar em ±5%.'));</script>
 </body>
 </html>
+
