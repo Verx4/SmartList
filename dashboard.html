@@ -77,17 +77,21 @@
         <section class="dashboard-grid-superior">
             <article id="cardOrcamento" class="orcamento-card orcamento-vazio">
                 <div class="orcamento-topo">
-                    <div>
-                        <h2>💰 Orçamento da compra</h2>
-                        <p>Defina quanto pretende gastar.</p>
-                    </div>
+                    <h2>💰 Orçamento</h2>
+                    <button id="btnEditarOrcamento" class="btn-editar-orcamento" type="button" aria-label="Editar orçamento" aria-expanded="false" aria-controls="painelEdicaoOrcamento">✎</button>
                 </div>
 
-                <div class="orcamento-form">
-                    <label class="sr-only" for="valorOrcamento">Valor do orçamento</label>
-                    <input type="text" id="valorOrcamento" placeholder="Ex.: 500,00" inputmode="decimal">
-                    <button type="button" id="btnSalvarOrcamento" class="btn btn-primary">Salvar</button>
-                    <button type="button" id="btnLimparOrcamento" class="btn btn-secondary">Limpar</button>
+                <div id="painelEdicaoOrcamento" class="orcamento-edicao" hidden>
+                    <div>
+                        <p>Defina quanto pretende gastar.</p>
+                    </div>
+
+                    <div class="orcamento-form">
+                        <label class="sr-only" for="valorOrcamento">Valor do orçamento</label>
+                        <input type="text" id="valorOrcamento" placeholder="Ex.: 500,00" inputmode="decimal">
+                        <button type="button" id="btnSalvarOrcamento" class="btn btn-primary">Salvar</button>
+                        <button type="button" id="btnLimparOrcamento" class="btn btn-secondary">Limpar</button>
+                    </div>
                 </div>
 
                 <div class="orcamento-resumo">
@@ -114,9 +118,6 @@
                     <div id="barraOrcamento" class="barra-orcamento"></div>
                 </div>
 
-                <p id="mensagemOrcamento" class="mensagem-orcamento">
-                    Defina um orçamento para acompanhar a compra.
-                </p>
             </article>
 
             <article class="mercado-atual-card">

@@ -306,6 +306,36 @@ export function configurarOrcamento(
     const campo =
         document.getElementById("valorOrcamento");
 
+    const botaoEditar =
+        document.getElementById("btnEditarOrcamento");
+
+    const painelEdicao =
+        document.getElementById("painelEdicaoOrcamento");
+
+    function fecharEdicao() {
+
+        if (!painelEdicao || !botaoEditar) return;
+
+        painelEdicao.hidden = true;
+        botaoEditar.setAttribute("aria-expanded", "false");
+
+    }
+
+    if (botaoEditar && painelEdicao && !botaoEditar.dataset.configurado) {
+
+        botaoEditar.dataset.configurado = "true";
+        botaoEditar.addEventListener("click", function () {
+
+            const abrir = painelEdicao.hidden;
+            painelEdicao.hidden = !abrir;
+            botaoEditar.setAttribute("aria-expanded", String(abrir));
+
+            if (abrir) requestAnimationFrame(() => campo?.focus());
+
+        });
+
+    }
+
 
     if (botaoSalvar && !botaoSalvar.dataset.configurado) {
 
@@ -330,6 +360,8 @@ export function configurarOrcamento(
                 aoAlterar(valor);
 
             }
+
+            fecharEdicao();
 
         });
 
@@ -359,6 +391,8 @@ export function configurarOrcamento(
                 aoAlterar(0);
 
             }
+
+            fecharEdicao();
 
         });
 
