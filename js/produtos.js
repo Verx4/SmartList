@@ -413,12 +413,13 @@ export function alternarFavorito(id) {
 
 export function aplicarSupermercadoAProdutos(
     supermercado,
-    apenasSemMercado = false
+    apenasSemMercado = false,
+    permitirVazio = false
 ) {
 
     const nome = textoSeguro(supermercado);
 
-    if (!nome) {
+    if (!nome && !permitirVazio) {
 
         return listarProdutos();
 

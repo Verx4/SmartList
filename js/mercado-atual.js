@@ -199,7 +199,8 @@ function renderizarSelect() {
 
     const opcaoInicial = document.createElement("option");
     opcaoInicial.value = "";
-    opcaoInicial.textContent = "Selecione o mercado atual";
+    opcaoInicial.textContent = "Manter vazio";
+    opcaoInicial.selected = !atual;
     campo.appendChild(opcaoInicial);
 
     listarMercadosFrequentes().forEach(mercado => {
@@ -244,6 +245,28 @@ function criarMercadoVisual(nome, selecionado) {
 }
 
 
+function criarOpcaoMercadoVazio(selecionado) {
+
+    const item = document.createElement("div");
+    item.className = selecionado
+        ? "mercado-frequente-item ativo"
+        : "mercado-frequente-item";
+
+    const selecionar = document.createElement("button");
+    selecionar.type = "button";
+    selecionar.className = "btn-selecionar-mercado";
+    selecionar.dataset.acao = "manter-vazio";
+    selecionar.textContent = selecionado
+        ? "✓ Manter vazio"
+        : "Manter vazio";
+
+    item.appendChild(selecionar);
+
+    return item;
+
+}
+
+
 function renderizarLista() {
 
     const container = document.getElementById("listaMercadosFrequentes");
@@ -259,12 +282,12 @@ function renderizarLista() {
 
     container.replaceChildren();
 
+    container.appendChild(
+        criarOpcaoMercadoVazio(!atual)
+    );
+
     if (!mercados.length) {
 
-        const aviso = document.createElement("p");
-        aviso.className = "mercados-vazio";
-        aviso.textContent = "Nenhum mercado cadastrado.";
-        container.appendChild(aviso);
         return;
 
     }
@@ -285,7 +308,7 @@ function renderizarBarraCompacta() {
     const resumo = document.getElementById("mercadoAtualResumo");
     const barra = document.getElementById("barraSelecionarMercado");
     const atual = obterMercadoAtual();
-    const texto = atual || "Selecione um mercado";
+    const texto = atual || "Manter vazio";
 
     if (resumo) {
 
@@ -299,7 +322,7 @@ function renderizarBarraCompacta() {
             "aria-label",
             atual
                 ? `Mercado atual: ${atual}. Toque para alterar.`
-                : "Selecione o mercado desta compra."
+                : "Compra sem mercado. Toque para alterar."
         );
 
     }
@@ -335,7 +358,7 @@ export function atualizarMercadoNoModal() {
 
     if (campo) {
 
-        campo.textContent = obterMercadoAtual() || "Nenhum mercado selecionado";
+        campo.textContent = obterMercadoAtual() || "Sem mercado";
 
     }
 
@@ -429,17 +452,22 @@ export function configurarMercadoAtual(aoSalvar) {
         botaoSalvar.dataset.configurado = "true";
         botaoSalvar.addEventListener("click", () => {
 
-            const mercado = salvarMercadoAtual(campoAtual?.value);
+            const valor = limparTexto(campoAtual?.value);
+            const mercado = valor
+                ? salvarMercadoAtual(valor)
+                : "";
 
-            if (!mercado) {
+            if (!valor) {
 
-                mostrarMensagem("Selecione um mercado.", "erro");
-                campoAtual?.focus();
-                return;
+                limparMercadoAtual();
 
             }
 
-            mostrarMensagem(`A compra atual está definida para ${mercado}.`);
+            mostrarMensagem(
+                mercado
+                    ? `A compra atual está definida para ${mercado}.`
+                    : "A compra atual foi mantida sem mercado."
+            );
             comunicar(mercado);
 
         });
@@ -460,6 +488,16 @@ export function configurarMercadoAtual(aoSalvar) {
             }
 
             const mercado = botao.dataset.mercado;
+
+            if (botao.dataset.acao === "manter-vazio") {
+
+                limparMercadoAtual();
+                mostrarMensagem("A compra atual foi mantida sem mercado.");
+                comunicar("");
+                fecharPainelCompacto();
+                return;
+
+            }
 
             if (botao.dataset.acao === "remover") {
 

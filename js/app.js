@@ -495,21 +495,6 @@ function atualizarTela() {
 
 function abrirModal() {
 
-    const mercado = obterMercadoAtual();
-
-    if (!mercado) {
-
-        notificar(
-            "Escolha e salve o mercado atual antes de adicionar produtos.",
-            "erro"
-        );
-
-        focarSeletorMercado();
-
-        return;
-
-    }
-
     const modal = elemento("modal", "modalProduto");
 
     if (!modal) {
@@ -621,21 +606,6 @@ function salvarNovoProduto(evento) {
 
     }
 
-    if (!supermercado) {
-
-        fecharModal();
-
-        notificar(
-            "Escolha o mercado atual antes de adicionar o produto.",
-            "erro"
-        );
-
-        focarSeletorMercado();
-
-        return;
-
-    }
-
     if (
         categoria === "automatico" ||
         categoria === "Automático"
@@ -663,7 +633,9 @@ function salvarNovoProduto(evento) {
     fecharModal();
 
     notificar(
-        `${nome} foi adicionado à lista de ${supermercado}.`
+        supermercado
+            ? `${nome} foi adicionado à lista de ${supermercado}.`
+            : `${nome} foi adicionado à lista sem mercado.`
     );
 
     atualizarTela();
@@ -905,17 +877,24 @@ function configurarEventos() {
 
                 aplicarSupermercadoAProdutos(
                     nome,
-                    false
+                    false,
+                    true
                 );
 
                 notificar(
-                    `O mercado ${nome} foi aplicado aos produtos existentes.`
+                    nome
+                        ? `O mercado ${nome} foi aplicado aos produtos existentes.`
+                        : "Os produtos existentes ficaram sem mercado."
                 );
 
             } else {
 
+                salvarProdutos(listarProdutos());
+
                 notificar(
-                    `Mercado atual alterado para ${nome}.`
+                    nome
+                        ? `Mercado atual alterado para ${nome}.`
+                        : "A compra atual foi mantida sem mercado."
                 );
 
             }

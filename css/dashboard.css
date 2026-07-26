@@ -424,7 +424,7 @@
 
 .mercado-seletor-barra {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 11px;
     min-height: 68px;
@@ -435,10 +435,6 @@
 
 .mercado-seletor-barra::-webkit-details-marker {
     display: none;
-}
-
-.mercado-seletor-icone {
-    font-size: 22px;
 }
 
 .mercado-seletor-textos {
