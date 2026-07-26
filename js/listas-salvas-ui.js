@@ -1,5 +1,6 @@
 import {
     criarListaSalva,
+    excluirListaSalva,
     listarListasSalvas,
     selecionarListaSalva
 } from "./produtos.js";
@@ -35,7 +36,10 @@ function ativarGerenciadorDeListas() {
             <select id="selecionarListaSalva" aria-label="Selecionar lista salva">
                 ${listas.map(lista => `<option value="${escapar(lista.id)}" ${lista.atual ? "selected" : ""}>${escapar(lista.nome)} · ${lista.produtos.length} item(ns)</option>`).join("")}
             </select>
-            <button type="button" class="btn btn-primary" id="criarNovaLista">+ Nova lista</button>
+            <div class="listas-salvas-botoes">
+                <button type="button" class="btn btn-primary" id="criarNovaLista">+ Nova lista</button>
+                <button type="button" class="btn btn-excluir-lista" id="excluirListaAtual" aria-label="Excluir lista selecionada">Excluir</button>
+            </div>
         </div>
         <div class="listas-salvas-nova" role="dialog" aria-modal="true" aria-labelledby="tituloNovaLista" hidden>
             <strong id="tituloNovaLista">Criar nova lista</strong>
@@ -47,6 +51,15 @@ function ativarGerenciadorDeListas() {
 
     gerenciador.querySelector("select").addEventListener("change", evento => {
         if (selecionarListaSalva(evento.currentTarget.value)) window.location.reload();
+    });
+
+    gerenciador.querySelector("#excluirListaAtual").addEventListener("click", () => {
+        const seletor = gerenciador.querySelector("#selecionarListaSalva");
+        const nome = seletor.selectedOptions[0]?.textContent?.split(" · ")[0] || "esta lista";
+
+        if (!window.confirm(`Excluir ${nome}? Esta ação não pode ser desfeita.`)) return;
+
+        if (excluirListaSalva(seletor.value)) window.location.reload();
     });
 
     gerenciador.querySelector("#criarNovaLista").addEventListener("click", () => {

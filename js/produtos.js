@@ -771,3 +771,43 @@ export function selecionarListaSalva(id) {
     return escolhida;
 
 }
+
+
+export function excluirListaSalva(id) {
+
+    const { listas, idAtual } = carregarListas();
+    const alvo = listas.find(lista => lista.id === String(id));
+
+    if (!alvo) return null;
+
+    let restantes = listas.filter(lista => lista.id !== alvo.id);
+
+    if (!restantes.length) {
+        const agora = new Date().toISOString();
+        restantes = [{
+            id: criarId(),
+            nome: "Minha lista",
+            mercado: "",
+            produtos: [],
+            criadoEm: agora,
+            atualizadoEm: agora
+        }];
+    }
+
+    const proxima = idAtual === alvo.id
+        ? restantes[0]
+        : restantes.find(lista => lista.id === idAtual) || restantes[0];
+
+    gravarListas(restantes, proxima.id);
+    localStorage.setItem(CHAVE_PRODUTOS, JSON.stringify(proxima.produtos));
+
+    if (proxima.mercado) localStorage.setItem("mercadoAtual", proxima.mercado);
+    else localStorage.removeItem("mercadoAtual");
+
+    window.dispatchEvent(new CustomEvent("listaatualalterada", {
+        detail: { lista: proxima, excluida: alvo }
+    }));
+
+    return { excluida: alvo, listaAtual: proxima };
+
+}
