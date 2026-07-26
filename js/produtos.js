@@ -1,3 +1,8 @@
+import {
+    normalizarMedidaProduto,
+    produtoEhPorPeso
+} from "./medidas-produtos.js";
+
 const CHAVE_PRODUTOS = "produtos";
 const CHAVE_LISTAS_SALVAS = "listasSalvas";
 const CHAVE_LISTA_ATUAL = "listaAtualId";
@@ -68,6 +73,8 @@ export function normalizarProduto(produto = {}) {
         categoria:
             textoSeguro(produto.categoria) ||
             "📦 Outros",
+
+        medida: normalizarMedidaProduto(produto),
 
         precos: resumoPrecos.precos,
 
@@ -553,9 +560,7 @@ export function zerarPrecosDaLista() {
                 quantidade: 0
             })),
 
-            peso: /(hortifruti|verdura|legume|fruta)/i.test(
-                String(produto.categoria)
-            )
+            peso: produtoEhPorPeso(produto)
                 ? 0
                 : produto.peso,
 
@@ -608,9 +613,7 @@ function normalizarPrecosDoProduto(produto = {}) {
 export function resumirPrecosProduto(produto = {}) {
 
     const precos = normalizarPrecosDoProduto(produto);
-    const porPeso = /(hortifruti|verdura|legume|fruta)/i.test(
-        String(produto.categoria || "")
-    );
+    const porPeso = produtoEhPorPeso(produto);
 
     if (porPeso) {
 

@@ -1,3 +1,8 @@
+import {
+    animarAberturaModal,
+    animarFechamentoModal
+} from "./animations.js";
+
 let modaisConfigurados = false;
 
 function obterModal(id) {
@@ -27,6 +32,8 @@ export function abrirModal(id = "modal") {
         "modal-aberto"
     );
 
+    animarAberturaModal(modal);
+
     setTimeout(() => {
         modal
             .querySelector(
@@ -39,7 +46,7 @@ export function abrirModal(id = "modal") {
     }, 0);
 }
 
-export function fecharModal(
+export async function fecharModal(
     id = "modal",
     limparFormulario = true
 ) {
@@ -49,13 +56,14 @@ export function fecharModal(
         return;
     }
 
-    modal.hidden = true;
-    modal.style.display = "none";
-
     modal.setAttribute(
         "aria-hidden",
         "true"
     );
+
+    await animarFechamentoModal(modal);
+    modal.hidden = true;
+    modal.style.display = "none";
 
     if (limparFormulario) {
         modal

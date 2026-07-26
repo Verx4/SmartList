@@ -1,3 +1,8 @@
+import {
+    normalizarMedidaProduto,
+    produtoEhPorPeso
+} from "./medidas-produtos.js";
+
 const CHAVE_HISTORICO = "historicoCompras";
 const CHAVE_ULTIMA_COMPRA = "ultimaCompra";
 const CHAVE_ECONOMIA = "economiaAcumulada";
@@ -16,9 +21,7 @@ function numeroSeguro(valor) {
 
 function ehHortifruti(produto) {
 
-    return /(hortifruti|verdura|legume|fruta)/i.test(
-        String(produto.categoria || "")
-    );
+    return produtoEhPorPeso(produto);
 
 }
 
@@ -175,6 +178,7 @@ export function finalizarCompra(produtos = []) {
             id: produto.id,
             nome: produto.nome,
             categoria: produto.categoria,
+            medida: normalizarMedidaProduto(produto),
             supermercado: produto.supermercado,
             precos: resumo.precos.map(item => ({ ...item })),
             preco: porPeso ? valorKg : resumo.precos.length ? resumo.media : numeroSeguro(produto.preco),

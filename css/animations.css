@@ -1,0 +1,130 @@
+:root {
+    --animacao-rapida: 160ms;
+    --animacao-padrao: 220ms;
+    --animacao-lenta: 280ms;
+    --animacao-curva: cubic-bezier(.2, .8, .2, 1);
+}
+
+:where(button, a, input, select, textarea, summary) {
+    transition:
+        color var(--animacao-rapida) ease,
+        background-color var(--animacao-rapida) ease,
+        border-color var(--animacao-rapida) ease,
+        box-shadow var(--animacao-rapida) ease,
+        opacity var(--animacao-rapida) ease,
+        transform var(--animacao-rapida) var(--animacao-curva);
+}
+
+:where(button, a[href], input, select, textarea, summary):focus-visible {
+    outline: 3px solid var(--cor-destaque, #60a5fa);
+    outline: 3px solid color-mix(in srgb, var(--cor-destaque, #60a5fa) 70%, white);
+    outline-offset: 3px;
+}
+
+:where(.card, .produto, .orcamento-card, .mercado-atual-card) {
+    transition:
+        border-color var(--animacao-padrao) ease,
+        box-shadow var(--animacao-padrao) ease,
+        transform var(--animacao-padrao) var(--animacao-curva);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    :where(.card, .produto, .orcamento-card, .mercado-atual-card):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 34px rgb(0 0 0 / 18%);
+    }
+
+    :where(button, .btn, a.btn):not(:disabled):hover {
+        transform: translateY(-1px) scale(1.01);
+    }
+}
+
+:where(button, .btn, a.btn):not(:disabled):active {
+    transform: scale(.97);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+    border-color: var(--cor-destaque, #60a5fa);
+    box-shadow: 0 0 0 3px rgba(var(--cor-primaria-rgb, 37, 99, 235), .16);
+}
+
+details[open] > :not(summary) {
+    animation: conteudo-detalhes var(--animacao-padrao) var(--animacao-curva);
+}
+
+.modal {
+    backdrop-filter: blur(6px);
+}
+
+.modal-content {
+    transform-origin: center;
+    will-change: transform, opacity;
+}
+
+.mensagem {
+    will-change: transform, opacity;
+}
+
+.produto-removendo {
+    pointer-events: none;
+}
+
+.produto-atualizado {
+    animation: produto-atualizado 620ms ease-out;
+}
+
+.dica-medida {
+    display: block;
+    margin-top: 6px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.form-group-medida select:disabled {
+    cursor: not-allowed;
+    opacity: .78;
+}
+
+@keyframes conteudo-detalhes {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes produto-atualizado {
+    0%,
+    100% {
+        box-shadow: inherit;
+    }
+
+    35% {
+        border-color: var(--cor-destaque, #60a5fa);
+        box-shadow: 0 0 0 3px rgba(var(--cor-primaria-rgb, 37, 99, 235), .18);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+
+    :where(.card, .produto, .orcamento-card, .mercado-atual-card):hover,
+    :where(button, .btn, a.btn):hover,
+    :where(button, .btn, a.btn):active {
+        transform: none;
+    }
+}

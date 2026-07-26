@@ -1,3 +1,5 @@
+import "./animations.js";
+
 const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL"

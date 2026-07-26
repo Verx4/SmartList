@@ -1,3 +1,12 @@
+import {
+    MEDIDA_KG,
+    normalizarMedidaProduto,
+    produtoEhPorPeso
+} from "./medidas-produtos.js";
+import {
+    animarProdutosNaLista
+} from "./animations.js";
+
 const CATEGORIAS = [
 
     "🥛 Laticínios",
@@ -81,9 +90,7 @@ function escaparHTML(valor) {
 
 function ehHortifruti(produto) {
 
-    return /(hortifruti|verdura|legume|fruta)/i.test(
-        String(produto.categoria || "")
-    );
+    return produtoEhPorPeso(produto);
 
 }
 
@@ -635,7 +642,11 @@ function obterAlteracoesDaEdicao(elemento, produto) {
     campoNome.setCustomValidity("");
 
     const categoria = elemento.querySelector('[data-editar="categoria"]')?.value;
-    const porPeso = ehHortifruti({ categoria });
+    const medida = normalizarMedidaProduto({
+        ...produto,
+        categoria
+    });
+    const porPeso = medida === MEDIDA_KG;
     let quantidadeTotal = Math.max(
         0,
         porPeso
@@ -650,6 +661,7 @@ function obterAlteracoesDaEdicao(elemento, produto) {
     return {
         nome,
         categoria,
+        medida,
         peso: porPeso
             ? Math.max(0, numeroSeguro(elemento.querySelector('[data-editar="peso"]')?.value))
             : 0,
@@ -697,6 +709,8 @@ export function renderizarProdutos(
 
     lista.innerHTML =
         produtos.map(montarProduto).join("");
+
+    animarProdutosNaLista(lista);
 
 
     lista.querySelectorAll("[data-produto-id]")
@@ -833,7 +847,7 @@ export function renderizarProdutos(
             elemento
                 .querySelector('[data-acao="excluir"]')
                 ?.addEventListener("click", () =>
-                    acoes.aoExcluir?.(id)
+                    acoes.aoExcluir?.(id, elemento)
                 );
 
             elemento

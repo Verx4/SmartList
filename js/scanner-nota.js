@@ -5,6 +5,10 @@ import {
     obterListaAtualSalva
 } from "./produtos.js";
 import { obterMercadoAtual, salvarMercadoAtual } from "./mercado-atual.js";
+import {
+    MEDIDA_KG,
+    MEDIDA_UNIDADE
+} from "./medidas-produtos.js";
 
 const URL_JS_QR = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
 const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
@@ -307,6 +311,7 @@ function importarSelecionados(modal, nota, fechar, criarNova) {
                 valor: Math.max(0, Number(item.valorUnitario || 0)),
                 quantidade: porPeso ? quantidade : Math.max(1, Math.round(quantidade))
             }],
+            medida: porPeso ? MEDIDA_KG : MEDIDA_UNIDADE,
             peso: porPeso ? quantidade : 0,
             supermercado: mercado,
             favorito: false
