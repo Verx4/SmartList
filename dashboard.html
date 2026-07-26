@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="./css/produtos-multivalores.css?v=1">
 </head>
 
-<body>
+<body class="sem-menu-superior">
     <div id="mensagens" class="mensagens-globais" aria-live="polite"></div>
 
     <header class="site-header">
@@ -47,6 +47,15 @@
                 <a href="./assinatura.html">Planos</a>
                 <a href="./perfil.html">Perfil</a>
             </nav>
+
+            <button
+                id="btnLeitorNota"
+                class="scanner-topo"
+                type="button"
+                aria-label="Abrir scanner da nota fiscal"
+                title="Scanner">
+                ▣
+            </button>
         </div>
     </header>
 
@@ -63,17 +72,6 @@
                 <p>Controle seu orçamento e organize suas compras.</p>
             </div>
 
-            <div class="dashboard-acoes-topo">
-                <button
-                    id="btnLeitorNota"
-                    class="btn btn-secondary"
-                    type="button"
-                    aria-label="Ler QR Code da nota fiscal">
-                    ▣ Ler nota
-                </button>
-                <a class="btn btn-secondary" href="./assinatura.html">Ver planos</a>
-                <a class="btn btn-primary" href="./comparacao.html">Comparar preços</a>
-            </div>
         </section>
 
         <section class="dashboard-grid-superior">

@@ -51,6 +51,11 @@ function configurarMenuMovel() {
         return;
     }
 
+    if (document.body.classList.contains("sem-menu-superior")) {
+        cabecalho.classList.add("menu-superior-removido");
+        return;
+    }
+
     if (!navegacao.id) {
         navegacao.id = "menuPrincipal";
     }

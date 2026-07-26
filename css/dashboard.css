@@ -14,10 +14,20 @@
     color: var(--cor-texto-secundario, #94a3b8);
 }
 
-.dashboard-acoes-topo {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+.scanner-topo {
+    display: grid;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    padding: 0;
+    place-items: center;
+    color: var(--cor-texto, #ffffff);
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #334155);
+    border-radius: 12px;
+    font-size: 23px;
+    cursor: pointer;
 }
 
 .dashboard-grid-superior {

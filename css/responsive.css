@@ -227,6 +227,10 @@
         margin-left: auto;
     }
 
+    .site-header.menu-superior-removido .main-nav {
+        display: none;
+    }
+
     .site-header.menu-ready .main-nav {
         position: absolute;
         top: calc(100% + 1px);

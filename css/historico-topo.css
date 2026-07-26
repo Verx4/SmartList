@@ -1,0 +1,9 @@
+.historico-topo > a:first-child:last-child {
+    display: inline;
+    width: auto;
+    height: auto;
+    place-items: initial;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
