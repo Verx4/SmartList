@@ -62,6 +62,7 @@ import {
     medidaPadraoParaNovoProduto,
     obterRegraMedida
 } from "./medidas-produtos.js";
+import { identificarCategoria } from "./categorias.js";
 
 import {
     animarAberturaModal,
@@ -263,103 +264,6 @@ function notificar(mensagem, tipo = "sucesso") {
             .finally(() => aviso.remove());
 
     }, 4500);
-
-}
-
-
-function inferirCategoria(nome) {
-
-    const texto =
-        String(nome || "").toLowerCase();
-
-    const regras = [
-
-        {
-            categoria: "🥛 Laticínios",
-            palavras: [
-                "leite",
-                "queijo",
-                "iogurte",
-                "manteiga",
-                "requeijão"
-            ]
-        },
-
-        {
-            categoria: "🥩 Carnes",
-            palavras: [
-                "carne",
-                "frango",
-                "peixe",
-                "linguiça",
-                "bife"
-            ]
-        },
-
-        {
-            categoria: "🍎 Hortifruti",
-            palavras: [
-                "banana",
-                "maçã",
-                "tomate",
-                "batata",
-                "cebola",
-                "alface",
-                "cenoura",
-                "fruta",
-                "verdura"
-            ]
-        },
-
-        {
-            categoria: "🍞 Padaria",
-            palavras: [
-                "pão",
-                "bolo",
-                "torrada"
-            ]
-        },
-
-        {
-            categoria: "🥤 Bebidas",
-            palavras: [
-                "água",
-                "suco",
-                "refrigerante",
-                "cerveja",
-                "bebida"
-            ]
-        },
-
-        {
-            categoria: "🧼 Limpeza",
-            palavras: [
-                "sabão",
-                "detergente",
-                "desinfetante",
-                "limpeza"
-            ]
-        },
-
-        {
-            categoria: "🪥 Higiene",
-            palavras: [
-                "shampoo",
-                "sabonete",
-                "pasta de dente",
-                "papel higiênico"
-            ]
-        }
-
-    ];
-
-    const regra = regras.find(item =>
-        item.palavras.some(palavra =>
-            texto.includes(palavra)
-        )
-    );
-
-    return regra?.categoria || "📦 Outros";
 
 }
 
@@ -697,7 +601,7 @@ function salvarNovoProduto(evento) {
         categoria === "Automático"
     ) {
 
-        categoria = inferirCategoria(nome);
+        categoria = identificarCategoria(nome);
 
     }
 

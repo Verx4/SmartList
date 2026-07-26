@@ -22,11 +22,21 @@ export const CATEGORIAS = [
 
     "🥩 Carnes",
 
+    "🍗 Frango",
+
+    "🐟 Peixes e Frutos do Mar",
+
     "🍎 Hortifruti",
 
     "🍞 Padaria",
 
     "🥤 Bebidas",
+
+    "⚡ Energéticos",
+
+    "🍺 Bebidas Alcoólicas",
+
+    "🌾 Grãos",
 
     "🍚 Mercearia",
 
@@ -40,11 +50,15 @@ export const CATEGORIAS = [
 
     "💊 Farmácia",
 
-    "🥫 Enlatados",
+    "🥫 Enlatados e Conservas",
 
     "❄️ Congelados",
 
     "🌶️ Temperos",
+
+    "🍽️ Descartáveis",
+
+    "🔌 Utilidades",
 
     "📦 Outros"
 
@@ -204,18 +218,73 @@ export function identificarCategoria(nomeProduto) {
             palavras: [
 
                 "carne",
-                "frango",
-                "peixe",
                 "bife",
                 "costela",
                 "linguica",
-                "presunto",
-                "mortadela",
                 "bacon",
                 "pernil",
-                "file",
+                "lombo",
+                "calabresa",
+                "carne seca",
+                "charque",
                 "patinho",
-                "picanha"
+                "picanha",
+                "alcatra",
+                "acem",
+                "maminha",
+                "fraldinha",
+                "cupim",
+                "coxao",
+                "lagarto",
+                "paleta",
+                "musculo",
+                "ossobuco"
+
+            ]
+
+        },
+
+        {
+
+            categoria: "🍗 Frango",
+
+            palavras: [
+
+                "frango",
+                "coxa",
+                "sobrecoxa",
+                "drumette",
+                "tulipa",
+                "coracao de frango",
+                "moela",
+                "figado de frango",
+                "nugget"
+
+            ]
+
+        },
+
+        {
+
+            categoria: "🐟 Peixes e Frutos do Mar",
+
+            palavras: [
+
+                "peixe",
+                "tilapia",
+                "salmao",
+                "merluza",
+                "pescada",
+                "dourado",
+                "atum",
+                "sardinha",
+                "bacalhau",
+                "camarao",
+                "lula",
+                "polvo",
+                "mexilhao",
+                "siri",
+                "caranguejo"
 
             ]
 
@@ -275,6 +344,54 @@ export function identificarCategoria(nomeProduto) {
 
         {
 
+            categoria: "⚡ Energéticos",
+
+            palavras: [
+
+                "energetico",
+                "red bull",
+                "monster",
+                "tnt energy",
+                "baly",
+                "burn",
+                "flying horse",
+                "fusion energy",
+                "nitro energy",
+                "vibe energy"
+
+            ]
+
+        },
+
+        {
+
+            categoria: "🍺 Bebidas Alcoólicas",
+
+            palavras: [
+
+                "cerveja",
+                "vinho",
+                "espumante",
+                "frisante",
+                "whisky",
+                "vodka",
+                "gin",
+                "rum",
+                "tequila",
+                "cachaca",
+                "conhaque",
+                "licor",
+                "smirnoff ice",
+                "beats",
+                "corote",
+                "xeque mate"
+
+            ]
+
+        },
+
+        {
+
             categoria: "🥤 Bebidas",
 
             palavras: [
@@ -282,12 +399,31 @@ export function identificarCategoria(nomeProduto) {
                 "agua",
                 "suco",
                 "refrigerante",
-                "cerveja",
-                "vinho",
-                "energetico",
                 "isotonico",
                 "cha gelado",
                 "bebida"
+
+            ]
+
+        },
+
+        {
+
+            categoria: "🌾 Grãos",
+
+            palavras: [
+
+                "arroz",
+                "feijao",
+                "milho",
+                "grao de bico",
+                "lentilha",
+                "ervilha seca",
+                "soja",
+                "quinoa",
+                "chia",
+                "linhaca",
+                "aveia em graos"
 
             ]
 
@@ -299,19 +435,29 @@ export function identificarCategoria(nomeProduto) {
 
             palavras: [
 
-                "arroz",
-                "feijao",
                 "macarrao",
+                "lasanha",
+                "massa para",
                 "farinha",
+                "fuba",
+                "flocao",
+                "tapioca",
+                "polvilho",
                 "acucar",
                 "cafe",
                 "oleo",
                 "azeite",
-                "sal",
-                "milho",
-                "grao de bico",
-                "lentilha",
-                "aveia"
+                "vinagre",
+                "molho",
+                "extrato",
+                "ketchup",
+                "mostarda",
+                "maionese",
+                "shoyu",
+                "fermento",
+                "amido de milho",
+                "cuscuz",
+                "granola"
 
             ]
 
@@ -425,7 +571,7 @@ export function identificarCategoria(nomeProduto) {
 
         {
 
-            categoria: "🥫 Enlatados",
+            categoria: "🥫 Enlatados e Conservas",
 
             palavras: [
 
@@ -477,6 +623,57 @@ export function identificarCategoria(nomeProduto) {
                 "paprica",
                 "caldo",
                 "coentro"
+
+            ]
+
+        },
+
+        {
+
+            categoria: "🍽️ Descartáveis",
+
+            palavras: [
+
+                "papel aluminio",
+                "filme plastico",
+                "papel manteiga",
+                "guardanapo",
+                "copo descartavel",
+                "prato descartavel",
+                "talher descartavel",
+                "canudo",
+                "marmita",
+                "pote descartavel",
+                "saco zip",
+                "sacola plastica"
+
+            ]
+
+        },
+
+        {
+
+            categoria: "🔌 Utilidades",
+
+            palavras: [
+
+                "pilha",
+                "bateria",
+                "lampada",
+                "extensao",
+                "filtro de linha",
+                "carvao",
+                "acendedor",
+                "gelo",
+                "espeto",
+                "fosforo",
+                "isqueiro",
+                "vela",
+                "fita adesiva",
+                "supercola",
+                "barbante",
+                "pregador",
+                "organizador"
 
             ]
 
