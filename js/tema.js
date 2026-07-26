@@ -251,7 +251,7 @@
                 `<div class="divisor-menu-tema"></div>`,
                 `<div class="cor-personalizada-premium"><label for="corTemaPersonalizada">Escolha seu novo tema</label>`,
                 `<div><input id="corTemaPersonalizada" type="color" value="`, corPersonalizada(), `">`,
-                `<button id="aplicarCorPersonalizada" type="button">APLICAR TEMA</button></div></div>`
+                `<button id="aplicarCorPersonalizada" type="button">APLICAR</button></div></div>`
             ]
             : [];
         controle.innerHTML = [
@@ -271,6 +271,18 @@
 
         const botao = controle.querySelector("#botaoTemaGlobal");
         const menu = controle.querySelector("#menuTemaGlobal");
+        const seletorCor = menu.querySelector("#corTemaPersonalizada");
+
+        function aplicarCorEscolhida() {
+            if (!seletorCor) {
+                return;
+            }
+
+            localStorage.setItem(CHAVE_COR_PERSONALIZADA, seletorCor.value);
+            aplicarAparencia("personalizada");
+            fecharMenu(controle);
+            botao.focus();
+        }
 
         botao.addEventListener("click", () => {
             const abrir = menu.hidden;
@@ -281,11 +293,7 @@
 
         menu.addEventListener("click", (evento) => {
             if (evento.target.closest("#aplicarCorPersonalizada")) {
-                const seletor = menu.querySelector("#corTemaPersonalizada");
-                localStorage.setItem(CHAVE_COR_PERSONALIZADA, seletor.value);
-                aplicarAparencia("personalizada");
-                fecharMenu(controle);
-                botao.focus();
+                aplicarCorEscolhida();
                 return;
             }
             const opcao = evento.target.closest("[data-aparencia]");
@@ -298,6 +306,8 @@
             fecharMenu(controle);
             botao.focus();
         });
+
+        seletorCor?.addEventListener("change", aplicarCorEscolhida);
 
         document.addEventListener("click", (evento) => {
             if (!controle.contains(evento.target)) {
