@@ -1,3 +1,11 @@
+import {
+    produtoEhPorPeso as produtoEhPorPesoCompartilhado
+} from "./medidas-produtos.js";
+import {
+    abrirPainel,
+    fecharPainel
+} from "./animations.js";
+
 const CHAVE_ORCAMENTO = "orcamentoCompra";
 
 
@@ -55,9 +63,7 @@ function formatarMoeda(valor) {
 
 function produtoEhPorPeso(produto) {
 
-    return /(hortifruti|verdura|legume|fruta)/i.test(
-        String(produto.categoria || "")
-    );
+    return produtoEhPorPesoCompartilhado(produto);
 
 }
 
@@ -325,12 +331,12 @@ export function configurarOrcamento(
     const painelEdicao =
         document.getElementById("painelEdicaoOrcamento");
 
-    function fecharEdicao() {
+    async function fecharEdicao() {
 
         if (!painelEdicao || !botaoEditar) return;
 
-        painelEdicao.hidden = true;
         botaoEditar.setAttribute("aria-expanded", "false");
+        await fecharPainel(painelEdicao);
 
     }
 
@@ -340,10 +346,13 @@ export function configurarOrcamento(
         botaoEditar.addEventListener("click", function () {
 
             const abrir = painelEdicao.hidden;
-            painelEdicao.hidden = !abrir;
             botaoEditar.setAttribute("aria-expanded", String(abrir));
 
-            if (abrir) requestAnimationFrame(() => campo?.focus());
+            if (abrir) {
+                abrirPainel(painelEdicao).then(() => campo?.focus());
+            } else {
+                fecharPainel(painelEdicao);
+            }
 
         });
 

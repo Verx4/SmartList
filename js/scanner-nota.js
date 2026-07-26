@@ -5,6 +5,11 @@ import {
     obterListaAtualSalva
 } from "./produtos.js";
 import { obterMercadoAtual, salvarMercadoAtual } from "./mercado-atual.js";
+import {
+    MEDIDA_KG,
+    MEDIDA_UNIDADE
+} from "./medidas-produtos.js";
+import { identificarCategoria } from "./categorias.js";
 
 const URL_JS_QR = "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js";
 const FORMATADOR_MOEDA = new Intl.NumberFormat("pt-BR", {
@@ -302,11 +307,12 @@ function importarSelecionados(modal, nota, fechar, criarNova) {
         const porPeso = ["KG", "G", "GR"].includes(unidade) || !Number.isInteger(quantidade);
         adicionarProduto({
             nome: item.nome,
-            categoria: inferirCategoria(item.nome),
+            categoria: identificarCategoria(item.nome),
             precos: [{
                 valor: Math.max(0, Number(item.valorUnitario || 0)),
                 quantidade: porPeso ? quantidade : Math.max(1, Math.round(quantidade))
             }],
+            medida: porPeso ? MEDIDA_KG : MEDIDA_UNIDADE,
             peso: porPeso ? quantidade : 0,
             supermercado: mercado,
             favorito: false
@@ -471,21 +477,6 @@ async function carregarImagem(arquivo) {
     } finally {
         URL.revokeObjectURL(url);
     }
-}
-
-function inferirCategoria(nome) {
-    const texto = String(nome || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    const regras = [
-        ["🥬 Hortifruti", ["banana", "maca", "tomate", "batata", "cebola", "fruta", "verdura"]],
-        ["🥩 Açougue", ["carne", "frango", "bife", "linguica", "costela"]],
-        ["🧀 Frios e Laticínios", ["leite", "queijo", "iogurte", "manteiga", "presunto"]],
-        ["🍞 Padaria", ["pao", "bolo", "torrada"]],
-        ["🥤 Bebidas", ["agua", "suco", "refrigerante", "cerveja"]],
-        ["🧼 Limpeza", ["sabao", "detergente", "desinfetante", "amaciante"]],
-        ["🪥 Higiene Pessoal", ["shampoo", "sabonete", "creme dental", "papel higienico"]],
-        ["🌾 Grãos", ["arroz", "feijao", "milho", "ervilha", "lentilha"]]
-    ];
-    return regras.find(([, palavras]) => palavras.some(palavra => texto.includes(palavra)))?.[0] || "📦 Outros";
 }
 
 function formatarQuantidade(item) {

@@ -1,3 +1,5 @@
+import "./animations.js";
+
 const $ = (id) => document.getElementById(id);
 
 const unidades = {

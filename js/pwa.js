@@ -1,3 +1,5 @@
+import "./animations.js";
+
 const appRoot = new URL("../", import.meta.url);
 const serviceWorkerUrl = new URL("service-worker.js", appRoot);
 const manifestUrl = new URL("manifest.webmanifest", appRoot);

@@ -1,22 +1,13 @@
-const CATEGORIAS = [
-
-    "🥛 Laticínios",
-    "🥩 Carnes",
-    "🍎 Hortifruti",
-    "🍞 Padaria",
-    "🥤 Bebidas",
-    "🍚 Mercearia",
-    "🍪 Doces e Snacks",
-    "🧼 Limpeza",
-    "🪥 Higiene",
-    "🐶 Pet",
-    "💊 Farmácia",
-    "🥫 Enlatados",
-    "❄️ Congelados",
-    "🌶️ Temperos",
-    "📦 Outros"
-
-];
+import {
+    MEDIDA_KG,
+    normalizarMedidaProduto,
+    obterRegraMedida,
+    produtoEhPorPeso
+} from "./medidas-produtos.js";
+import { CATEGORIAS } from "./categorias.js";
+import {
+    animarProdutosNaLista
+} from "./animations.js";
 
 
 function numeroSeguro(valor) {
@@ -81,9 +72,7 @@ function escaparHTML(valor) {
 
 function ehHortifruti(produto) {
 
-    return /(hortifruti|verdura|legume|fruta)/i.test(
-        String(produto.categoria || "")
-    );
+    return produtoEhPorPeso(produto);
 
 }
 
@@ -131,7 +120,11 @@ export function calcularTotalProdutos(produtos = []) {
 
 function montarOpcoesCategoria(categoriaAtual) {
 
-    return CATEGORIAS.map(categoria => `
+    const categorias = CATEGORIAS.includes(categoriaAtual)
+        ? CATEGORIAS
+        : [categoriaAtual, ...CATEGORIAS].filter(Boolean);
+
+    return categorias.map(categoria => `
 
         <option
             value="${escaparHTML(categoria)}"
@@ -477,6 +470,7 @@ function montarProduto(produto) {
 
     const resumo = resumirProduto(produto);
     const porPeso = ehHortifruti(produto);
+    const regraMedida = obterRegraMedida(produto.nome);
     const aberto = precosAbertos.has(String(produto.id));
     const editando = produtosEmEdicao.has(String(produto.id));
     const quantidadePrecos = porPeso ? 1 : resumo.precos.length;
@@ -504,10 +498,17 @@ function montarProduto(produto) {
                         ` : `<small class="produto-sem-ultima-compra">Sem compra finalizada</small>`}
                     </div>
                 </div>
-                <div class="alternar-precos" aria-label="${rotuloPrecos}">
-                    <strong>${rotuloPrecos}</strong>
-                </div>
-                <div class="metrica-produto">
+                ${!porPeso && quantidadePrecos > 1 ? `
+                    <button type="button" class="alternar-precos acionavel" data-acao="alternar-precos"
+                        aria-expanded="${aberto}" aria-controls="precos-${escaparHTML(produto.id)}">
+                        ${aberto ? "Ocultar" : "Ver"} ${rotuloPrecos}
+                    </button>
+                ` : `
+                    <div class="alternar-precos" aria-label="${rotuloPrecos}">
+                        <strong>${rotuloPrecos}</strong>
+                    </div>
+                `}
+                <div class="metrica-produto metrica-quantidade">
                     <span>${porPeso ? "Peso (kg)" : editando && precosAdicionais.length ? "Qtd. principal" : "Qtd. total"}</span>
                     ${editando && porPeso ? `
                         <input class="editar-peso-total" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
@@ -525,27 +526,37 @@ function montarProduto(produto) {
                     <span>Total</span>
                     <strong data-total-produto>${formatarMoeda(resumo.total)}</strong>
                 </div>
-                <button type="button" class="editar-produto" data-acao="editar" aria-label="Editar ${escaparHTML(produto.nome)}">✎</button>
+                <button type="button" class="editar-produto" data-acao="editar"
+                    aria-expanded="${editando}" aria-label="${editando ? "Fechar edição de" : "Editar"} ${escaparHTML(produto.nome)}">✎</button>
             </header>
 
             ${editando ? `
                 <section class="editar-produto-painel" aria-label="Editar produto">
                     <label><span>Nome do produto</span><input type="text" data-editar="nome" maxlength="100" value="${escaparHTML(produto.nome)}"></label>
                     <label><span>Categoria</span><select data-editar="categoria">${montarOpcoesCategoria(produto.categoria)}</select></label>
-                    <label><span>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
+                    <label class="editar-produto-medida">
+                        <span>Forma de compra</span>
+                        <select data-editar="medida" ${regraMedida.tipo === "fixa" ? "disabled" : ""}>
+                            <option value="unidade" ${porPeso ? "" : "selected"}>Unidade</option>
+                            <option value="kg" ${porPeso ? "selected" : ""}>Kg</option>
+                        </select>
+                        <small>${escaparHTML(regraMedida.motivo)}</small>
+                    </label>
+                    <label><span data-rotulo-valor-medida>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
                         data-editar="valor-unitario" value="${precoPrincipal.valor.toFixed(2)}"
                         aria-label="Valor unitário de ${escaparHTML(produto.nome)}"></label>
                     <div class="editar-produto-acoes">
                         <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alterações</button>
                         <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>
-                        ${porPeso ? "" : `<button type="button" class="btn btn-secondary" data-acao="abrir-precos">+ Adicionar preço</button>`}
+                        <button type="button" class="btn btn-secondary" data-acao="abrir-precos" ${porPeso ? "hidden" : ""}>+ Adicionar preço</button>
                         <button type="button" class="btn btn-danger" data-acao="excluir">Excluir produto</button>
                     </div>
                 </section>
             ` : ""}
 
-            ${!porPeso && (editando || aberto) ? `
-                <section class="precos-produto" ${aberto ? "" : "hidden"} aria-label="Preços adicionais de ${escaparHTML(produto.nome)}">
+            ${editando || aberto ? `
+                <section id="precos-${escaparHTML(produto.id)}" class="precos-produto"
+                    ${aberto && !porPeso ? "" : "hidden"} aria-label="Preços adicionais de ${escaparHTML(produto.nome)}">
                     <div class="precos-produto-topo"><h4>Preços adicionais</h4><button type="button" data-acao="adicionar-preco">+ Outro preço</button></div>
                     <div class="precos-cabecalho" aria-hidden="true"><span>Valor (R$)</span><span>Quantidade</span><span>Subtotal (R$)</span><span></span></div>
                     <div class="precos-lista">${precosAdicionais.map((preco, indice) => montarLinhaPreco(preco, indice + 1, produto.nome)).join("")}</div>
@@ -621,6 +632,100 @@ function sincronizarPrecosComResumoEditavel(elemento, produto) {
 }
 
 
+function configurarQuantidadeEditavel(elemento, produto) {
+
+    const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
+    const campoPeso = elemento.querySelector('[data-editar="peso"]');
+
+    elemento
+        .querySelector('[data-acao-edicao="diminuir-quantidade"]')
+        ?.addEventListener("click", () => {
+            campoQuantidadeTotal.value = String(
+                Math.max(0, Math.floor(numeroSeguro(campoQuantidadeTotal.value)) - 1)
+            );
+            sincronizarPrecosComResumoEditavel(elemento, produto || {});
+        });
+
+    elemento
+        .querySelector('[data-acao-edicao="aumentar-quantidade"]')
+        ?.addEventListener("click", () => {
+            campoQuantidadeTotal.value = String(
+                Math.max(0, Math.floor(numeroSeguro(campoQuantidadeTotal.value)) + 1)
+            );
+            sincronizarPrecosComResumoEditavel(elemento, produto || {});
+        });
+
+    campoQuantidadeTotal?.addEventListener("input", () => {
+        campoQuantidadeTotal.value = String(
+            Math.max(0, Math.floor(numeroSeguro(campoQuantidadeTotal.value)))
+        );
+        sincronizarPrecosComResumoEditavel(elemento, produto || {});
+    });
+
+    campoPeso?.addEventListener("input", () => {
+        sincronizarPrecosComResumoEditavel(elemento, produto || {});
+    });
+
+}
+
+
+function atualizarEdicaoPorMedida(elemento, produto, medida) {
+
+    const porPeso = medida === MEDIDA_KG;
+    const metrica = elemento.querySelector(".metrica-quantidade");
+    const quantidadeAtual = numeroSeguro(
+        elemento.querySelector('[data-editar="quantidade-total"]')?.value
+        ?? elemento.querySelector('[data-editar="peso"]')?.value
+    );
+    const quantidadeInicial = quantidadeAtual || (
+        porPeso
+            ? numeroSeguro(produto?.peso)
+            : numeroSeguro(obterPrecosProduto(produto || {})[0]?.quantidade)
+    );
+
+    elemento.dataset.porPeso = String(porPeso);
+
+    if (metrica) {
+        metrica.innerHTML = porPeso
+            ? `
+                <span>Peso (kg)</span>
+                <input class="editar-peso-total" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
+                    data-editar="peso" value="${quantidadeInicial}" aria-label="Peso em kg de ${escaparHTML(produto?.nome)}">
+            `
+            : `
+                <span>Qtd. total</span>
+                <div class="editar-quantidade-total">
+                    <button type="button" data-acao-edicao="diminuir-quantidade" aria-label="Diminuir quantidade total">−</button>
+                    <input type="number" min="0" step="1" inputmode="numeric" data-editar="quantidade-total"
+                        value="${Math.floor(quantidadeInicial)}" aria-label="Quantidade principal de ${escaparHTML(produto?.nome)}">
+                    <button type="button" data-acao-edicao="aumentar-quantidade" aria-label="Aumentar quantidade total">+</button>
+                </div>
+            `;
+    }
+
+    const rotuloValor = elemento.querySelector("[data-rotulo-valor-medida]");
+    if (rotuloValor) {
+        rotuloValor.textContent = porPeso
+            ? "Valor do kg (R$)"
+            : "Valor unitário (R$)";
+    }
+
+    const botaoAdicionarPreco = elemento.querySelector('[data-acao="abrir-precos"]');
+    if (botaoAdicionarPreco) {
+        botaoAdicionarPreco.hidden = porPeso;
+    }
+
+    if (porPeso) {
+        const painelPrecos = elemento.querySelector(".precos-produto");
+        if (painelPrecos) painelPrecos.hidden = true;
+    }
+
+    configurarQuantidadeEditavel(elemento, produto);
+    sincronizarPrecosComResumoEditavel(elemento, produto || {});
+
+}
+
+
 function obterAlteracoesDaEdicao(elemento, produto) {
 
     const campoNome = elemento.querySelector('[data-editar="nome"]');
@@ -635,7 +740,14 @@ function obterAlteracoesDaEdicao(elemento, produto) {
     campoNome.setCustomValidity("");
 
     const categoria = elemento.querySelector('[data-editar="categoria"]')?.value;
-    const porPeso = ehHortifruti({ categoria });
+    const regraMedida = obterRegraMedida(nome);
+    const medidaSelecionada = elemento.querySelector('[data-editar="medida"]')?.value;
+    const medida = regraMedida.medida || (
+        [MEDIDA_KG, "unidade"].includes(medidaSelecionada)
+            ? medidaSelecionada
+            : normalizarMedidaProduto({ ...produto, categoria })
+    );
+    const porPeso = medida === MEDIDA_KG;
     let quantidadeTotal = Math.max(
         0,
         porPeso
@@ -650,6 +762,7 @@ function obterAlteracoesDaEdicao(elemento, produto) {
     return {
         nome,
         categoria,
+        medida,
         peso: porPeso
             ? Math.max(0, numeroSeguro(elemento.querySelector('[data-editar="peso"]')?.value))
             : 0,
@@ -698,6 +811,8 @@ export function renderizarProdutos(
     lista.innerHTML =
         produtos.map(montarProduto).join("");
 
+    animarProdutosNaLista(lista);
+
 
     lista.querySelectorAll("[data-produto-id]")
         .forEach(elemento => {
@@ -711,8 +826,23 @@ export function renderizarProdutos(
             elemento
                 .querySelector('[data-acao="editar"]')
                 ?.addEventListener("click", () => {
-                    produtosEmEdicao.add(String(id));
+                    if (produtosEmEdicao.has(String(id))) {
+                        produtosEmEdicao.delete(String(id));
+                    } else {
+                        produtosEmEdicao.add(String(id));
+                    }
                     precosAbertos.delete(String(id));
+                    renderizarProdutos(produtos, acoes);
+                });
+
+            elemento
+                .querySelector('[data-acao="alternar-precos"]')
+                ?.addEventListener("click", () => {
+                    if (precosAbertos.has(String(id))) {
+                        precosAbertos.delete(String(id));
+                    } else {
+                        precosAbertos.add(String(id));
+                    }
                     renderizarProdutos(produtos, acoes);
                 });
 
@@ -731,42 +861,22 @@ export function renderizarProdutos(
                     if (painelPrecos) painelPrecos.hidden = false;
                 });
 
-            const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
-            const campoPeso = elemento.querySelector('[data-editar="peso"]');
             const campoValorUnitario = elemento.querySelector('[data-editar="valor-unitario"]');
-
-            elemento
-                .querySelector('[data-acao-edicao="diminuir-quantidade"]')
-                ?.addEventListener("click", () => {
-                    campoQuantidadeTotal.value = String(
-                        Math.max(0, Math.floor(numeroSeguro(campoQuantidadeTotal.value)) - 1)
-                    );
-                    sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
-                });
-
-            elemento
-                .querySelector('[data-acao-edicao="aumentar-quantidade"]')
-                ?.addEventListener("click", () => {
-                    campoQuantidadeTotal.value = String(
-                        Math.max(0, Math.floor(numeroSeguro(campoQuantidadeTotal.value)) + 1)
-                    );
-                    sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
-                });
-
-            campoQuantidadeTotal?.addEventListener("input", () => {
-                campoQuantidadeTotal.value = String(
-                    Math.max(0, Math.floor(numeroSeguro(campoQuantidadeTotal.value)))
-                );
-                sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
-            });
+            const campoMedida = elemento.querySelector('[data-editar="medida"]');
 
             campoValorUnitario?.addEventListener("input", () => {
                 sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
             });
 
-            campoPeso?.addEventListener("input", () => {
-                sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
+            campoMedida?.addEventListener("change", evento => {
+                atualizarEdicaoPorMedida(
+                    elemento,
+                    produtoAtual || {},
+                    evento.target.value
+                );
             });
+
+            configurarQuantidadeEditavel(elemento, produtoAtual || {});
 
             elemento
                 .querySelector('[data-acao="cancelar-edicao"]')
@@ -833,7 +943,7 @@ export function renderizarProdutos(
             elemento
                 .querySelector('[data-acao="excluir"]')
                 ?.addEventListener("click", () =>
-                    acoes.aoExcluir?.(id)
+                    acoes.aoExcluir?.(id, elemento)
                 );
 
             elemento

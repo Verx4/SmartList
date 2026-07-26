@@ -56,6 +56,23 @@ import {
 
 } from "./mercado-atual.js";
 
+import {
+    MEDIDA_KG,
+    limparMarcadorMedida,
+    medidaPadraoParaNovoProduto,
+    obterRegraMedida
+} from "./medidas-produtos.js";
+import { identificarCategoria } from "./categorias.js";
+
+import {
+    animarAberturaModal,
+    animarEntradaNotificacao,
+    animarFechamentoModal,
+    animarSaidaNotificacao,
+    animarSaidaProduto,
+    destacarProduto
+} from "./animations.js";
+
 
 let produtos = [];
 let historico = [];
@@ -77,6 +94,76 @@ function elemento(...ids) {
     }
 
     return null;
+
+}
+
+
+function numeroDigitado(valor) {
+
+    const texto = String(valor || "")
+        .trim()
+        .replace(/\s/g, "")
+        .replace(",", ".");
+    const numero = Number(texto);
+
+    return Number.isFinite(numero)
+        ? numero
+        : 0;
+
+}
+
+
+function atualizarCampoMedidaNovoProduto() {
+
+    const campoNome = elemento("novoNome");
+    const campoCategoria = elemento("novaCategoria");
+    const campoMedida = elemento("novaMedida");
+    const campoQuantidade = elemento("novaQuantidade");
+    const rotuloQuantidade = elemento("rotuloNovaQuantidade");
+    const dica = elemento("dicaNovaMedida");
+
+    if (!campoMedida || !campoQuantidade) {
+        return;
+    }
+
+    const regra = obterRegraMedida(campoNome?.value);
+    const medida = medidaPadraoParaNovoProduto(
+        campoNome?.value,
+        campoCategoria?.value,
+        campoMedida.value
+    );
+
+    campoMedida.value = regra.medida || medida;
+    campoMedida.disabled = regra.tipo === "fixa";
+    campoMedida.setAttribute(
+        "aria-describedby",
+        "dicaNovaMedida"
+    );
+
+    if (dica) {
+        dica.textContent = regra.motivo;
+    }
+
+    const porPeso = campoMedida.value === MEDIDA_KG;
+
+    if (rotuloQuantidade) {
+        rotuloQuantidade.textContent = porPeso
+            ? "Peso (kg)"
+            : "Quantidade";
+    }
+
+    campoQuantidade.type = porPeso
+        ? "text"
+        : "number";
+    campoQuantidade.inputMode = porPeso
+        ? "decimal"
+        : "numeric";
+    campoQuantidade.step = porPeso
+        ? "0.001"
+        : "1";
+    campoQuantidade.placeholder = porPeso
+        ? "Ex.: 1,5"
+        : "0";
 
 }
 
@@ -169,108 +256,14 @@ function notificar(mensagem, tipo = "sucesso") {
 
     container.appendChild(aviso);
 
+    animarEntradaNotificacao(aviso);
+
     window.setTimeout(() => {
 
-        aviso.remove();
+        animarSaidaNotificacao(aviso)
+            .finally(() => aviso.remove());
 
     }, 4500);
-
-}
-
-
-function inferirCategoria(nome) {
-
-    const texto =
-        String(nome || "").toLowerCase();
-
-    const regras = [
-
-        {
-            categoria: "🥛 Laticínios",
-            palavras: [
-                "leite",
-                "queijo",
-                "iogurte",
-                "manteiga",
-                "requeijão"
-            ]
-        },
-
-        {
-            categoria: "🥩 Carnes",
-            palavras: [
-                "carne",
-                "frango",
-                "peixe",
-                "linguiça",
-                "bife"
-            ]
-        },
-
-        {
-            categoria: "🍎 Hortifruti",
-            palavras: [
-                "banana",
-                "maçã",
-                "tomate",
-                "batata",
-                "cebola",
-                "alface",
-                "cenoura",
-                "fruta",
-                "verdura"
-            ]
-        },
-
-        {
-            categoria: "🍞 Padaria",
-            palavras: [
-                "pão",
-                "bolo",
-                "torrada"
-            ]
-        },
-
-        {
-            categoria: "🥤 Bebidas",
-            palavras: [
-                "água",
-                "suco",
-                "refrigerante",
-                "cerveja",
-                "bebida"
-            ]
-        },
-
-        {
-            categoria: "🧼 Limpeza",
-            palavras: [
-                "sabão",
-                "detergente",
-                "desinfetante",
-                "limpeza"
-            ]
-        },
-
-        {
-            categoria: "🪥 Higiene",
-            palavras: [
-                "shampoo",
-                "sabonete",
-                "pasta de dente",
-                "papel higiênico"
-            ]
-        }
-
-    ];
-
-    const regra = regras.find(item =>
-        item.palavras.some(palavra =>
-            texto.includes(palavra)
-        )
-    );
-
-    return regra?.categoria || "📦 Outros";
 
 }
 
@@ -418,6 +411,7 @@ function atualizarTela() {
                 atualizarProduto(id, alteracoes);
                 notificar("Produto atualizado.");
                 atualizarTela();
+                destacarProduto(id);
 
             },
 
@@ -453,7 +447,7 @@ function atualizarTela() {
 
             },
 
-            aoExcluir(id) {
+            async aoExcluir(id, elementoProduto) {
 
                 const produto =
                     produtos.find(
@@ -471,6 +465,7 @@ function atualizarTela() {
 
                 }
 
+                await animarSaidaProduto(elementoProduto);
                 removerProduto(id);
 
                 notificar(
@@ -510,6 +505,8 @@ function abrirModal() {
     document.body.classList.add("modal-aberto");
 
     atualizarMercadoNoModal();
+    atualizarCampoMedidaNovoProduto();
+    animarAberturaModal(modal);
 
     window.setTimeout(() => {
 
@@ -520,7 +517,7 @@ function abrirModal() {
 }
 
 
-function fecharModal() {
+async function fecharModal() {
 
     const modal = elemento("modal", "modalProduto");
 
@@ -530,10 +527,18 @@ function fecharModal() {
 
     }
 
+    if (modal.hidden || modal.dataset.fechando === "true") {
+        return;
+    }
+
+    modal.dataset.fechando = "true";
+    modal.setAttribute("aria-hidden", "true");
+    await animarFechamentoModal(modal);
+
     modal.classList.remove("aberto");
     modal.style.removeProperty("display");
-    modal.setAttribute("aria-hidden", "true");
     modal.hidden = true;
+    modal.dataset.fechando = "false";
     document.body.classList.remove("modal-aberto");
 
 }
@@ -564,6 +569,17 @@ function limparFormularioProduto() {
 
     }
 
+    const medida = elemento("novaMedida");
+
+    if (medida) {
+
+        medida.disabled = false;
+        medida.value = "unidade";
+
+    }
+
+    atualizarCampoMedidaNovoProduto();
+
 }
 
 
@@ -571,20 +587,44 @@ function salvarNovoProduto(evento) {
 
     evento?.preventDefault();
 
-    const nome =
+    const nomeDigitado =
         elemento("novoNome")?.value.trim();
+
+    const nome = limparMarcadorMedida(nomeDigitado);
 
     let categoria =
         elemento("novaCategoria")?.value ||
         "automatico";
 
+    if (
+        categoria === "automatico" ||
+        categoria === "Automático"
+    ) {
+
+        categoria = identificarCategoria(nome);
+
+    }
+
     const preco =
         Number(elemento("novoPreco")?.value || 0);
 
-    const quantidade = Math.max(
+    const quantidadeInformada = Math.max(
         0,
-        Number(elemento("novaQuantidade")?.value || 0)
+        numeroDigitado(elemento("novaQuantidade")?.value)
     );
+
+    const regraMedida = obterRegraMedida(nomeDigitado);
+    const medida = regraMedida.medida || medidaPadraoParaNovoProduto(
+        nomeDigitado,
+        categoria,
+        elemento("novaMedida")?.value
+    );
+    const quantidade = medida === MEDIDA_KG
+        ? 0
+        : Math.floor(quantidadeInformada);
+    const peso = medida === MEDIDA_KG
+        ? quantidadeInformada
+        : 0;
 
     const favorito =
         Boolean(elemento("novoFavorito")?.checked);
@@ -606,15 +646,6 @@ function salvarNovoProduto(evento) {
 
     }
 
-    if (
-        categoria === "automatico" ||
-        categoria === "Automático"
-    ) {
-
-        categoria = inferirCategoria(nome);
-
-    }
-
     adicionarProduto({
 
         nome,
@@ -623,7 +654,8 @@ function salvarNovoProduto(evento) {
             valor: Math.max(0, preco),
             quantidade
         }],
-        peso: 0,
+        medida,
+        peso,
         supermercado,
         favorito
 
@@ -742,6 +774,26 @@ function configurarEventos() {
         ?.addEventListener(
             "submit",
             salvarNovoProduto
+        );
+
+    elemento("novoNome")
+        ?.addEventListener(
+            "input",
+            atualizarCampoMedidaNovoProduto
+        );
+
+
+    elemento("novaCategoria")
+        ?.addEventListener(
+            "change",
+            atualizarCampoMedidaNovoProduto
+        );
+
+
+    elemento("novaMedida")
+        ?.addEventListener(
+            "change",
+            atualizarCampoMedidaNovoProduto
         );
 
 
