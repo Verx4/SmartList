@@ -62,14 +62,8 @@
     background: transparent;
     border: 1px solid transparent;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: default;
     white-space: nowrap;
-}
-
-.alternar-precos:hover,
-.alternar-precos:focus-visible {
-    background: var(--cor-superficie-secundaria, #1f2937);
-    border-color: var(--cor-borda, #26334b);
 }
 
 .metrica-produto {

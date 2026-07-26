@@ -462,10 +462,9 @@ function montarProduto(produto) {
                     </button>
                     <div><h3>${escaparHTML(produto.nome)}</h3><small>${escaparHTML(produto.categoria)}</small></div>
                 </div>
-                <button type="button" class="alternar-precos" data-acao="alternar-precos"
-                    aria-expanded="${aberto}" aria-label="${aberto ? "Fechar" : "Abrir"} preços cadastrados">
-                    <strong>${rotuloPrecos}</strong><span aria-hidden="true">${aberto ? "⌃" : "⌄"}</span>
-                </button>
+                <div class="alternar-precos" aria-label="${rotuloPrecos}">
+                    <strong>${rotuloPrecos}</strong>
+                </div>
                 <div class="metrica-produto"><span>Qtd. total</span><strong data-total-quantidade>${resumo.quantidadeTotal}</strong></div>
                 <div class="metrica-produto metrica-total"><span>Total do item</span><strong data-total-produto>${formatarMoeda(resumo.total)}</strong></div>
                 <button type="button" class="editar-produto" data-acao="editar" aria-label="Editar ${escaparHTML(produto.nome)}">✎</button>
@@ -578,14 +577,6 @@ export function renderizarProdutos(
                 elemento.dataset.produtoId;
 
             elemento
-                .querySelector('[data-acao="alternar-precos"]')
-                ?.addEventListener("click", () => {
-                    if (precosAbertos.has(String(id))) precosAbertos.delete(String(id));
-                    else precosAbertos.add(String(id));
-                    renderizarProdutos(produtos, acoes);
-                });
-
-            elemento
                 .querySelector('[data-acao="editar"]')
                 ?.addEventListener("click", () => {
                     produtosEmEdicao.add(String(id));
@@ -597,6 +588,7 @@ export function renderizarProdutos(
                 .querySelector('[data-acao="cancelar-edicao"]')
                 ?.addEventListener("click", () => {
                     produtosEmEdicao.delete(String(id));
+                    precosAbertos.delete(String(id));
                     renderizarProdutos(produtos, acoes);
                 });
 
@@ -612,6 +604,7 @@ export function renderizarProdutos(
                     }
                     campoNome.setCustomValidity("");
                     produtosEmEdicao.delete(String(id));
+                    precosAbertos.delete(String(id));
                     acoes.aoSalvarEdicao?.(id, {
                         nome,
                         categoria: elemento.querySelector('[data-editar="categoria"]')?.value

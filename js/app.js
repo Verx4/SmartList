@@ -81,6 +81,24 @@ function elemento(...ids) {
 }
 
 
+function focarSeletorMercado() {
+
+    const painel = elemento("painelMercados");
+
+    if (painel) {
+
+        painel.open = true;
+
+    }
+
+    elemento(
+        "barraSelecionarMercado",
+        "mercadoAtual"
+    )?.focus();
+
+}
+
+
 function lerUsuarioAtual() {
 
     for (const chave of ["usuarioAtual", "usuarioLogado"]) {
@@ -478,7 +496,7 @@ function abrirModal() {
             "erro"
         );
 
-        elemento("mercadoAtual")?.focus();
+        focarSeletorMercado();
 
         return;
 
@@ -604,7 +622,7 @@ function salvarNovoProduto(evento) {
             "erro"
         );
 
-        elemento("mercadoAtual")?.focus();
+        focarSeletorMercado();
 
         return;
 

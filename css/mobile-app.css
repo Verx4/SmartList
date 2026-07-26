@@ -185,4 +185,40 @@ body.app-mobile {
     .app-bottom-nav .nav-icon {
         font-size: 19px;
     }
+
+    .orcamento-card .orcamento-form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .orcamento-card .orcamento-form input {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .orcamento-card .orcamento-form .btn {
+        width: 100%;
+        min-width: 0;
+        padding-inline: 8px;
+    }
+
+    .orcamento-card .orcamento-resumo {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .orcamento-card .orcamento-resumo div {
+        padding: 8px 6px;
+    }
+
+    .orcamento-card .orcamento-resumo span {
+        font-size: 10px;
+    }
+
+    .orcamento-card .orcamento-resumo strong {
+        font-size: 13px;
+    }
+
+    .orcamento-card .barra-orcamento-trilho {
+        height: 9px;
+    }
 }

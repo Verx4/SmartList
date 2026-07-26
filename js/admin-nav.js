@@ -54,7 +54,7 @@
         const marca = sidebar.querySelector(".brand, .admin-logo");
 
         if (marca) {
-            marca.href = "../inicio.html";
+            marca.href = "./index.html";
             marca.className = "brand admin-brand";
             marca.innerHTML = `
                 <img src="../assets/logo/smart-list-app.png" alt="" width="38" height="38">

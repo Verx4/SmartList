@@ -280,10 +280,51 @@ function renderizarLista() {
 }
 
 
+function renderizarBarraCompacta() {
+
+    const resumo = document.getElementById("mercadoAtualResumo");
+    const barra = document.getElementById("barraSelecionarMercado");
+    const atual = obterMercadoAtual();
+    const texto = atual || "Selecione um mercado";
+
+    if (resumo) {
+
+        resumo.textContent = texto;
+
+    }
+
+    if (barra) {
+
+        barra.setAttribute(
+            "aria-label",
+            atual
+                ? `Mercado atual: ${atual}. Toque para alterar.`
+                : "Selecione o mercado desta compra."
+        );
+
+    }
+
+}
+
+
+function fecharPainelCompacto() {
+
+    const painel = document.getElementById("painelMercados");
+
+    if (painel) {
+
+        painel.open = false;
+
+    }
+
+}
+
+
 export function renderizarMercados() {
 
     renderizarSelect();
     renderizarLista();
+    renderizarBarraCompacta();
 
 }
 
@@ -355,7 +396,12 @@ export function configurarMercadoAtual(aoSalvar) {
             }
 
             campoNovo.value = "";
-            campoAtual.value = mercado;
+            if (campoAtual) {
+
+                campoAtual.value = mercado;
+
+            }
+
             mostrarMensagem(`${mercado} foi adicionado aos seus mercados.`);
 
         });
@@ -426,6 +472,7 @@ export function configurarMercadoAtual(aoSalvar) {
             const selecionado = salvarMercadoAtual(mercado);
             mostrarMensagem(`${selecionado} foi selecionado para esta compra.`);
             comunicar(selecionado);
+            fecharPainelCompacto();
 
         });
 

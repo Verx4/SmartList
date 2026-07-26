@@ -122,39 +122,40 @@
             </article>
 
             <article class="mercado-atual-card">
-                <div class="mercado-atual-topo">
-                    <div>
-                        <h2>🏪 Meus mercados</h2>
-                        <p>Cadastre uma vez e selecione onde está comprando.</p>
+                <details id="painelMercados" class="mercado-seletor-compacto">
+                    <summary id="barraSelecionarMercado" class="mercado-seletor-barra">
+                        <span class="mercado-seletor-icone" aria-hidden="true">🏪</span>
+                        <span class="mercado-seletor-textos">
+                            <small>Mercado atual</small>
+                            <strong id="mercadoAtualResumo">Selecione um mercado</strong>
+                        </span>
+                        <span class="mercado-seletor-seta" aria-hidden="true">⌄</span>
+                    </summary>
+
+                    <div class="mercado-seletor-conteudo">
+                        <p class="mercado-seletor-instrucao">Toque em uma opção para marcar o mercado desta compra.</p>
+
+                        <div id="listaMercadosFrequentes" class="lista-mercados-frequentes"></div>
+
+                        <details class="adicionar-mercado-recolhivel">
+                            <summary>+ Cadastrar outro mercado</summary>
+                            <div class="adicionar-mercado-form">
+                                <label class="sr-only" for="novoMercadoFrequente">Nome do mercado</label>
+                                <input type="text" id="novoMercadoFrequente" placeholder="Ex.: Assaí, Atacadão...">
+                                <button type="button" id="btnAdicionarMercadoFrequente" class="btn btn-secondary">
+                                    Adicionar
+                                </button>
+                            </div>
+                        </details>
+
+                        <label class="aplicar-mercado" for="aplicarMercadoExistentes">
+                            <input type="checkbox" id="aplicarMercadoExistentes">
+                            <span>Aplicar aos produtos já adicionados</span>
+                        </label>
+
+                        <p id="mensagemMercado" class="mensagem-mercado" aria-live="polite"></p>
                     </div>
-                </div>
-
-                <div class="adicionar-mercado-form">
-                    <label class="sr-only" for="novoMercadoFrequente">Nome do mercado</label>
-                    <input type="text" id="novoMercadoFrequente" placeholder="Ex.: Assaí, Atacadão...">
-                    <button type="button" id="btnAdicionarMercadoFrequente" class="btn btn-secondary">
-                        Adicionar
-                    </button>
-                </div>
-
-                <div id="listaMercadosFrequentes" class="lista-mercados-frequentes"></div>
-
-                <div class="mercado-atual-form">
-                    <label class="sr-only" for="mercadoAtual">Mercado da compra atual</label>
-                    <select id="mercadoAtual">
-                        <option value="">Selecione o mercado atual</option>
-                    </select>
-                    <button type="button" id="btnSalvarMercadoAtual" class="btn btn-primary">
-                        Usar este mercado
-                    </button>
-                </div>
-
-                <label class="aplicar-mercado" for="aplicarMercadoExistentes">
-                    <input type="checkbox" id="aplicarMercadoExistentes">
-                    <span>Aplicar esse mercado aos produtos já adicionados</span>
-                </label>
-
-                <p id="mensagemMercado" class="mensagem-mercado" aria-live="polite"></p>
+                </details>
             </article>
         </section>
 
@@ -231,7 +232,6 @@
             </button>
         </div>
 
-        <section id="resumoItens" class="resumo-itens"></section>
     </main>
 
     <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalProduto"

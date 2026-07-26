@@ -121,6 +121,64 @@
     font-size: 14px;
 }
 
+.orcamento-card {
+    padding: 16px;
+}
+
+.orcamento-card .orcamento-topo {
+    margin-bottom: 10px;
+}
+
+.orcamento-card .orcamento-topo h2 {
+    margin-bottom: 2px;
+    font-size: 18px;
+}
+
+.orcamento-card .orcamento-topo p {
+    font-size: 13px;
+}
+
+.orcamento-card .orcamento-form {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) auto auto;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.orcamento-card .orcamento-form input,
+.orcamento-card .orcamento-form .btn {
+    min-height: 42px;
+}
+
+.orcamento-card .orcamento-form .btn {
+    width: auto;
+    padding: 8px 14px;
+}
+
+.orcamento-card .orcamento-resumo {
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.orcamento-card .orcamento-resumo div {
+    min-width: 0;
+    padding: 9px 10px;
+}
+
+.orcamento-card .orcamento-resumo span {
+    margin-bottom: 3px;
+}
+
+.orcamento-card .orcamento-resumo strong {
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.orcamento-card .mensagem-orcamento {
+    margin: 7px 0 0;
+    font-size: 12px;
+}
+
 .orcamento-atencao .barra-orcamento {
     background: #eab308;
 }
@@ -352,6 +410,130 @@
 
 .mensagem-mercado.mensagem-erro {
     color: #fca5a5;
+}
+
+.mercado-atual-card {
+    align-self: start;
+    padding: 0;
+    overflow: hidden;
+}
+
+.mercado-seletor-compacto {
+    width: 100%;
+}
+
+.mercado-seletor-barra {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 11px;
+    min-height: 68px;
+    padding: 12px 15px;
+    cursor: pointer;
+    list-style: none;
+}
+
+.mercado-seletor-barra::-webkit-details-marker {
+    display: none;
+}
+
+.mercado-seletor-icone {
+    font-size: 22px;
+}
+
+.mercado-seletor-textos {
+    min-width: 0;
+}
+
+.mercado-seletor-textos small,
+.mercado-seletor-textos strong {
+    display: block;
+}
+
+.mercado-seletor-textos small {
+    margin-bottom: 2px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 11px;
+}
+
+.mercado-seletor-textos strong {
+    overflow: hidden;
+    color: var(--cor-texto, #ffffff);
+    font-size: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mercado-seletor-seta {
+    color: var(--cor-destaque, #60a5fa);
+    font-size: 22px;
+    transition: transform 0.2s ease;
+}
+
+.mercado-seletor-compacto[open] .mercado-seletor-seta {
+    transform: rotate(180deg);
+}
+
+.mercado-seletor-conteudo {
+    padding: 13px 15px 15px;
+    border-top: 1px solid var(--cor-borda, #26334b);
+}
+
+.mercado-seletor-instrucao {
+    margin-bottom: 10px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 12px;
+}
+
+.mercado-seletor-conteudo .lista-mercados-frequentes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    min-height: 0;
+    gap: 7px;
+    margin-bottom: 11px;
+}
+
+.mercado-seletor-conteudo .mercado-frequente-item {
+    min-width: 0;
+}
+
+.mercado-seletor-conteudo .btn-selecionar-mercado {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.adicionar-mercado-recolhivel {
+    margin-top: 4px;
+    padding: 0 10px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #334155);
+    border-radius: 10px;
+}
+
+.adicionar-mercado-recolhivel > summary {
+    padding: 10px 0;
+    color: var(--cor-destaque, #60a5fa);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.adicionar-mercado-recolhivel .adicionar-mercado-form {
+    margin: 0 0 10px;
+}
+
+.mercado-seletor-conteudo .aplicar-mercado {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.mercado-seletor-conteudo .mensagem-mercado {
+    min-height: 0;
+    margin: 7px 0 0;
 }
 
 /* Ações e modal */

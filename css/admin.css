@@ -96,6 +96,33 @@
     background: #15803d;
 }
 
+.lista-status {
+    display: grid;
+    gap: 8px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    padding: 9px 10px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border-radius: 9px;
+}
+
+.status-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.status-item strong {
+    flex: 0 0 auto;
+    margin: 0;
+    font-size: 16px;
+}
+
 .admin-conteudo,
 .admin-main {
     min-width: 0;
