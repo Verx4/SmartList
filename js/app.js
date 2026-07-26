@@ -421,6 +421,13 @@ function atualizarTela() {
 
             },
 
+            aoPrepararEdicaoPrecos(id, alteracoes) {
+
+                atualizarProduto(id, alteracoes);
+                atualizarTela();
+
+            },
+
             aoAlterarPeso(id, peso) {
 
                 atualizarPeso(id, peso);

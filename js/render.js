@@ -420,7 +420,7 @@ function montarLinhaPreco(preco, indice, nomeProduto) {
             <label class="preco-valor-campo">
                 <span>Valor (R$)</span>
                 <input type="number" min="0" step="0.01" inputmode="decimal"
-                    value="${preco.valor}" data-campo-preco="valor"
+                    value="${preco.valor.toFixed(2)}" data-campo-preco="valor"
                     aria-label="Valor do preÃ§o ${indice + 1} de ${escaparHTML(nomeProduto)}">
             </label>
             <div class="preco-quantidade-campo">
@@ -455,6 +455,84 @@ function formatarQuantidade(valor) {
 }
 
 
+function ajustarPrecosAoResumo(produto, quantidadeInformada, totalInformado) {
+
+    const precos = obterPrecosProduto(produto).map(preco => ({ ...preco }));
+    const quantidadeAlvo = Math.max(0, Math.floor(numeroSeguro(quantidadeInformada)));
+    const totalAlvo = Math.max(0, numeroSeguro(totalInformado));
+    const quantidadeAtual = precos.reduce(
+        (soma, preco) => soma + preco.quantidade,
+        0
+    );
+
+    if (quantidadeAtual > 0) {
+
+        let quantidadeDistribuida = 0;
+
+        precos.forEach((preco, indice) => {
+
+            const ultimaLinha = indice === precos.length - 1;
+            const quantidade = ultimaLinha
+                ? quantidadeAlvo - quantidadeDistribuida
+                : Math.floor((preco.quantidade / quantidadeAtual) * quantidadeAlvo);
+
+            preco.quantidade = Math.max(0, quantidade);
+            quantidadeDistribuida += preco.quantidade;
+
+        });
+
+    } else {
+
+        precos.forEach(preco => { preco.quantidade = 0; });
+        precos[0].quantidade = quantidadeAlvo;
+
+    }
+
+    const linhasAtivas = precos.filter(preco => preco.quantidade > 0);
+    const totalAtual = linhasAtivas.reduce(
+        (soma, preco) => soma + (preco.valor * preco.quantidade),
+        0
+    );
+
+    if (!linhasAtivas.length) {
+
+        return precos;
+
+    }
+
+    if (totalAlvo === 0) {
+
+        linhasAtivas.forEach(preco => { preco.valor = 0; });
+        return precos;
+
+    }
+
+    if (totalAtual > 0) {
+
+        const fator = totalAlvo / totalAtual;
+        linhasAtivas.forEach(preco => { preco.valor *= fator; });
+
+    } else {
+
+        linhasAtivas[0].valor = totalAlvo / linhasAtivas[0].quantidade;
+
+    }
+
+    const ultimaLinha = linhasAtivas.at(-1);
+    const totalOutrasLinhas = linhasAtivas
+        .slice(0, -1)
+        .reduce((soma, preco) => soma + (preco.valor * preco.quantidade), 0);
+
+    ultimaLinha.valor = Math.max(
+        0,
+        (totalAlvo - totalOutrasLinhas) / ultimaLinha.quantidade
+    );
+
+    return precos;
+
+}
+
+
 function montarProduto(produto) {
 
     const resumo = resumirProduto(produto);
@@ -478,545 +556,4 @@ function montarProduto(produto) {
                                 <span>Ãšltimo preÃ§o <strong>${ultimoPreco > 0 ? formatarMoeda(ultimoPreco) : "â€”"}</strong></span>
                                 <span>Ãšltima qtd. <strong>${ultimaQuantidade > 0 ? formatarQuantidade(ultimaQuantidade) : "â€”"}</strong></span>
                             </div>
-                        ` : `<small class="produto-sem-ultima-compra">Sem compra finalizada</small>`}
-                    </div>
-                </div>
-                <div class="alternar-precos" aria-label="${rotuloPrecos}">
-                    <strong>${rotuloPrecos}</strong>
-                </div>
-                <div class="metrica-produto"><span>Qtd. total</span><strong data-total-quantidade>${resumo.quantidadeTotal}</strong></div>
-                <div class="metrica-produto metrica-total"><span>Total</span><strong data-total-produto>${formatarMoeda(resumo.total)}</strong></div>
-                <button type="button" class="editar-produto" data-acao="editar" aria-label="Editar ${escaparHTML(produto.nome)}">âœŽ</button>
-            </header>
-
-            ${editando ? `
-                <section class="editar-produto-painel" aria-label="Editar produto">
-                    <label><span>Nome do produto</span><input type="text" data-editar="nome" maxlength="100" value="${escaparHTML(produto.nome)}"></label>
-                    <label><span>Categoria</span><select data-editar="categoria">${montarOpcoesCategoria(produto.categoria)}</select></label>
-                    <div class="editar-produto-acoes">
-                        <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alteraÃ§Ãµes</button>
-                        <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>
-                        <button type="button" class="btn btn-danger" data-acao="excluir">Excluir produto</button>
-                    </div>
-                </section>
-            ` : ""}
-
-            ${aberto ? `
-                <section class="precos-produto" aria-label="PreÃ§os cadastrados de ${escaparHTML(produto.nome)}">
-                    <div class="precos-produto-topo"><h4>PreÃ§os cadastrados</h4><button type="button" data-acao="adicionar-preco">+ Adicionar preÃ§o</button></div>
-                    <div class="precos-cabecalho" aria-hidden="true"><span>Valor (R$)</span><span>Quantidade</span><span>Subtotal (R$)</span><span></span></div>
-                    <div class="precos-lista">${resumo.precos.map((preco, indice) => montarLinhaPreco(preco, indice, produto.nome)).join("")}</div>
-                    <footer class="resumo-precos-produto">
-                        <div><span>Qtd. total</span><strong data-resumo-quantidade>${resumo.quantidadeTotal} ${resumo.quantidadeTotal === 1 ? "unidade" : "unidades"}</strong></div>
-                        <div><span>Total do item</span><strong data-resumo-total>${formatarMoeda(resumo.total)}</strong></div>
-                        <div><span>MÃ©dia por unidade</span><strong data-resumo-media>${formatarMoeda(resumo.media)}</strong></div>
-                    </footer>
-                </section>
-            ` : ""}
-        </article>
-    `;
-
-}
-
-
-function atualizarResumoVisualProduto(elemento) {
-
-    const linhas = [...elemento.querySelectorAll(".preco-cadastrado")];
-    let quantidadeTotal = 0;
-    let total = 0;
-
-    linhas.forEach(linha => {
-        const valor = Math.max(0, numeroSeguro(linha.querySelector('[data-campo-preco="valor"]')?.value));
-        const quantidade = Math.max(0, numeroSeguro(linha.querySelector("[data-quantidade-preco]")?.textContent));
-        const subtotal = valor * quantidade;
-        quantidadeTotal += quantidade;
-        total += subtotal;
-        const subtotalElemento = linha.querySelector("[data-subtotal-preco]");
-        if (subtotalElemento) subtotalElemento.textContent = formatarMoeda(subtotal);
-    });
-
-    const media = quantidadeTotal > 0 ? total / quantidadeTotal : 0;
-    const atualizar = (seletor, valor) => {
-        const alvo = elemento.querySelector(seletor);
-        if (alvo) alvo.textContent = valor;
-    };
-    atualizar("[data-total-quantidade]", String(quantidadeTotal));
-    atualizar("[data-total-produto]", formatarMoeda(total));
-    atualizar("[data-resumo-quantidade]", `${quantidadeTotal} ${quantidadeTotal === 1 ? "unidade" : "unidades"}`);
-    atualizar("[data-resumo-total]", formatarMoeda(total));
-    atualizar("[data-resumo-media]", formatarMoeda(media));
-
-}
-
-
-export function renderizarProdutos(
-    produtos = [],
-    acoes = {}
-) {
-
-    const lista =
-        document.getElementById("listaProdutos");
-
-    if (!lista) {
-
-        return;
-
-    }
-
-    if (!produtos.length) {
-
-        lista.innerHTML = `
-
-            <div class="estado-vazio">
-
-                <span aria-hidden="true">ðŸ›’</span>
-
-                <h3>Nenhum produto encontrado</h3>
-
-                <p>
-                    Escolha o mercado atual e adicione o primeiro item.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    lista.innerHTML =
-        produtos.map(montarProduto).join("");
-
-
-    lista.querySelectorAll("[data-produto-id]")
-        .forEach(elemento => {
-
-            const id =
-                elemento.dataset.produtoId;
-
-            elemento
-                .querySelector('[data-acao="editar"]')
-                ?.addEventListener("click", () => {
-                    produtosEmEdicao.add(String(id));
-                    precosAbertos.add(String(id));
-                    renderizarProdutos(produtos, acoes);
-                });
-
-            elemento
-                .querySelector('[data-acao="cancelar-edicao"]')
-                ?.addEventListener("click", () => {
-                    produtosEmEdicao.delete(String(id));
-                    precosAbertos.delete(String(id));
-                    renderizarProdutos(produtos, acoes);
-                });
-
-            elemento
-                .querySelector('[data-acao="salvar-edicao"]')
-                ?.addEventListener("click", () => {
-                    const campoNome = elemento.querySelector('[data-editar="nome"]');
-                    const nome = campoNome?.value.trim();
-                    if (!nome) {
-                        campoNome?.setCustomValidity("Digite o nome do produto.");
-                        campoNome?.reportValidity();
-                        return;
-                    }
-                    campoNome.setCustomValidity("");
-                    produtosEmEdicao.delete(String(id));
-                    precosAbertos.delete(String(id));
-                    acoes.aoSalvarEdicao?.(id, {
-                        nome,
-                        categoria: elemento.querySelector('[data-editar="categoria"]')?.value
-                    });
-                });
-
-            elemento
-                .querySelector('[data-acao="adicionar-preco"]')
-                ?.addEventListener("click", () => {
-                    precosAbertos.add(String(id));
-                    acoes.aoAdicionarPreco?.(id);
-                });
-
-            elemento.querySelectorAll(".preco-cadastrado").forEach(linha => {
-                const precoId = linha.dataset.precoId;
-
-                linha.querySelector('[data-acao-preco="diminuir"]')
-                    ?.addEventListener("click", () =>
-                        acoes.aoAlterarQuantidadePreco?.(id, precoId, -1)
-                    );
-
-                linha.querySelector('[data-acao-preco="aumentar"]')
-                    ?.addEventListener("click", () =>
-                        acoes.aoAlterarQuantidadePreco?.(id, precoId, 1)
-                    );
-
-                linha.querySelector('[data-acao-preco="excluir"]')
-                    ?.addEventListener("click", () =>
-                        acoes.aoExcluirPreco?.(id, precoId)
-                    );
-
-                linha.querySelector('[data-campo-preco="valor"]')
-                    ?.addEventListener("input", evento => {
-                        acoes.aoAlterarValorPreco?.(id, precoId, evento.target.value);
-                        atualizarResumoVisualProduto(elemento);
-                    });
-            });
-
-            elemento
-                .querySelector('[data-acao="aumentar"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoAlterarQuantidade?.(id, 1)
-                );
-
-            elemento
-                .querySelector('[data-acao="diminuir"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoAlterarQuantidade?.(id, -1)
-                );
-
-            elemento
-                .querySelector('[data-acao="excluir"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoExcluir?.(id)
-                );
-
-            elemento
-                .querySelector('[data-campo="preco"]')
-                ?.addEventListener("change", evento =>
-                    acoes.aoAlterarPreco?.(
-                        id,
-                        evento.target.value
-                    )
-                );
-
-            elemento
-                .querySelector('[data-campo="peso"]')
-                ?.addEventListener("change", evento =>
-                    acoes.aoAlterarPeso?.(
-                        id,
-                        evento.target.value
-                    )
-                );
-
-            elemento
-                .querySelector('[data-campo="categoria"]')
-                ?.addEventListener("change", evento =>
-                    acoes.aoAlterarCategoria?.(
-                        id,
-                        evento.target.value
-                    )
-                );
-
-        });
-
-}
-
-
-function montarResumoCategorias(produtos) {
-
-    const totais = {};
-
-    produtos.forEach(produto => {
-
-        const categoria =
-            produto.categoria || "ðŸ“¦ Outros";
-
-        totais[categoria] =
-            (totais[categoria] || 0) +
-            calcularSubtotalProduto(produto);
-
-    });
-
-    const categorias =
-        Object.entries(totais)
-            .sort((a, b) => b[1] - a[1]);
-
-    if (!categorias.length) {
-
-        return `
-            <p class="texto-secundario">
-                Adicione produtos para visualizar o resumo.
-            </p>
-        `;
-
-    }
-
-    return categorias.map(
-        ([categoria, total]) => `
-
-            <div class="categoria-resumo">
-
-                <span>
-                    ${escaparHTML(categoria)}
-                </span>
-
-                <strong>
-                    ${formatarMoeda(total)}
-                </strong>
-
-            </div>
-
-        `
-    ).join("");
-
-}
-
-
-export function renderizarTotais(
-    produtos = [],
-    historico = []
-) {
-
-    const total =
-        calcularTotalProdutos(produtos);
-
-    const ultima =
-        historico.length
-            ? numeroSeguro(historico[0].total)
-            : 0;
-
-    const totalCompra =
-        document.getElementById("totalCompra");
-
-    const ultimaCompra =
-        document.getElementById("ultimaCompra");
-
-    const comparacao =
-        document.getElementById("comparacaoCompra");
-
-    const resumo =
-        document.getElementById("resumoItens");
-
-
-    if (totalCompra) {
-
-        totalCompra.textContent =
-            formatarMoeda(total);
-
-    }
-
-    if (ultimaCompra) {
-
-        ultimaCompra.textContent =
-            formatarMoeda(ultima);
-
-    }
-
-    if (comparacao) {
-
-        if (ultima <= 0) {
-
-            comparacao.textContent =
-                "âšª Nenhuma compra anterior";
-
-            comparacao.className =
-                "comparacao-compra";
-
-        } else {
-
-            const diferenca = total - ultima;
-
-            if (diferenca > 0) {
-
-                comparacao.textContent =
-                    `ðŸ”´ A compra atual estÃ¡ ${formatarMoeda(diferenca)} mais cara.`;
-
-                comparacao.className =
-                    "comparacao-compra comparacao-aumento";
-
-            } else if (diferenca < 0) {
-
-                comparacao.textContent =
-                    `ðŸŸ¢ Economia estimada de ${formatarMoeda(Math.abs(diferenca))}.`;
-
-                comparacao.className =
-                    "comparacao-compra comparacao-economia";
-
-            } else {
-
-                comparacao.textContent =
-                    "âšª O total Ã© igual ao da Ãºltima compra.";
-
-                comparacao.className =
-                    "comparacao-compra";
-
-            }
-
-        }
-
-    }
-
-    if (resumo) {
-
-        resumo.innerHTML = `
-
-            <h3>ðŸ“Š Resumo da Compra</h3>
-
-            <div class="resumo-total-linha">
-
-                <span>Total atual</span>
-
-                <strong>
-                    ${formatarMoeda(total)}
-                </strong>
-
-            </div>
-
-            ${montarResumoCategorias(produtos)}
-
-        `;
-
-    }
-
-}
-
-
-export function renderizarHistorico(
-    historico = []
-) {
-
-    const container =
-        document.getElementById("historicoCompras");
-
-    if (!container) {
-
-        return;
-
-    }
-
-    if (!historico.length) {
-
-        container.innerHTML = `
-
-            <h2>ðŸ“‹ HistÃ³rico de Compras</h2>
-
-            <p class="texto-secundario">
-                Nenhuma compra foi finalizada ainda.
-            </p>
-
-        `;
-
-        return;
-
-    }
-
-    container.innerHTML = `
-
-        <h2>ðŸ“‹ HistÃ³rico de Compras</h2>
-
-        <div class="botoes-historico">
-
-            <button
-                type="button"
-                class="btn-limpar-historico"
-                data-acao-historico="limpar"
-            >
-                Limpar histÃ³rico
-            </button>
-
-            <button
-                type="button"
-                class="btn-zerar-compra"
-                data-acao-historico="zerar"
-            >
-                Zerar preÃ§os atuais
-            </button>
-
-        </div>
-
-        ${historico.map(compra => `
-
-            <article class="compra-historico">
-
-                <h3>
-                    Compra de ${escaparHTML(formatarData(compra.data))}
-                </h3>
-
-                <p>
-                    <strong>Mercado:</strong>
-                    ${escaparHTML(compra.supermercado || "VÃ¡rios mercados")}
-                </p>
-
-                <p>
-                    <strong>Total:</strong>
-                    ${formatarMoeda(compra.total)}
-                </p>
-
-                ${
-                    numeroSeguro(compra.economia) > 0
-                        ? `
-                            <p class="diferenca-compra-economia">
-                                Economia de ${formatarMoeda(compra.economia)}
-                            </p>
-                        `
-                        : `
-                            <p class="diferenca-compra-primeira">
-                                Compra registrada no histÃ³rico
-                            </p>
-                        `
-                }
-
-                <ul>
-
-                    ${(compra.itens || []).map(item => `
-
-                        <li>
-                            ${escaparHTML(item.nome)}
-                            â€” ${escaparHTML(item.supermercado || "Sem mercado")}
-                            â€” ${formatarMoeda(item.subtotal)}
-                        </li>
-
-                    `).join("")}
-
-                </ul>
-
-            </article>
-
-        `).join("")}
-
-    `;
-
-}
-
-
-function obterPrecosProduto(produto = {}) {
-
-    if (Array.isArray(produto.precos) && produto.precos.length) {
-
-        return produto.precos.map((preco, indice) => ({
-            id: String(preco.id || indice),
-            valor: Math.max(0, numeroSeguro(preco.valor)),
-            quantidade: Math.max(0, numeroSeguro(preco.quantidade))
-        }));
-
-    }
-
-    return [{
-        id: "preco-inicial",
-        valor: Math.max(0, numeroSeguro(produto.preco)),
-        quantidade: Math.max(0, numeroSeguro(produto.quantidade))
-    }];
-
-}
-
-
-function resumirProduto(produto = {}) {
-
-    const precos = obterPrecosProduto(produto);
-    const quantidadeTotal = precos.reduce(
-        (soma, preco) => soma + preco.quantidade,
-        0
-    );
-    const total = precos.reduce(
-        (soma, preco) => soma + (preco.valor * preco.quantidade),
-        0
-    );
-
-    return {
-        precos,
-        quantidadeTotal,
-        total,
-        media: quantidadeTotal > 0 ? total / quantidadeTotal : 0
-    };
-
-}
+                  Û~ö¶‰žËkºwµçA…µÁ½9½µ”ü¹Ù…±Õ”¹ÑÉ¥´ ¤ì((€€€¥˜€ …¹½µ”¤ì(€€€€€€€…µÁ½9½µ”ü¹Í•ÑÕÍÑ½µY…±¥‘¥Ñä ‰¥¥Ñ”¼¹½µ”‘¼ÁÉ½‘ÕÑ¼¸ˆ¤ì(€€€€€€€…µÁ½9½µ”ü¹É•Á½ÉÑY…±¥‘¥Ñä ¤ì(€€€€€€€É•ÑÕÉ¸¹Õ±°ì(€€€ô((€€€…µÁ½9½µ”¹Í•ÑÕÍÑ½µY…±¥‘¥Ñä ˆˆ¤ì((€€€±•ÐÅÕ…¹Ñ¥‘…‘•Q½Ñ…°€ô5…Ñ ¹µ…à (€€€€€€€€À°(€€€€€€€5…Ñ ¹™±½½È¡¹Õµ•É½M•ÕÉ¼¡•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ•‘¥Ñ…Èô‰ÅÕ…¹Ñ¥‘…‘”µÑ½Ñ…°‰tœ¤ü¹Ù…±Õ”¤¤(€€€€¤ì(€€€½¹ÍÐÑ½Ñ…°€ô5…Ñ ¹µ…à (€€€€€€€€À°(€€€€€€€¹Õµ•É½M•ÕÉ¼¡•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ•‘¥Ñ…Èô‰Ñ½Ñ…°‰tœ¤ü¹Ù…±Õ”¤(€€€€¤ì((€€€¥˜€¡Ñ½Ñ…°€ø€À€˜˜ÅÕ…¹Ñ¥‘…‘•Q½Ñ…°€ôôô€À¤ÅÕ…¹Ñ¥‘…‘•Q½Ñ…°€ô€Äì((€€€É•ÑÕÉ¸ì(€€€€€€€¹½µ”°(€€€€€€€…Ñ•½É¥„è•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ•‘¥Ñ…Èô‰…Ñ•½É¥„‰tœ¤ü¹Ù…±Õ”°(€€€€€€€ÁÉ•½Ìè…©ÕÍÑ…ÉAÉ•½Í½I•ÍÕµ¼¡ÁÉ½‘ÕÑ¼ñðíô°ÅÕ…¹Ñ¥‘…‘•Q½Ñ…°°Ñ½Ñ…°¤(€€€ôì()ô(()•áÁ½ÉÐ™Õ¹Ñ¥½¸É•¹‘•É¥é…ÉAÉ½‘ÕÑ½Ì (€€€ÁÉ½‘ÕÑ½Ì€ômt°4(€€€…½•Ì€ôíô4(¤ì4(4(€€€½¹ÍÐ±¥ÍÑ„€ô4(€€€€€€€‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰±¥ÍÑ…AÉ½‘ÕÑ½Ìˆ¤ì4(4(€€€¥˜€ …±¥ÍÑ„¤ì4(4(€€€€€€€É•ÑÕÉ¸ì4(4(€€€ô4(4(€€€¥˜€ …ÁÉ½‘ÕÑ½Ì¹±•¹Ñ ¤ì4(4(€€€€€€€±¥ÍÑ„¹¥¹¹•É!Q50€ô€4(4(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰•ÍÑ…‘¼µÙ…é¥¼ˆø4(4(€€€€€€€€€€€€€€€€ñÍÁ…¸…É¥„µ¡¥‘‘•¸ô‰ÑÉÕ”ˆûÂ~nHð½ÍÁ…¸ø4(4(€€€€€€€€€€€€€€€€ñ Ìù9•¹¡Õ´ÁÉ½‘ÕÑ¼•¹½¹ÑÉ…‘¼ð½ Ìø4(4(€€€€€€€€€€€€€€€€ñÀø4(€€€€€€€€€€€€€€€€€€€Í½±¡„¼µ•É…‘¼…ÑÕ…°”…‘¥¥½¹”¼ÁÉ¥µ•¥É¼¥Ñ•´¸4(€€€€€€€€€€€€€€€€ð½Àø4(4(€€€€€€€€€€€€ð½‘¥Øø4(4(€€€€€€€€ì4(4(€€€€€€€É•ÑÕÉ¸ì4(4(€€€ô4(4(€€€±¥ÍÑ„¹¥¹¹•É!Q50€ô4(€€€€€€€ÁÉ½‘ÕÑ½Ì¹µ…À¡µ½¹Ñ…ÉAÉ½‘ÕÑ¼¤¹©½¥¸ ˆˆ¤ì4(4(4(€€€±¥ÍÑ„¹ÅÕ•ÉåM•±•Ñ½É±° ‰m‘…Ñ„µÁÉ½‘ÕÑ¼µ¥‘tˆ¤4(€€€€€€€€¹™½É… ¡•±•µ•¹Ñ¼€ôøì((€€€€€€€€€€€½¹ÍÐ¥€ô(€€€€€€€€€€€€€€€•±•µ•¹Ñ¼¹‘…Ñ…Í•Ð¹ÁÉ½‘ÕÑ½%ì(€€€€€€€€€€€½¹ÍÐÁÉ½‘ÕÑ½ÑÕ…°€ôÁÉ½‘ÕÑ½Ì¹™¥¹ (€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ¼€ôøMÑÉ¥¹œ¡ÁÉ½‘ÕÑ¼¹¥¤€ôôôMÑÉ¥¹œ¡¥¤(€€€€€€€€€€€€¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰•‘¥Ñ…È‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ½Íµ‘¥…¼¹…‘¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€ÁÉ•½Í‰•ÉÑ½Ì¹‘•±•Ñ”¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€É•¹‘•É¥é…ÉAÉ½‘ÕÑ½Ì¡ÁÉ½‘ÕÑ½Ì°…½•Ì¤ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰…‰É¥ÈµÁÉ•½Ì‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€½¹ÍÐ…±Ñ•É…½•Ì€ô½‰Ñ•É±Ñ•É…½•Í…‘¥…¼¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°¤ì(€€€€€€€€€€€€€€€€€€€¥˜€ ……±Ñ•É…½•Ì¤É•ÑÕÉ¸ì(€€€€€€€€€€€€€€€€€€€ÁÉ•½Í‰•ÉÑ½Ì¹…‘¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€¥˜€¡…½•Ì¹…½AÉ•Á…É…É‘¥…½AÉ•½Ì¤ì(€€€€€€€€€€€€€€€€€€€€€€€…½•Ì¹…½AÉ•Á…É…É‘¥…½AÉ•½Ì¡¥°…±Ñ•É…½•Ì¤ì(€€€€€€€€€€€€€€€€€€€€€€€É•ÑÕÉ¸ì(€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€Í¥¹É½¹¥é…ÉAÉ•½Í½µI•ÍÕµ½‘¥Ñ…Ù•°¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°ñðíô¤ì(€€€€€€€€€€€€€€€€€€€½¹ÍÐÁ…¥¹•±AÉ•½Ì€ô•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½È ˆ¹ÁÉ•½ÌµÁÉ½‘ÕÑ¼ˆ¤ì(€€€€€€€€€€€€€€€€€€€¥˜€¡Á…¥¹•±AÉ•½Ì¤Á…¥¹•±AÉ•½Ì¹¡¥‘‘•¸€ô™…±Í”ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€½¹ÍÐ…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°€ô•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ•‘¥Ñ…Èô‰ÅÕ…¹Ñ¥‘…‘”µÑ½Ñ…°‰tœ¤ì(€€€€€€€€€€€½¹ÍÐ…µÁ½Q½Ñ…°€ô•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ•‘¥Ñ…Èô‰Ñ½Ñ…°‰tœ¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼µ•‘¥…¼ô‰‘¥µ¥¹Õ¥ÈµÅÕ…¹Ñ¥‘…‘”‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”€ôMÑÉ¥¹œ (€€€€€€€€€€€€€€€€€€€€€€€5…Ñ ¹µ…à À°5…Ñ ¹™±½½È¡¹Õµ•É½M•ÕÉ¼¡…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”¤¤€´€Ä¤(€€€€€€€€€€€€€€€€€€€€¤ì(€€€€€€€€€€€€€€€€€€€Í¥¹É½¹¥é…ÉAÉ•½Í½µI•ÍÕµ½‘¥Ñ…Ù•°¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°ñðíô¤ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼µ•‘¥…¼ô‰…Õµ•¹Ñ…ÈµÅÕ…¹Ñ¥‘…‘”‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”€ôMÑÉ¥¹œ (€€€€€€€€€€€€€€€€€€€€€€€5…Ñ ¹µ…à À°5…Ñ ¹™±½½È¡¹Õµ•É½M•ÕÉ¼¡…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”¤¤€¬€Ä¤(€€€€€€€€€€€€€€€€€€€€¤ì(€€€€€€€€€€€€€€€€€€€Í¥¹É½¹¥é…ÉAÉ•½Í½µI•ÍÕµ½‘¥Ñ…Ù•°¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°ñðíô¤ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕÐˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”€ôMÑÉ¥¹œ (€€€€€€€€€€€€€€€€€€€5…Ñ ¹µ…à À°5…Ñ ¹™±½½È¡¹Õµ•É½M•ÕÉ¼¡…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”¤¤¤(€€€€€€€€€€€€€€€€¤ì(€€€€€€€€€€€€€€€Í¥¹É½¹¥é…ÉAÉ•½Í½µI•ÍÕµ½‘¥Ñ…Ù•°¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°ñðíô¤ì(€€€€€€€€€€€ô¤ì((€€€€€€€€€€€…µÁ½Q½Ñ…°ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕÐˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€¥˜€¡¹Õµ•É½M•ÕÉ¼¡…µÁ½Q½Ñ…°¹Ù…±Õ”¤€ø€À€˜˜¹Õµ•É½M•ÕÉ¼¡…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°ü¹Ù…±Õ”¤€ôôô€À¤ì(€€€€€€€€€€€€€€€€€€€…µÁ½EÕ…¹Ñ¥‘…‘•Q½Ñ…°¹Ù…±Õ”€ô€ˆÄˆì(€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€Í¥¹É½¹¥é…ÉAÉ•½Í½µI•ÍÕµ½‘¥Ñ…Ù•°¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°ñðíô¤ì(€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰…¹•±…Èµ•‘¥…¼‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ½Íµ‘¥…¼¹‘•±•Ñ”¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€ÁÉ•½Í‰•ÉÑ½Ì¹‘•±•Ñ”¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€É•¹‘•É¥é…ÉAÉ½‘ÕÑ½Ì¡ÁÉ½‘ÕÑ½Ì°…½•Ì¤ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰Í…±Ù…Èµ•‘¥…¼‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€½¹ÍÐ…±Ñ•É…½•Ì€ô½‰Ñ•É±Ñ•É…½•Í…‘¥…¼¡•±•µ•¹Ñ¼°ÁÉ½‘ÕÑ½ÑÕ…°¤ì(€€€€€€€€€€€€€€€€€€€¥˜€ ……±Ñ•É…½•Ì¤É•ÑÕÉ¸ì(€€€€€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ½Íµ‘¥…¼¹‘•±•Ñ”¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€ÁÉ•½Í‰•ÉÑ½Ì¹‘•±•Ñ”¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½M…±Ù…É‘¥…¼ü¸¡¥°…±Ñ•É…½•Ì¤ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰…‘¥¥½¹…ÈµÁÉ•¼‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€€€€€€€€€€€€€€€€€ÁÉ•½Í‰•ÉÑ½Ì¹…‘¡MÑÉ¥¹œ¡¥¤¤ì(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½‘¥¥½¹…ÉAÉ•¼ü¸¡¥¤ì(€€€€€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼¹ÅÕ•ÉåM•±•Ñ½É±° ˆ¹ÁÉ•¼µ…‘…ÍÑÉ…‘¼ˆ¤¹™½É… ¡±¥¹¡„€ôøì(€€€€€€€€€€€€€€€½¹ÍÐÁÉ•½%€ô±¥¹¡„¹‘…Ñ…Í•Ð¹ÁÉ•½%ì((€€€€€€€€€€€€€€€±¥¹¡„¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼µÁÉ•¼ô‰‘¥µ¥¹Õ¥È‰tœ¤(€€€€€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø(€€€€€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉEÕ…¹Ñ¥‘…‘•AÉ•¼ü¸¡¥°ÁÉ•½%°€´Ä¤(€€€€€€€€€€€€€€€€€€€€¤ì((€€€€€€€€€€€€€€€±¥¹¡„¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼µÁÉ•¼ô‰…Õµ•¹Ñ…È‰tœ¤(€€€€€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø(€€€€€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉEÕ…¹Ñ¥‘…‘•AÉ•¼ü¸¡¥°ÁÉ•½%°€Ä¤(€€€€€€€€€€€€€€€€€€€€¤ì((€€€€€€€€€€€€€€€±¥¹¡„¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼µÁÉ•¼ô‰•á±Õ¥È‰tœ¤(€€€€€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø(€€€€€€€€€€€€€€€€€€€€€€€…½•Ì¹…½á±Õ¥ÉAÉ•¼ü¸¡¥°ÁÉ•½%¤(€€€€€€€€€€€€€€€€€€€€¤ì((€€€€€€€€€€€€€€€±¥¹¡„¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ…µÁ¼µÁÉ•¼ô‰Ù…±½È‰tœ¤(€€€€€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕÐˆ°•Ù•¹Ñ¼€ôøì(€€€€€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉY…±½ÉAÉ•¼ü¸¡¥°ÁÉ•½%°•Ù•¹Ñ¼¹Ñ…É•Ð¹Ù…±Õ”¤ì(€€€€€€€€€€€€€€€€€€€€€€€…ÑÕ…±¥é…ÉI•ÍÕµ½Y¥ÍÕ…±AÉ½‘ÕÑ¼¡•±•µ•¹Ñ¼¤ì(€€€€€€€€€€€€€€€€€€€ô¤ì(€€€€€€€€€€€ô¤ì((€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰…Õµ•¹Ñ…È‰tœ¤4(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø4(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉEÕ…¹Ñ¥‘…‘”ü¸¡¥°€Ä¤4(€€€€€€€€€€€€€€€€¤ì4(4(€€€€€€€€€€€•±•µ•¹Ñ¼4(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰‘¥µ¥¹Õ¥È‰tœ¤4(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø4(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉEÕ…¹Ñ¥‘…‘”ü¸¡¥°€´Ä¤4(€€€€€€€€€€€€€€€€¤ì4(4(€€€€€€€€€€€•±•µ•¹Ñ¼4(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ……¼ô‰•á±Õ¥È‰tœ¤4(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø4(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½á±Õ¥Èü¸¡¥¤4(€€€€€€€€€€€€€€€€¤ì4(4(€€€€€€€€€€€•±•µ•¹Ñ¼(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ…µÁ¼ô‰ÁÉ•¼‰tœ¤(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ñ¼€ôø4(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉAÉ•¼ü¸ 4(€€€€€€€€€€€€€€€€€€€€€€€¥°4(€€€€€€€€€€€€€€€€€€€€€€€•Ù•¹Ñ¼¹Ñ…É•Ð¹Ù…±Õ”4(€€€€€€€€€€€€€€€€€€€€¤4(€€€€€€€€€€€€€€€€¤ì4(4(€€€€€€€€€€€•±•µ•¹Ñ¼4(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ…µÁ¼ô‰Á•Í¼‰tœ¤4(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ñ¼€ôø4(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…ÉA•Í¼ü¸ 4(€€€€€€€€€€€€€€€€€€€€€€€¥°4(€€€€€€€€€€€€€€€€€€€€€€€•Ù•¹Ñ¼¹Ñ…É•Ð¹Ù…±Õ”4(€€€€€€€€€€€€€€€€€€€€¤4(€€€€€€€€€€€€€€€€¤ì4(4(€€€€€€€€€€€•±•µ•¹Ñ¼4(€€€€€€€€€€€€€€€€¹ÅÕ•ÉåM•±•Ñ½È m‘…Ñ„µ…µÁ¼ô‰…Ñ•½É¥„‰tœ¤4(€€€€€€€€€€€€€€€€ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°•Ù•¹Ñ¼€ôø4(€€€€€€€€€€€€€€€€€€€…½•Ì¹…½±Ñ•É…É…Ñ•½É¥„ü¸ 4(€€€€€€€€€€€€€€€€€€€€€€€¥°4(€€€€€€€€€€€€€€€€€€€€€€€•Ù•¹Ñ¼¹Ñ…É•Ð¹Ù…±Õ”4(€€€€€€€€€€€€€€€€€€€€¤4(€€€€€€€€€€€€€€€€¤ì4(4(€€€€€€€ô¤ì4(4)ô4(4(4)™Õ¹Ñ¥½¸µ½¹Ñ…ÉI•ÍÕµ½…Ñ•½É¥…Ì¡ÁÉ½‘ÕÑ½Ì¤ì4(4(€€€½¹ÍÐÑ½Ñ…¥Ì€ôíôì4(4(€€€ÁÉ½‘ÕÑ½Ì¹™½É… ¡ÁÉ½‘ÕÑ¼€ôøì4(4(€€€€€€€½¹ÍÐ…Ñ•½É¥„€ô4(€€€€€€€€€€€ÁÉ½‘ÕÑ¼¹…Ñ•½É¥„ñð€‹Â~N˜=ÕÑÉ½Ìˆì4(4(€€€€€€€Ñ½Ñ…¥Ím…Ñ•½É¥…t€ô4(€€€€€€€€€€€€¡Ñ½Ñ…¥Ím…Ñ•½É¥…tñð€À¤€¬4(€€€€€€€€€€€…±Õ±…ÉMÕ‰Ñ½Ñ…±AÉ½‘ÕÑ¼¡ÁÉ½‘ÕÑ¼¤ì4(4(€€€ô¤ì4(4(€€€½¹ÍÐ…Ñ•½É¥…Ì€ô4(€€€€€€€=‰©•Ð¹•¹ÑÉ¥•Ì¡Ñ½Ñ…¥Ì¤4(€€€€€€€€€€€€¹Í½ÉÐ ¡„°ˆ¤€ôø‰lÅt€´…lÅt¤ì4(4(€€€¥˜€ ……Ñ•½É¥…Ì¹±•¹Ñ ¤ì4(4(€€€€€€€É•ÑÕÉ¸€4(€€€€€€€€€€€€ñÀ±…ÍÌô‰Ñ•áÑ¼µÍ•Õ¹‘…É¥¼ˆø4(€€€€€€€€€€€€€€€‘¥¥½¹”ÁÉ½‘ÕÑ½ÌÁ…É„Ù¥ÍÕ…±¥é…È¼É•ÍÕµ¼¸4(€€€€€€€€€€€€ð½Àø4(€€€€€€€€ì4(4(€€€ô4(4(€€€É•ÑÕÉ¸…Ñ•½É¥…Ì¹µ…À 4(€€€€€€€€¡m…Ñ•½É¥„°Ñ½Ñ…±t¤€ôø€4(4(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰…Ñ•½É¥„µÉ•ÍÕµ¼ˆø4(4(€€€€€€€€€€€€€€€€ñÍÁ…¸ø4(€€€€€€€€€€€€€€€€€€€€‘í•Í…Á…É!Q50¡…Ñ•½É¥„¥ô4(€€€€€€€€€€€€€€€€ð½ÍÁ…¸ø4(4(€€€€€€€€€€€€€€€€ñÍÑÉ½¹œø4(€€€€€€€€€€€€€€€€€€€€‘í™½Éµ…Ñ…É5½•‘„¡Ñ½Ñ…°¥ô4(€€€€€€€€€€€€€€€€ð½ÍÑÉ½¹œø4(4(€€€€€€€€€€€€ð½‘¥Øø4(4(€€€€€€€€4(€€€€¤¹©½¥¸ ˆˆ¤ì4(4)ô4(4(4)•áÁ½ÉÐ™Õ¹Ñ¥½¸É•¹‘•É¥é…ÉQ½Ñ…¥Ì 4(€€€ÁÉ½‘ÕÑ½Ì€ômt°4(€€€¡¥ÍÑ½É¥¼€ômt4(¤ì4(4(€€€½¹ÍÐÑ½Ñ…°€ô4(€€€€€€€…±Õ±…ÉQ½Ñ…±AÉ½‘ÕÑ½Ì¡ÁÉ½‘ÕÑ½Ì¤ì4(4(€€€½¹ÍÐÕ±Ñ¥µ„€ô4(€€€€€€€¡¥ÍÑ½É¥¼¹±•¹Ñ 4(€€€€€€€€€€€€ü¹Õµ•É½M•ÕÉ¼¡¡¥ÍÑ½É¥½lÁt¹Ñ½Ñ…°¤4(€€€€€€€€€€€€è€Àì4(4(€€€½¹ÍÐÑ½Ñ…±½µÁÉ„€ô4(€€€€€€€‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰Ñ½Ñ…±½µÁÉ„ˆ¤ì4(4(€€€½¹ÍÐÕ±Ñ¥µ…½µÁÉ„€ô4(€€€€€€€‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰Õ±Ñ¥µ…½µÁÉ„ˆ¤ì4(4(€€€½¹ÍÐ½µÁ…É……¼€ô4(€€€€€€€‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰½µÁ…É……½½µÁÉ„ˆ¤ì4(4(€€€½¹ÍÐÉ•ÍÕµ¼€ô4(€€€€€€€‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰É•ÍÕµ½%Ñ•¹Ìˆ¤ì4(4(4(€€€¥˜€¡Ñ½Ñ…±½µÁÉ„¤ì4(4(€€€€€€€Ñ½Ñ…±½µÁÉ„¹Ñ•áÑ½¹Ñ•¹Ð€ô4(€€€€€€€€€€€™½Éµ…Ñ…É5½•‘„¡Ñ½Ñ…°¤ì4(4(€€€ô4(4(€€€¥˜€¡Õ±Ñ¥µ…½µÁÉ„¤ì4(4(€€€€€€€Õ±Ñ¥µ…½µÁÉ„¹Ñ•áÑ½¹Ñ•¹Ð€ô4(€€€€€€€€€€€™½Éµ…Ñ…É5½•‘„¡Õ±Ñ¥µ„¤ì4(4(€€€ô4(4(€€€¥˜€¡½µÁ…É……¼¤ì4(4(€€€€€€€¥˜€¡Õ±Ñ¥µ„€ðô€À¤ì4(4(€€€€€€€€€€€½µÁ…É……¼¹Ñ•áÑ½¹Ñ•¹Ð€ô4(€€€€€€€€€€€€€€€€‹Šj¨9•¹¡Õµ„½µÁÉ„…¹Ñ•É¥½Èˆì4(4(€€€€€€€€€€€½µÁ…É……¼¹±…ÍÍ9…µ”€ô4(€€€€€€€€€€€€€€€€‰½µÁ…É……¼µ½µÁÉ„ˆì4(4(€€€€€€€ô•±Í”ì4(4(€€€€€€€€€€€½¹ÍÐ‘¥™•É•¹„€ôÑ½Ñ…°€´Õ±Ñ¥µ„ì4(4(€€€€€€€€€€€¥˜€¡‘¥™•É•¹„€ø€À¤ì4(4(€€€€€€€€€€€€€€€½µÁ…É……¼¹Ñ•áÑ½¹Ñ•¹Ð€ô4(€€€€€€€€€€€€€€€€€€€ƒÂ~RÐ½µÁÉ„…ÑÕ…°•ÍÓ„€‘í™½Éµ…Ñ…É5½•‘„¡‘¥™•É•¹„¥ôµ…¥Ì…É„¹€ì4(4(€€€€€€€€€€€€€€€½µÁ…É……¼¹±…ÍÍ9…µ”€ô4(€€€€€€€€€€€€€€€€€€€€‰½µÁ…É……¼µ½µÁÉ„½µÁ…É……¼µ…Õµ•¹Ñ¼ˆì4(4(€€€€€€€€€€€ô•±Í”¥˜€¡‘¥™•É•¹„€ð€À¤ì4(4(€€€€€€€€€€€€€€€½µÁ…É……¼¹Ñ•áÑ½¹Ñ•¹Ð€ô4(€€€€€€€€€€€€€€€€€€€ƒÂ~~ˆ½¹½µ¥„•ÍÑ¥µ…‘„‘”€‘í™½Éµ…Ñ…É5½•‘„¡5…Ñ ¹…‰Ì¡‘¥™•É•¹„¤¥ô¹€ì4(4(€€€€€€€€€€€€€€€½µÁ…É……¼¹±…ÍÍ9…µ”€ô4(€€€€€€€€€€€€€€€€€€€€‰½µÁ…É……¼µ½µÁÉ„½µÁ…É……¼µ•½¹½µ¥„ˆì4(4(€€€€€€€€€€€ô•±Í”ì4(4(€€€€€€€€€€€€€€€½µÁ…É……¼¹Ñ•áÑ½¹Ñ•¹Ð€ô4(€€€€€€€€€€€€€€€€€€€€‹Šj¨<Ñ½Ñ…°ƒ¤¥Õ…°…¼‘„ƒé±Ñ¥µ„½µÁÉ„¸ˆì4(4(€€€€€€€€€€€€€€€½µÁ…É……¼¹±…ÍÍ9…µ”€ô4(€€€€€€€€€€€€€€€€€€€€‰½µÁ…É……¼µ½µÁÉ„ˆì4(4(€€€€€€€€€€€ô4(4(€€€€€€€ô4(4(€€€ô4(4(€€€¥˜€¡É•ÍÕµ¼¤ì4(4(€€€€€€€É•ÍÕµ¼¹¥¹¹•É!Q50€ô€4(4(€€€€€€€€€€€€ñ ÌûÂ~N(I•ÍÕµ¼‘„½µÁÉ„ð½ Ìø4(4(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰É•ÍÕµ¼µÑ½Ñ…°µ±¥¹¡„ˆø4(4(€€€€€€€€€€€€€€€€ñÍÁ…¸ùQ½Ñ…°…ÑÕ…°ð½ÍÁ…¸ø4(4(€€€€€€€€€€€€€€€€ñÍÑÉ½¹œø4(€€€€€€€€€€€€€€€€€€€€‘í™½Éµ…Ñ…É5½•‘„¡Ñ½Ñ…°¥ô4(€€€€€€€€€€€€€€€€ð½ÍÑÉ½¹œø4(4(€€€€€€€€€€€€ð½‘¥Øø4(4(€€€€€€€€€€€€‘íµ½¹Ñ…ÉI•ÍÕµ½…Ñ•½É¥…Ì¡ÁÉ½‘ÕÑ½Ì¥ô4(4(€€€€€€€€ì4(4(€€€ô4(4)ô4(4(4)•áÁ½ÉÐ™Õ¹Ñ¥½¸É•¹‘•É¥é…É!¥ÍÑ½É¥¼ 4(€€€¡¥ÍÑ½É¥¼€ômt4(¤ì4(4(€€€½¹ÍÐ½¹Ñ…¥¹•È€ô4(€€€€€€€‘½Õµ•¹Ð¹•Ñ±•µ•¹Ñ	å% ‰¡¥ÍÑ½É¥½½µÁÉ…Ìˆ¤ì4(4(€€€¥˜€ …½¹Ñ…¥¹•È¤ì4(4(€€€€€€€É•ÑÕÉ¸ì4(4(€€€ô4(4(€€€¥˜€ …¡¥ÍÑ½É¥¼¹±•¹Ñ ¤ì4(4(€€€€€€€½¹Ñ…¥¹•È¹¥¹¹•É!Q50€ô€4(4(€€€€€€€€€€€€ñ ÈûÂ~N,!¥ÍÓÍÉ¥¼‘”½µÁÉ…Ìð½ Èø4(4(€€€€€€€€€€€€ñÀ±…ÍÌô‰Ñ•áÑ¼µÍ•Õ¹‘…É¥¼ˆø4(€€€€€€€€€€€€€€€9•¹¡Õµ„½µÁÉ„™½¤™¥¹…±¥é…‘„…¥¹‘„¸4(€€€€€€€€€€€€ð½Àø4(4(€€€€€€€€ì4(4(€€€€€€€É•ÑÕÉ¸ì4(4(€€€ô4(4(€€€½¹Ñ…¥¹•È¹¥¹¹•É!Q50€ô€4(4(€€€€€€€€ñ ÈûÂ~N,!¥ÍÓÍÉ¥¼‘”½µÁÉ…Ìð½ Èø4(4(€€€€€€€€ñ‘¥Ø±…ÍÌô‰‰½Ñ½•Ìµ¡¥ÍÑ½É¥¼ˆø4(4(€€€€€€€€€€€€ñ‰ÕÑÑ½¸4(€€€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ4(€€€€€€€€€€€€€€€±…ÍÌô‰‰Ñ¸µ±¥µÁ…Èµ¡¥ÍÑ½É¥¼ˆ4(€€€€€€€€€€€€€€€‘…Ñ„µ……¼µ¡¥ÍÑ½É¥¼ô‰±¥µÁ…Èˆ4(€€€€€€€€€€€€ø4(€€€€€€€€€€€€€€€1¥µÁ…È¡¥ÍÓÍÉ¥¼4(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø4(4(€€€€€€€€€€€€ñ‰ÕÑÑ½¸4(€€€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ4(€€€€€€€€€€€€€€€±…ÍÌô‰‰Ñ¸µé•É…Èµ½µÁÉ„ˆ4(€€€€€€€€€€€€€€€‘…Ñ„µ……¼µ¡¥ÍÑ½É¥¼ô‰é•É…Èˆ4(€€€€€€€€€€€€ø4(€€€€€€€€€€€€€€€i•É…ÈÁÉ—½Ì…ÑÕ…¥Ì4(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø4(4(€€€€€€€€ð½‘¥Øø4(4(€€€€€€€€‘í¡¥ÍÑ½É¥¼¹µ…À¡½µÁÉ„€ôø€4(4(€€€€€€€€€€€€ñ…ÉÑ¥±”±…ÍÌô‰½µÁÉ„µ¡¥ÍÑ½É¥¼ˆø4(4(€€€€€€€€€€€€€€€€ñ Ìø4(€€€€€€€€€€€€€€€€€€€½µÁÉ„‘”€‘í•Í…Á…É!Q50¡™½Éµ…Ñ…É…Ñ„¡½µÁÉ„¹‘…Ñ„¤¥ô4(€€€€€€€€€€€€€€€€ð½ Ìø4(4(€€€€€€€€€€€€€€€€ñÀø4(€€€€€€€€€€€€€€€€€€€€ñÍÑÉ½¹œù5•É…‘¼èð½ÍÑÉ½¹œø4(€€€€€€€€€€€€€€€€€€€€‘í•Í…Á…É!Q50¡½µÁÉ„¹ÍÕÁ•Éµ•É…‘¼ñð€‰[…É¥½Ìµ•É…‘½Ìˆ¥ô4(€€€€€€€€€€€€€€€€ð½Àø4(4(€€€€€€€€€€€€€€€€ñÀø4(€€€€€€€€€€€€€€€€€€€€ñÍÑÉ½¹œùQ½Ñ…°èð½ÍÑÉ½¹œø4(€€€€€€€€€€€€€€€€€€€€‘í™½Éµ…Ñ…É5½•‘„¡½µÁÉ„¹Ñ½Ñ…°¥ô4(€€€€€€€€€€€€€€€€ð½Àø4(4(€€€€€€€€€€€€€€€€‘ì4(€€€€€€€€€€€€€€€€€€€¹Õµ•É½M•ÕÉ¼¡½µÁÉ„¹•½¹½µ¥„¤€ø€À4(€€€€€€€€€€€€€€€€€€€€€€€€ü€4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€ñÀ±…ÍÌô‰‘¥™•É•¹„µ½µÁÉ„µ•½¹½µ¥„ˆø4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€½¹½µ¥„‘”€‘í™½Éµ…Ñ…É5½•‘„¡½µÁÉ„¹•½¹½µ¥„¥ô4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€ð½Àø4(€€€€€€€€€€€€€€€€€€€€€€€€4(€€€€€€€€€€€€€€€€€€€€€€€€è€4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€ñÀ±…ÍÌô‰‘¥™•É•¹„µ½µÁÉ„µÁÉ¥µ•¥É„ˆø4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€½µÁÉ„É•¥ÍÑÉ…‘„¹¼¡¥ÍÓÍÉ¥¼4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€ð½Àø4(€€€€€€€€€€€€€€€€€€€€€€€€4(€€€€€€€€€€€€€€€ô4(4(€€€€€€€€€€€€€€€€ñÕ°ø4(4(€€€€€€€€€€€€€€€€€€€€‘ì¡½µÁÉ„¹¥Ñ•¹Ìñðmt¤¹µ…À¡¥Ñ•´€ôø€4(4(€€€€€€€€€€€€€€€€€€€€€€€€ñ±¤ø4(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‘í•Í…Á…É!Q50¡¥Ñ•´¹¹½µ”¥ô4(€€€€€€€€€€€€€€€€€€€€€€€€€€€ƒŠP€‘í•Í…Á…É!Q50¡¥Ñ•´¹ÍÕÁ•Éµ•É…‘¼ñð€‰M•´µ•É…‘¼ˆ¥ô4(€€€€€€€€€€€€€€€€€€€€€€€€€€€ƒŠP€‘í™½Éµ…Ñ…É5½•‘„¡¥Ñ•´¹ÍÕ‰Ñ½Ñ…°¥ô4(€€€€€€€€€€€€€€€€€€€€€€€€ð½±¤ø4(4(€€€€€€€€€€€€€€€€€€€€¤¹©½¥¸ ˆˆ¥ô4(4(€€€€€€€€€€€€€€€€ð½Õ°ø4(4(€€€€€€€€€€€€ð½…ÉÑ¥±”ø4(4(€€€€€€€€¤¹©½¥¸ ˆˆ¥ô4(4(€€€€ì4(4)ô(()™Õ¹Ñ¥½¸½‰Ñ•ÉAÉ•½ÍAÉ½‘ÕÑ¼¡ÁÉ½‘ÕÑ¼€ôíô¤ì((€€€¥˜€¡ÉÉ…ä¹¥ÍÉÉ…ä¡ÁÉ½‘ÕÑ¼¹ÁÉ•½Ì¤€˜˜ÁÉ½‘ÕÑ¼¹ÁÉ•½Ì¹±•¹Ñ ¤ì((€€€€€€€É•ÑÕÉ¸ÁÉ½‘ÕÑ¼¹ÁÉ•½Ì¹µ…À ¡ÁÉ•¼°¥¹‘¥”¤€ôø€¡ì(€€€€€€€€€€€¥èMÑÉ¥¹œ¡ÁÉ•¼¹¥ñð¥¹‘¥”¤°(€€€€€€€€€€€Ù…±½Èè5…Ñ ¹µ…à À°¹Õµ•É½M•ÕÉ¼¡ÁÉ•¼¹Ù…±½È¤¤°(€€€€€€€€€€€ÅÕ…¹Ñ¥‘…‘”è5…Ñ ¹µ…à À°¹Õµ•É½M•ÕÉ¼¡ÁÉ•¼¹ÅÕ…¹Ñ¥‘…‘”¤¤(€€€€€€€ô¤¤ì((€€€ô((€€€É•ÑÕÉ¸mì(€€€€€€€¥è€‰ÁÉ•¼µ¥¹¥¥…°ˆ°(€€€€€€€Ù…±½Èè5…Ñ ¹µ…à À°¹Õµ•É½M•ÕÉ¼¡ÁÉ½‘ÕÑ¼¹ÁÉ•¼¤¤°(€€€€€€€ÅÕ…¹Ñ¥‘…‘”è5…Ñ ¹µ…à À°¹Õµ•É½M•ÕÉ¼¡ÁÉ½‘ÕÑ¼¹ÅÕ…¹Ñ¥‘…‘”¤¤(€€€õtì()ô(()™Õ¹Ñ¥½¸É•ÍÕµ¥ÉAÉ½‘ÕÑ¼¡ÁÉ½‘ÕÑ¼€ôíô¤ì((€€€½¹ÍÐÁÉ•½Ì€ô½‰Ñ•ÉAÉ•½ÍAÉ½‘ÕÑ¼¡ÁÉ½‘ÕÑ¼¤ì(€€€½¹ÍÐÅÕ…¹Ñ¥‘…‘•Q½Ñ…°€ôÁÉ•½Ì¹É•‘Õ” (€€€€€€€€¡Í½µ„°ÁÉ•¼¤€ôøÍ½µ„€¬ÁÉ•¼¹ÅÕ…¹Ñ¥‘…‘”°(€€€€€€€€À(€€€€¤ì(€€€½¹ÍÐÑ½Ñ…°€ôÁÉ•½Ì¹É•‘Õ” (€€€€€€€€¡Í½µ„°ÁÉ•¼¤€ôøÍ½µ„€¬€¡ÁÉ•¼¹Ù…±½È€¨ÁÉ•¼¹ÅÕ…¹Ñ¥‘…‘”¤°(€€€€€€€€À(€€€€¤ì((€€€É•ÑÕÉ¸ì(€€€€€€€ÁÉ•½Ì°(€€€€€€€ÅÕ…¹Ñ¥‘…‘•Q½Ñ…°°(€€€€€€€Ñ½Ñ…°°(€€€€€€€µ•‘¥„èÅÕ…¹Ñ¥‘…‘•Q½Ñ…°€ø€À€üÑ½Ñ…°€¼ÅÕ…¹Ñ¥‘…‘•Q½Ñ…°€è€À(€€€ôì()ô(
