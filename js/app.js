@@ -421,9 +421,10 @@ function atualizarTela() {
 
             },
 
-            aoPrepararEdicaoPrecos(id, alteracoes) {
+            aoAbrirNovoPreco(id, alteracoes) {
 
                 atualizarProduto(id, alteracoes);
+                adicionarPrecoCadastrado(id);
                 atualizarTela();
 
             },

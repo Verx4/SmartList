@@ -455,78 +455,15 @@ function formatarQuantidade(valor) {
 }
 
 
-function ajustarPrecosAoResumo(produto, quantidadeInformada, totalInformado) {
+function atualizarPrecoPrincipal(produto, quantidadeInformada, valorInformado) {
 
     const precos = obterPrecosProduto(produto).map(preco => ({ ...preco }));
-    const quantidadeAlvo = Math.max(0, Math.floor(numeroSeguro(quantidadeInformada)));
-    const totalAlvo = Math.max(0, numeroSeguro(totalInformado));
-    const quantidadeAtual = precos.reduce(
-        (soma, preco) => soma + preco.quantidade,
-        0
-    );
 
-    if (quantidadeAtual > 0) {
-
-        let quantidadeDistribuida = 0;
-
-        precos.forEach((preco, indice) => {
-
-            const ultimaLinha = indice === precos.length - 1;
-            const quantidade = ultimaLinha
-                ? quantidadeAlvo - quantidadeDistribuida
-                : Math.floor((preco.quantidade / quantidadeAtual) * quantidadeAlvo);
-
-            preco.quantidade = Math.max(0, quantidade);
-            quantidadeDistribuida += preco.quantidade;
-
-        });
-
-    } else {
-
-        precos.forEach(preco => { preco.quantidade = 0; });
-        precos[0].quantidade = quantidadeAlvo;
-
-    }
-
-    const linhasAtivas = precos.filter(preco => preco.quantidade > 0);
-    const totalAtual = linhasAtivas.reduce(
-        (soma, preco) => soma + (preco.valor * preco.quantidade),
-        0
-    );
-
-    if (!linhasAtivas.length) {
-
-        return precos;
-
-    }
-
-    if (totalAlvo === 0) {
-
-        linhasAtivas.forEach(preco => { preco.valor = 0; });
-        return precos;
-
-    }
-
-    if (totalAtual > 0) {
-
-        const fator = totalAlvo / totalAtual;
-        linhasAtivas.forEach(preco => { preco.valor *= fator; });
-
-    } else {
-
-        linhasAtivas[0].valor = totalAlvo / linhasAtivas[0].quantidade;
-
-    }
-
-    const ultimaLinha = linhasAtivas.at(-1);
-    const totalOutrasLinhas = linhasAtivas
-        .slice(0, -1)
-        .reduce((soma, preco) => soma + (preco.valor * preco.quantidade), 0);
-
-    ultimaLinha.valor = Math.max(
-        0,
-        (totalAlvo - totalOutrasLinhas) / ultimaLinha.quantidade
-    );
+    precos[0] = {
+        ...precos[0],
+        quantidade: Math.max(0, Math.floor(numeroSeguro(quantidadeInformada))),
+        valor: Math.max(0, numeroSeguro(valorInformado))
+    };
 
     return precos;
 
@@ -543,6 +480,8 @@ function montarProduto(produto) {
     const ultimoPreco = Math.max(0, numeroSeguro(produto.ultimoPreco));
     const ultimaQuantidade = Math.max(0, numeroSeguro(produto.ultimaQuantidade));
     const possuiUltimaCompra = ultimoPreco > 0 || ultimaQuantidade > 0;
+    const precoPrincipal = resumo.precos[0];
+    const precosAdicionais = resumo.precos.slice(1);
 
     return `
         <article class="produto produto-multivalores"
@@ -563,25 +502,19 @@ function montarProduto(produto) {
                     <strong>${rotuloPrecos}</strong>
                 </div>
                 <div class="metrica-produto">
-                    <span>Qtd. total</span>
+                    <span>${editando && precosAdicionais.length ? "Qtd. principal" : "Qtd. total"}</span>
                     ${editando ? `
                         <div class="editar-quantidade-total">
                             <button type="button" data-acao-edicao="diminuir-quantidade" aria-label="Diminuir quantidade total">−</button>
                             <input type="number" min="0" step="1" inputmode="numeric" data-editar="quantidade-total"
-                                value="${resumo.quantidadeTotal}" aria-label="Quantidade total de ${escaparHTML(produto.nome)}">
+                                value="${precoPrincipal.quantidade}" aria-label="Quantidade principal de ${escaparHTML(produto.nome)}">
                             <button type="button" data-acao-edicao="aumentar-quantidade" aria-label="Aumentar quantidade total">+</button>
                         </div>
                     ` : `<strong data-total-quantidade>${resumo.quantidadeTotal}</strong>`}
                 </div>
                 <div class="metrica-produto metrica-total">
                     <span>Total</span>
-                    ${editando ? `
-                        <label class="editar-total-produto">
-                            <span class="sr-only">Valor total do produto</span>
-                            <input type="number" min="0" step="0.01" inputmode="decimal" data-editar="total"
-                                value="${resumo.total.toFixed(2)}" aria-label="Valor total de ${escaparHTML(produto.nome)}">
-                        </label>
-                    ` : `<strong data-total-produto>${formatarMoeda(resumo.total)}</strong>`}
+                    <strong data-total-produto>${formatarMoeda(resumo.total)}</strong>
                 </div>
                 <button type="button" class="editar-produto" data-acao="editar" aria-label="Editar ${escaparHTML(produto.nome)}">✎</button>
             </header>
@@ -590,6 +523,9 @@ function montarProduto(produto) {
                 <section class="editar-produto-painel" aria-label="Editar produto">
                     <label><span>Nome do produto</span><input type="text" data-editar="nome" maxlength="100" value="${escaparHTML(produto.nome)}"></label>
                     <label><span>Categoria</span><select data-editar="categoria">${montarOpcoesCategoria(produto.categoria)}</select></label>
+                    <label><span>Valor unitário (R$)</span><input class="editar-valor-unitario" type="number" min="0" step="0.01" inputmode="decimal"
+                        data-editar="valor-unitario" value="${precoPrincipal.valor.toFixed(2)}"
+                        aria-label="Valor unitário de ${escaparHTML(produto.nome)}"></label>
                     <div class="editar-produto-acoes">
                         <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alterações</button>
                         <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>
@@ -600,15 +536,10 @@ function montarProduto(produto) {
             ` : ""}
 
             ${editando || aberto ? `
-                <section class="precos-produto" ${aberto ? "" : "hidden"} aria-label="Preços cadastrados de ${escaparHTML(produto.nome)}">
-                    <div class="precos-produto-topo"><h4>Preços cadastrados</h4><button type="button" data-acao="adicionar-preco">+ Adicionar preço</button></div>
+                <section class="precos-produto" ${aberto ? "" : "hidden"} aria-label="Preços adicionais de ${escaparHTML(produto.nome)}">
+                    <div class="precos-produto-topo"><h4>Preços adicionais</h4><button type="button" data-acao="adicionar-preco">+ Outro preço</button></div>
                     <div class="precos-cabecalho" aria-hidden="true"><span>Valor (R$)</span><span>Quantidade</span><span>Subtotal (R$)</span><span></span></div>
-                    <div class="precos-lista">${resumo.precos.map((preco, indice) => montarLinhaPreco(preco, indice, produto.nome)).join("")}</div>
-                    <footer class="resumo-precos-produto">
-                        <div><span>Qtd. total</span><strong data-resumo-quantidade>${resumo.quantidadeTotal} ${resumo.quantidadeTotal === 1 ? "unidade" : "unidades"}</strong></div>
-                        <div><span>Total do item</span><strong data-resumo-total>${formatarMoeda(resumo.total)}</strong></div>
-                        <div><span>Média por unidade</span><strong data-resumo-media>${formatarMoeda(resumo.media)}</strong></div>
-                    </footer>
+                    <div class="precos-lista">${precosAdicionais.map((preco, indice) => montarLinhaPreco(preco, indice + 1, produto.nome)).join("")}</div>
                 </section>
             ` : ""}
         </article>
@@ -617,11 +548,13 @@ function montarProduto(produto) {
 }
 
 
-function atualizarResumoVisualProduto(elemento, opcoes = {}) {
+function atualizarResumoVisualProduto(elemento) {
 
     const linhas = [...elemento.querySelectorAll(".preco-cadastrado")];
-    let quantidadeTotal = 0;
-    let total = 0;
+    const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
+    const campoValorUnitario = elemento.querySelector('[data-editar="valor-unitario"]');
+    let quantidadeTotal = Math.max(0, numeroSeguro(campoQuantidadeTotal?.value));
+    let total = quantidadeTotal * Math.max(0, numeroSeguro(campoValorUnitario?.value));
 
     linhas.forEach(linha => {
         const valor = Math.max(0, numeroSeguro(linha.querySelector('[data-campo-preco="valor"]')?.value));
@@ -633,29 +566,14 @@ function atualizarResumoVisualProduto(elemento, opcoes = {}) {
         if (subtotalElemento) subtotalElemento.textContent = formatarMoeda(subtotal);
     });
 
-    const media = quantidadeTotal > 0 ? total / quantidadeTotal : 0;
     const atualizar = (seletor, valor) => {
         const alvo = elemento.querySelector(seletor);
         if (alvo) alvo.textContent = valor;
     };
-    const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
-    const campoTotal = elemento.querySelector('[data-editar="total"]');
-
-    if (!opcoes.preservarCamposEdicao && campoQuantidadeTotal) {
-        campoQuantidadeTotal.value = String(quantidadeTotal);
-    } else {
+    if (!campoQuantidadeTotal) {
         atualizar("[data-total-quantidade]", String(quantidadeTotal));
     }
-
-    if (!opcoes.preservarCamposEdicao && campoTotal) {
-        campoTotal.value = total.toFixed(2);
-    } else {
-        atualizar("[data-total-produto]", formatarMoeda(total));
-    }
-
-    atualizar("[data-resumo-quantidade]", `${quantidadeTotal} ${quantidadeTotal === 1 ? "unidade" : "unidades"}`);
-    atualizar("[data-resumo-total]", formatarMoeda(total));
-    atualizar("[data-resumo-media]", formatarMoeda(media));
+    atualizar("[data-total-produto]", formatarMoeda(total));
 
 }
 
@@ -663,8 +581,8 @@ function atualizarResumoVisualProduto(elemento, opcoes = {}) {
 function sincronizarPrecosComResumoEditavel(elemento, produto) {
 
     const quantidade = elemento.querySelector('[data-editar="quantidade-total"]')?.value;
-    const total = elemento.querySelector('[data-editar="total"]')?.value;
-    const precos = ajustarPrecosAoResumo(produto, quantidade, total);
+    const valorUnitario = elemento.querySelector('[data-editar="valor-unitario"]')?.value;
+    const precos = atualizarPrecoPrincipal(produto, quantidade, valorUnitario);
     const precosPorId = new Map(
         precos.map(preco => [String(preco.id), preco])
     );
@@ -682,7 +600,7 @@ function sincronizarPrecosComResumoEditavel(elemento, produto) {
 
     });
 
-    atualizarResumoVisualProduto(elemento, { preservarCamposEdicao: true });
+    atualizarResumoVisualProduto(elemento);
 
 }
 
@@ -704,17 +622,15 @@ function obterAlteracoesDaEdicao(elemento, produto) {
         0,
         Math.floor(numeroSeguro(elemento.querySelector('[data-editar="quantidade-total"]')?.value))
     );
-    const total = Math.max(
+    const valorUnitario = Math.max(
         0,
-        numeroSeguro(elemento.querySelector('[data-editar="total"]')?.value)
+        numeroSeguro(elemento.querySelector('[data-editar="valor-unitario"]')?.value)
     );
-
-    if (total > 0 && quantidadeTotal === 0) quantidadeTotal = 1;
 
     return {
         nome,
         categoria: elemento.querySelector('[data-editar="categoria"]')?.value,
-        precos: ajustarPrecosAoResumo(produto || {}, quantidadeTotal, total)
+        precos: atualizarPrecoPrincipal(produto || {}, quantidadeTotal, valorUnitario)
     };
 
 }
@@ -783,8 +699,8 @@ export function renderizarProdutos(
                     const alteracoes = obterAlteracoesDaEdicao(elemento, produtoAtual);
                     if (!alteracoes) return;
                     precosAbertos.add(String(id));
-                    if (acoes.aoPrepararEdicaoPrecos) {
-                        acoes.aoPrepararEdicaoPrecos(id, alteracoes);
+                    if (acoes.aoAbrirNovoPreco) {
+                        acoes.aoAbrirNovoPreco(id, alteracoes);
                         return;
                     }
                     sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
@@ -793,7 +709,7 @@ export function renderizarProdutos(
                 });
 
             const campoQuantidadeTotal = elemento.querySelector('[data-editar="quantidade-total"]');
-            const campoTotal = elemento.querySelector('[data-editar="total"]');
+            const campoValorUnitario = elemento.querySelector('[data-editar="valor-unitario"]');
 
             elemento
                 .querySelector('[data-acao-edicao="diminuir-quantidade"]')
@@ -820,10 +736,7 @@ export function renderizarProdutos(
                 sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
             });
 
-            campoTotal?.addEventListener("input", () => {
-                if (numeroSeguro(campoTotal.value) > 0 && numeroSeguro(campoQuantidadeTotal?.value) === 0) {
-                    campoQuantidadeTotal.value = "1";
-                }
+            campoValorUnitario?.addEventListener("input", () => {
                 sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
             });
 
