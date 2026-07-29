@@ -73,15 +73,16 @@ function calcular() {
   $('textoCusto').textContent = `Custo total das ${unidadesNecessarias} ${unidadesNecessarias === 1 ? 'unidade' : 'unidades'}:`;
   $('custoEquivalente').textContent = moeda.format(custoEquivalente);
 
-  const precoBaseA = a.preco / a.base;
-  const precoBaseB = b.preco / b.base;
-  const melhor = precoBaseA <= precoBaseB ? { ...a, nome: 'Embalagem 1' } : { ...b, nome: 'Embalagem 2' };
-  const pior = precoBaseA <= precoBaseB ? { ...b, nome: 'Embalagem 2' } : { ...a, nome: 'Embalagem 1' };
-  const custoPiorNaQtdMelhor = (melhor.base / pior.base) * pior.preco;
-  const economia = Math.max(0, custoPiorNaQtdMelhor - melhor.preco);
-  const percentual = custoPiorNaQtdMelhor > 0 ? (economia / custoPiorNaQtdMelhor) * 100 : 0;
+  const menorEhMelhor = custoEquivalente < maior.preco;
+  const melhor = menorEhMelhor ? menor : maior;
+  const quantidadeMelhor = menorEhMelhor ? unidadesNecessarias : 1;
+  const custoMelhor = menorEhMelhor ? custoEquivalente : maior.preco;
+  const custoPior = menorEhMelhor ? maior.preco : custoEquivalente;
+  const economia = Math.max(0, custoPior - custoMelhor);
+  const percentual = custoPior > 0 ? (economia / custoPior) * 100 : 0;
+  const rotuloQuantidade = quantidadeMelhor === 1 ? 'unidade' : 'unidades';
 
-  $('melhorOpcao').textContent = `Levar 1 unidade da ${melhor.nome.toLowerCase()} de ${descricao(melhor)}`;
+  $('melhorOpcao').textContent = `Levar ${quantidadeMelhor} ${rotuloQuantidade} da ${melhor.nome.toLowerCase()} de ${descricao(melhor)}`;
   $('economiaValor').textContent = moeda.format(economia);
   $('economiaPercentual').textContent = `${numero.format(percentual)}%`;
 
