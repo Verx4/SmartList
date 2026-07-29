@@ -142,7 +142,7 @@ public class NotaFiscalService {
 
     URI validarUrl(String endereco) {
         try {
-            URI uri = new URI(endereco == null ? "" : endereco.trim());
+            URI uri = new URI(normalizarEndereco(endereco));
             String host = uri.getHost();
             String scheme = uri.getScheme();
 
@@ -159,6 +159,11 @@ public class NotaFiscalService {
         } catch (URISyntaxException | IllegalArgumentException erro) {
             throw urlInvalida();
         }
+    }
+
+    String normalizarEndereco(String endereco) {
+        return (endereco == null ? "" : endereco.trim())
+            .replace("|", "%7C");
     }
 
     private DocumentoRemoto baixar(URI inicial) {
@@ -188,7 +193,7 @@ public class NotaFiscalService {
                     if (location.isBlank()) {
                         throw consultaIndisponivel();
                     }
-                    atual = atual.resolve(location);
+                    atual = atual.resolve(normalizarEndereco(location));
                     continue;
                 }
 

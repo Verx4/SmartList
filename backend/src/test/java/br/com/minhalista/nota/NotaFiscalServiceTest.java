@@ -51,6 +51,19 @@ class NotaFiscalServiceTest {
     }
 
     @Test
+    void normalizaSeparadoresOficiaisDoQrCodeDaNfce() {
+        String endereco = service.normalizarEndereco(
+            "http://nfce.sefaz.pe.gov.br/nfce/consulta?p="
+                + "00000000000000000000000000000000000000000000|2|1|1"
+        );
+
+        URI uri = URI.create(endereco);
+
+        assertThat(uri.getHost()).isEqualTo("nfce.sefaz.pe.gov.br");
+        assertThat(uri.getRawQuery()).contains("%7C2%7C1%7C1");
+    }
+
+    @Test
     void rejeitaEnderecoQueNaoPertenceAoGoverno() {
         assertThatThrownBy(() -> service.validarUrl("https://exemplo.com/nota"))
             .isInstanceOf(RegraNegocioException.class)
