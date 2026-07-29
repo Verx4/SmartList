@@ -8,13 +8,13 @@ const URL_GSAP = "https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js";
 const idsProdutosConhecidos = new Set();
 let promessaGsap;
 
-function movimentoReduzido() {
+export function movimentoReduzido() {
     return window.matchMedia(
         "(prefers-reduced-motion: reduce)"
     ).matches;
 }
 
-function carregarGsap() {
+export function carregarGsap() {
     if (window.gsap) {
         return Promise.resolve(window.gsap);
     }
@@ -416,7 +416,10 @@ export function destacarProduto(id) {
 }
 
 async function animarEntradaPagina() {
-    if (movimentoReduzido()) {
+    if (
+        document.documentElement.classList.contains("smart-list-intro-pending")
+        || movimentoReduzido()
+    ) {
         return;
     }
 

@@ -171,8 +171,20 @@ function configurarLogin() {
                     "sucesso"
                 );
 
+                const administrador =
+                    String(usuario?.perfil || "").toUpperCase() === "ADMIN";
+
+                if (!administrador) {
+                    try {
+                        sessionStorage.removeItem("smartListIntroPlayed");
+                        sessionStorage.setItem("smartListIntroPending", "true");
+                    } catch (_erro) {
+                        // O login continua normalmente quando a sessão do navegador está indisponível.
+                    }
+                }
+
                 window.location.assign(
-                    String(usuario?.perfil || "").toUpperCase() === "ADMIN"
+                    administrador
                         ? "./admin/index.html"
                         : "./dashboard.html"
                 );

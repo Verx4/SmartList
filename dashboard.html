@@ -8,6 +8,18 @@
     <meta name="application-name" content="Smart List">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script>
+        try {
+            if (
+                sessionStorage.getItem("smartListIntroPending") === "true"
+                && sessionStorage.getItem("smartListIntroPlayed") !== "true"
+            ) {
+                document.documentElement.classList.add("smart-list-intro-pending");
+            }
+        } catch (_erro) {
+            // O dashboard continua visível quando o armazenamento da sessão está indisponível.
+        }
+    </script>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
@@ -24,6 +36,7 @@
     <link rel="stylesheet" href="./css/produtos.css">
     <link rel="stylesheet" href="./css/historico.css">
     <link rel="stylesheet" href="./css/dashboard.css">
+    <link rel="stylesheet" href="./css/login-intro.css?v=1">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/temas.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
@@ -325,6 +338,7 @@
     </footer>
 
     <script src="./js/tema.js"></script>
+    <script type="module" src="./js/login-intro.js?v=1"></script>
     <script type="module" src="./js/app.js"></script>
     <script type="module" src="./js/listas-salvas-ui.js?v=3"></script>
     <script type="module" src="./js/scanner-nota.js?v=3"></script>
