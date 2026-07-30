@@ -422,3 +422,63 @@
     margin-top: 12px;
     font-size: 13px;
 }
+
+.admin-oferta-form {
+    margin-bottom: 22px;
+    padding: 22px;
+}
+
+.admin-oferta-form h2 {
+    margin: 5px 0 16px;
+}
+
+.admin-oferta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.admin-oferta-grid label {
+    display: grid;
+    gap: 7px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-oferta-grid .campo-largo {
+    grid-column: span 2;
+}
+
+.admin-check {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 15px 0;
+}
+
+.admin-check input {
+    width: 20px;
+    height: 20px;
+}
+
+.processar-fonte {
+    width: auto;
+    min-width: 100px;
+}
+
+@media (max-width: 900px) {
+    .admin-oferta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-oferta-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-oferta-grid .campo-largo {
+        grid-column: auto;
+    }
+}

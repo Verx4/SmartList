@@ -9,13 +9,15 @@
                 ["usuarios", "./usuarios.html", "👥", "Usuários"],
                 ["assinaturas", "./usuarios.html#assinaturas", "💳", "Assinaturas"],
                 ["supermercados", "./supermercados.html", "🏪", "Supermercados"],
-                ["produtos", "./produtos.html", "📦", "Produtos"]
+                ["produtos", "./produtos.html", "📦", "Produtos"],
+                ["localizacao", "./localizacao.html", "📍", "Localização"]
             ]
         },
         {
             titulo: "Dados e integrações",
             itens: [
                 ["scrapers", "./scrapers.html", "🤖", "Scrapers"],
+                ["ofertas", "./ofertas.html", "🏷️", "Ofertas e encartes"],
                 ["apis", "./apis.html", "🔗", "APIs"],
                 ["banco-de-dados", "./monitoramento.html#banco-de-dados", "🗄️", "Banco de Dados"],
                 ["relatorios", "./index.html#relatorios", "📈", "Relatórios"]

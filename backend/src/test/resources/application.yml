@@ -26,4 +26,10 @@ app:
     webhook-tolerancia-minutos: 5
   scraper:
     margem-percentual: 5.00
-
+  ofertas:
+    captura-ativa: false
+    tamanho-maximo-bytes: 15728640
+    paginas-maximas-pdf: 3
+    google-vision-api-key: ""
+    openai-api-key: ""
+    openai-model: gpt-5-nano
