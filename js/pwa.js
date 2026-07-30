@@ -1,4 +1,5 @@
 import "./animations.js";
+import { ativarAtualizacaoLocalizacao } from "./localizacao-app.js";
 
 const appRoot = new URL("../", import.meta.url);
 const serviceWorkerUrl = new URL("service-worker.js", appRoot);
@@ -16,6 +17,7 @@ carregarAparencia();
 configurarInstalacao();
 configurarMenuMovel();
 registrarServiceWorker();
+ativarAtualizacaoLocalizacao();
 
 function carregarAparencia() {
     const estilosCarregados = Array.from(
