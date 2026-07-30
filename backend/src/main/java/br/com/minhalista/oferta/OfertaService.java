@@ -14,10 +14,12 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.localizacao.LocalizacaoAtiva;
 import br.com.minhalista.localizacao.LocalizacaoService;
 import br.com.minhalista.usuario.Usuario;
@@ -105,6 +107,16 @@ public class OfertaService {
         double longitude,
         double raioKm
     ) {
+        Usuario usuario = usuarioService.obterAutenticado();
+        LocalizacaoAtiva autorizada = localizacaoService.ativaDoUsuario(usuario)
+            .filter(localizacao -> localizacao.latitude() != null
+                && localizacao.longitude() != null)
+            .orElseThrow(() -> new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Autorize sua localização atual para identificar mercados próximos."
+            ));
+        latitude = autorizada.latitude();
+        longitude = autorizada.longitude();
         double raioSeguro = Math.max(1, Math.min(100, raioKm));
         descobertaMercadosService.descobrir(latitude, longitude, raioSeguro);
         double deltaLatitude = raioSeguro / 111.32;
