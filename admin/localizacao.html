@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <title>Localização | Administração</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+<body data-admin-page="localizacao">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a class="brand" href="./index.html">🛒 Smart List</a>
+            <nav class="admin-nav" aria-label="Administração"></nav>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <span class="page-eyebrow">ADMINISTRAÇÃO</span>
+                    <h1>Localização</h1>
+                    <p>Visão nacional agregada de consentimentos e unidades confirmadas.</p>
+                </div>
+                <button id="atualizarLocalizacoes" class="btn btn-primary" type="button">Atualizar</button>
+            </header>
+            <aside class="admin-aviso-assinatura">
+                <strong>Privacidade por padrão</strong>
+                <p id="avisoPrivacidade">Nenhuma coordenada ou identidade individual é exibida nesta área.</p>
+            </aside>
+            <section class="grid-resumo">
+                <article class="card resumo-card"><span>Consentimentos ativos</span><strong id="totalConsentimentos">0</strong></article>
+                <article class="card resumo-card"><span>Atualizados em 24 h</span><strong id="atualizados24h">0</strong></article>
+                <article class="card resumo-card"><span>Localidades</span><strong id="totalLocalidades">0</strong></article>
+                <article class="card resumo-card"><span>Redes confirmadas</span><strong id="totalRedes">0</strong></article>
+            </section>
+            <section class="card tabela-card">
+                <div class="section-header"><div><span class="card-label">Distribuição</span><h2>Usuários por localidade</h2></div></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Estado</th><th>Cidade</th><th>Bairro</th><th>Usuários</th></tr></thead>
+                        <tbody id="tabelaLocalidades"><tr><td colspan="4">Carregando...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="card tabela-card">
+                <div class="section-header"><div><span class="card-label">Confirmações</span><h2>Redes escolhidas</h2></div></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Rede</th><th>Confirmações</th></tr></thead>
+                        <tbody id="tabelaRedesConfirmadas"><tr><td colspan="2">Carregando...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/tema.js"></script>
+    <script src="../js/admin-nav.js"></script>
+    <script type="module" src="../js/admin-localizacao.js"></script>
+</body>
+</html>

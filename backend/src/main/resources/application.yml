@@ -53,6 +53,13 @@ app:
     webhook-tolerancia-minutos: ${MERCADO_PAGO_WEBHOOK_TOLERANCE_MINUTES:5}
   scraper:
     margem-percentual: 5.00
+  ofertas:
+    captura-ativa: ${OFFER_CAPTURE_ENABLED:true}
+    tamanho-maximo-bytes: ${OFFER_MAX_DOWNLOAD_BYTES:15728640}
+    paginas-maximas-pdf: ${OFFER_MAX_PDF_PAGES:12}
+    google-vision-api-key: ${GOOGLE_CLOUD_VISION_API_KEY:}
+    openai-api-key: ${OPENAI_API_KEY:}
+    openai-model: ${OPENAI_OFFER_MODEL:gpt-5-nano}
 
 logging:
   level:

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <title>Ofertas e encartes | Administração</title>
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+<body data-admin-page="ofertas">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a class="brand" href="./index.html">🛒 Smart List</a>
+            <nav class="admin-nav" aria-label="Administração"></nav>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <span class="page-eyebrow">DADOS E INTEGRAÇÕES</span>
+                    <h1>Ofertas e encartes</h1>
+                    <p>Cadastre unidades e fontes públicas. CAPTCHA e login nunca são contornados.</p>
+                </div>
+            </header>
+            <section class="card admin-oferta-form">
+                <span class="card-label">Catálogo nacional</span>
+                <h2>Cadastrar ou atualizar unidade</h2>
+                <form id="formUnidadeOferta" class="form">
+                    <div class="admin-oferta-grid">
+                        <label>Rede<input name="rede" maxlength="120" required></label>
+                        <label>Nome da unidade<input name="nome" maxlength="140" required></label>
+                        <label>Endereço<input name="endereco" maxlength="240" required></label>
+                        <label>Bairro<input name="bairro" maxlength="100"></label>
+                        <label>Cidade<input name="cidade" maxlength="100" required></label>
+                        <label>Estado<input name="estado" minlength="2" maxlength="2" required></label>
+                        <label>Latitude<input name="latitude" type="number" min="-90" max="90" step="any"></label>
+                        <label>Longitude<input name="longitude" type="number" min="-180" max="180" step="any"></label>
+                    </div>
+                    <label class="admin-check"><input name="ativa" type="checkbox" checked> Unidade ativa</label>
+                    <button class="btn btn-primary" type="submit">Salvar unidade</button>
+                </form>
+            </section>
+            <section class="card admin-oferta-form">
+                <span class="card-label">Captura automática</span>
+                <h2>Cadastrar fonte pública</h2>
+                <form id="formFonteOferta" class="form">
+                    <div class="admin-oferta-grid">
+                        <label>Unidade<select id="fonteUnidade" name="unidadeId" required></select></label>
+                        <label>Nome da fonte<input name="nome" maxlength="140" placeholder="Encarte semanal" required></label>
+                        <label class="campo-largo">URL pública<input name="url" type="url" maxlength="1200" required></label>
+                        <label>Formato<select name="tipo"><option value="AUTOMATICO">Automático</option><option value="PDF">PDF</option><option value="IMAGEM">Imagem</option></select></label>
+                    </div>
+                    <label class="admin-check"><input name="ativa" type="checkbox" checked> Verificar automaticamente</label>
+                    <button class="btn btn-primary" type="submit">Salvar fonte</button>
+                </form>
+                <p id="mensagemAdminOfertas" class="texto-ajuda" aria-live="polite"></p>
+            </section>
+            <section class="card tabela-card">
+                <div class="section-header"><div><span class="card-label">Fontes</span><h2>Processamento</h2></div></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Rede e unidade</th><th>Fonte</th><th>Status</th><th>Ofertas</th><th>Mensagem</th><th>Ação</th></tr></thead>
+                        <tbody id="tabelaFontesOferta"><tr><td colspan="6">Carregando...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/tema.js"></script>
+    <script src="../js/admin-nav.js"></script>
+    <script type="module" src="../js/admin-ofertas.js"></script>
+</body>
+</html>

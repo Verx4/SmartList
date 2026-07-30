@@ -4,65 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#071525">
-    <title>Comparar mercados | Smart List</title>
+    <title>Ofertas próximas | Smart List</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="stylesheet" href="./css/global.css">
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/comparacao-lista-v2.css?v=1">
-    <link rel="stylesheet" href="./css/comparacao-embalagens-padrao.css?v=1">
+    <link rel="stylesheet" href="./css/ofertas.css?v=1">
 </head>
 <body class="embalagens-page mercados-page sem-controle-tema">
-    <main class="embalagens-app comparacao-lista-shell">
+    <main class="embalagens-app ofertas-shell">
         <header class="embalagens-header">
             <a class="icon-button" href="./inicio.html" aria-label="Voltar">←</a>
             <h1>Comparação</h1>
-            <button id="ajudaMercados" class="help-button" type="button" aria-label="Ajuda">?</button>
+            <button id="ajudaOfertas" class="help-button" type="button" aria-label="Ajuda">?</button>
         </header>
+
         <nav class="comparison-tabs" aria-label="Tipos de comparação">
             <a href="./comparar-embalagens.html">Embalagens</a>
-            <a class="active" href="./comparacao.html" aria-current="page">Mercados</a>
+            <a class="active" href="./comparacao.html" aria-current="page">Ofertas</a>
         </nav>
 
-        <section class="comparacao-lista-cabecalho">
-            <small>Comparação da sua lista</small>
-            <h1>Onde a compra fica mais barata?</h1>
-            <p>Usamos apenas preços reais encontrados para os itens que você salvou.</p>
+        <section class="ofertas-cabecalho">
+            <small>ENCARTES E FOLDERS PÚBLICOS</small>
+            <h1>Ofertas próximas da sua lista</h1>
+            <p>Veja promoções em texto, com endereço, distância e validade. Nenhuma imagem de encarte é exibida.</p>
         </section>
 
-        <aside class="aviso-margem" role="note">
-            <strong>Margem de ±5%</strong>
-            <span>O preço pode variar por loja, estoque e horário. Itens sem preço não entram no total.</span>
-        </aside>
-
-        <form id="formComparacaoLista" class="comparacao-config">
-            <div class="resumo-lista-comparacao">
-                <div><span>Itens na lista</span><strong id="quantidadeItensComparacao">0</strong></div>
-                <a href="./dashboard.html">Editar lista</a>
+        <section class="localizacao-card" aria-labelledby="tituloLocalizacao">
+            <div>
+                <small>LOCALIZAÇÃO OPCIONAL</small>
+                <h2 id="tituloLocalizacao">Encontre unidades perto de você</h2>
+                <p id="statusLocalizacao">Sua posição não é coletada em segundo plano.</p>
             </div>
-            <label for="cidadeComparacao">Cidade ou região</label>
-            <input id="cidadeComparacao" name="cidade" type="text" maxlength="100" placeholder="Ex.: Recife">
+            <div class="localizacao-acoes">
+                <button id="usarLocalizacao" class="btn-localizacao primario" type="button">Usar localização atual</button>
+                <button id="informarLocalidade" class="btn-localizacao" type="button">Informar cidade</button>
+                <button id="revogarLocalizacao" class="btn-localizacao perigo" type="button" hidden>Apagar localização</button>
+            </div>
+        </section>
 
-            <fieldset>
-                <legend>Mercados para consultar</legend>
-                <div class="atalhos-redes"><button id="selecionarRedes" type="button">Selecionar todos</button><button id="limparRedes" type="button">Limpar</button></div>
-                <div id="redesComparacao" class="redes-comparacao" aria-live="polite"><p>Carregando redes...</p></div>
-            </fieldset>
-
-            <button id="btnCompararLista" class="comparar-lista-botao" type="submit">Comparar minha lista</button>
-            <p id="mensagemComparacao" class="mensagem-comparacao" aria-live="polite"></p>
+        <form id="formLocalidade" class="localidade-form" hidden>
+            <h2>Informe sua região</h2>
+            <p>Usaremos somente cidade, estado e bairro para procurar ofertas.</p>
+            <div class="localidade-grid">
+                <label>Cidade
+                    <input id="localidadeCidade" name="cidade" type="text" maxlength="100" required>
+                </label>
+                <label>Estado
+                    <input id="localidadeEstado" name="estado" type="text" maxlength="2" minlength="2" placeholder="PE" required>
+                </label>
+                <label>Bairro
+                    <input id="localidadeBairro" name="bairro" type="text" maxlength="100">
+                </label>
+            </div>
+            <label class="consentimento-localizacao">
+                <input id="consentimentoLocalizacao" type="checkbox" required>
+                <span>Autorizo o uso desta localidade para encontrar ofertas. Posso apagar quando quiser.</span>
+            </label>
+            <div class="localidade-botoes">
+                <button class="btn-localizacao primario" type="submit">Salvar e buscar</button>
+                <button id="cancelarLocalidade" class="btn-localizacao" type="button">Cancelar</button>
+            </div>
         </form>
 
-        <section id="resultadoComparacaoLista" class="resultado-comparacao-lista" hidden>
-            <header><div><small>Resultado</small><h2 id="tituloMelhorMercado">Comparação concluída</h2></div><span id="atualizacaoComparacao"></span></header>
-            <div id="cardsMercadosComparacao" class="cards-mercados-comparacao"></div>
+        <form id="formFiltrosOfertas" class="filtros-ofertas">
+            <div class="resumo-lista-ofertas">
+                <div><span>Produtos na lista</span><strong id="quantidadeItensOfertas">0</strong></div>
+                <a href="./dashboard.html">Editar lista</a>
+            </div>
+            <div class="filtros-grid">
+                <label>Produto
+                    <input id="filtroProduto" type="search" maxlength="180" placeholder="Todos os produtos da lista">
+                </label>
+                <label>Mercado
+                    <input id="filtroMercado" type="search" maxlength="120" placeholder="Todos">
+                </label>
+                <label>Categoria
+                    <input id="filtroCategoria" type="search" maxlength="100" placeholder="Todas">
+                </label>
+                <label>Distância
+                    <select id="filtroRaio">
+                        <option value="5">Até 5 km</option>
+                        <option value="10">Até 10 km</option>
+                        <option value="25" selected>Até 25 km</option>
+                        <option value="50">Até 50 km</option>
+                        <option value="100">Até 100 km</option>
+                    </select>
+                </label>
+            </div>
+            <button id="buscarOfertas" class="buscar-ofertas" type="submit">Buscar melhores ofertas</button>
+            <p id="mensagemOfertas" class="mensagem-ofertas" aria-live="polite"></p>
+        </form>
+
+        <section id="unidadesProximas" class="unidades-proximas" hidden>
+            <header>
+                <div><small>CONFIRMAÇÃO OPCIONAL</small><h2>Em qual unidade você está comprando?</h2></div>
+                <button id="fecharUnidades" type="button" aria-label="Fechar">×</button>
+            </header>
+            <p>Escolha somente se quiser confirmar a unidade. A localização sozinha não define o mercado.</p>
+            <div id="listaUnidadesProximas"></div>
+        </section>
+
+        <section id="resultadoOfertas" class="resultado-ofertas" hidden>
+            <header>
+                <div><small>RESULTADOS</small><h2>Ofertas encontradas</h2></div>
+                <span id="atualizacaoOfertas"></span>
+            </header>
+            <p id="avisoOfertas"></p>
+            <div id="listaResultadosOfertas"></div>
         </section>
     </main>
 
     <script src="./js/tema.js"></script>
-    <script type="module" src="./js/comparacao.js?v=2"></script>
+    <script type="module" src="./js/ofertas.js?v=1"></script>
     <script src="./js/mobile-nav.js"></script>
-    <script>document.getElementById('ajudaMercados')?.addEventListener('click',()=>alert('Selecione os mercados e compare os preços disponíveis de todos os itens da sua lista. Os valores podem variar em ±5%.'));</script>
 </body>
 </html>

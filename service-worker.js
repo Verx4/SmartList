@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v30`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v30`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v31`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v31`;
 
 const PRECACHE_URLS = [
     "./",
@@ -29,6 +29,7 @@ const PRECACHE_URLS = [
     "./css/comparar-embalagens.css",
     "./css/inicio.css",
     "./css/comparacao-lista-v2.css",
+    "./css/ofertas.css",
     "./css/comparacao-embalagens-padrao.css",
     "./css/historico-v2.css",
     "./css/historico-topo.css",
@@ -45,7 +46,7 @@ const PRECACHE_URLS = [
     "./js/mobile-nav.js",
     "./js/comparar-embalagens.js",
     "./js/inicio.js",
-    "./js/comparacao.js",
+    "./js/ofertas.js",
     "./js/historico-page.js",
     "./js/scanner-nota.js",
     "./js/listas-salvas-ui.js",
