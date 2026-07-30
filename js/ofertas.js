@@ -173,6 +173,7 @@ porId("usarLocalizacao").addEventListener("click", () => {
 porId("revogarLocalizacao").addEventListener("click", async () => {
     try {
         await api.delete("/localizacoes");
+        localStorage.removeItem("smartListLocalizacaoAutorizada");
         coordenadasDaSessao = null;
         atualizarStatusLocalizacao(null);
         porId("unidadesProximas").hidden = true;
