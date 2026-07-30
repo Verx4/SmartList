@@ -63,7 +63,6 @@ import {
     obterRegraMedida
 } from "./medidas-produtos.js";
 import { identificarCategoria } from "./categorias.js";
-import { api } from "./api.js";
 
 import {
     animarAberturaModal,
@@ -753,91 +752,12 @@ function alternarHistorico() {
 }
 
 
-let localizacaoSolicitadaNestaSessao = false;
-
-function solicitarLocalizacaoParaLista() {
-    if (localizacaoSolicitadaNestaSessao) {
-        return;
-    }
-    localizacaoSolicitadaNestaSessao = true;
-
-    if (!navigator.geolocation) {
-        notificar(
-            "Este navegador não oferece localização. A lista continuará sem mercado identificado.",
-            "erro"
-        );
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        async posicao => {
-            const coordenadas = {
-                latitude: posicao.coords.latitude,
-                longitude: posicao.coords.longitude,
-                precisao: posicao.coords.accuracy
-            };
-            try {
-                await api.post("/localizacoes", {
-                    origem: "GPS",
-                    latitude: coordenadas.latitude,
-                    longitude: coordenadas.longitude,
-                    precisaoMetros: coordenadas.precisao,
-                    cidade: "",
-                    estado: "",
-                    bairro: null,
-                    consentimento: true
-                });
-                const parametros = new URLSearchParams({
-                    latitude: String(coordenadas.latitude),
-                    longitude: String(coordenadas.longitude),
-                    raioKm: "25"
-                });
-                const unidades = await api.get(
-                    `/ofertas/unidades-proximas?${parametros}`
-                );
-                const nomes = [...new Set(
-                    (Array.isArray(unidades) ? unidades : [])
-                        .slice(0, 20)
-                        .map(unidade => [unidade.rede, unidade.unidade]
-                            .filter(Boolean)
-                            .join(" · "))
-                        .filter(Boolean)
-                )];
-                nomes.forEach(adicionarMercadoFrequente);
-                notificar(
-                    nomes.length
-                        ? `${nomes.length} mercado(s) próximo(s) adicionado(s) para você escolher.`
-                        : "Localização autorizada, mas nenhum mercado próximo foi encontrado."
-                );
-            } catch (_erro) {
-                localizacaoSolicitadaNestaSessao = false;
-                notificar(
-                    "Não foi possível identificar mercados agora. A lista continua disponível.",
-                    "erro"
-                );
-            }
-        },
-        erro => {
-            const mensagem = erro.code === erro.PERMISSION_DENIED
-                ? "Localização não autorizada. Não será possível identificar o mercado automaticamente."
-                : "Não foi possível obter sua localização. A lista continuará sem mercado identificado.";
-            notificar(mensagem, "erro");
-        },
-        { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 }
-    );
-}
-
-function iniciarMontagemLista() {
-    abrirModal();
-    solicitarLocalizacaoParaLista();
-}
-
 function configurarEventos() {
 
     elemento(
         "btnAdicionarProduto",
         "abrirModalProduto"
-    )?.addEventListener("click", iniciarMontagemLista);
+    )?.addEventListener("click", abrirModal);
 
 
     elemento(
