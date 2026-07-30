@@ -115,26 +115,33 @@ public class OfertaService {
                 HttpStatus.BAD_REQUEST,
                 "Autorize sua localização atual para identificar mercados próximos."
             ));
-        latitude = autorizada.latitude();
-        longitude = autorizada.longitude();
+        final double latitudeAutorizada = autorizada.latitude();
+        final double longitudeAutorizada = autorizada.longitude();
         double raioSeguro = Math.max(1, Math.min(100, raioKm));
-        descobertaMercadosService.descobrir(latitude, longitude, raioSeguro);
+        descobertaMercadosService.descobrir(
+            latitudeAutorizada,
+            longitudeAutorizada,
+            raioSeguro
+        );
         double deltaLatitude = raioSeguro / 111.32;
-        double divisorLongitude = Math.max(0.2, Math.cos(Math.toRadians(latitude)));
+        double divisorLongitude = Math.max(
+            0.2,
+            Math.cos(Math.toRadians(latitudeAutorizada))
+        );
         double deltaLongitude = raioSeguro / (111.32 * divisorLongitude);
 
         return unidadeRepository.findByAtivaTrueAndLatitudeBetweenAndLongitudeBetween(
-                latitude - deltaLatitude,
-                latitude + deltaLatitude,
-                longitude - deltaLongitude,
-                longitude + deltaLongitude
+                latitudeAutorizada - deltaLatitude,
+                latitudeAutorizada + deltaLatitude,
+                longitudeAutorizada - deltaLongitude,
+                longitudeAutorizada + deltaLongitude
             ).stream()
             .filter(unidade -> unidade.getLatitude() != null && unidade.getLongitude() != null)
             .map(unidade -> new UnidadeComDistancia(
                 unidade,
                 Distancias.emQuilometros(
-                    latitude,
-                    longitude,
+                    latitudeAutorizada,
+                    longitudeAutorizada,
                     unidade.getLatitude(),
                     unidade.getLongitude()
                 )
