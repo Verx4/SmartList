@@ -56,44 +56,32 @@ function prepararCamada() {
     camada.setAttribute("aria-label", "Abrindo o Smart List");
     camada.innerHTML = `
         <div class="smart-list-intro-stage">
-            <div class="smart-list-intro-lockup">
-                <div class="smart-list-intro-energy" aria-hidden="true">
-                    <span class="smart-list-intro-ring"></span>
-                    <span class="smart-list-intro-ring"></span>
-                    <span class="smart-list-intro-ring"></span>
-                    <span class="smart-list-intro-core"></span>
-                </div>
-                <p class="smart-list-intro-brand" aria-hidden="true">
-                    <span class="smart-list-intro-smart">SMART</span>
-                    <span class="smart-list-intro-list">LIST</span>
-                </p>
-            </div>
-
             <div class="smart-list-intro-particles" aria-hidden="true"></div>
 
-            <div class="smart-list-intro-logo-wrap">
-                <img class="smart-list-intro-logo" src="./assets/logo/logo.png" alt="Logo Smart List">
-            </div>
-
-            <div class="smart-list-intro-progress" aria-hidden="true">
-                <span class="smart-list-intro-progress-bar"></span>
-            </div>
-
             <div class="smart-list-intro-cart verde" aria-hidden="true">
-                <span class="smart-list-intro-cart-handle"></span>
-                <span class="smart-list-intro-cart-basket"></span>
-                <span class="smart-list-intro-cart-wheel"></span>
+                <span class="smart-list-intro-cart-glyph">
+                    <span class="smart-list-intro-cart-handle"></span>
+                    <span class="smart-list-intro-cart-basket"></span>
+                    <span class="smart-list-intro-cart-wheel"></span>
+                </span>
             </div>
+
             <div class="smart-list-intro-cart azul" aria-hidden="true">
-                <span class="smart-list-intro-cart-handle"></span>
-                <span class="smart-list-intro-cart-basket"></span>
-                <span class="smart-list-intro-cart-wheel"></span>
+                <span class="smart-list-intro-cart-glyph">
+                    <span class="smart-list-intro-cart-handle"></span>
+                    <span class="smart-list-intro-cart-basket"></span>
+                    <span class="smart-list-intro-cart-wheel"></span>
+                </span>
             </div>
 
             <span class="smart-list-intro-flash" aria-hidden="true"></span>
             <span class="smart-list-intro-wave" aria-hidden="true"></span>
 
-            <p class="smart-list-intro-final-brand" aria-hidden="true">
+            <div class="smart-list-intro-logo-wrap">
+                <img class="smart-list-intro-logo" src="./assets/logo/logo.png" alt="Logo Smart List">
+            </div>
+
+            <p class="smart-list-intro-brand" aria-hidden="true">
                 <span class="smart-list-intro-smart">SMART</span>
                 <span class="smart-list-intro-list">LIST</span>
             </p>
@@ -165,7 +153,7 @@ function criarParticulas() {
     const dispositivoLimitado = (navigator.hardwareConcurrency || 8) <= 4
         || (navigator.deviceMemory || 8) <= 4
         || window.innerWidth <= 480;
-    const quantidade = dispositivoLimitado ? 30 : 52;
+    const quantidade = dispositivoLimitado ? 28 : 46;
     const fragmento = document.createDocumentFragment();
     const dados = [];
 
@@ -173,32 +161,35 @@ function criarParticulas() {
         const particula = document.createElement("span");
         const verde = indice % 2 === 0;
         const angulo = (Math.PI * 2 * indice) / quantidade;
-        const variacao = pseudoAleatorio(indice + 1);
-        const raioInicial = 58 + variacao * 36;
-        const raioExplosao = 125 + pseudoAleatorio(indice + 9) * Math.min(260, window.innerWidth * 0.3);
-        const anguloColisao = angulo + pseudoAleatorio(indice + 23) * 0.55;
-        const raioColisao = 55 + pseudoAleatorio(indice + 31) * 115;
-        const tamanho = 3 + Math.round(pseudoAleatorio(indice + 41) * 4);
+        const raioExplosao = 72
+            + pseudoAleatorio(indice + 5) * Math.min(210, window.innerWidth * 0.28);
+        const formaLogo = indice < Math.round(quantidade * 0.66);
+        const anguloLogo = (Math.PI * 2 * indice) / Math.max(1, Math.round(quantidade * 0.66));
+        const raioLogo = 62 + pseudoAleatorio(indice + 17) * 32;
 
         particula.className = "smart-list-intro-particle";
-        particula.style.setProperty("--particle-size", `${tamanho}px`);
+        particula.style.setProperty(
+            "--particle-size",
+            `${3 + Math.round(pseudoAleatorio(indice + 29) * 4)}px`
+        );
         particula.style.setProperty("--particle-color", verde ? "#22c55e" : "#3b82f6");
         particula.style.setProperty(
             "--particle-glow",
-            verde ? "rgba(34, 197, 94, .72)" : "rgba(59, 130, 246, .75)"
+            verde ? "rgba(34, 197, 94, .76)" : "rgba(59, 130, 246, .78)"
         );
         fragmento.appendChild(particula);
 
         dados.push({
             elemento: particula,
-            inicialX: Math.cos(angulo) * raioInicial,
-            inicialY: Math.sin(angulo) * raioInicial,
             explosaoX: Math.cos(angulo) * raioExplosao,
             explosaoY: Math.sin(angulo) * raioExplosao,
-            colisaoX: Math.cos(anguloColisao) * raioColisao,
-            colisaoY: Math.sin(anguloColisao) * raioColisao,
-            palavraX: ((indice / Math.max(1, quantidade - 1)) - 0.5) * Math.min(360, window.innerWidth * 0.72),
-            palavraY: 86 + (pseudoAleatorio(indice + 57) - 0.5) * 38
+            formacaoX: formaLogo
+                ? Math.cos(anguloLogo) * raioLogo
+                : ((indice / Math.max(1, quantidade - 1)) - 0.5)
+                    * Math.min(310, window.innerWidth * 0.72),
+            formacaoY: formaLogo
+                ? -54 + Math.sin(anguloLogo) * raioLogo
+                : 94 + (pseudoAleatorio(indice + 41) - 0.5) * 22
         });
     }
 
@@ -212,31 +203,20 @@ function pseudoAleatorio(semente) {
 }
 
 function executarAberturaCompleta(gsap) {
-    const energy = camada.querySelector(".smart-list-intro-energy");
-    const rings = [...camada.querySelectorAll(".smart-list-intro-ring")];
-    const brand = camada.querySelector(".smart-list-intro-brand");
     const logoWrap = camada.querySelector(".smart-list-intro-logo-wrap");
     const logo = camada.querySelector(".smart-list-intro-logo");
-    const progress = camada.querySelector(".smart-list-intro-progress");
-    const progressBar = camada.querySelector(".smart-list-intro-progress-bar");
+    const brand = camada.querySelector(".smart-list-intro-brand");
     const cartGreen = camada.querySelector(".smart-list-intro-cart.verde");
     const cartBlue = camada.querySelector(".smart-list-intro-cart.azul");
     const flash = camada.querySelector(".smart-list-intro-flash");
     const wave = camada.querySelector(".smart-list-intro-wave");
-    const finalBrand = camada.querySelector(".smart-list-intro-final-brand");
     const particulas = criarParticulas();
     const alvosParticulas = particulas.map(item => item.elemento);
-    const distanciaCarrinho = Math.min(430, Math.max(150, window.innerWidth * 0.39));
-    const elevacaoLogo = window.innerWidth <= 640 ? -108 : -128;
+    const distanciaCarrinho = Math.min(520, Math.max(175, window.innerWidth * 0.48));
     const encaixe = { x: 0, y: 0, escala: 1 };
 
     gsap.set(logoWrap, { xPercent: -50, yPercent: -50 });
-    gsap.set(alvosParticulas, {
-        x: indice => particulas[indice].inicialX,
-        y: indice => particulas[indice].inicialY,
-        scale: 0.25,
-        opacity: 0
-    });
+    gsap.set(alvosParticulas, { x: 0, y: 0, scale: 0.2, opacity: 0 });
 
     timeline = gsap.timeline({
         defaults: { ease: "power2.out" },
@@ -244,160 +224,136 @@ function executarAberturaCompleta(gsap) {
     });
 
     timeline
-        .fromTo(energy,
-            { opacity: 0, scale: 0.54, rotation: -24 },
-            { opacity: 1, scale: 1, rotation: 0, duration: 0.6 },
-            0
+        .fromTo(
+            cartGreen,
+            { opacity: 0, x: -distanciaCarrinho - 72, scale: 0.78 },
+            { opacity: 1, x: -distanciaCarrinho, scale: 1, duration: 0.5 },
+            0.08
         )
-        .to(rings, {
-            rotation: indice => indice % 2 ? -150 : 190,
-            duration: 1.15,
-            stagger: 0.04,
-            ease: "none"
-        }, 0)
-        .fromTo(brand,
-            { opacity: 0, x: 30, scale: 0.92, filter: "blur(7px)" },
-            { opacity: 1, x: 0, scale: 1, filter: "blur(0px)", duration: 0.5 },
-            0.16
+        .fromTo(
+            cartBlue,
+            { opacity: 0, x: distanciaCarrinho + 72, scale: 0.78 },
+            { opacity: 1, x: distanciaCarrinho, scale: 1, duration: 0.5 },
+            0.08
         )
-        .to(alvosParticulas, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.18,
-            stagger: 0.004
-        }, 0.72)
-        .to(alvosParticulas, {
-            x: indice => particulas[indice].explosaoX,
-            y: indice => particulas[indice].explosaoY,
-            rotation: indice => indice * 19,
-            duration: 0.42,
-            ease: "power3.out"
-        }, 0.82)
-        .to([energy, brand], {
-            opacity: 0,
-            scale: 1.15,
-            filter: "blur(9px)",
-            duration: 0.35,
-            ease: "power2.in"
-        }, 0.84)
-        .to(alvosParticulas, {
-            x: 0,
-            y: 0,
-            scale: 0.18,
-            opacity: 0.75,
-            duration: 0.48,
-            ease: "power3.in"
-        }, 1.12)
-        .fromTo(logoWrap,
-            { opacity: 0, scale: 0.52, filter: "brightness(1.8) blur(5px)" },
-            { opacity: 1, scale: 1, filter: "brightness(1) blur(0px)", duration: 0.7, ease: "back.out(1.55)" },
-            1.34
-        )
-        .to(alvosParticulas, { opacity: 0, scale: 0, duration: 0.24 }, 1.55)
-        .fromTo(progress,
-            { opacity: 0, scaleX: 0.82 },
-            { opacity: 1, scaleX: 1, duration: 0.24 },
-            1.92
-        )
-        .to(progressBar, { width: "100%", duration: 1.2, ease: "power1.inOut" }, 2.02)
-        .to(logo, {
-            filter: "brightness(1.34) drop-shadow(0 0 34px rgba(34,197,94,.68))",
-            duration: 0.22,
-            repeat: 3,
-            yoyo: true,
+        .to(cartGreen, {
+            x: -distanciaCarrinho + 34,
+            duration: 0.4,
             ease: "sine.inOut"
-        }, 2.08)
-        .fromTo(cartGreen,
-            { opacity: 0, x: -distanciaCarrinho, scale: 0.84 },
-            { opacity: 1, x: -distanciaCarrinho, scale: 1, duration: 0.4, ease: "back.out(1.7)" },
-            2.84
-        )
-        .fromTo(cartBlue,
-            { opacity: 0, x: distanciaCarrinho, scale: 0.84 },
-            { opacity: 1, x: distanciaCarrinho, scale: 1, duration: 0.4, ease: "back.out(1.7)" },
-            2.84
-        )
-        .to(cartGreen, { x: -distanciaCarrinho - 14, duration: 0.18, ease: "power1.out" }, 3.16)
-        .to(cartBlue, { x: distanciaCarrinho + 14, duration: 0.18, ease: "power1.out" }, 3.16)
+        }, 0.52)
+        .to(cartBlue, {
+            x: distanciaCarrinho - 34,
+            duration: 0.4,
+            ease: "sine.inOut"
+        }, 0.52)
         .call(() => {
             cartGreen.classList.add("correndo");
             cartBlue.classList.add("correndo");
-        }, [], 3.34)
+        }, [], 0.86)
         .to(cartGreen, {
             x: -18,
             scale: 1.08,
-            filter: "blur(.7px) drop-shadow(0 0 18px currentColor)",
-            duration: 0.8,
+            filter: "blur(.65px) drop-shadow(0 0 19px currentColor)",
+            duration: 0.78,
             ease: "power4.in"
-        }, 3.34)
+        }, 0.86)
         .to(cartBlue, {
             x: 18,
             scale: 1.08,
-            filter: "blur(.7px) drop-shadow(0 0 18px currentColor)",
-            duration: 0.8,
+            filter: "blur(.65px) drop-shadow(0 0 19px currentColor)",
+            duration: 0.78,
             ease: "power4.in"
-        }, 3.34)
-        .fromTo(flash,
-            { opacity: 0, scale: 0.2 },
-            { opacity: 1, scale: 2.2, duration: 0.1, yoyo: true, repeat: 1 },
-            4.12
+        }, 0.86)
+        .fromTo(
+            flash,
+            { opacity: 0, scale: 0.18 },
+            { opacity: 1, scale: 2.25, duration: 0.1, yoyo: true, repeat: 1 },
+            1.6
         )
-        .fromTo(wave,
-            { opacity: 0.95, scale: 0.3 },
-            { opacity: 0, scale: 7.5, duration: 0.42, ease: "power2.out" },
-            4.12
+        .fromTo(
+            wave,
+            { opacity: 0.96, scale: 0.28 },
+            { opacity: 0, scale: 7.2, duration: 0.42, ease: "power2.out" },
+            1.6
         )
-        .set(alvosParticulas, { x: 0, y: 0, scale: 0.55, opacity: 0.95 }, 4.12)
+        .set(alvosParticulas, { x: 0, y: 0, opacity: 1, scale: 0.6 }, 1.6)
         .to(alvosParticulas, {
-            x: indice => particulas[indice].colisaoX,
-            y: indice => particulas[indice].colisaoY,
-            duration: 0.2,
+            x: indice => particulas[indice].explosaoX,
+            y: indice => particulas[indice].explosaoY,
+            rotation: indice => indice * 17,
+            duration: 0.28,
             ease: "power3.out"
-        }, 4.12)
-        .to([cartGreen, cartBlue], { opacity: 0, scale: 0.7, duration: 0.16 }, 4.14)
-        .to(logoWrap, { y: elevacaoLogo, duration: 0.42, ease: "power2.out" }, 4.12)
-        .to(progress, { opacity: 0, y: 12, duration: 0.2 }, 4.12)
+        }, 1.6)
+        .to([cartGreen, cartBlue], { opacity: 0, scale: 0.72, duration: 0.16 }, 1.62)
         .to(alvosParticulas, {
-            x: indice => particulas[indice].palavraX,
-            y: indice => particulas[indice].palavraY,
-            scale: 0.35,
-            opacity: 0.42,
-            duration: 0.3,
+            x: indice => particulas[indice].formacaoX,
+            y: indice => particulas[indice].formacaoY,
+            scale: 0.38,
+            opacity: 0.72,
+            duration: 0.36,
             ease: "power2.inOut"
-        }, 4.3)
-        .fromTo(finalBrand,
-            { opacity: 0, scale: 0.72, filter: "blur(7px)" },
-            { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "back.out(1.5)" },
-            4.32
+        }, 1.86)
+        .fromTo(
+            logoWrap,
+            { opacity: 0, scale: 0.58, filter: "brightness(1.7) blur(5px)" },
+            {
+                opacity: 1,
+                scale: 1,
+                filter: "brightness(1) blur(0px)",
+                duration: 0.56,
+                ease: "back.out(1.55)"
+            },
+            2.05
         )
-        .to(alvosParticulas, { opacity: 0, scale: 0, duration: 0.24 }, 4.54)
-        .to(finalBrand, {
+        .fromTo(
+            brand,
+            { opacity: 0, scale: 0.74, y: 10, filter: "blur(6px)" },
+            {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                filter: "blur(0px)",
+                duration: 0.52,
+                ease: "back.out(1.45)"
+            },
+            2.06
+        )
+        .to(logo, {
+            filter: "brightness(1.22) drop-shadow(0 0 30px rgba(59,130,246,.56))",
+            duration: 0.24,
+            repeat: 1,
+            yoyo: true,
+            ease: "sine.inOut"
+        }, 2.16)
+        .to(alvosParticulas, { opacity: 0, scale: 0, duration: 0.34 }, 2.38)
+        .to(brand, {
             opacity: 0,
-            scale: 0.9,
+            scale: 0.92,
+            y: -4,
             filter: "blur(4px)",
-            duration: 0.35,
+            duration: 0.3,
             ease: "power1.in"
-        }, 5.18)
-        .call(() => prepararEncaixe(gsap, logoWrap, encaixe), [], 5.26)
+        }, 3.28)
+        .call(() => prepararEncaixe(gsap, logoWrap, encaixe), [], 3.42)
         .to(logoWrap, {
             x: () => Number(gsap.getProperty(logoWrap, "x")) + encaixe.x,
             y: () => Number(gsap.getProperty(logoWrap, "y")) + encaixe.y,
             scale: () => encaixe.escala,
-            duration: 0.7,
+            duration: 0.76,
             ease: "power3.inOut",
             onComplete: () => {
                 gsap.set(logoDestino, { opacity: 1 });
                 gsap.set(logoWrap, { opacity: 0 });
             }
-        }, 5.28)
+        }, 3.44)
         .to(elementosPainel, {
             opacity: 1,
             y: 0,
-            duration: 0.6,
-            stagger: 0.035,
+            duration: 0.62,
+            stagger: 0.025,
             ease: "power2.out"
-        }, 5.3)
-        .to(camada, { opacity: 0, duration: 0.28, ease: "power1.out" }, 5.92);
+        }, 3.5)
+        .to(camada, { opacity: 0, duration: 0.3, ease: "power1.out" }, 4.25);
 }
 
 function executarAberturaReduzida(gsap) {
@@ -407,30 +363,31 @@ function executarAberturaReduzida(gsap) {
     gsap.set(logoWrap, { xPercent: -50, yPercent: -50 });
     timeline = gsap.timeline({ onComplete: finalizar });
     timeline
-        .fromTo(logoWrap,
-            { opacity: 0, scale: 0.94 },
-            { opacity: 1, scale: 1, duration: 0.2, ease: "power1.out" }
+        .fromTo(
+            logoWrap,
+            { opacity: 0, scale: 0.96 },
+            { opacity: 1, scale: 1, duration: 0.18, ease: "power1.out" }
         )
-        .call(() => prepararEncaixe(gsap, logoWrap, encaixe), [], 0.28)
+        .call(() => prepararEncaixe(gsap, logoWrap, encaixe), [], 0.2)
         .to(logoWrap, {
             x: () => Number(gsap.getProperty(logoWrap, "x")) + encaixe.x,
             y: () => Number(gsap.getProperty(logoWrap, "y")) + encaixe.y,
             scale: () => encaixe.escala,
-            duration: 0.38,
+            duration: 0.32,
             ease: "power1.inOut",
             onComplete: () => {
                 gsap.set(logoDestino, { opacity: 1 });
                 gsap.set(logoWrap, { opacity: 0 });
             }
-        }, 0.3)
+        }, 0.22)
         .to(elementosPainel, {
             opacity: 1,
             y: 0,
-            duration: 0.32,
-            stagger: 0.018,
+            duration: 0.3,
+            stagger: 0.015,
             ease: "power1.out"
-        }, 0.32)
-        .to(camada, { opacity: 0, duration: 0.2 }, 0.63);
+        }, 0.24)
+        .to(camada, { opacity: 0, duration: 0.18 }, 0.58);
 }
 
 function prepararEncaixe(gsap, logoWrap, encaixe) {
@@ -461,6 +418,7 @@ async function executarFallback() {
 }
 
 function finalizar() {
+    window.removeEventListener("pagehide", encerrar);
     document.documentElement.classList.remove(CLASSE_PENDENTE);
     document.body.classList.remove(CLASSE_ATIVA);
     liberarDashboard();
@@ -477,6 +435,7 @@ function finalizar() {
 }
 
 function finalizarSemAnimacao() {
+    window.removeEventListener("pagehide", encerrar);
     timeline?.kill();
     timeline = null;
     document.documentElement.classList.remove(CLASSE_PENDENTE);
@@ -501,3 +460,4 @@ function encerrar() {
     timeline = null;
     finalizarSemAnimacao();
 }
+
