@@ -44,6 +44,65 @@ function obterPosicao() {
     });
 }
 
+function identificarMercadoAtual(unidades) {
+    const proxima = Array.isArray(unidades) ? unidades[0] : null;
+    const distancia = Number(proxima?.distanciaKm);
+    if (!proxima || !Number.isFinite(distancia) || distancia > 0.3) {
+        localStorage.removeItem("smartListUnidadeMercadoAtual");
+        return;
+    }
+
+    const nome = [proxima.rede, proxima.unidade]
+        .filter(Boolean)
+        .join(" · ");
+    if (!nome) {
+        return;
+    }
+
+    let frequentes = [];
+    try {
+        const salvos = JSON.parse(localStorage.getItem("mercadosFrequentes"));
+        frequentes = Array.isArray(salvos) ? salvos : [];
+    } catch (_erro) {
+        frequentes = [];
+    }
+    if (!frequentes.some(item =>
+        String(item).toLocaleLowerCase("pt-BR")
+            === nome.toLocaleLowerCase("pt-BR")
+    )) {
+        frequentes.push(nome);
+        localStorage.setItem(
+            "mercadosFrequentes",
+            JSON.stringify(frequentes)
+        );
+    }
+
+    localStorage.setItem("mercadoAtual", nome);
+    localStorage.setItem(
+        "smartListUnidadeMercadoAtual",
+        JSON.stringify({
+            id: proxima.id,
+            rede: proxima.rede,
+            unidade: proxima.unidade,
+            endereco: proxima.endereco,
+            bairro: proxima.bairro,
+            cidade: proxima.cidade,
+            estado: proxima.estado,
+            distanciaKm: distancia,
+            identificadaEm: new Date().toISOString()
+        })
+    );
+
+    const resumo = document.getElementById("mercadoAtualResumo");
+    if (resumo) {
+        resumo.textContent = nome;
+    }
+    window.dispatchEvent(new CustomEvent(
+        "smartlist:mercado-identificado",
+        { detail: { nome, unidade: proxima } }
+    ));
+}
+
 async function salvarPosicao(posicao) {
     const coordenadas = {
         latitude: posicao.coords.latitude,
@@ -66,7 +125,14 @@ async function salvarPosicao(posicao) {
         longitude: String(coordenadas.longitude),
         raioKm: "25"
     });
-    api.get(`/ofertas/unidades-proximas?${parametros}`).catch(() => null);
+    try {
+        const unidades = await api.get(
+            `/ofertas/unidades-proximas?${parametros}`
+        );
+        identificarMercadoAtual(unidades);
+    } catch (_erro) {
+        // A atualização da localização não depende da resposta de mercados.
+    }
 
     localStorage.setItem(CHAVE_AUTORIZADA, "true");
     localStorage.setItem(CHAVE_ULTIMA, String(Date.now()));
