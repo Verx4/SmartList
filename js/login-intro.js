@@ -77,14 +77,16 @@ function prepararCamada() {
             <span class="smart-list-intro-flash" aria-hidden="true"></span>
             <span class="smart-list-intro-wave" aria-hidden="true"></span>
 
-            <div class="smart-list-intro-logo-wrap">
-                <img class="smart-list-intro-logo" src="./assets/logo/logo.png" alt="Logo Smart List">
-            </div>
+            <div class="smart-list-intro-formation">
+                <div class="smart-list-intro-logo-wrap">
+                    <img class="smart-list-intro-logo" src="./assets/logo/logo.png" alt="Logo Smart List">
+                </div>
 
-            <p class="smart-list-intro-brand" aria-hidden="true">
-                <span class="smart-list-intro-smart">SMART</span>
-                <span class="smart-list-intro-list">LIST</span>
-            </p>
+                <p class="smart-list-intro-brand" aria-hidden="true">
+                    <span class="smart-list-intro-smart">SMART</span>
+                    <span class="smart-list-intro-list">LIST</span>
+                </p>
+            </div>
         </div>`;
 
     document.body.appendChild(camada);
@@ -215,7 +217,6 @@ function executarAberturaCompleta(gsap) {
     const distanciaCarrinho = Math.min(520, Math.max(175, window.innerWidth * 0.48));
     const encaixe = { x: 0, y: 0, escala: 1 };
 
-    gsap.set(logoWrap, { xPercent: -50, yPercent: -50 });
     gsap.set(alvosParticulas, { x: 0, y: 0, scale: 0.2, opacity: 0 });
 
     timeline = gsap.timeline({
@@ -360,7 +361,6 @@ function executarAberturaReduzida(gsap) {
     const logoWrap = camada.querySelector(".smart-list-intro-logo-wrap");
     const encaixe = { x: 0, y: 0, escala: 1 };
 
-    gsap.set(logoWrap, { xPercent: -50, yPercent: -50 });
     timeline = gsap.timeline({ onComplete: finalizar });
     timeline
         .fromTo(
