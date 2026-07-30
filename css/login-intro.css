@@ -81,15 +81,23 @@ body.smart-list-intro-active {
     will-change: transform, opacity;
 }
 
-.smart-list-intro-logo-wrap {
+.smart-list-intro-formation {
     position: absolute;
-    top: calc(50% - 50px);
+    top: 50%;
     left: 50%;
     z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    transform: translate(-50%, -50%);
+}
+
+.smart-list-intro-logo-wrap {
+    position: relative;
     width: clamp(132px, 18vw, 180px);
     aspect-ratio: 1;
     opacity: 0;
-    transform: translate(-50%, -50%);
     transform-origin: center;
     will-change: transform, opacity, filter;
 }
@@ -104,10 +112,7 @@ body.smart-list-intro-active {
 }
 
 .smart-list-intro-brand {
-    position: absolute;
-    top: calc(50% + 88px);
-    left: 50%;
-    z-index: 5;
+    position: relative;
     display: flex;
     align-items: center;
     gap: 0.28em;
@@ -120,7 +125,6 @@ body.smart-list-intro-active {
     text-transform: uppercase;
     white-space: nowrap;
     opacity: 0;
-    transform: translateX(-50%);
     will-change: transform, opacity, filter;
 }
 
@@ -266,12 +270,14 @@ body.smart-list-intro-active {
     }
 
     .smart-list-intro-logo-wrap {
-        top: calc(50% - 42px);
         width: clamp(120px, 38vw, 150px);
     }
 
+    .smart-list-intro-formation {
+        gap: 20px;
+    }
+
     .smart-list-intro-brand {
-        top: calc(50% + 82px);
         gap: 0.24em;
         font-size: clamp(29px, 10vw, 42px);
     }
@@ -317,7 +323,6 @@ body.smart-list-intro-active {
     }
 
     .smart-list-intro-brand {
-        top: calc(50% + 72px);
         font-size: 28px;
     }
 }
