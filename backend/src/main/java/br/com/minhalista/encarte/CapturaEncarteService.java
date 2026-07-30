@@ -131,7 +131,10 @@ public class CapturaEncarteService {
                     Duration.ofDays(7)
                 );
             }
-            Download midia = localizarMidiaNaPagina(uri, download);
+            String textoPagina = extrairTextoOfertasHtml(uri, download);
+            Download midia = textoPagina == null
+                ? localizarMidiaNaPagina(uri, download)
+                : download;
 
             String hash = hash(midia.conteudo());
             if (hash.equals(fonte.getUltimoHash())) {
@@ -143,11 +146,13 @@ public class CapturaEncarteService {
                 );
             }
 
-            String textoOcr = ocrService.extrair(
-                midia.conteudo(),
-                midia.contentType(),
-                fonte.getTipo()
-            );
+            String textoOcr = textoPagina == null
+                ? ocrService.extrair(
+                    midia.conteudo(),
+                    midia.contentType(),
+                    fonte.getTipo()
+                )
+                : textoPagina;
             List<OfertaExtraida> ofertas = extratorService.extrair(textoOcr);
             if (ofertas.isEmpty()) {
                 return atualizarStatus(
@@ -258,6 +263,27 @@ public class CapturaEncarteService {
             || html.contains("faca login")
             || html.contains("sign in")
             || html.contains("access denied");
+    }
+
+    private String extrairTextoOfertasHtml(URI pagina, Download download) {
+        if (!download.contentType().toLowerCase(Locale.ROOT).contains("text/html")) {
+            return null;
+        }
+        Document documento = Jsoup.parse(
+            new String(download.conteudo(), StandardCharsets.UTF_8),
+            pagina.toString()
+        );
+        List<String> linhas = documento.select(
+                "article, [class*=product], [class*=produto], [data-testid*=product], [data-testid*=produto]"
+            ).stream()
+            .map(Element::text)
+            .map(String::trim)
+            .filter(texto -> texto.length() >= 5 && texto.length() <= 320)
+            .filter(texto -> texto.matches(".*(?:R\\$\\s*)?\\d{1,5}[,.]\\d{2}.*"))
+            .distinct()
+            .limit(500)
+            .toList();
+        return linhas.isEmpty() ? null : String.join("\n", linhas);
     }
 
     private Download localizarMidiaNaPagina(URI pagina, Download download) {
