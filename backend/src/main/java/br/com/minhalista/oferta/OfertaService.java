@@ -33,17 +33,20 @@ public class OfertaService {
     private final UnidadeMercadoRepository unidadeRepository;
     private final UsuarioService usuarioService;
     private final LocalizacaoService localizacaoService;
+    private final DescobertaMercadosService descobertaMercadosService;
 
     public OfertaService(
         OfertaRepository ofertaRepository,
         UnidadeMercadoRepository unidadeRepository,
         UsuarioService usuarioService,
-        LocalizacaoService localizacaoService
+        LocalizacaoService localizacaoService,
+        DescobertaMercadosService descobertaMercadosService
     ) {
         this.ofertaRepository = ofertaRepository;
         this.unidadeRepository = unidadeRepository;
         this.usuarioService = usuarioService;
         this.localizacaoService = localizacaoService;
+        this.descobertaMercadosService = descobertaMercadosService;
     }
 
     @Transactional(readOnly = true)
@@ -96,13 +99,14 @@ public class OfertaService {
         return new OfertaListaResponse(Instant.now(), aviso, produtos);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<UnidadeProximaResponse> unidadesProximas(
         double latitude,
         double longitude,
         double raioKm
     ) {
         double raioSeguro = Math.max(1, Math.min(100, raioKm));
+        descobertaMercadosService.descobrir(latitude, longitude, raioSeguro);
         double deltaLatitude = raioSeguro / 111.32;
         double divisorLongitude = Math.max(0.2, Math.cos(Math.toRadians(latitude)));
         double deltaLongitude = raioSeguro / (111.32 * divisorLongitude);
