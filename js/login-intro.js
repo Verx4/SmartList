@@ -37,7 +37,7 @@ function gravarSessao(chave, valor) {
     try {
         sessionStorage.setItem(chave, valor);
     } catch (_erro) {
-        // A abertura continua mesmo quando o armazenamento estÃ¡ indisponÃ­vel.
+        // A abertura continua mesmo quando o armazenamento está indisponível.
     }
 }
 
@@ -45,7 +45,7 @@ function removerSessao(chave) {
     try {
         sessionStorage.removeItem(chave);
     } catch (_erro) {
-        // NÃ£o bloqueia a navegaÃ§Ã£o quando o armazenamento estÃ¡ indisponÃ­vel.
+        // Não bloqueia a navegação quando o armazenamento está indisponível.
     }
 }
 
