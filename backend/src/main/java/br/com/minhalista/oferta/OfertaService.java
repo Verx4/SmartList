@@ -14,10 +14,12 @@ import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.localizacao.LocalizacaoAtiva;
 import br.com.minhalista.localizacao.LocalizacaoService;
 import br.com.minhalista.usuario.Usuario;
@@ -33,17 +35,20 @@ public class OfertaService {
     private final UnidadeMercadoRepository unidadeRepository;
     private final UsuarioService usuarioService;
     private final LocalizacaoService localizacaoService;
+    private final DescobertaMercadosService descobertaMercadosService;
 
     public OfertaService(
         OfertaRepository ofertaRepository,
         UnidadeMercadoRepository unidadeRepository,
         UsuarioService usuarioService,
-        LocalizacaoService localizacaoService
+        LocalizacaoService localizacaoService,
+        DescobertaMercadosService descobertaMercadosService
     ) {
         this.ofertaRepository = ofertaRepository;
         this.unidadeRepository = unidadeRepository;
         this.usuarioService = usuarioService;
         this.localizacaoService = localizacaoService;
+        this.descobertaMercadosService = descobertaMercadosService;
     }
 
     @Transactional(readOnly = true)
@@ -96,29 +101,47 @@ public class OfertaService {
         return new OfertaListaResponse(Instant.now(), aviso, produtos);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<UnidadeProximaResponse> unidadesProximas(
         double latitude,
         double longitude,
         double raioKm
     ) {
+        Usuario usuario = usuarioService.obterAutenticado();
+        LocalizacaoAtiva autorizada = localizacaoService.ativaDoUsuario(usuario)
+            .filter(localizacao -> localizacao.latitude() != null
+                && localizacao.longitude() != null)
+            .orElseThrow(() -> new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Autorize sua localização atual para identificar mercados próximos."
+            ));
+        final double latitudeAutorizada = autorizada.latitude();
+        final double longitudeAutorizada = autorizada.longitude();
         double raioSeguro = Math.max(1, Math.min(100, raioKm));
+        descobertaMercadosService.descobrir(
+            latitudeAutorizada,
+            longitudeAutorizada,
+            raioSeguro
+        );
         double deltaLatitude = raioSeguro / 111.32;
-        double divisorLongitude = Math.max(0.2, Math.cos(Math.toRadians(latitude)));
+        double divisorLongitude = Math.max(
+            0.2,
+            Math.cos(Math.toRadians(latitudeAutorizada))
+        );
         double deltaLongitude = raioSeguro / (111.32 * divisorLongitude);
 
         return unidadeRepository.findByAtivaTrueAndLatitudeBetweenAndLongitudeBetween(
-                latitude - deltaLatitude,
-                latitude + deltaLatitude,
-                longitude - deltaLongitude,
-                longitude + deltaLongitude
+                latitudeAutorizada - deltaLatitude,
+                latitudeAutorizada + deltaLatitude,
+                longitudeAutorizada - deltaLongitude,
+                longitudeAutorizada + deltaLongitude
             ).stream()
             .filter(unidade -> unidade.getLatitude() != null && unidade.getLongitude() != null)
             .map(unidade -> new UnidadeComDistancia(
                 unidade,
                 Distancias.emQuilometros(
-                    latitude,
-                    longitude,
+                    latitudeAutorizada,
+                    longitudeAutorizada,
                     unidade.getLatitude(),
                     unidade.getLongitude()
                 )

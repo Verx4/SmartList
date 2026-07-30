@@ -1,4 +1,5 @@
 import "./animations.js";
+import { ativarAtualizacaoLocalizacao } from "./localizacao-app.js";
 
 const appRoot = new URL("../", import.meta.url);
 const serviceWorkerUrl = new URL("service-worker.js", appRoot);
@@ -6,6 +7,15 @@ const manifestUrl = new URL("manifest.webmanifest", appRoot);
 const iconUrl = new URL("assets/icons/icon-192.png", appRoot);
 const themeStyleUrl = new URL("css/temas.css", appRoot);
 const themeScriptUrl = new URL("js/tema.js?v=10", appRoot);
+
+const PAGINAS_COM_RETORNO_AO_INICIO = new Set([
+    "perfil.html",
+    "assinatura.html",
+    "sugestoes.html",
+    "suporte.html",
+    "termos.html",
+    "privacidade.html"
+]);
 
 let installEvent = null;
 let installButton = null;
@@ -16,6 +26,7 @@ carregarAparencia();
 configurarInstalacao();
 configurarMenuMovel();
 registrarServiceWorker();
+ativarAtualizacaoLocalizacao();
 
 function carregarAparencia() {
     const estilosCarregados = Array.from(
@@ -52,6 +63,8 @@ function configurarMenuMovel() {
     if (!cabecalho || !conteudo || !navegacao) {
         return;
     }
+
+    configurarRetornoAoInicio(conteudo);
 
     if (document.body.classList.contains("sem-menu-superior")) {
         cabecalho.classList.add("menu-superior-removido");
@@ -114,6 +127,68 @@ function configurarMenuMovel() {
         }
     });
 }
+
+function configurarRetornoAoInicio(conteudo) {
+    const pagina = window.location.pathname.split("/").pop() || "index.html";
+
+    if (!PAGINAS_COM_RETORNO_AO_INICIO.has(pagina)) {
+        return;
+    }
+
+    const marca = conteudo.querySelector(".brand");
+
+    if (!marca || typeof window.matchMedia !== "function") {
+        return;
+    }
+
+    const conteudoOriginal = marca.innerHTML;
+    const destinoOriginal = marca.getAttribute("href");
+    const classeOriginal = marca.className;
+    const rotuloOriginal = marca.getAttribute("aria-label");
+    const tituloOriginal = marca.getAttribute("title");
+    const telaMovel = window.matchMedia("(max-width: 768px)");
+
+    const atualizar = () => {
+        if (telaMovel.matches) {
+            marca.setAttribute("href", "./inicio.html");
+            marca.className = `${classeOriginal} btn btn-secondary mobile-back-link`;
+            marca.innerHTML = '<span aria-hidden="true">←</span><span>Voltar</span>';
+            marca.setAttribute("aria-label", "Voltar à tela inicial");
+            marca.setAttribute("title", "Voltar à tela inicial");
+            return;
+        }
+
+        marca.innerHTML = conteudoOriginal;
+        marca.className = classeOriginal;
+
+        if (destinoOriginal === null) {
+            marca.removeAttribute("href");
+        } else {
+            marca.setAttribute("href", destinoOriginal);
+        }
+
+        if (rotuloOriginal === null) {
+            marca.removeAttribute("aria-label");
+        } else {
+            marca.setAttribute("aria-label", rotuloOriginal);
+        }
+
+        if (tituloOriginal === null) {
+            marca.removeAttribute("title");
+        } else {
+            marca.setAttribute("title", tituloOriginal);
+        }
+    };
+
+    atualizar();
+
+    if (typeof telaMovel.addEventListener === "function") {
+        telaMovel.addEventListener("change", atualizar);
+    } else {
+        telaMovel.addListener?.(atualizar);
+    }
+}
+
 
 function garantirMetadadosPwa() {
     if (!document.querySelector('link[rel="manifest"]')) {

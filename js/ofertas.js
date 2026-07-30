@@ -144,12 +144,6 @@ porId("usarLocalizacao").addEventListener("click", () => {
                 precisao: posicao.coords.accuracy
             };
             porId("consentimentoLocalizacao").checked = true;
-            if (!porId("localidadeCidade").value.trim()
-                || !porId("localidadeEstado").value.trim()) {
-                mensagem("Confirme cidade e estado para concluir.", false);
-                abrirFormularioLocalidade();
-                return;
-            }
             try {
                 await salvarLocalizacao("GPS", coordenadasPendentes);
                 coordenadasPendentes = null;
@@ -160,6 +154,7 @@ porId("usarLocalizacao").addEventListener("click", () => {
                         : "Não foi possível registrar a localização.",
                     true
                 );
+                abrirFormularioLocalidade();
             }
         },
         erro => {
@@ -178,6 +173,7 @@ porId("usarLocalizacao").addEventListener("click", () => {
 porId("revogarLocalizacao").addEventListener("click", async () => {
     try {
         await api.delete("/localizacoes");
+        localStorage.removeItem("smartListLocalizacaoAutorizada");
         coordenadasDaSessao = null;
         atualizarStatusLocalizacao(null);
         porId("unidadesProximas").hidden = true;
@@ -341,7 +337,7 @@ function renderizarOferta(oferta) {
 
 porId("ajudaOfertas").addEventListener("click", () => {
     alert(
-        "As ofertas vêm de encartes públicos processados. A localização é opcional, aproximada, expira e pode ser apagada. Confirme endereço, validade e condições antes da compra."
+        "As ofertas vêm de fontes públicas processadas. Com sua autorização, uma posição aproximada é consultada no OpenStreetMap para identificar cidade e mercados próximos. Ela expira e pode ser apagada. © OpenStreetMap contributors."
     );
 });
 

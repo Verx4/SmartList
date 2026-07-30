@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/ofertas.css?v=1">
+    <link rel="stylesheet" href="./css/ofertas.css?v=2">
 </head>
 <body class="embalagens-page mercados-page sem-controle-tema">
     <main class="embalagens-app ofertas-shell">
@@ -33,20 +33,20 @@
 
         <section class="localizacao-card" aria-labelledby="tituloLocalizacao">
             <div>
-                <small>LOCALIZAÇÃO OPCIONAL</small>
-                <h2 id="tituloLocalizacao">Encontre unidades perto de você</h2>
+                <small>LOCALIZAÇÃO DA CONTA</small>
+                <h2 id="tituloLocalizacao">Ofertas da sua região</h2>
                 <p id="statusLocalizacao">Sua posição não é coletada em segundo plano.</p>
             </div>
             <div class="localizacao-acoes">
-                <button id="usarLocalizacao" class="btn-localizacao primario" type="button">Usar localização atual</button>
-                <button id="informarLocalidade" class="btn-localizacao" type="button">Informar cidade</button>
+                <button id="usarLocalizacao" class="btn-localizacao primario" type="button" hidden>Usar localização atual</button>
+                <button id="informarLocalidade" class="btn-localizacao" type="button" hidden>Informar cidade</button>
                 <button id="revogarLocalizacao" class="btn-localizacao perigo" type="button" hidden>Apagar localização</button>
             </div>
         </section>
 
         <form id="formLocalidade" class="localidade-form" hidden>
             <h2>Informe sua região</h2>
-            <p>Usaremos somente cidade, estado e bairro para procurar ofertas.</p>
+            <p>No GPS, usamos uma posição aproximada no OpenStreetMap para identificar cidade e mercados próximos.</p>
             <div class="localidade-grid">
                 <label>Cidade
                     <input id="localidadeCidade" name="cidade" type="text" maxlength="100" required>
@@ -60,7 +60,7 @@
             </div>
             <label class="consentimento-localizacao">
                 <input id="consentimentoLocalizacao" type="checkbox" required>
-                <span>Autorizo o uso desta localidade para encontrar ofertas. Posso apagar quando quiser.</span>
+                <span>Autorizo o uso aproximado desta localidade para encontrar mercados e ofertas. Posso apagar quando quiser.</span>
             </label>
             <div class="localidade-botoes">
                 <button class="btn-localizacao primario" type="submit">Salvar e buscar</button>
@@ -117,7 +117,7 @@
     </main>
 
     <script src="./js/tema.js"></script>
-    <script type="module" src="./js/ofertas.js?v=1"></script>
+    <script type="module" src="./js/ofertas.js?v=2"></script>
     <script src="./js/mobile-nav.js"></script>
 </body>
 </html>

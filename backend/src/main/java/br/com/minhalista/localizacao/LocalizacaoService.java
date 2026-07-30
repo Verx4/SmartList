@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.minhalista.common.RegraNegocioException;
+import br.com.minhalista.oferta.DescobertaMercadosService;
 import br.com.minhalista.oferta.UnidadeMercado;
 import br.com.minhalista.oferta.UnidadeMercadoRepository;
 import br.com.minhalista.usuario.Usuario;
@@ -26,30 +27,50 @@ public class LocalizacaoService {
     private final LocalizacaoUsuarioRepository repository;
     private final UnidadeMercadoRepository unidadeRepository;
     private final UsuarioService usuarioService;
+    private final DescobertaMercadosService descobertaMercadosService;
 
     public LocalizacaoService(
         LocalizacaoUsuarioRepository repository,
         UnidadeMercadoRepository unidadeRepository,
-        UsuarioService usuarioService
+        UsuarioService usuarioService,
+        DescobertaMercadosService descobertaMercadosService
     ) {
         this.repository = repository;
         this.unidadeRepository = unidadeRepository;
         this.usuarioService = usuarioService;
+        this.descobertaMercadosService = descobertaMercadosService;
     }
 
     @Transactional
     public LocalizacaoResponse salvar(LocalizacaoRequest request) {
         Usuario usuario = usuarioService.obterAutenticado();
         validarCoordenadas(request);
+        String cidade = limpar(request.cidade());
+        String estado = limpar(request.estado());
+        String bairro = limpar(request.bairro());
+        if (request.origem() == OrigemLocalizacao.GPS
+            && (cidade == null || estado == null)) {
+            DescobertaMercadosService.LocalidadePublica publica =
+                descobertaMercadosService.localizar(request.latitude(), request.longitude());
+            cidade = cidade == null ? publica.cidade() : cidade;
+            estado = estado == null ? publica.estado() : estado;
+            bairro = bairro == null ? publica.bairro() : bairro;
+        }
+        if (cidade == null || estado == null || estado.length() != 2) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Não foi possível identificar cidade e estado. Informe-os manualmente."
+            );
+        }
         Instant agora = Instant.now();
         LocalizacaoUsuario localizacao = repository.findByUsuarioId(usuario.getId())
             .orElseGet(LocalizacaoUsuario::new);
 
         localizacao.setUsuario(usuario);
         localizacao.setOrigem(request.origem());
-        localizacao.setBairro(limpar(request.bairro()));
-        localizacao.setCidade(request.cidade().trim());
-        localizacao.setEstado(request.estado().trim().toUpperCase(Locale.ROOT));
+        localizacao.setBairro(bairro);
+        localizacao.setCidade(cidade);
+        localizacao.setEstado(estado.toUpperCase(Locale.ROOT));
         localizacao.setConsentimentoEm(
             localizacao.getConsentimentoEm() == null
                 ? agora
