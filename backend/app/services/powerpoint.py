@@ -316,7 +316,6 @@ def generate_presentation(
 
     mapping_items = list(mappings)
     resolved_inputs: dict[int, tuple[Any, str]] = {}
-    source_errors: list[str] = []
     target_errors: list[str] = []
     with WorkbookReader(excel_path) as reader:
         for index, mapping in enumerate(mapping_items):
@@ -359,8 +358,6 @@ def generate_presentation(
                 else:
                     raw_value = None
                     resolved_source = mapping.source_ref or "origem não informada"
-                if raw_value is None and not getattr(mapping, "requires_review", False):
-                    raise ValueError("célula sem valor calculado")
                 if raw_value is None:
                     warnings.append(
                         {
@@ -374,26 +371,17 @@ def generate_presentation(
                     )
                 resolved_inputs[index] = (raw_value, resolved_source)
             except Exception as exc:
-                if getattr(mapping, "requires_review", False):
-                    resolved_inputs[index] = (None, mapping.source_ref or "excel")
-                    warnings.append(
-                        {
-                            "slide": int(mapping.slide_number),
-                            "field": mapping.target_ref,
-                            "message": f"{mapping.purpose}: {exc}",
-                        }
-                    )
-                else:
-                    source_errors.append(f"{mapping.purpose}: {exc}")
-
-    if source_errors:
-        details = "; ".join(source_errors[:8])
-        if len(source_errors) > 8:
-            details += f"; e mais {len(source_errors) - 8} campo(s)."
-        raise ValueError(
-            "A planilha não contém todos os dados obrigatórios para este modelo. "
-            f"{details}"
-        )
+                resolved_inputs[index] = (None, mapping.source_ref or "excel")
+                warnings.append(
+                    {
+                        "slide": int(mapping.slide_number),
+                        "field": mapping.target_ref,
+                        "message": (
+                            f"{mapping.purpose}: {exc}; "
+                            "o campo foi marcado para revisão."
+                        ),
+                    }
+                )
 
     for index, mapping in enumerate(mapping_items):
         slide_number = int(mapping.slide_number)
