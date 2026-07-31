@@ -1,5 +1,6 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
-import { createServer, request as proxyRequest } from "node:http";
+import { createServer, request as httpProxyRequest } from "node:http";
+import { request as httpsProxyRequest } from "node:https";
 import { extname, resolve, sep } from "node:path";
 import { spawn } from "node:child_process";
 
@@ -8,6 +9,11 @@ const clientRoot = resolve(root, "dist", "client");
 const internalPort = Number(process.env.VINEXT_INTERNAL_PORT ?? 3001);
 const publicPort = Number(process.env.PORT ?? 3000);
 const backendPort = Number(process.env.BACKEND_PORT ?? 8000);
+const backendUrl = new URL(
+  process.env.BACKEND_URL ?? `http://127.0.0.1:${backendPort}`,
+);
+const backendProxyRequest =
+  backendUrl.protocol === "https:" ? httpsProxyRequest : httpProxyRequest;
 const vinextBin = resolve(root, "node_modules", "vinext", "dist", "cli.js");
 
 const contentTypes = {
@@ -46,13 +52,13 @@ const server = createServer((request, response) => {
   const requestPath = request.url ?? "/";
   const isApiRequest = requestPath.startsWith("/api/");
   if (isApiRequest) {
-    const proxy = proxyRequest(
+    const proxy = backendProxyRequest(
       {
-        hostname: "127.0.0.1",
-        port: backendPort,
-        path: requestPath,
+        hostname: backendUrl.hostname,
+        port: backendUrl.port || undefined,
+        path: `${backendUrl.pathname.replace(/\/$/, "")}${requestPath}`,
         method: request.method,
-        headers: request.headers,
+        headers: { ...request.headers, host: backendUrl.host },
       },
       (upstream) => {
         response.writeHead(upstream.statusCode ?? 502, upstream.headers);
@@ -88,7 +94,7 @@ const server = createServer((request, response) => {
     return;
   }
 
-  const proxy = proxyRequest(
+  const proxy = httpProxyRequest(
     {
       hostname: "127.0.0.1",
       port: internalPort,
