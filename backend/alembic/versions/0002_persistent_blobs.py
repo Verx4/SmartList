@@ -15,6 +15,10 @@ depends_on = None
 
 
 def upgrade() -> None:
+    bind = op.get_bind()
+    if "stored_blobs" in sa.inspect(bind).get_table_names():
+        return
+
     op.create_table(
         "stored_blobs",
         sa.Column("storage_key", sa.String(length=512), nullable=False),
@@ -32,4 +36,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table("stored_blobs")
+    bind = op.get_bind()
+    if "stored_blobs" in sa.inspect(bind).get_table_names():
+        op.drop_table("stored_blobs")
