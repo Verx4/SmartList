@@ -1,4 +1,8 @@
 from fastapi.testclient import TestClient
+from sqlalchemy import delete
+from sqlalchemy.orm import Session
+
+from app.models.entities import User
 
 
 def test_health(client: TestClient) -> None:
@@ -55,6 +59,25 @@ def test_user_can_register_and_login(client: TestClient) -> None:
         json={"email": "fernanda.nova@teste.com.br", "password": "MinhaSenha123!"},
     )
     assert login.status_code == 200
+
+
+def test_first_registered_user_becomes_admin(
+    client: TestClient, db: Session
+) -> None:
+    db.execute(delete(User))
+    db.commit()
+
+    registration = client.post(
+        "/api/v1/auth/register",
+        json={
+            "name": "ResponsÃ¡vel inicial",
+            "email": "responsavel@teste.com.br",
+            "password": "MinhaSenha123!",
+        },
+    )
+
+    assert registration.status_code == 201
+    assert registration.json()["user"]["role"] == "admin"
 
 
 def test_project_crud_requires_authentication(client: TestClient) -> None:

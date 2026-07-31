@@ -75,11 +75,15 @@ def register(
             detail="Já existe uma conta com este e-mail.",
         )
 
+    # O primeiro cadastro de uma instalaÃ§Ã£o nova administra os modelos.
+    # Todos os cadastros seguintes entram com o perfil normal de engenharia.
+    first_user = db.scalar(select(User.id).limit(1)) is None
+
     user = User(
         name=payload.name.strip(),
         email=email,
         password_hash=hash_password(payload.password),
-        role=UserRole.ENGINEERING,
+        role=UserRole.ADMIN if first_user else UserRole.ENGINEERING,
         is_active=True,
     )
     db.add(user)
