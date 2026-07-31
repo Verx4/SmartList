@@ -1,0 +1,401 @@
+{
+  "template_name": "FAR Carpina — Acompanhamento mensal",
+  "mapping_version": 2,
+  "protected_slides": [6, 11],
+  "notes": [
+    "Mapeamento calibrado com a planilha e o PowerPoint de junho de 2026.",
+    "Slides 6 e 11 são restaurados byte a byte a partir do modelo original.",
+    "Imagens e textos narrativos sem origem inequívoca permanecem inalterados e exigem revisão humana."
+  ],
+  "excel_validation": {
+    "reference_month_required": true,
+    "required_sheets": [
+      "Curva S",
+      "Progresso Mensal",
+      "Custo",
+      "Planilha1"
+    ],
+    "cell_contains": [
+      {
+        "sheet": "Planilha1",
+        "cell": "C4",
+        "any": ["CARPINA", "FAR"],
+        "message": "A identificação da obra no Excel não corresponde ao modelo FAR Carpina."
+      },
+      {
+        "sheet": "Curva S",
+        "cell": "E2",
+        "any": ["REALIZADO"],
+        "message": "A aba Curva S não possui a coluna Realizado esperada pelo modelo."
+      },
+      {
+        "sheet": "Progresso Mensal",
+        "cell": "E2",
+        "any": ["REALIZADO"],
+        "message": "A aba Progresso Mensal não possui a coluna Realizado esperada pelo modelo."
+      }
+    ]
+  },
+  "mappings": [
+    {
+      "slide_number": 1,
+      "purpose": "Mês da capa",
+      "source_type": "manual",
+      "source_ref": "reference_month_long",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 7|p2|r1",
+      "content_type": "text",
+      "format_rule": {},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Progresso acumulado base",
+      "source_type": "excel",
+      "source_ref": "Curva S!C8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 24|p2|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Progresso acumulado reprogramado",
+      "source_type": "excel",
+      "source_ref": "Curva S!D8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 24|p3|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Progresso acumulado realizado",
+      "source_type": "excel",
+      "source_ref": "Curva S!E8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 24|p4|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Custo total realizado",
+      "source_type": "excel",
+      "source_ref": "Planilha1!F23",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 24|p5|r2",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2},
+      "requires_review": true
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Progresso mensal base",
+      "source_type": "excel",
+      "source_ref": "Progresso Mensal!C8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 25|p2|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Progresso mensal reprogramado",
+      "source_type": "excel",
+      "source_ref": "Progresso Mensal!D8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 25|p3|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Progresso mensal realizado",
+      "source_type": "excel",
+      "source_ref": "Progresso Mensal!E8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 25|p4|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "IDPM mensal",
+      "source_type": "excel",
+      "source_ref": "Progresso Mensal!N13",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 25|p5|r2",
+      "content_type": "decimal",
+      "format_rule": {"decimals": 2, "suffix": "."},
+      "requires_review": true
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Data da última medição",
+      "source_type": "excel",
+      "source_ref": "Curva S!A8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 27|p1|r1",
+      "content_type": "date",
+      "format_rule": {"pattern": "%d/%m/%y", "prefix": "Última medição: ", "source_rule": {"type": "month", "date_columns": ["A", "B"]}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 5,
+      "purpose": "Reprogramado para o próximo mês",
+      "source_type": "excel",
+      "source_ref": "Progresso Mensal!D9",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 31|p1|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "source_rule": {"type": "month", "date_columns": ["A", "B"], "month_offset": 1}},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Mês de referência financeiro",
+      "source_type": "manual",
+      "source_ref": "reference_month_short",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 98|p1|r1",
+      "content_type": "text",
+      "format_rule": {},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Execução física acumulada",
+      "source_type": "excel",
+      "source_ref": "Curva S!E8",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 94|p1|r1",
+      "content_type": "percentage",
+      "format_rule": {
+        "decimals": 2,
+        "source_is_fraction": true,
+        "prefix": "% Execução Física: ",
+        "source_rule": {"type": "month", "date_columns": ["A", "B"]}
+      },
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Recebido acumulado",
+      "source_type": "excel",
+      "source_ref": "Custo!C17",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 95",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Percentual recebido acumulado",
+      "source_type": "excel",
+      "source_ref": "Custo!D35",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 96",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "suffix": " "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "PLS total",
+      "source_type": "excel",
+      "source_ref": "Custo!C34",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 100",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Saldo PLS habitação",
+      "source_type": "excel",
+      "source_ref": "Custo!E31",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 101|p2|r1",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2, "prefix": "Habitação: "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Saldo PLS infraestrutura",
+      "source_type": "excel",
+      "source_ref": "Custo!E32",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 101|p3|r1",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2, "prefix": "Infraestrutura: "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Saldo PLS equipamentos",
+      "source_type": "excel",
+      "source_ref": "Custo!E33",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 102|p1|r1",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2, "prefix": "Equipamentos: "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Saldo total PLS",
+      "source_type": "excel",
+      "source_ref": "Custo!E34",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 103|p1|r1",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2, "prefix": "Saldo Total PLS: "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "PLS prevista acumulada",
+      "source_type": "excel",
+      "source_ref": "Custo!H31",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 104",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2},
+      "requires_review": true
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Saldo total do orçamento",
+      "source_type": "excel",
+      "source_ref": "Custo!H35",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 108|p1|r2",
+      "content_type": "decimal",
+      "format_rule": {"decimals": 2, "grouping": true},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Custo previsto acumulado",
+      "source_type": "excel",
+      "source_ref": "Custo!I31",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 109|p1|r2",
+      "content_type": "decimal",
+      "format_rule": {"decimals": 2, "grouping": true, "prefix": " "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Custo orçado total",
+      "source_type": "excel",
+      "source_ref": "Custo!H33",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 110",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Percentual de custo real acumulado",
+      "source_type": "excel",
+      "source_ref": "Custo!D18",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 111",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "suffix": " "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Percentual de custo previsto acumulado",
+      "source_type": "excel",
+      "source_ref": "Custo!I32",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 112",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "suffix": " "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 16,
+      "purpose": "Custo real acumulado",
+      "source_type": "excel",
+      "source_ref": "Custo!C18",
+      "target_kind": "shape_name",
+      "target_ref": "TextBox 113",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2},
+      "requires_review": false
+    },
+    {
+      "slide_number": 20,
+      "purpose": "Percentual de ajuste do desvio",
+      "source_type": "excel",
+      "source_ref": "Planilha1!J32",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 15|p1|r2",
+      "content_type": "percentage",
+      "format_rule": {"decimals": 2, "source_is_fraction": true, "prefix": " de "},
+      "requires_review": true
+    },
+    {
+      "slide_number": 21,
+      "purpose": "Desvio da obra",
+      "source_type": "excel",
+      "source_ref": "Planilha1!N4",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 15|p1|r2",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2, "prefix": "DESVIO: "},
+      "requires_review": false
+    },
+    {
+      "slide_number": 21,
+      "purpose": "Desvio de encargos sociais",
+      "source_type": "excel",
+      "source_ref": "Planilha1!N10",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 15|p1|r2",
+      "content_type": "currency",
+      "format_rule": {
+        "decimals": 2,
+        "prefix": "DESVIO: ",
+        "shape_occurrence": 2
+      },
+      "requires_review": false
+    },
+    {
+      "slide_number": 22,
+      "purpose": "Desvio de despesas indiretas",
+      "source_type": "excel",
+      "source_ref": "Planilha1!N13",
+      "target_kind": "shape_run",
+      "target_ref": "TextBox 15|p1|r2",
+      "content_type": "currency",
+      "format_rule": {"decimals": 2, "prefix": "DESVIO: "},
+      "requires_review": false
+    }
+  ],
+  "manual_review": [
+    {
+      "slides": [2, 3, 7, 8, 9, 10, 12, 14, 15, 23],
+      "reason": "Textos, efetivo ou informações mensais sem uma origem única e confirmada na planilha."
+    },
+    {
+      "slides": [13, 17, 18, 19, 20, 21, 22],
+      "reason": "As tabelas e gráficos estão inseridos como imagens; a troca automática por imagem está pronta, mas a regra de renderização precisa ser aprovada por modelo."
+    }
+  ]
+}

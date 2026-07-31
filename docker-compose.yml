@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-engenharia_slides}
+      POSTGRES_USER: ${POSTGRES_USER:-engenharia}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-engenharia}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-engenharia} -d ${POSTGRES_DB:-engenharia_slides}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-engenharia}:${POSTGRES_PASSWORD:-engenharia}@db:5432/${POSTGRES_DB:-engenharia_slides}
+      SECRET_KEY: ${SECRET_KEY:-desenvolvimento-apenas-troque-em-producao}
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      PRIVATE_STORAGE_PATH: /app/private_storage
+      SECURE_COOKIES: "false"
+    volumes:
+      - private_files:/app/private_storage
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      target: development
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  private_files:

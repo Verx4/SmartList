@@ -1,0 +1,13 @@
+.git
+.next
+.vinext
+dist
+node_modules
+private_storage
+backend/private_storage
+backend/.venv
+backend/.pytest_cache
+work
+outputs
+*.log
+.env

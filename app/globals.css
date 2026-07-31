@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+:root {
+  --background: #04162d;
+  --foreground: #eaf3ff;
+  --card: #0b2b52;
+  --surface: #0e315c;
+  --surface-elevated: #164575;
+  --muted: #9bb4d1;
+  --border: #24517e;
+  --brand: #2f8cff;
+  --brand-strong: #1f70dc;
+  --accent: #71baff;
+  --success: #65d7bd;
+  --warning: #ffd27a;
+  --danger: #ff98a6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-geist-sans);
+}
+
+* {
+  border-color: var(--border);
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+input,
+select,
+textarea {
+  color: var(--foreground);
+  color-scheme: dark;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #829dbd;
+}
+
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #71baff;
+  color: #03152c;
+}
+
+.fine-grid {
+  background-image:
+    linear-gradient(rgba(113, 186, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(113, 186, 255, 0.055) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * Safety net for legacy page-level utility classes. All visible surfaces in
+ * this application are blue; light neutral tokens must never render white.
+ */
+:is(
+  [class*="bg-white"],
+  [class*="bg-[#f"],
+  [class*="bg-[#e"],
+  [class*="bg-[#d"]
+) {
+  background-color: var(--surface) !important;
+}
+
+:is(
+  [class*="border-white"],
+  [class*="border-[#f"],
+  [class*="border-[#e"],
+  [class*="border-[#d"],
+  [class*="border-[#c"]
+) {
+  border-color: var(--border) !important;
+}
+
+:is(
+  [class*="text-[#1"],
+  [class*="text-[#2"],
+  [class*="text-[#3"],
+  [class*="text-[#4"],
+  [class*="text-[#5"],
+  [class*="text-[#6"],
+  [class*="text-[#7"],
+  [class*="text-[#8"],
+  [class*="text-[#9"]
+) {
+  color: var(--foreground) !important;
+}
