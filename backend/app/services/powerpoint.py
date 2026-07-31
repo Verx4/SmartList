@@ -17,7 +17,7 @@ from app.services.excel import WorkbookReader
 
 def format_value(value: Any, content_type: str, rule: dict[str, Any]) -> str:
     if value is None:
-        return "Dado não disponível"
+        return "REVISAR"
     elif content_type == "percentage":
         decimals = int(rule.get("decimals", 2))
         numeric = float(value)
