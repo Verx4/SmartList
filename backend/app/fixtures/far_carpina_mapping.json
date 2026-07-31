@@ -1,6 +1,6 @@
 {
   "template_name": "FAR Carpina — Acompanhamento mensal",
-  "mapping_version": 2,
+  "mapping_version": 3,
   "protected_slides": [6, 11],
   "notes": [
     "Mapeamento calibrado com a planilha e o PowerPoint de junho de 2026.",
@@ -17,6 +17,7 @@
     ],
     "cell_contains": [
       {
+        "kind": "identity",
         "sheet": "Planilha1",
         "cell": "C4",
         "any": ["CARPINA", "FAR"],
@@ -89,8 +90,15 @@
       "target_kind": "shape_run",
       "target_ref": "TextBox 24|p5|r2",
       "content_type": "currency",
-      "format_rule": {"decimals": 2},
-      "requires_review": true
+      "format_rule": {
+        "decimals": 2,
+        "source_rule": {
+          "type": "table_lookup",
+          "labels": ["TOTAL OBRA"],
+          "headers": ["REALIZADO ACUMULADO"]
+        }
+      },
+      "requires_review": false
     },
     {
       "slide_number": 5,
@@ -129,12 +137,21 @@
       "slide_number": 5,
       "purpose": "IDPM mensal",
       "source_type": "excel",
-      "source_ref": "Progresso Mensal!N13",
+      "source_ref": "Progresso Mensal!G8",
       "target_kind": "shape_run",
       "target_ref": "TextBox 25|p5|r2",
       "content_type": "decimal",
-      "format_rule": {"decimals": 2, "suffix": "."},
-      "requires_review": true
+      "format_rule": {
+        "decimals": 2,
+        "suffix": ".",
+        "source_rule": {
+          "type": "month_ratio",
+          "date_columns": ["A", "B"],
+          "numerator_column": "E",
+          "denominator_column": "D"
+        }
+      },
+      "requires_review": false
     },
     {
       "slide_number": 5,
@@ -358,7 +375,15 @@
       "target_kind": "shape_run",
       "target_ref": "TextBox 15|p1|r2",
       "content_type": "currency",
-      "format_rule": {"decimals": 2, "prefix": "DESVIO: "},
+      "format_rule": {
+        "decimals": 2,
+        "prefix": "DESVIO: ",
+        "source_rule": {
+          "type": "table_lookup",
+          "labels": ["CARPINA - FAR (OBRA)", "OBRA"],
+          "headers": ["DESVIO (R$)"]
+        }
+      },
       "requires_review": false
     },
     {
@@ -372,7 +397,12 @@
       "format_rule": {
         "decimals": 2,
         "prefix": "DESVIO: ",
-        "shape_occurrence": 2
+        "shape_occurrence": 2,
+        "source_rule": {
+          "type": "table_lookup",
+          "labels": ["ENCARGOS SOCIAIS"],
+          "headers": ["DESVIO (R$)"]
+        }
       },
       "requires_review": false
     },
@@ -384,7 +414,15 @@
       "target_kind": "shape_run",
       "target_ref": "TextBox 15|p1|r2",
       "content_type": "currency",
-      "format_rule": {"decimals": 2, "prefix": "DESVIO: "},
+      "format_rule": {
+        "decimals": 2,
+        "prefix": "DESVIO: ",
+        "source_rule": {
+          "type": "table_lookup",
+          "labels": ["DESPESAS INDIRETAS", "DESPESAS INDIRETAS DE OBRA"],
+          "headers": ["DESVIO (R$)"]
+        }
+      },
       "requires_review": false
     }
   ],

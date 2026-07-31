@@ -26,7 +26,12 @@ from app.schemas.contracts import (
 )
 from app.services.excel import validate_reference_month, validate_workbook_compatibility
 from app.services.powerpoint import generate_presentation
-from app.services.storage import output_path, resolve_private_path
+from app.services.storage import (
+    delete_stored_file,
+    ensure_local_file,
+    output_path,
+    persist_file,
+)
 
 router = APIRouter()
 
@@ -95,13 +100,13 @@ def list_saved_presentations(
     ]
 
 
-def remove_generation_files(generation: Generation) -> None:
+def remove_generation_files(generation: Generation, db: Session) -> None:
     for storage_key in (
         generation.output_storage_key,
         generation.report_storage_key,
     ):
         if storage_key:
-            resolve_private_path(storage_key).unlink(missing_ok=True)
+            delete_stored_file(db, storage_key)
 
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
@@ -115,7 +120,7 @@ def clear_saved_presentations(
         )
     )
     for generation in generations:
-        remove_generation_files(generation)
+        remove_generation_files(generation, db)
         db.delete(generation)
     db.add(
         AuditLog(
@@ -150,8 +155,8 @@ def create_generation(
         raise HTTPException(status_code=409, detail="Planilha não pertence à obra informada.")
     if upload.uploaded_by_id != user.id and user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Planilha pertence a outro usuário.")
-    if (upload.analysis or {}).get("deleted_at") or not resolve_private_path(
-        upload.storage_key
+    if (upload.analysis or {}).get("deleted_at") or not ensure_local_file(
+        db, upload.storage_key
     ).is_file():
         raise HTTPException(
             status_code=409,
@@ -159,8 +164,9 @@ def create_generation(
         )
 
     compatibility_issues = validate_workbook_compatibility(
-        resolve_private_path(upload.storage_key),
+        ensure_local_file(db, upload.storage_key),
         project.custom_rules,
+        strict_identity=False,
     )
     if compatibility_issues:
         raise HTTPException(
@@ -175,7 +181,7 @@ def create_generation(
         )
 
     month_issues = validate_reference_month(
-        resolve_private_path(upload.storage_key),
+        ensure_local_file(db, upload.storage_key),
         payload.reference_month,
     )
     if month_issues:
@@ -249,17 +255,25 @@ def create_generation(
             f"Mês de Referência: {month_name[:3].title()}/{reference_date:%y}",
         )
         report = generate_presentation(
-            template_path=resolve_private_path(template.storage_key),
-            excel_path=resolve_private_path(upload.storage_key),
+            template_path=ensure_local_file(db, template.storage_key),
+            excel_path=ensure_local_file(db, upload.storage_key),
             output_path=output_file,
             report_path=report_file,
             mappings=mappings,
             protected_slides=set(template.protected_slides),
             manual_values=manual_values,
             reference_month=payload.reference_month,
+            layout_only=bool((upload.analysis or {}).get("compatibility_warnings")),
         )
         generation.output_storage_key = output_key
         generation.report_storage_key = report_key
+        persist_file(
+            db,
+            output_key,
+            output_file,
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        )
+        persist_file(db, report_key, report_file, "application/json")
         generation.warnings = report["warnings"]
         generation.status = (
             GenerationStatus.REVIEW
@@ -305,7 +319,7 @@ def download_file(
     storage_key = getattr(generation, storage_field)
     if not storage_key:
         raise HTTPException(status_code=409, detail="Arquivo ainda não disponível.")
-    path = resolve_private_path(storage_key)
+    path = ensure_local_file(db, storage_key)
     if not path.exists():
         raise HTTPException(status_code=404, detail="Arquivo não encontrado no armazenamento.")
     return FileResponse(
@@ -358,7 +372,7 @@ def delete_saved_presentation(
         raise HTTPException(status_code=404, detail="Apresentação não encontrada.")
     if generation.created_by_id != user.id and user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Apresentação pertence a outro usuário.")
-    remove_generation_files(generation)
+    remove_generation_files(generation, db)
     db.add(
         AuditLog(
             user_id=user.id,

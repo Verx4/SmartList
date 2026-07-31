@@ -5,8 +5,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from fastapi import HTTPException, UploadFile, status
+from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.models.entities import StoredBlob
 
 settings = get_settings()
 
@@ -90,3 +92,46 @@ def output_path(filename: str) -> tuple[str, Path]:
     path = resolve_private_path(storage_key)
     path.parent.mkdir(parents=True, exist_ok=True)
     return storage_key, path
+
+
+def persist_file(
+    db: Session,
+    storage_key: str,
+    path: Path,
+    content_type: str = "application/octet-stream",
+) -> None:
+    """Keep a database copy so files survive an ephemeral server restart."""
+    content = path.read_bytes()
+    record = db.get(StoredBlob, storage_key)
+    if record is None:
+        record = StoredBlob(
+            storage_key=storage_key,
+            content=content,
+            content_type=content_type,
+            size_bytes=len(content),
+        )
+        db.add(record)
+    else:
+        record.content = content
+        record.content_type = content_type
+        record.size_bytes = len(content)
+
+
+def ensure_local_file(db: Session, storage_key: str) -> Path:
+    """Restore a database-backed file to the temporary local workspace."""
+    path = resolve_private_path(storage_key)
+    if path.is_file():
+        return path
+    record = db.get(StoredBlob, storage_key)
+    if record is None:
+        return path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(record.content)
+    return path
+
+
+def delete_stored_file(db: Session, storage_key: str) -> None:
+    resolve_private_path(storage_key).unlink(missing_ok=True)
+    record = db.get(StoredBlob, storage_key)
+    if record is not None:
+        db.delete(record)

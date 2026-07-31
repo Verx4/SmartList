@@ -18,7 +18,7 @@ from app.core.config import get_settings
 from app.core.database import Base, SessionLocal, engine
 from app.models.entities import Project, SlideMapping, Template
 from app.seed import seed
-from app.services.storage import safe_filename
+from app.services.storage import persist_file, safe_filename
 
 
 def copy_private(source: Path) -> tuple[str, Path]:
@@ -96,6 +96,12 @@ def register(powerpoint_path: Path) -> Template:
         )
         for item in fixture["mappings"]:
             db.add(SlideMapping(template_id=template.id, **item))
+        persist_file(
+            db,
+            template.storage_key,
+            destination,
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        )
         project.custom_rules = {
             **(project.custom_rules or {}),
             "reference_model_sha256": source_digest,

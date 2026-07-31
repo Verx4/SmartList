@@ -35,6 +35,8 @@ type ExcelUpload = {
     sheet_count: number;
     sheets: Array<{ name: string; dimensions: string }>;
     detected_reference_month?: string | null;
+    detected_project?: { code?: string; name: string; source: string } | null;
+    compatibility_warnings?: string[];
   };
 };
 type Generation = {
@@ -122,9 +124,11 @@ export default function NovaApresentacaoPage() {
       if (result.analysis.detected_reference_month) {
         setReference(result.analysis.detected_reference_month);
       }
-      setMessage(
-        `${result.analysis.sheet_count} abas encontradas. O mês foi identificado automaticamente e o Excel ficou salvo.`,
-      );
+      const detectedProject = result.analysis.detected_project?.name;
+      const layoutWarning = result.analysis.compatibility_warnings?.length
+        ? ` A planilha foi identificada como “${detectedProject ?? "outra obra"}”. O modelo ${project} será usado apenas como layout, com os dados encontrados neste Excel.`
+        : "";
+      setMessage(`${result.analysis.sheet_count} abas encontradas. O mês foi identificado automaticamente e o Excel ficou salvo.${layoutWarning}`);
     } catch (reason) {
       setMessage(
         reason instanceof Error

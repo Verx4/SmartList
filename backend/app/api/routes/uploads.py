@@ -17,7 +17,12 @@ from app.models.entities import (
 )
 from app.schemas.contracts import SavedExcelRead, UploadRead
 from app.services.excel import analyze_workbook, validate_workbook_compatibility
-from app.services.storage import resolve_private_path, save_upload
+from app.services.storage import (
+    delete_stored_file,
+    ensure_local_file,
+    persist_file,
+    save_upload,
+)
 
 router = APIRouter()
 
@@ -74,7 +79,7 @@ def download_saved_excel(
     user: User = Depends(get_current_user),
 ) -> FileResponse:
     upload = get_accessible_excel(upload_id, db, user)
-    path = resolve_private_path(upload.storage_key)
+    path = ensure_local_file(db, upload.storage_key)
     if not path.is_file():
         raise HTTPException(status_code=404, detail="Arquivo Excel não encontrado.")
     return FileResponse(
@@ -84,8 +89,8 @@ def download_saved_excel(
     )
 
 
-def soft_delete_excel(upload: Upload) -> None:
-    resolve_private_path(upload.storage_key).unlink(missing_ok=True)
+def soft_delete_excel(upload: Upload, db: Session) -> None:
+    delete_stored_file(db, upload.storage_key)
     upload.analysis = {
         **(upload.analysis or {}),
         "deleted_at": datetime.now(timezone.utc).isoformat(),
@@ -107,7 +112,7 @@ def clear_saved_excels(
     )
     active_uploads = [upload for upload in uploads if not excel_is_deleted(upload)]
     for upload in active_uploads:
-        soft_delete_excel(upload)
+        soft_delete_excel(upload, db)
     db.add(
         AuditLog(
             user_id=user.id,
@@ -126,7 +131,7 @@ def delete_saved_excel(
     user: User = Depends(get_current_user),
 ) -> None:
     upload = get_accessible_excel(upload_id, db, user)
-    soft_delete_excel(upload)
+    soft_delete_excel(upload, db)
     db.add(
         AuditLog(
             user_id=user.id,
@@ -181,6 +186,7 @@ async def upload_excel(
         else validate_workbook_compatibility(
             stored.absolute_path,
             project.custom_rules,
+            strict_identity=False,
         )
     )
     if (
@@ -205,6 +211,15 @@ async def upload_excel(
             },
         )
 
+    identity_warnings = validate_workbook_compatibility(
+        stored.absolute_path,
+        project.custom_rules,
+        strict_identity=True,
+    )
+    if identity_warnings:
+        analysis["compatibility_warnings"] = identity_warnings
+        analysis["layout_project"] = project.name
+
     record = Upload(
         project_id=project_id,
         uploaded_by_id=user.id,
@@ -218,6 +233,7 @@ async def upload_excel(
     )
     db.add(record)
     db.flush()
+    persist_file(db, stored.storage_key, stored.absolute_path, stored.content_type)
     db.add(
         AuditLog(
             user_id=user.id,
@@ -228,6 +244,8 @@ async def upload_excel(
                 "filename": stored.original_filename,
                 "sha256": stored.sha256,
                 "sheets": [sheet["name"] for sheet in analysis["sheets"]],
+                "detected_project": analysis.get("detected_project"),
+                "compatibility_warnings": analysis.get("compatibility_warnings", []),
             },
         )
     )

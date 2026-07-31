@@ -17,7 +17,7 @@ from app.services.excel import WorkbookReader
 
 def format_value(value: Any, content_type: str, rule: dict[str, Any]) -> str:
     if value is None:
-        formatted = "Dado não disponível"
+        return "Dado não disponível"
     elif content_type == "percentage":
         decimals = int(rule.get("decimals", 2))
         numeric = float(value)
@@ -308,6 +308,7 @@ def generate_presentation(
     protected_slides: set[int],
     manual_values: dict[str, Any],
     reference_month: str | None = None,
+    layout_only: bool = False,
 ) -> dict[str, Any]:
     presentation = Presentation(str(template_path))
     changes: list[dict[str, Any]] = []
@@ -316,9 +317,34 @@ def generate_presentation(
     mapping_items = list(mappings)
     resolved_inputs: dict[int, tuple[Any, str]] = {}
     source_errors: list[str] = []
+    target_errors: list[str] = []
     with WorkbookReader(excel_path) as reader:
         for index, mapping in enumerate(mapping_items):
             if int(mapping.slide_number) in protected_slides:
+                continue
+            format_rule = mapping.format_rule or {}
+            source_rule_type = (format_rule.get("source_rule") or {}).get("type")
+            portable = bool(format_rule.get("portable")) or source_rule_type in {
+                "month",
+                "month_ratio",
+                "table_lookup",
+            }
+            if (
+                layout_only
+                and mapping.source_type == "excel"
+                and not portable
+            ):
+                resolved_inputs[index] = (None, "campo específico do modelo original")
+                warnings.append(
+                    {
+                        "slide": int(mapping.slide_number),
+                        "field": mapping.target_ref,
+                        "message": (
+                            f"{mapping.purpose}: campo específico da obra do modelo; "
+                            "marcado como não disponível para evitar misturar dados."
+                        ),
+                    }
+                )
                 continue
             try:
                 if mapping.source_type == "manual":
@@ -333,11 +359,32 @@ def generate_presentation(
                 else:
                     raw_value = None
                     resolved_source = mapping.source_ref or "origem não informada"
-                if raw_value is None:
+                if raw_value is None and not getattr(mapping, "requires_review", False):
                     raise ValueError("célula sem valor calculado")
+                if raw_value is None:
+                    warnings.append(
+                        {
+                            "slide": int(mapping.slide_number),
+                            "field": mapping.target_ref,
+                            "message": (
+                                f"{mapping.purpose}: dado não encontrado; "
+                                "o campo foi marcado para revisão."
+                            ),
+                        }
+                    )
                 resolved_inputs[index] = (raw_value, resolved_source)
             except Exception as exc:
-                source_errors.append(f"{mapping.purpose}: {exc}")
+                if getattr(mapping, "requires_review", False):
+                    resolved_inputs[index] = (None, mapping.source_ref or "excel")
+                    warnings.append(
+                        {
+                            "slide": int(mapping.slide_number),
+                            "field": mapping.target_ref,
+                            "message": f"{mapping.purpose}: {exc}",
+                        }
+                    )
+                else:
+                    source_errors.append(f"{mapping.purpose}: {exc}")
 
     if source_errors:
         details = "; ".join(source_errors[:8])
@@ -372,15 +419,6 @@ def generate_presentation(
         try:
             raw_value, resolved_source = resolved_inputs[index]
 
-            if raw_value is None:
-                warnings.append(
-                    {
-                        "slide": slide_number,
-                        "field": mapping.target_ref,
-                        "message": "Dado não disponível; revisão humana necessária.",
-                    }
-                )
-                continue
             formatted = format_value(
                 raw_value, mapping.content_type, mapping.format_rule or {}
             )
@@ -474,24 +512,26 @@ def generate_presentation(
                 )
 
             if not updated:
-                warnings.append(
-                    {
-                        "slide": slide_number,
-                        "field": mapping.target_ref,
-                        "message": "Elemento de destino não encontrado.",
-                    }
-                )
-        except Exception as exc:
-            warnings.append(
-                {
+                issue = {
                     "slide": slide_number,
                     "field": mapping.target_ref,
-                    "message": f"Falha controlada no mapeamento: {exc}",
+                    "message": "Elemento de destino não encontrado.",
                 }
-            )
+                warnings.append(issue)
+                if not getattr(mapping, "requires_review", False):
+                    target_errors.append(f"slide {slide_number}: {mapping.target_ref}")
+        except Exception as exc:
+            issue = {
+                "slide": slide_number,
+                "field": mapping.target_ref,
+                "message": f"Falha controlada no mapeamento: {exc}",
+            }
+            warnings.append(issue)
+            if not getattr(mapping, "requires_review", False):
+                target_errors.append(f"slide {slide_number}: {mapping.target_ref}: {exc}")
 
-    if warnings:
-        details = "; ".join(item["message"] for item in warnings[:8])
+    if target_errors:
+        details = "; ".join(target_errors[:8])
         raise ValueError(
             "O modelo não pôde ser atualizado com segurança. "
             f"{details}"
@@ -509,6 +549,7 @@ def generate_presentation(
         "protected_slide_verification": protected_verification,
         "changes": changes,
         "warnings": warnings,
+        "layout_only": layout_only,
     }
     report_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2),

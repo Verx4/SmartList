@@ -6,7 +6,7 @@ from app.api.deps import get_current_user, require_roles
 from app.core.database import get_db
 from app.models.entities import AuditLog, Project, Template, User, UserRole
 from app.schemas.contracts import ProtectedSlidesUpdate, TemplateRead
-from app.services.storage import save_upload
+from app.services.storage import persist_file, save_upload
 
 router = APIRouter()
 
@@ -58,6 +58,7 @@ async def upload_template(
     )
     db.add(template)
     db.flush()
+    persist_file(db, stored.storage_key, stored.absolute_path, stored.content_type)
     db.add(
         AuditLog(
             user_id=user.id,

@@ -126,6 +126,32 @@ class WorkbookReader:
             raise ValueError(f"Aba obrigatória não encontrada: {sheet_name}")
         worksheet = self.workbook[sheet_name]
         rule = source_rule or {}
+        if rule.get("type") == "table_lookup":
+            labels = [normalize_text(item) for item in rule.get("labels", [])]
+            headers = [normalize_text(item) for item in rule.get("headers", [])]
+            header_row = None
+            value_column = None
+            for row in range(1, min(worksheet.max_row, 20) + 1):
+                for column in range(1, worksheet.max_column + 1):
+                    value = normalize_text(worksheet.cell(row, column).value)
+                    if value and any(header == value or header in value for header in headers):
+                        header_row = row
+                        value_column = column
+                        break
+                if value_column is not None:
+                    break
+            if header_row is None or value_column is None:
+                raise ValueError(f"Cabeçalho esperado não encontrado na aba {sheet_name}.")
+            for row in range(header_row + 1, worksheet.max_row + 1):
+                row_text = " ".join(
+                    normalize_text(worksheet.cell(row, column).value)
+                    for column in range(1, min(worksheet.max_column, 5) + 1)
+                )
+                if labels and any(label == row_text or label in row_text for label in labels):
+                    value = worksheet.cell(row, value_column).value
+                    coordinate = worksheet.cell(row, value_column).coordinate
+                    return value, f"{sheet_name}!{coordinate}"
+            raise ValueError(f"Linha esperada não encontrada na aba {sheet_name}.")
         if rule.get("type") in {"month", "month_ratio"}:
             if not reference_month:
                 raise ValueError("O mês de referência é obrigatório para esta origem.")
@@ -157,6 +183,8 @@ class WorkbookReader:
 def validate_workbook_compatibility(
     path: Path,
     project_rules: dict[str, Any] | None,
+    *,
+    strict_identity: bool = True,
 ) -> list[str]:
     validation = (project_rules or {}).get("excel_validation") or {}
     if not validation:
@@ -175,11 +203,57 @@ def validate_workbook_compatibility(
             actual = normalize_text(workbook[sheet_name][coordinate].value)
             expected = [normalize_text(item) for item in check.get("any", [])]
             if expected and not any(item in actual for item in expected):
+                is_identity_check = (
+                    check.get("kind") == "identity"
+                    or "identificacao da obra" in normalize_text(check.get("message"))
+                )
+                if is_identity_check and not strict_identity:
+                    continue
                 issues.append(
                     check.get("message")
                     or f"O conteúdo de {sheet_name}!{coordinate} não corresponde ao modelo selecionado."
                 )
     return issues
+
+
+def detect_project_identity(path: Path) -> dict[str, str] | None:
+    """Identifica a obra por conteúdo e, quando disponível, pela sigla do arquivo."""
+    with WorkbookReader(path) as reader:
+        workbook = reader.workbook
+        candidates = (
+            ("Relatório - CN", "D5"),
+            ("Custo Por Nível", "A3"),
+            ("Custo Por Nível (2)", "B3"),
+            ("Planilha1", "C4"),
+        )
+        display_name = ""
+        source = ""
+        for sheet_name, coordinate in candidates:
+            if sheet_name not in workbook.sheetnames:
+                continue
+            value = str(workbook[sheet_name][coordinate].value or "").strip()
+            normalized = normalize_text(value)
+            if value and normalized not in {"obra", "total obra"}:
+                display_name = re.sub(r"^\s*\d+\s*-\s*", "", value)
+                display_name = re.sub(r"\s*\(OBRA\)\s*$", "", display_name, flags=re.I)
+                source = f"{sheet_name}!{coordinate}"
+                break
+
+    filename = normalize_text(path.stem).replace(" ", "")
+    if "fdsmfp" in filename:
+        code = "FDSMFP"
+    elif "farcarp" in filename or "carpina" in filename:
+        code = "FAR-CARPINA"
+    else:
+        code = ""
+
+    if not display_name and not code:
+        return None
+    return {
+        "code": code,
+        "name": display_name or code,
+        "source": source or "nome do arquivo",
+    }
 
 
 def detect_reference_month(workbook: Any) -> str | None:
@@ -301,6 +375,7 @@ def analyze_workbook(path: Path) -> dict[str, Any]:
         "sheet_count": len(sheets),
         "sheets": sheets,
         "detected_reference_month": detected_reference_month,
+        "detected_project": detect_project_identity(path),
     }
 
 

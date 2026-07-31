@@ -110,3 +110,45 @@ def test_workbook_compatibility_rejects_another_project(tmp_path: Path) -> None:
     )
 
     assert issues == ["Obra incorreta."]
+    assert validate_workbook_compatibility(
+        file_path,
+        {
+            "excel_validation": {
+                "required_sheets": ["Curva S", "Progresso Mensal", "Custo", "Planilha1"],
+                "cell_contains": [
+                    {
+                        "kind": "identity",
+                        "sheet": "Planilha1",
+                        "cell": "C4",
+                        "any": ["CARPINA", "FAR"],
+                        "message": "Obra incorreta.",
+                    }
+                ],
+            }
+        },
+        strict_identity=False,
+    ) == []
+
+
+def test_table_lookup_finds_total_when_row_moves(tmp_path: Path) -> None:
+    file_path = tmp_path / "custos.xlsx"
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Planilha1"
+    sheet.append([None, "UC", "Descrição", None, None, "Realizado Acumulado"])
+    sheet.append([None, "01", "OBRA", None, None, 100])
+    sheet.append([None, "TOTAL OBRA:", None, None, None, 250])
+    workbook.save(file_path)
+
+    with WorkbookReader(file_path) as reader:
+        value, source = reader.read(
+            "Planilha1!F99",
+            source_rule={
+                "type": "table_lookup",
+                "labels": ["TOTAL OBRA"],
+                "headers": ["REALIZADO ACUMULADO"],
+            },
+        )
+
+    assert value == 250
+    assert source == "Planilha1!F3"
