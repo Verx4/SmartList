@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/receitas.css?v=3">
+    <link rel="stylesheet" href="./css/receitas.css?v=4">
 </head>
 <body class="embalagens-page receitas-page sem-controle-tema">
     <main id="receitasConteudo" class="receitas-app">
@@ -28,7 +28,7 @@
         <section class="receitas-cabecalho">
             <small>PLANEJE, COZINHE E ECONOMIZE</small>
             <h1>Receitas</h1>
-            <p>Encontre receitas com o que você tem em casa</p>
+            <p>Descubra o que preparar com os alimentos que você tem.</p>
         </section>
 
         <section class="preparo-guiado-destaque" aria-labelledby="tituloPreparoGuiado">
@@ -44,32 +44,30 @@
         <form id="formBuscaReceitas" class="receitas-busca" role="search">
             <label class="sr-only" for="buscaReceitas">Buscar receitas</label>
             <span aria-hidden="true">⌕</span>
-            <input id="buscaReceitas" type="search" maxlength="100" placeholder="Buscar receitas..." autocomplete="off">
+            <input id="buscaReceitas" type="search" maxlength="100" placeholder="Buscar qualquer receita ou ingrediente..." autocomplete="off">
             <button type="submit">Buscar</button>
         </form>
 
-        <section class="ingredientes-destaque" aria-labelledby="tituloIngredientes">
+        <section class="ingredientes-destaque despensa-em-casa" aria-labelledby="tituloIngredientes">
             <div class="destaque-icone" aria-hidden="true">⌁</div>
             <div>
-                <small>BUSCA POR INGREDIENTES</small>
+                <small>SUA DESPENSA DE RECEITAS</small>
                 <h2 id="tituloIngredientes">O que você tem em casa?</h2>
-                <p>Digite os ingredientes que você tem em casa e encontraremos receitas para você.</p>
+                <p>Adicione um alimento por vez. A quantidade é opcional e nunca será considerada zero quando não for informada.</p>
             </div>
-            <form id="formIngredientes" class="ingredientes-form">
-                <label class="sr-only" for="ingredientesManuais">Ingredientes separados por vírgula</label>
-                <textarea id="ingredientesManuais" rows="2" maxlength="500" placeholder="Ex.: feijão, couve, farofa, calabresa, ovos, charque..."></textarea>
-                <button type="submit">Encontrar receitas</button>
+            <form id="formAlimentoCasa" class="ingredientes-form alimento-individual-form">
+                <label>Alimento<input id="nomeAlimentoCasa" maxlength="160" required placeholder="Ex.: arroz"></label>
+                <label>Quantidade (opcional)<input id="quantidadeAlimentoCasa" type="number" min="0.001" step="0.001" inputmode="decimal" placeholder="Não informada"></label>
+                <label>Unidade<select id="unidadeAlimentoCasa"><option value="unidade">Unidade</option><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="l">L</option></select></label>
+                <button type="submit">Adicionar alimento</button>
             </form>
-        </section>
-
-        <section class="despensa-resumo" aria-labelledby="tituloDespensaResumo">
-            <div>
-                <span class="despensa-resumo-icone" aria-hidden="true">▦</span>
-                <div><small>SUA DESPENSA</small><h2 id="tituloDespensaResumo">Receitas com o que você comprou</h2></div>
+            <div class="despensa-inline-cabecalho">
+                <strong id="quantidadeDespensa">0 alimentos</strong>
+                <button id="abrirDespensa" type="button">Editar despensa</button>
             </div>
-            <div class="despensa-resumo-acoes">
-                <strong id="quantidadeDespensa">0 itens</strong>
-                <button id="abrirDespensa" type="button">Gerenciar despensa</button>
+            <div id="listaAlimentosCasa" class="alimentos-casa" aria-live="polite"></div>
+            <div class="despensa-receitas-acao">
+                <button id="encontrarReceitasDespensa" type="button">Encontrar receitas com minha despensa</button>
             </div>
         </section>
 
@@ -125,7 +123,10 @@
                 <span id="resumoResultados" aria-live="polite">Carregando...</span>
             </header>
             <p id="mensagemReceitas" class="mensagem-receitas" aria-live="polite"></p>
-            <div id="listaReceitas" class="receitas-grade"></div>
+            <div id="vitrineCategorias" class="vitrine-categorias"></div>
+            <div id="listaReceitas" class="receitas-grade" hidden></div>
+            <div class="carregar-mais-wrap"><button id="carregarMaisReceitas" type="button" hidden>Carregar mais receitas</button></div>
+            <button id="buscarReceitaIa" class="buscar-receita-ia" type="button" hidden>Não encontrou? Criar uma receita com IA</button>
         </section>
     </main>
 
@@ -148,9 +149,11 @@
             </dl>
 
             <section class="ingredientes-detalhe">
-                <header><div><small>CONFIRA ANTES DE COMEÇAR</small><h2>Itens necessários</h2></div><span id="compatibilidadeDetalhe"></span></header>
+                <header><div><small>CONFIRA ANTES DE COMEÇAR</small><h2>Ingredientes e sua despensa</h2></div><span id="compatibilidadeDetalhe"></span></header>
+                <h3 class="subtitulo-ingredientes">Você tem</h3>
                 <div id="itensNecessarios"></div>
-                <div id="faltantesBloco" class="faltantes-bloco" hidden><h3>Faltam</h3><div id="itensFaltantes"></div></div>
+                <div id="quantidadesDesconhecidasBloco" class="quantidades-desconhecidas-bloco" hidden><h3>Confira a quantidade</h3><div id="itensQuantidadeDesconhecida"></div></div>
+                <div id="faltantesBloco" class="faltantes-bloco" hidden><h3>Está faltando</h3><div id="itensFaltantes"></div></div>
                 <button id="adicionarFaltantes" class="acao-primaria" type="button">Adicionar itens que faltam à lista</button>
             </section>
 
@@ -173,13 +176,14 @@
 
     <dialog id="despensaDialog" class="despensa-dialog">
         <form method="dialog" class="dialog-topo"><div><small>ESTOQUE ESTIMADO</small><h2>Despensa</h2></div><button value="cancel" aria-label="Fechar">×</button></form>
-        <p>Produtos comprados são somados automaticamente. Ajuste as quantidades quando consumir algo.</p>
+        <p>Somente alimentos entram aqui. Produtos comprados são somados automaticamente; bebidas e itens não alimentares permanecem apenas no histórico.</p>
         <form id="formNovoItemDespensa" class="novo-item-despensa">
             <label>Produto<input id="nomeItemDespensa" maxlength="160" required placeholder="Ex.: arroz"></label>
-            <label>Quantidade<input id="quantidadeItemDespensa" type="number" min="0.001" step="0.001" required value="1"></label>
+            <label>Quantidade (opcional)<input id="quantidadeItemDespensa" type="number" min="0.001" step="0.001" inputmode="decimal" placeholder="Não informada"></label>
             <label>Unidade<select id="unidadeItemDespensa"><option value="unidade">Unidade</option><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="l">L</option></select></label>
             <button type="submit">Adicionar</button>
         </form>
+        <p id="mensagemDespensa" class="mensagem-despensa" aria-live="polite"></p>
         <div id="listaDespensa" class="lista-despensa"></div>
     </dialog>
 
@@ -235,7 +239,7 @@
 
     <script type="module" src="./js/pwa.js?v=2"></script>
     <script src="./js/tema.js"></script>
-    <script type="module" src="./js/receitas.js?v=3"></script>
+    <script type="module" src="./js/receitas.js?v=4"></script>
     <script src="./js/mobile-nav.js"></script>
 </body>
 </html>

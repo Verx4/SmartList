@@ -60,6 +60,11 @@ app:
     google-vision-api-key: ${GOOGLE_CLOUD_VISION_API_KEY:}
     openai-api-key: ${OPENAI_API_KEY:}
     openai-model: ${OPENAI_OFFER_MODEL:gpt-5-nano}
+  receitas:
+    themealdb-api-key: ${THEMEALDB_API_KEY:}
+    themealdb-base-url: ${THEMEALDB_BASE_URL:https://www.themealdb.com/api/json/v1}
+    openai-api-key: ${OPENAI_API_KEY:}
+    openai-model: ${OPENAI_RECIPE_MODEL:gpt-5-nano}
 
 logging:
   level:

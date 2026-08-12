@@ -48,6 +48,15 @@ public class Receita {
     @Column(nullable = false, length = 80)
     private String rendimento;
 
+    @Column(nullable = false, length = 30, columnDefinition = "varchar(30) default 'SMART_LIST'")
+    private String origem = "SMART_LIST";
+
+    @Column(nullable = false, length = 100, columnDefinition = "varchar(100) default 'Smart List'")
+    private String fonte = "Smart List";
+
+    @Column(name = "referencia_externa", length = 600)
+    private String referenciaExterna;
+
     @ElementCollection
     @CollectionTable(name = "receitas_utensilios", joinColumns = @JoinColumn(name = "receita_id"))
     @OrderColumn(name = "ordem")
@@ -90,6 +99,12 @@ public class Receita {
     public void setDificuldade(String dificuldade) { this.dificuldade = dificuldade; }
     public String getRendimento() { return rendimento; }
     public void setRendimento(String rendimento) { this.rendimento = rendimento; }
+    public String getOrigem() { return origem; }
+    public void setOrigem(String origem) { this.origem = origem; }
+    public String getFonte() { return fonte; }
+    public void setFonte(String fonte) { this.fonte = fonte; }
+    public String getReferenciaExterna() { return referenciaExterna; }
+    public void setReferenciaExterna(String referenciaExterna) { this.referenciaExterna = referenciaExterna; }
     public List<String> getUtensilios() { return utensilios; }
     public List<IngredienteReceita> getIngredientes() { return ingredientes; }
     public List<PassoReceita> getPassos() { return passos; }

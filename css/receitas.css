@@ -207,6 +207,117 @@
     border-radius: 12px;
 }
 
+.alimento-individual-form {
+    grid-template-columns: minmax(180px, 1fr) minmax(150px, .45fr) minmax(120px, .3fr) auto;
+    align-items: end;
+}
+
+.alimento-individual-form label,
+.item-despensa-campos label {
+    display: grid;
+    gap: 6px;
+    color: var(--cor-texto-secundario);
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.alimento-individual-form input,
+.alimento-individual-form select,
+.item-despensa-campos input,
+.item-despensa-campos select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 11px;
+    color: var(--cor-texto);
+    background: var(--cor-superficie-secundaria, var(--cor-campo));
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+}
+
+.despensa-inline-cabecalho {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 15px;
+    border-top: 1px solid var(--cor-borda);
+}
+
+.despensa-inline-cabecalho button,
+.alimento-casa-card button,
+.vitrine-categoria header button,
+.carregar-mais-wrap button,
+.buscar-receita-ia {
+    min-height: 40px;
+    padding: 8px 13px;
+    color: var(--cor-destaque);
+    background: transparent;
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.alimentos-casa {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.alimento-casa-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    padding: 11px;
+    background: var(--cor-superficie-secundaria, var(--cor-campo));
+    border: 1px solid var(--cor-borda);
+    border-radius: 12px;
+}
+
+.alimento-casa-card > span {
+    color: var(--cor-destaque);
+    font-size: 19px;
+}
+
+.alimento-casa-card > div {
+    min-width: 0;
+}
+
+.alimento-casa-card strong,
+.alimento-casa-card small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.alimento-casa-card small {
+    margin-top: 3px;
+    color: var(--cor-texto-secundario);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.despensa-receitas-acao {
+    grid-column: 1 / -1;
+}
+
+.despensa-receitas-acao button {
+    width: 100%;
+    min-height: 50px;
+    color: var(--cor-texto-botao);
+    background: var(--cor-primaria);
+    border: 0;
+    border-radius: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
 .despensa-resumo {
     display: flex;
     align-items: center;
@@ -408,6 +519,52 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.vitrine-categorias {
+    display: grid;
+    gap: 26px;
+}
+
+.vitrine-categoria {
+    display: grid;
+    gap: 12px;
+}
+
+.vitrine-categoria + .vitrine-categoria {
+    padding-top: 22px;
+    border-top: 1px solid var(--cor-borda);
+}
+
+.vitrine-categoria > header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.vitrine-categoria h3 {
+    margin-top: 3px;
+    font-size: 20px;
+}
+
+.carregar-mais-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.carregar-mais-wrap button {
+    min-width: 210px;
+}
+
+.buscar-receita-ia {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 14px;
+    color: var(--cor-texto);
+    background: rgba(var(--cor-primaria-rgb), .12);
+    border-color: var(--cor-primaria);
+}
+
 .receita-card {
     position: relative;
     display: grid;
@@ -472,6 +629,20 @@
     font-size: 12px;
 }
 
+.receita-origem {
+    width: max-content;
+    max-width: 100%;
+    padding: 4px 7px;
+    overflow: hidden;
+    color: var(--cor-destaque) !important;
+    background: rgba(var(--cor-primaria-rgb), .1);
+    border-radius: 999px;
+    font-size: 9px !important;
+    letter-spacing: .03em !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .receita-compatibilidade {
     display: grid;
     gap: 5px;
@@ -534,1003 +705,4 @@
     width: 42px;
     height: 42px;
     place-items: center;
-    color: var(--cor-texto);
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 22px;
-}
-
-.detalhe-topo button:last-child {
-    color: var(--cor-alerta, var(--cor-amarelo));
-}
-
-.detalhe-conteudo {
-    width: min(920px, calc(100% - 28px));
-    margin: 0 auto;
-    padding: 28px 0 118px;
-}
-
-.detalhe-cabecalho {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 18px;
-}
-
-#iconeReceitaDetalhe {
-    width: 76px;
-    height: 76px;
-    border-radius: 21px;
-    font-size: 38px;
-}
-
-.detalhe-cabecalho h1 {
-    margin: 5px 0 7px;
-    font-size: clamp(30px, 6vw, 48px);
-}
-
-.detalhe-cabecalho p {
-    color: var(--cor-texto-secundario);
-}
-
-.receita-metricas {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    margin: 22px 0 0;
-}
-
-.receita-metricas > div {
-    padding: 13px;
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 13px;
-}
-
-.receita-metricas dt {
-    color: var(--cor-texto-secundario);
-    font-size: 11px;
-}
-
-.receita-metricas dd {
-    margin: 4px 0 0;
-    font-weight: 900;
-}
-
-#compatibilidadeDetalhe {
-    padding: 6px 9px;
-    color: var(--cor-sucesso, var(--cor-verde));
-    background: rgba(34, 197, 94, .1);
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 900;
-}
-
-.item-necessario,
-.item-faltante,
-.item-despensa {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--cor-borda);
-}
-
-.item-necessario:last-child,
-.item-faltante:last-child,
-.item-despensa:last-child {
-    border-bottom: 0;
-}
-
-.estado-ingrediente {
-    display: grid;
-    width: 25px;
-    height: 25px;
-    place-items: center;
-    color: var(--cor-alerta, var(--cor-amarelo));
-    border: 1px solid currentColor;
-    border-radius: 50%;
-    font-size: 12px;
-}
-
-.item-necessario.disponivel .estado-ingrediente {
-    color: var(--cor-sucesso, var(--cor-verde));
-}
-
-.item-necessario small,
-.item-faltante small {
-    display: block;
-    color: var(--cor-texto-secundario);
-    font-size: 11px;
-}
-
-.item-necessario > strong,
-.item-faltante > strong {
-    text-align: right;
-}
-
-.faltantes-bloco {
-    margin-top: 17px;
-    padding: 13px;
-    background: rgba(245, 158, 11, .08);
-    border: 1px solid rgba(245, 158, 11, .3);
-    border-radius: 12px;
-}
-
-.faltantes-bloco h3 {
-    color: var(--cor-alerta, var(--cor-amarelo));
-}
-
-.acao-primaria {
-    width: 100%;
-    margin-top: 15px;
-}
-
-.utensilios-grade {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
-}
-
-.utensilio-item {
-    display: flex;
-    min-height: 48px;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 12px;
-}
-
-.utensilio-item span {
-    color: var(--cor-destaque);
-    font-size: 20px;
-}
-
-#totalUtensilios {
-    color: var(--cor-texto-secundario);
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.passo-progresso {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: 12px;
-}
-
-.passo-progresso > span {
-    color: var(--cor-destaque);
-    font-size: 12px;
-    font-weight: 900;
-}
-
-.passo-progresso > div {
-    height: 7px;
-    overflow: hidden;
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border-radius: 999px;
-}
-
-.passo-progresso i {
-    display: block;
-    width: 0;
-    height: 100%;
-    background: var(--cor-primaria);
-    border-radius: inherit;
-    transition: width .25s ease;
-}
-
-.passo-atual {
-    min-height: 180px;
-    margin-top: 15px;
-    padding: clamp(20px, 4vw, 34px);
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 16px;
-}
-
-.passo-atual h3 {
-    margin-bottom: 10px;
-    font-size: clamp(23px, 3vw, 31px);
-}
-
-.passo-atual > .passo-resumo {
-    color: var(--cor-texto-secundario);
-    font-size: 17px;
-}
-
-.passo-bloco {
-    margin-top: 20px;
-    padding-top: 18px;
-    border-top: 1px solid var(--cor-borda);
-}
-
-.passo-bloco h4,
-.passo-como-saber h4,
-.passo-observacoes h4 {
-    margin-bottom: 10px;
-    color: var(--cor-destaque);
-    font-size: 13px;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-}
-
-.lista-uso-passo {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.lista-uso-passo li {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 10px 12px;
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 11px;
-}
-
-.lista-uso-passo li > span:first-child {
-    color: var(--cor-destaque);
-    font-size: 18px;
-}
-
-.lista-uso-passo small {
-    display: block;
-    margin-bottom: 2px;
-    color: var(--cor-sucesso, var(--cor-verde));
-    font-size: 9px;
-    letter-spacing: .04em;
-}
-
-.passo-como-fazer ol,
-.cozinha-como-fazer ol {
-    display: grid;
-    gap: 12px;
-    margin: 0;
-    padding-left: 30px;
-}
-
-.passo-como-fazer li,
-.cozinha-como-fazer li {
-    padding-left: 5px;
-    line-height: 1.55;
-}
-
-.passo-como-fazer li::marker,
-.cozinha-como-fazer li::marker {
-    color: var(--cor-destaque);
-    font-weight: 900;
-}
-
-.passo-metadados,
-.cozinha-metadados {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
-    margin: 18px 0 0;
-}
-
-.passo-metadados > div,
-.cozinha-metadados > div {
-    padding: 12px;
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 11px;
-}
-
-.passo-metadados dt,
-.cozinha-metadados dt {
-    color: var(--cor-texto-secundario);
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-}
-
-.passo-metadados dd,
-.cozinha-metadados dd {
-    margin: 5px 0 0;
-    font-weight: 800;
-}
-
-.passo-como-saber,
-.cozinha-como-saber,
-.passo-observacoes,
-.cozinha-observacoes {
-    margin-top: 14px;
-    padding: 14px;
-    border-radius: 12px;
-}
-
-.passo-como-saber,
-.cozinha-como-saber {
-    background: rgba(34, 197, 94, .08);
-    border: 1px solid rgba(34, 197, 94, .28);
-}
-
-.passo-como-saber h4,
-.cozinha-como-saber h2 {
-    color: var(--cor-sucesso, var(--cor-verde));
-}
-
-.passo-observacoes,
-.cozinha-observacoes {
-    background: rgba(245, 158, 11, .08);
-    border: 1px solid rgba(245, 158, 11, .28);
-}
-
-.passo-observacoes ul,
-.cozinha-observacoes ul {
-    display: grid;
-    gap: 7px;
-    margin: 0;
-    padding-left: 20px;
-}
-
-.conteudo-indisponivel {
-    color: var(--cor-texto-secundario);
-}
-
-.indicadores-passos {
-    display: flex;
-    justify-content: center;
-    gap: 7px;
-    margin: 14px 0;
-}
-
-.indicadores-passos button {
-    width: 10px;
-    height: 10px;
-    padding: 0;
-    background: var(--cor-borda);
-    border: 0;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.indicadores-passos button.concluido,
-.indicadores-passos button.ativo {
-    background: var(--cor-primaria);
-}
-
-.indicadores-passos button.ativo {
-    width: 25px;
-    border-radius: 999px;
-}
-
-.passo-acoes {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-.passo-acoes button,
-.modo-cozinha footer button {
-    min-height: 48px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 11px;
-    font-weight: 900;
-    cursor: pointer;
-}
-
-.passo-acoes button:last-child,
-.modo-cozinha footer button:last-child {
-    color: var(--cor-texto-botao);
-    background: var(--cor-primaria);
-    border-color: var(--cor-primaria);
-}
-
-.finalizar-receita {
-    width: 100%;
-    min-height: 55px;
-    margin-top: 18px;
-    font-size: 16px;
-}
-
-.despensa-dialog,
-.finalizar-dialog {
-    width: min(720px, calc(100% - 24px));
-    max-height: calc(100dvh - 30px);
-    padding: 20px;
-    overflow: auto;
-    color: var(--cor-texto);
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 20px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, .45);
-}
-
-.despensa-dialog::backdrop,
-.finalizar-dialog::backdrop {
-    background: rgba(0, 0, 0, .7);
-    backdrop-filter: blur(5px);
-}
-
-.dialog-topo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-}
-
-.dialog-topo h2 {
-    margin-top: 3px;
-    font-size: 27px;
-}
-
-.dialog-topo button {
-    width: 42px;
-    height: 42px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 12px;
-    font-size: 25px;
-}
-
-.despensa-dialog > p {
-    color: var(--cor-texto-secundario);
-}
-
-.novo-item-despensa {
-    display: grid;
-    grid-template-columns: 1fr 130px 120px auto;
-    align-items: end;
-    gap: 9px;
-    margin: 17px 0;
-    padding: 13px;
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border-radius: 13px;
-}
-
-.novo-item-despensa label {
-    display: grid;
-    gap: 5px;
-    font-size: 11px;
-    font-weight: 900;
-}
-
-.novo-item-despensa input,
-.novo-item-despensa select {
-    width: 100%;
-    min-height: 42px;
-    padding: 0 10px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 9px;
-}
-
-.item-despensa > span {
-    display: grid;
-    width: 28px;
-    height: 28px;
-    place-items: center;
-    color: var(--cor-sucesso, var(--cor-verde));
-    background: rgba(34, 197, 94, .1);
-    border-radius: 8px;
-}
-
-.item-despensa-controles {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.item-despensa-controles input {
-    width: 84px;
-    min-height: 38px;
-    padding: 0 8px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 8px;
-}
-
-.item-despensa-controles button {
-    width: 38px;
-    height: 38px;
-    color: var(--cor-perigo, var(--cor-vermelho));
-    background: transparent;
-    border: 1px solid var(--cor-borda);
-    border-radius: 8px;
-}
-
-.finalizar-dialog {
-    width: min(460px, calc(100% - 24px));
-    text-align: center;
-}
-
-.finalizar-icone {
-    display: grid;
-    width: 62px;
-    height: 62px;
-    margin: 0 auto 12px;
-    place-items: center;
-    color: var(--cor-sucesso, var(--cor-verde));
-    background: rgba(34, 197, 94, .12);
-    border: 1px solid rgba(34, 197, 94, .35);
-    border-radius: 50%;
-    font-size: 28px;
-}
-
-.finalizar-dialog p {
-    margin: 9px 0 17px;
-    color: var(--cor-texto-secundario);
-}
-
-.finalizar-dialog > div:last-child {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
-}
-
-.finalizar-dialog button:last-child {
-    min-height: 44px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 11px;
-    font-weight: 900;
-}
-
-.modo-cozinha {
-    position: fixed;
-    z-index: 3000;
-    inset: 0;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    color: var(--cor-texto);
-    background: var(--cor-fundo);
-}
-
-.modo-cozinha[hidden] {
-    display: none;
-}
-
-.modo-cozinha header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 18px clamp(16px, 4vw, 42px);
-    background: var(--cor-superficie, var(--cor-card));
-    border-bottom: 1px solid var(--cor-borda);
-}
-
-.modo-cozinha header > div {
-    display: grid;
-}
-
-.modo-cozinha header button {
-    width: 52px;
-    height: 52px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 14px;
-    font-size: 29px;
-}
-
-.modo-cozinha main {
-    width: min(920px, 100%);
-    margin: 0 auto;
-    padding: clamp(20px, 4vw, 42px);
-    overflow-y: auto;
-}
-
-.cozinha-progresso {
-    display: grid;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.cozinha-progresso > div:first-child {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-#numeroModoCozinha {
-    color: var(--cor-destaque);
-    font-size: 16px;
-    font-weight: 900;
-}
-
-#estadoPassoCozinha {
-    color: var(--cor-sucesso, var(--cor-verde));
-    font-weight: 800;
-}
-
-.cozinha-progresso > div:last-child {
-    height: 8px;
-    overflow: hidden;
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border-radius: 999px;
-}
-
-.cozinha-progresso i {
-    display: block;
-    width: 0;
-    height: 100%;
-    background: var(--cor-primaria);
-    border-radius: inherit;
-    transition: width .25s ease;
-}
-
-.cozinha-consultas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 14px 0 20px;
-}
-
-.cozinha-consultas button {
-    min-height: 42px;
-    padding: 8px 13px;
-    color: var(--cor-destaque);
-    background: transparent;
-    border: 1px solid var(--cor-borda);
-    border-radius: 11px;
-    font-weight: 800;
-}
-
-.cozinha-etapa {
-    padding: clamp(18px, 4vw, 34px);
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 18px;
-}
-
-.cozinha-etapa > small {
-    color: var(--cor-destaque);
-}
-
-.modo-cozinha .cozinha-etapa > h1 {
-    margin: 7px 0 8px;
-    font-size: clamp(30px, 6vw, 50px);
-}
-
-.modo-cozinha .cozinha-resumo {
-    color: var(--cor-texto-secundario);
-    font-size: clamp(16px, 2.5vw, 20px);
-    line-height: 1.55;
-}
-
-.cozinha-bloco {
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--cor-borda);
-}
-
-.cozinha-bloco h2,
-.cozinha-como-saber h2,
-.cozinha-observacoes h2 {
-    margin-bottom: 12px;
-    color: var(--cor-destaque);
-    font-size: 14px;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-}
-
-.cozinha-uso-atual .lista-uso-passo {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.cozinha-como-fazer ol {
-    gap: 16px;
-    font-size: clamp(17px, 2.5vw, 21px);
-}
-
-.cozinha-como-saber p,
-.cozinha-observacoes li {
-    line-height: 1.55;
-}
-
-.modo-cozinha footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 13px;
-    padding: 16px clamp(16px, 4vw, 42px) calc(16px + env(safe-area-inset-bottom));
-    background: var(--cor-superficie, var(--cor-card));
-    border-top: 1px solid var(--cor-borda);
-}
-
-.modo-cozinha footer button {
-    min-height: 62px;
-    font-size: 17px;
-}
-
-.consulta-cozinha-dialog {
-    width: min(620px, calc(100% - 24px));
-    max-height: calc(100dvh - 30px);
-    padding: 18px;
-    overflow: auto;
-    color: var(--cor-texto);
-    background: var(--cor-superficie, var(--cor-card));
-    border: 1px solid var(--cor-borda);
-    border-radius: 20px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, .5);
-}
-
-.consulta-cozinha-dialog::backdrop {
-    background: rgba(0, 0, 0, .72);
-}
-
-.consulta-lista {
-    display: grid;
-    gap: 8px;
-    margin-top: 15px;
-}
-
-.consulta-lista > div {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    padding: 11px 12px;
-    background: var(--cor-superficie-secundaria, var(--cor-campo));
-    border: 1px solid var(--cor-borda);
-    border-radius: 11px;
-}
-
-.consulta-lista > div > span {
-    color: var(--cor-destaque);
-}
-
-.consulta-lista small {
-    color: var(--cor-texto-secundario);
-}
-
-@media (max-width: 920px) {
-    .receitas-grade,
-    .receitas-grade.compacta {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .novo-item-despensa {
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .novo-item-despensa > button {
-        grid-column: 1 / -1;
-    }
-}
-
-@media (max-width: 640px) {
-    .receitas-app {
-        padding: 16px 12px 100px;
-    }
-
-    .receitas-cabecalho {
-        margin-top: 24px;
-    }
-
-    .preparo-guiado-destaque {
-        grid-template-columns: auto minmax(0, 1fr);
-        padding: 16px;
-    }
-
-    .preparo-guiado-destaque button {
-        grid-column: 1 / -1;
-        width: 100%;
-        min-height: 54px;
-    }
-
-    .receitas-busca {
-        grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .receitas-busca button {
-        grid-column: 1 / -1;
-        width: 100%;
-    }
-
-    .ingredientes-destaque {
-        grid-template-columns: 1fr;
-    }
-
-    .destaque-icone {
-        width: 48px;
-        height: 48px;
-    }
-
-    .ingredientes-form {
-        grid-column: auto;
-        grid-template-columns: 1fr;
-    }
-
-    .ingredientes-form button {
-        width: 100%;
-    }
-
-    .despensa-resumo,
-    .despensa-resumo-acoes,
-    .receitas-filtros > header,
-    .favoritas-secao > header,
-    .resultados-receitas > header,
-    .ingredientes-detalhe > header,
-    .utensilios-detalhe > header,
-    .preparo-interativo > header {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .despensa-resumo-acoes {
-        display: grid;
-        grid-template-columns: 1fr auto;
-    }
-
-    .filtros-linha {
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
-
-    .categorias-chips {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .categorias-chips button:first-child {
-        grid-column: 1 / -1;
-    }
-
-    .filtro-chips button {
-        justify-content: center;
-    }
-
-    .receitas-grade,
-    .receitas-grade.compacta {
-        grid-template-columns: 1fr;
-    }
-
-    .receita-card {
-        min-height: 0;
-    }
-
-    .detalhe-conteudo {
-        width: calc(100% - 24px);
-        padding-top: 20px;
-    }
-
-    .detalhe-cabecalho {
-        align-items: start;
-    }
-
-    #iconeReceitaDetalhe {
-        width: 58px;
-        height: 58px;
-        border-radius: 16px;
-        font-size: 28px;
-    }
-
-    .receita-metricas {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .item-necessario,
-    .item-faltante {
-        grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .item-necessario > strong,
-    .item-faltante > strong {
-        grid-column: 2;
-        text-align: left;
-    }
-
-    .passo-atual {
-        min-height: 0;
-        padding: 17px;
-    }
-
-    .utensilios-grade,
-    .lista-uso-passo,
-    .cozinha-uso-atual .lista-uso-passo,
-    .passo-metadados,
-    .cozinha-metadados {
-        grid-template-columns: 1fr;
-    }
-
-    .novo-item-despensa {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .novo-item-despensa label:first-child,
-    .novo-item-despensa > button {
-        grid-column: 1 / -1;
-    }
-
-    .item-despensa {
-        grid-template-columns: auto minmax(0, 1fr);
-    }
-
-    .item-despensa-controles {
-        grid-column: 1 / -1;
-        justify-content: flex-end;
-    }
-
-    .modo-cozinha main {
-        padding: 16px 12px 24px;
-    }
-
-    .cozinha-progresso > div:first-child {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 3px;
-    }
-
-    .cozinha-consultas {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .cozinha-consultas button {
-        min-height: 48px;
-    }
-
-    .cozinha-etapa {
-        padding: 17px;
-    }
-
-    .modo-cozinha .cozinha-etapa > h1 {
-        font-size: clamp(30px, 9vw, 42px);
-    }
-
-    .cozinha-como-fazer ol {
-        font-size: 18px;
-    }
-
-    .modo-cozinha footer button {
-        min-height: 62px;
-        font-size: 17px;
-    }
-}
-
-@media (max-width: 390px) {
-    .categorias-chips,
-    .finalizar-dialog > div:last-child {
-        grid-template-columns: 1fr;
-    }
-
-    .categorias-chips button:first-child {
-        grid-column: auto;
-    }
-
-    .despensa-resumo-acoes {
-        grid-template-columns: 1fr;
-    }
-
-    .novo-item-despensa {
-        grid-template-columns: 1fr;
-    }
-
-    .novo-item-despensa label:first-child,
-    .novo-item-despensa > button {
-        grid-column: auto;
-    }
-
-    .cozinha-consultas {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .receita-card,
-    .passo-progresso i {
-        transition: none;
-    }
-}
+    color: var(--cor-texto)Ûn;¶‰žËkºwµç}µ¼µÍ…‰•È°(¹½é¥¹¡„µ½µ¼µÍ…‰•È°(¹Á…ÍÍ¼µ½‰Í•ÉÙ…½•Ì°(¹½é¥¹¡„µ½‰Í•ÉÙ…½•Ìì(€€€µ…É¥¸µÑ½Àè€ÄÑÁàì(€€€Á…‘‘¥¹œè€ÄÑÁàì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÉÁàì)ô((¹Á…ÍÍ¼µ½µ¼µÍ…‰•È°(¹½é¥¹¡„µ½µ¼µÍ…‰•Èì(€€€‰…­É½Õ¹èÉ‰„ ÌÐ°€ÄäÜ°€äÐ°€¸Àà¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥É‰„ ÌÐ°€ÄäÜ°€äÐ°€¸Èà¤ì)ô((¹Á…ÍÍ¼µ½µ¼µÍ…‰•È Ð°(¹½é¥¹¡„µ½µ¼µÍ…‰•È Èì(€€€½±½ÈèÙ…È ´µ½ÈµÍÕ•ÍÍ¼°Ù…È ´µ½ÈµÙ•É‘”¤¤ì)ô((¹Á…ÍÍ¼µ½‰Í•ÉÙ…½•Ì°(¹½é¥¹¡„µ½‰Í•ÉÙ…½•Ìì(€€€‰…­É½Õ¹èÉ‰„ ÈÐÔ°€ÄÔà°€ÄÄ°€¸Àà¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥É‰„ ÈÐÔ°€ÄÔà°€ÄÄ°€¸Èà¤ì)ô((¹Á…ÍÍ¼µ½‰Í•ÉÙ…½•ÌÕ°°(¹½é¥¹¡„µ½‰Í•ÉÙ…½•ÌÕ°ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€…Àè€ÝÁàì(€€€µ…É¥¸è€Àì(€€€Á…‘‘¥¹œµ±•™Ðè€ÈÁÁàì)ô((¹½¹Ñ•Õ‘¼µ¥¹‘¥ÍÁ½¹¥Ù•°ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µÍ•Õ¹‘…É¥¼¤ì)ô((¹¥¹‘¥…‘½É•ÌµÁ…ÍÍ½Ìì(€€€‘¥ÍÁ±…äè™±•àì(€€€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè•¹Ñ•Èì(€€€…Àè€ÝÁàì(€€€µ…É¥¸è€ÄÑÁà€Àì)ô((¹¥¹‘¥…‘½É•ÌµÁ…ÍÍ½Ì‰ÕÑÑ½¸ì(€€€Ý¥‘Ñ è€ÄÁÁàì(€€€¡•¥¡Ðè€ÄÁÁàì(€€€Á…‘‘¥¹œè€Àì(€€€‰…­É½Õ¹èÙ…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•Èè€Àì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÔÀ”ì(€€€ÕÉÍ½ÈèÁ½¥¹Ñ•Èì)ô((¹¥¹‘¥…‘½É•ÌµÁ…ÍÍ½Ì‰ÕÑÑ½¸¹½¹±Õ¥‘¼°(¹¥¹‘¥…‘½É•ÌµÁ…ÍÍ½Ì‰ÕÑÑ½¸¹…Ñ¥Ù¼ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÁÉ¥µ…É¥„¤ì)ô((¹¥¹‘¥…‘½É•ÌµÁ…ÍÍ½Ì‰ÕÑÑ½¸¹…Ñ¥Ù¼ì(€€€Ý¥‘Ñ è€ÈÕÁàì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì)ô((¹Á…ÍÍ¼µ…½•Ìì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€Å™Èì(€€€…Àè€ÄÁÁàì)ô((¹Á…ÍÍ¼µ…½•Ì‰ÕÑÑ½¸°(¹µ½‘¼µ½é¥¹¡„™½½Ñ•È‰ÕÑÑ½¸ì(€€€µ¥¸µ¡•¥¡Ðè€ÐáÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÅÁàì(€€€™½¹ÐµÝ•¥¡Ðè€äÀÀì(€€€ÕÉÍ½ÈèÁ½¥¹Ñ•Èì)ô((¹Á…ÍÍ¼µ…½•Ì‰ÕÑÑ½¸é±…ÍÐµ¡¥±°(¹µ½‘¼µ½é¥¹¡„™½½Ñ•È‰ÕÑÑ½¸é±…ÍÐµ¡¥±ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µ‰½Ñ…¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÁÉ¥µ…É¥„¤ì(€€€‰½É‘•Èµ½±½ÈèÙ…È ´µ½ÈµÁÉ¥µ…É¥„¤ì)ô((¹™¥¹…±¥é…ÈµÉ••¥Ñ„ì(€€€Ý¥‘Ñ è€ÄÀÀ”ì(€€€µ¥¸µ¡•¥¡Ðè€ÔÕÁàì(€€€µ…É¥¸µÑ½Àè€ÄáÁàì(€€€™½¹ÐµÍ¥é”è€ÄÙÁàì)ô((¹‘•ÍÁ•¹Í„µ‘¥…±½œ°(¹™¥¹…±¥é…Èµ‘¥…±½œì(€€€Ý¥‘Ñ èµ¥¸ ÜÈÁÁà°…±Œ ÄÀÀ”€´€ÈÑÁà¤¤ì(€€€µ…àµ¡•¥¡Ðè…±Œ ÄÀÁ‘Ù €´€ÌÁÁà¤ì(€€€Á…‘‘¥¹œè€ÈÁÁàì(€€€½Ù•É™±½Üè…ÕÑ¼ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”°Ù…È ´µ½Èµ…É¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÈÁÁàì(€€€‰½àµÍ¡…‘½Üè€À€ÈÑÁà€àÁÁàÉ‰„ À°€À°€À°€¸ÐÔ¤ì)ô((¹‘•ÍÁ•¹Í„µ‘¥…±½œèé‰…­‘É½À°(¹™¥¹…±¥é…Èµ‘¥…±½œèé‰…­‘É½Àì(€€€‰…­É½Õ¹èÉ‰„ À°€À°€À°€¸Ü¤ì(€€€‰…­‘É½Àµ™¥±Ñ•Èè‰±ÕÈ ÕÁà¤ì)ô((¹‘¥…±½œµÑ½Á¼ì(€€€‘¥ÍÁ±…äè™±•àì(€€€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì(€€€©ÕÍÑ¥™äµ½¹Ñ•¹ÐèÍÁ…”µ‰•ÑÝ••¸ì(€€€µ…É¥¸µ‰½ÑÑ½´è€áÁàì)ô((¹‘¥…±½œµÑ½Á¼ Èì(€€€µ…É¥¸µÑ½Àè€ÍÁàì(€€€™½¹ÐµÍ¥é”è€ÈÝÁàì)ô((¹‘¥…±½œµÑ½Á¼‰ÕÑÑ½¸ì(€€€Ý¥‘Ñ è€ÐÉÁàì(€€€¡•¥¡Ðè€ÐÉÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÉÁàì(€€€™½¹ÐµÍ¥é”è€ÈÕÁàì)ô((¹‘•ÍÁ•¹Í„µ‘¥…±½œ€øÀì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µÍ•Õ¹‘…É¥¼¤ì)ô((¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€ÄÌÁÁà€ÄÈÁÁà…ÕÑ¼ì(€€€…±¥¸µ¥Ñ•µÌè•¹ì(€€€…Àè€åÁàì(€€€µ…É¥¸è€ÄÝÁà€Àì(€€€Á…‘‘¥¹œè€ÄÍÁàì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÍÁàì)ô((¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„±…‰•°ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€…Àè€ÕÁàì(€€€™½¹ÐµÍ¥é”è€ÄÅÁàì(€€€™½¹ÐµÝ•¥¡Ðè€äÀÀì)ô((¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„¥¹ÁÕÐ°(¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„Í•±•Ðì(€€€Ý¥‘Ñ è€ÄÀÀ”ì(€€€µ¥¸µ¡•¥¡Ðè€ÐÉÁàì(€€€Á…‘‘¥¹œè€À€ÄÁÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”°Ù…È ´µ½Èµ…É¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€åÁàì)ô((¹¥Ñ•´µ‘•ÍÁ•¹Í„€øÍÁ…¸ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€Ý¥‘Ñ è€ÈáÁàì(€€€¡•¥¡Ðè€ÈáÁàì(€€€Á±…”µ¥Ñ•µÌè•¹Ñ•Èì(€€€½±½ÈèÙ…È ´µ½ÈµÍÕ•ÍÍ¼°Ù…È ´µ½ÈµÙ•É‘”¤¤ì(€€€‰…­É½Õ¹èÉ‰„ ÌÐ°€ÄäÜ°€äÐ°€¸Ä¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€áÁàì)ô((¹¥Ñ•´µ‘•ÍÁ•¹Í„µ…µÁ½Ìì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à ÄØÁÁà°€Å™È¤µ¥¹µ…à ÄÌÁÁà°€¸ÐÕ™È¤µ¥¹µ…à ÄÀÕÁà°€¸Í™È¤ì(€€€…Àè€áÁàì)ô((¹¥Ñ•´µ‘•ÍÁ•¹Í„µ½¹ÑÉ½±•Ìì(€€€‘¥ÍÁ±…äè™±•àì(€€€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì(€€€…Àè€ÙÁàì)ô((¹¥Ñ•´µ‘•ÍÁ•¹Í„µ½¹ÑÉ½±•Ì¥¹ÁÕÐì(€€€Ý¥‘Ñ è€àÑÁàì(€€€µ¥¸µ¡•¥¡Ðè€ÌáÁàì(€€€Á…‘‘¥¹œè€À€áÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€áÁàì)ô((¹¥Ñ•´µ‘•ÍÁ•¹Í„µ½¹ÑÉ½±•Ì‰ÕÑÑ½¸ì(€€€µ¥¸µ¡•¥¡Ðè€ÐÁÁàì(€€€Á…‘‘¥¹œè€ÝÁà€ÄÁÁàì(€€€½±½ÈèÙ…È ´µ½Èµ‘•ÍÑ…ÅÕ”¤ì(€€€‰…­É½Õ¹èÑÉ…¹ÍÁ…É•¹Ðì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€áÁàì(€€€™½¹ÐµÝ•¥¡Ðè€àÀÀì)ô((¹¥Ñ•´µ‘•ÍÁ•¹Í„µ½¹ÑÉ½±•Ì‰ÕÑÑ½¸é±…ÍÐµ¡¥±ì(€€€½±½ÈèÙ…È ´µ½ÈµÁ•É¥¼°Ù…È ´µ½ÈµÙ•Éµ•±¡¼¤¤ì)ô((¹µ•¹Í…•´µ‘•ÍÁ•¹Í„é¹½Ð é•µÁÑä¤ì(€€€µ…É¥¸è€áÁà€Àì(€€€Á…‘‘¥¹œè€ÄÁÁà€ÄÉÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µÍ•Õ¹‘…É¥¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÁÁàì)ô((¹•ÍÑ…‘¼µÙ…é¥¼¹½µÁ…Ñ¼ì(€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€µ…É¥¸è€Àì(€€€Á…‘‘¥¹œè€ÄÉÁàì)ô((¹™¥¹…±¥é…Èµ‘¥…±½œì(€€€Ý¥‘Ñ èµ¥¸ ÐØÁÁà°…±Œ ÄÀÀ”€´€ÈÑÁà¤¤ì(€€€Ñ•áÐµ…±¥¸è•¹Ñ•Èì)ô((¹™¥¹…±¥é…Èµ¥½¹”ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€Ý¥‘Ñ è€ØÉÁàì(€€€¡•¥¡Ðè€ØÉÁàì(€€€µ…É¥¸è€À…ÕÑ¼€ÄÉÁàì(€€€Á±…”µ¥Ñ•µÌè•¹Ñ•Èì(€€€½±½ÈèÙ…È ´µ½ÈµÍÕ•ÍÍ¼°Ù…È ´µ½ÈµÙ•É‘”¤¤ì(€€€‰…­É½Õ¹èÉ‰„ ÌÐ°€ÄäÜ°€äÐ°€¸ÄÈ¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥É‰„ ÌÐ°€ÄäÜ°€äÐ°€¸ÌÔ¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÔÀ”ì(€€€™½¹ÐµÍ¥é”è€ÈáÁàì)ô((¹™¥¹…±¥é…Èµ‘¥…±½œÀì(€€€µ…É¥¸è€åÁà€À€ÄÝÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µÍ•Õ¹‘…É¥¼¤ì)ô((¹™¥¹…±¥é…Èµ‘¥…±½œ€ø‘¥Øé±…ÍÐµ¡¥±ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€Å™Èì(€€€…Àè€åÁàì)ô((¹™¥¹…±¥é…Èµ‘¥…±½œ‰ÕÑÑ½¸é±…ÍÐµ¡¥±ì(€€€µ¥¸µ¡•¥¡Ðè€ÐÑÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÅÁàì(€€€™½¹ÐµÝ•¥¡Ðè€äÀÀì)ô((¹µ½‘¼µ½é¥¹¡„ì(€€€Á½Í¥Ñ¥½¸è™¥á•ì(€€€èµ¥¹‘•àè€ÌÀÀÀì(€€€¥¹Í•Ðè€Àì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µÉ½ÝÌè…ÕÑ¼€Å™È…ÕÑ¼ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½Èµ™Õ¹‘¼¤ì)ô((¹µ½‘¼µ½é¥¹¡…m¡¥‘‘•¹tì(€€€‘¥ÍÁ±…äè¹½¹”ì)ô((¹µ½‘¼µ½é¥¹¡„¡•…‘•Èì(€€€‘¥ÍÁ±…äè™±•àì(€€€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì(€€€©ÕÍÑ¥™äµ½¹Ñ•¹ÐèÍÁ…”µ‰•ÑÝ••¸ì(€€€…Àè€ÄÕÁàì(€€€Á…‘‘¥¹œè€ÄáÁà±…µÀ ÄÙÁà°€ÑÙÜ°€ÐÉÁà¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”°Ù…È ´µ½Èµ…É¤¤ì(€€€‰½É‘•Èµ‰½ÑÑ½´è€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì)ô((¹µ½‘¼µ½é¥¹¡„¡•…‘•È€ø‘¥Øì(€€€‘¥ÍÁ±…äèÉ¥ì)ô((¹µ½‘¼µ½é¥¹¡„¡•…‘•È‰ÕÑÑ½¸ì(€€€Ý¥‘Ñ è€ÔÉÁàì(€€€¡•¥¡Ðè€ÔÉÁàì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÑÁàì(€€€™½¹ÐµÍ¥é”è€ÈåÁàì)ô((¹µ½‘¼µ½é¥¹¡„µ…¥¸ì(€€€Ý¥‘Ñ èµ¥¸ äÈÁÁà°€ÄÀÀ”¤ì(€€€µ…É¥¸è€À…ÕÑ¼ì(€€€Á…‘‘¥¹œè±…µÀ ÈÁÁà°€ÑÙÜ°€ÐÉÁà¤ì(€€€½Ù•É™±½Üµäè…ÕÑ¼ì)ô((¹½é¥¹¡„µÁÉ½É•ÍÍ¼ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€…Àè€ÄÁÁàì(€€€µ…É¥¸µ‰½ÑÑ½´è€ÄÉÁàì)ô((¹½é¥¹¡„µÁÉ½É•ÍÍ¼€ø‘¥Øé™¥ÉÍÐµ¡¥±ì(€€€‘¥ÍÁ±…äè™±•àì(€€€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì(€€€©ÕÍÑ¥™äµ½¹Ñ•¹ÐèÍÁ…”µ‰•ÑÝ••¸ì(€€€…Àè€ÄÉÁàì)ô((¹Õµ•É½5½‘½½é¥¹¡„ì(€€€½±½ÈèÙ…È ´µ½Èµ‘•ÍÑ…ÅÕ”¤ì(€€€™½¹ÐµÍ¥é”è€ÄÙÁàì(€€€™½¹ÐµÝ•¥¡Ðè€äÀÀì)ô((•ÍÑ…‘½A…ÍÍ½½é¥¹¡„ì(€€€½±½ÈèÙ…È ´µ½ÈµÍÕ•ÍÍ¼°Ù…È ´µ½ÈµÙ•É‘”¤¤ì(€€€™½¹ÐµÝ•¥¡Ðè€àÀÀì)ô((¹½é¥¹¡„µÁÉ½É•ÍÍ¼€ø‘¥Øé±…ÍÐµ¡¥±ì(€€€¡•¥¡Ðè€áÁàì(€€€½Ù•É™±½Üè¡¥‘‘•¸ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì)ô((¹½é¥¹¡„µÁÉ½É•ÍÍ¼¤ì(€€€‘¥ÍÁ±…äè‰±½¬ì(€€€Ý¥‘Ñ è€Àì(€€€¡•¥¡Ðè€ÄÀÀ”ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÁÉ¥µ…É¥„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè¥¹¡•É¥Ðì(€€€ÑÉ…¹Í¥Ñ¥½¸èÝ¥‘Ñ €¸ÈÕÌ•…Í”ì)ô((¹½é¥¹¡„µ½¹ÍÕ±Ñ…Ìì(€€€‘¥ÍÁ±…äè™±•àì(€€€™±•àµÝÉ…ÀèÝÉ…Àì(€€€…Àè€áÁàì(€€€µ…É¥¸è€ÄÑÁà€À€ÈÁÁàì)ô((¹½é¥¹¡„µ½¹ÍÕ±Ñ…Ì‰ÕÑÑ½¸ì(€€€µ¥¸µ¡•¥¡Ðè€ÐÉÁàì(€€€Á…‘‘¥¹œè€áÁà€ÄÍÁàì(€€€½±½ÈèÙ…È ´µ½Èµ‘•ÍÑ…ÅÕ”¤ì(€€€‰…­É½Õ¹èÑÉ…¹ÍÁ…É•¹Ðì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÅÁàì(€€€™½¹ÐµÝ•¥¡Ðè€àÀÀì)ô((¹½é¥¹¡„µ•Ñ…Á„ì(€€€Á…‘‘¥¹œè±…µÀ ÄáÁà°€ÑÙÜ°€ÌÑÁà¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”°Ù…È ´µ½Èµ…É¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄáÁàì)ô((¹½é¥¹¡„µ•Ñ…Á„€øÍµ…±°ì(€€€½±½ÈèÙ…È ´µ½Èµ‘•ÍÑ…ÅÕ”¤ì)ô((¹µ½‘¼µ½é¥¹¡„€¹½é¥¹¡„µ•Ñ…Á„€ø Äì(€€€µ…É¥¸è€ÝÁà€À€áÁàì(€€€™½¹ÐµÍ¥é”è±…µÀ ÌÁÁà°€ÙÙÜ°€ÔÁÁà¤ì)ô((¹µ½‘¼µ½é¥¹¡„€¹½é¥¹¡„µÉ•ÍÕµ¼ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µÍ•Õ¹‘…É¥¼¤ì(€€€™½¹ÐµÍ¥é”è±…µÀ ÄÙÁà°€È¸ÕÙÜ°€ÈÁÁà¤ì(€€€±¥¹”µ¡•¥¡Ðè€Ä¸ÔÔì)ô((¹½é¥¹¡„µ‰±½¼ì(€€€µ…É¥¸µÑ½Àè€ÈÑÁàì(€€€Á…‘‘¥¹œµÑ½Àè€ÈÁÁàì(€€€‰½É‘•ÈµÑ½Àè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì)ô((¹½é¥¹¡„µ‰±½¼ È°(¹½é¥¹¡„µ½µ¼µÍ…‰•È È°(¹½é¥¹¡„µ½‰Í•ÉÙ…½•Ì Èì(€€€µ…É¥¸µ‰½ÑÑ½´è€ÄÉÁàì(€€€½±½ÈèÙ…È ´µ½Èµ‘•ÍÑ…ÅÕ”¤ì(€€€™½¹ÐµÍ¥é”è€ÄÑÁàì(€€€±•ÑÑ•ÈµÍÁ…¥¹œè€¸ÀÙ•´ì(€€€Ñ•áÐµÑÉ…¹Í™½É´èÕÁÁ•É…Í”ì)ô((¹½é¥¹¡„µÕÍ¼µ…ÑÕ…°€¹±¥ÍÑ„µÕÍ¼µÁ…ÍÍ¼ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì)ô((¹½é¥¹¡„µ½µ¼µ™…é•È½°ì(€€€…Àè€ÄÙÁàì(€€€™½¹ÐµÍ¥é”è±…µÀ ÄÝÁà°€È¸ÕÙÜ°€ÈÅÁà¤ì)ô((¹½é¥¹¡„µ½µ¼µÍ…‰•ÈÀ°(¹½é¥¹¡„µ½‰Í•ÉÙ…½•Ì±¤ì(€€€±¥¹”µ¡•¥¡Ðè€Ä¸ÔÔì)ô((¹µ½‘¼µ½é¥¹¡„™½½Ñ•Èì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€Å™Èì(€€€…Àè€ÄÍÁàì(€€€Á…‘‘¥¹œè€ÄÙÁà±…µÀ ÄÙÁà°€ÑÙÜ°€ÐÉÁà¤…±Œ ÄÙÁà€¬•¹Ø¡Í…™”µ…É•„µ¥¹Í•Ðµ‰½ÑÑ½´¤¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”°Ù…È ´µ½Èµ…É¤¤ì(€€€‰½É‘•ÈµÑ½Àè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì)ô((¹µ½‘¼µ½é¥¹¡„™½½Ñ•È‰ÕÑÑ½¸ì(€€€µ¥¸µ¡•¥¡Ðè€ØÉÁàì(€€€™½¹ÐµÍ¥é”è€ÄÝÁàì)ô((¹½¹ÍÕ±Ñ„µ½é¥¹¡„µ‘¥…±½œì(€€€Ý¥‘Ñ èµ¥¸ ØÈÁÁà°…±Œ ÄÀÀ”€´€ÈÑÁà¤¤ì(€€€µ…àµ¡•¥¡Ðè…±Œ ÄÀÁ‘Ù €´€ÌÁÁà¤ì(€€€Á…‘‘¥¹œè€ÄáÁàì(€€€½Ù•É™±½Üè…ÕÑ¼ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼¤ì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”°Ù…È ´µ½Èµ…É¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÈÁÁàì(€€€‰½àµÍ¡…‘½Üè€À€ÈÑÁà€àÁÁàÉ‰„ À°€À°€À°€¸Ô¤ì)ô((¹½¹ÍÕ±Ñ„µ½é¥¹¡„µ‘¥…±½œèé‰…­‘É½Àì(€€€‰…­É½Õ¹èÉ‰„ À°€À°€À°€¸ÜÈ¤ì)ô((¹½¹ÍÕ±Ñ„µ±¥ÍÑ„ì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€…Àè€áÁàì(€€€µ…É¥¸µÑ½Àè€ÄÕÁàì)ô((¹½¹ÍÕ±Ñ„µ±¥ÍÑ„€ø‘¥Øì(€€€‘¥ÍÁ±…äèÉ¥ì(€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè…ÕÑ¼µ¥¹µ…à À°€Å™È¤…ÕÑ¼ì(€€€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì(€€€…Àè€ÄÁÁàì(€€€Á…‘‘¥¹œè€ÄÅÁà€ÄÉÁàì(€€€‰…­É½Õ¹èÙ…È ´µ½ÈµÍÕÁ•É™¥¥”µÍ•Õ¹‘…É¥„°Ù…È ´µ½Èµ…µÁ¼¤¤ì(€€€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ½Èµ‰½É‘„¤ì(€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÅÁàì)ô((¹½¹ÍÕ±Ñ„µ±¥ÍÑ„€ø‘¥Ø€øÍÁ…¸ì(€€€½±½ÈèÙ…È ´µ½Èµ‘•ÍÑ…ÅÕ”¤ì)ô((¹½¹ÍÕ±Ñ„µ±¥ÍÑ„Íµ…±°ì(€€€½±½ÈèÙ…È ´µ½ÈµÑ•áÑ¼µÍ•Õ¹‘…É¥¼¤ì)ô()µ•‘¥„€¡µ…àµÝ¥‘Ñ è€äÈÁÁà¤ì(€€€€¹…±¥µ•¹Ñ½Ìµ…Í„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì(€€€ô((€€€€¹É••¥Ñ…ÌµÉ…‘”°(€€€€¹É••¥Ñ…ÌµÉ…‘”¹½µÁ…Ñ„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì(€€€ô((€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€Å™È€Å™Èì(€€€ô((€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„€ø‰ÕÑÑ½¸ì(€€€€€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€ô)ô()µ•‘¥„€¡µ…àµÝ¥‘Ñ è€ØÐÁÁà¤ì(€€€€¹É••¥Ñ…Ìµ…ÁÀì(€€€€€€€Á…‘‘¥¹œè€ÄÙÁà€ÄÉÁà€ÄÀÁÁàì(€€€ô((€€€€¹É••¥Ñ…Ìµ…‰•…±¡¼ì(€€€€€€€µ…É¥¸µÑ½Àè€ÈÑÁàì(€€€ô((€€€€¹ÁÉ•Á…É¼µÕ¥…‘¼µ‘•ÍÑ…ÅÕ”ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè…ÕÑ¼µ¥¹µ…à À°€Å™È¤ì(€€€€€€€Á…‘‘¥¹œè€ÄÙÁàì(€€€ô((€€€€¹ÁÉ•Á…É¼µÕ¥…‘¼µ‘•ÍÑ…ÅÕ”‰ÕÑÑ½¸ì(€€€€€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€€€€€Ý¥‘Ñ è€ÄÀÀ”ì(€€€€€€€µ¥¸µ¡•¥¡Ðè€ÔÑÁàì(€€€ô((€€€€¹É••¥Ñ…Ìµ‰ÕÍ„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè…ÕÑ¼µ¥¹µ…à À°€Å™È¤ì(€€€ô((€€€€¹É••¥Ñ…Ìµ‰ÕÍ„‰ÕÑÑ½¸ì(€€€€€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€€€€€Ý¥‘Ñ è€ÄÀÀ”ì(€€€ô((€€€€¹¥¹É•‘¥•¹Ñ•Ìµ‘•ÍÑ…ÅÕ”ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹‘•ÍÑ…ÅÕ”µ¥½¹”ì(€€€€€€€Ý¥‘Ñ è€ÐáÁàì(€€€€€€€¡•¥¡Ðè€ÐáÁàì(€€€ô((€€€€¹¥¹É•‘¥•¹Ñ•Ìµ™½É´ì(€€€€€€€É¥µ½±Õµ¸è…ÕÑ¼ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹¥¹É•‘¥•¹Ñ•Ìµ™½É´‰ÕÑÑ½¸ì(€€€€€€€Ý¥‘Ñ è€ÄÀÀ”ì(€€€ô((€€€€¹‘•ÍÁ•¹Í„µ¥¹±¥¹”µ…‰•…±¡¼°(€€€€¹Ù¥ÑÉ¥¹”µ…Ñ•½É¥„€ø¡•…‘•Èì(€€€€€€€…±¥¸µ¥Ñ•µÌèÍÑÉ•Ñ ì(€€€€€€€™±•àµ‘¥É•Ñ¥½¸è½±Õµ¸ì(€€€ô((€€€€¹…±¥µ•¹Ñ½Ìµ…Í„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹‘•ÍÁ•¹Í„µÉ•ÍÕµ¼°(€€€€¹‘•ÍÁ•¹Í„µÉ•ÍÕµ¼µ…½•Ì°(€€€€¹É••¥Ñ…Ìµ™¥±ÑÉ½Ì€ø¡•…‘•È°(€€€€¹™…Ù½É¥Ñ…ÌµÍ•…¼€ø¡•…‘•È°(€€€€¹É•ÍÕ±Ñ…‘½ÌµÉ••¥Ñ…Ì€ø¡•…‘•È°(€€€€¹¥¹É•‘¥•¹Ñ•Ìµ‘•Ñ…±¡”€ø¡•…‘•È°(€€€€¹ÕÑ•¹Í¥±¥½Ìµ‘•Ñ…±¡”€ø¡•…‘•È°(€€€€¹ÁÉ•Á…É¼µ¥¹Ñ•É…Ñ¥Ù¼€ø¡•…‘•Èì(€€€€€€€…±¥¸µ¥Ñ•µÌèÍÑÉ•Ñ ì(€€€€€€€™±•àµ‘¥É•Ñ¥½¸è½±Õµ¸ì(€€€ô((€€€€¹‘•ÍÁ•¹Í„µÉ•ÍÕµ¼µ…½•Ìì(€€€€€€€‘¥ÍÁ±…äèÉ¥ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È…ÕÑ¼ì(€€€ô((€€€€¹™¥±ÑÉ½Ìµ±¥¹¡„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€€€€€…Àè€ÄáÁàì(€€€ô((€€€€¹…Ñ•½É¥…Ìµ¡¥ÁÌì(€€€€€€€‘¥ÍÁ±…äèÉ¥ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì(€€€ô((€€€€¹…Ñ•½É¥…Ìµ¡¥ÁÌ‰ÕÑÑ½¸é™¥ÉÍÐµ¡¥±ì(€€€€€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€ô((€€€€¹™¥±ÑÉ¼µ¡¥ÁÌ‰ÕÑÑ½¸ì(€€€€€€€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè•¹Ñ•Èì(€€€ô((€€€€¹É••¥Ñ…ÌµÉ…‘”°(€€€€¹É••¥Ñ…ÌµÉ…‘”¹½µÁ…Ñ„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹É••¥Ñ„µ…Éì(€€€€€€€µ¥¸µ¡•¥¡Ðè€Àì(€€€ô((€€€€¹‘•Ñ…±¡”µ½¹Ñ•Õ‘¼ì(€€€€€€€Ý¥‘Ñ è…±Œ ÄÀÀ”€´€ÈÑÁà¤ì(€€€€€€€Á…‘‘¥¹œµÑ½Àè€ÈÁÁàì(€€€ô((€€€€¹‘•Ñ…±¡”µ…‰•…±¡¼ì(€€€€€€€…±¥¸µ¥Ñ•µÌèÍÑ…ÉÐì(€€€ô((€€€€¥½¹•I••¥Ñ…•Ñ…±¡”ì(€€€€€€€Ý¥‘Ñ è€ÔáÁàì(€€€€€€€¡•¥¡Ðè€ÔáÁàì(€€€€€€€‰½É‘•ÈµÉ…‘¥ÕÌè€ÄÙÁàì(€€€€€€€™½¹ÐµÍ¥é”è€ÈáÁàì(€€€ô((€€€€¹É••¥Ñ„µµ•ÑÉ¥…Ìì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì(€€€ô((€€€€¹¥Ñ•´µ¹••ÍÍ…É¥¼°(€€€€¹¥Ñ•´µ™…±Ñ…¹Ñ”°(€€€€¹¥Ñ•´µÅÕ…¹Ñ¥‘…‘”µ‘•Í½¹¡•¥‘„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè…ÕÑ¼µ¥¹µ…à À°€Å™È¤ì(€€€ô((€€€€¹¥Ñ•´µ¹••ÍÍ…É¥¼€øÍÑÉ½¹œ°(€€€€¹¥Ñ•´µ™…±Ñ…¹Ñ”€øÍÑÉ½¹œ°(€€€€¹¥Ñ•´µÅÕ…¹Ñ¥‘…‘”µ‘•Í½¹¡•¥‘„€øÍÑÉ½¹œì(€€€€€€€É¥µ½±Õµ¸è€Èì(€€€€€€€Ñ•áÐµ…±¥¸è±•™Ðì(€€€ô((€€€€¹Á…ÍÍ¼µ…ÑÕ…°ì(€€€€€€€µ¥¸µ¡•¥¡Ðè€Àì(€€€€€€€Á…‘‘¥¹œè€ÄÝÁàì(€€€ô((€€€€¹ÕÑ•¹Í¥±¥½ÌµÉ…‘”°(€€€€¹±¥ÍÑ„µÕÍ¼µÁ…ÍÍ¼°(€€€€¹½é¥¹¡„µÕÍ¼µ…ÑÕ…°€¹±¥ÍÑ„µÕÍ¼µÁ…ÍÍ¼°(€€€€¹Á…ÍÍ¼µµ•Ñ…‘…‘½Ì°(€€€€¹½é¥¹¡„µµ•Ñ…‘…‘½Ìì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€Å™Èì(€€€ô((€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„±…‰•°é™¥ÉÍÐµ¡¥±°(€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„€ø‰ÕÑÑ½¸ì(€€€€€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€ô((€€€€¹¥Ñ•´µ‘•ÍÁ•¹Í„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè…ÕÑ¼µ¥¹µ…à À°€Å™È¤ì(€€€ô((€€€€¹¥Ñ•´µ‘•ÍÁ•¹Í„µ…µÁ½Ìì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹¥Ñ•´µ‘•ÍÁ•¹Í„µ½¹ÑÉ½±•Ìì(€€€€€€€É¥µ½±Õµ¸è€Ä€¼€´Äì(€€€€€€€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè™±•àµ•¹ì(€€€ô((€€€€¹µ½‘¼µ½é¥¹¡„µ…¥¸ì(€€€€€€€Á…‘‘¥¹œè€ÄÙÁà€ÄÉÁà€ÈÑÁàì(€€€ô((€€€€¹½é¥¹¡„µÁÉ½É•ÍÍ¼€ø‘¥Øé™¥ÉÍÐµ¡¥±ì(€€€€€€€…±¥¸µ¥Ñ•µÌè™±•àµÍÑ…ÉÐì(€€€€€€€™±•àµ‘¥É•Ñ¥½¸è½±Õµ¸ì(€€€€€€€…Àè€ÍÁàì(€€€ô((€€€€¹½é¥¹¡„µ½¹ÍÕ±Ñ…Ìì(€€€€€€€‘¥ÍÁ±…äèÉ¥ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™È€Å™Èì(€€€ô((€€€€¹½é¥¹¡„µ½¹ÍÕ±Ñ…Ì‰ÕÑÑ½¸ì(€€€€€€€µ¥¸µ¡•¥¡Ðè€ÐáÁàì(€€€ô((€€€€¹½é¥¹¡„µ•Ñ…Á„ì(€€€€€€€Á…‘‘¥¹œè€ÄÝÁàì(€€€ô((€€€€¹µ½‘¼µ½é¥¹¡„€¹½é¥¹¡„µ•Ñ…Á„€ø Äì(€€€€€€€™½¹ÐµÍ¥é”è±…µÀ ÌÁÁà°€åÙÜ°€ÐÉÁà¤ì(€€€ô((€€€€¹½é¥¹¡„µ½µ¼µ™…é•È½°ì(€€€€€€€™½¹ÐµÍ¥é”è€ÄáÁàì(€€€ô((€€€€¹µ½‘¼µ½é¥¹¡„™½½Ñ•È‰ÕÑÑ½¸ì(€€€€€€€µ¥¸µ¡•¥¡Ðè€ØÉÁàì(€€€€€€€™½¹ÐµÍ¥é”è€ÄÝÁàì(€€€ô)ô()µ•‘¥„€¡µ…àµÝ¥‘Ñ è€ÌäÁÁà¤ì(€€€€¹…Ñ•½É¥…Ìµ¡¥ÁÌ°(€€€€¹™¥¹…±¥é…Èµ‘¥…±½œ€ø‘¥Øé±…ÍÐµ¡¥±ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹…Ñ•½É¥…Ìµ¡¥ÁÌ‰ÕÑÑ½¸é™¥ÉÍÐµ¡¥±ì(€€€€€€€É¥µ½±Õµ¸è…ÕÑ¼ì(€€€ô((€€€€¹‘•ÍÁ•¹Í„µÉ•ÍÕµ¼µ…½•Ìì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„ì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô((€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„±…‰•°é™¥ÉÍÐµ¡¥±°(€€€€¹¹½Ù¼µ¥Ñ•´µ‘•ÍÁ•¹Í„€ø‰ÕÑÑ½¸ì(€€€€€€€É¥µ½±Õµ¸è…ÕÑ¼ì(€€€ô((€€€€¹½é¥¹¡„µ½¹ÍÕ±Ñ…Ìì(€€€€€€€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè€Å™Èì(€€€ô)ô()µ•‘¥„€¡ÁÉ•™•ÉÌµÉ•‘Õ•µµ½Ñ¥½¸èÉ•‘Õ”¤ì(€€€€¹É••¥Ñ„µ…É°(€€€€¹Á…ÍÍ¼µÁÉ½É•ÍÍ¼¤ì(€€€€€€€ÑÉ…¹Í¥Ñ¥½¸è¹½¹”ì(€€€ô)ô

@@ -12,17 +12,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
 
 import br.com.minhalista.lista.ListaCompraResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/api/receitas")
+@Validated
 public class ReceitaController {
 
     private final ReceitaService service;
+    private final CatalogoReceitasService catalogoService;
 
-    public ReceitaController(ReceitaService service) {
+    public ReceitaController(ReceitaService service, CatalogoReceitasService catalogoService) {
         this.service = service;
+        this.catalogoService = catalogoService;
     }
 
     @GetMapping
@@ -35,6 +41,20 @@ public class ReceitaController {
         @RequestParam(defaultValue = "false") boolean somenteDisponiveis
     ) {
         return service.buscar(busca, ingredientes, categoria, tipo, tempo, somenteDisponiveis);
+    }
+
+    @GetMapping("/catalogo")
+    public List<ReceitaResponse> buscarCatalogo(
+        @RequestParam @Size(max = 100) String busca
+    ) {
+        return catalogoService.buscarEImportar(busca).stream().map(service::obter).toList();
+    }
+
+    @PostMapping("/gerar")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ReceitaResponse gerar(@Valid @RequestBody GerarReceitaRequest request) {
+        String id = catalogoService.gerarEImportar(request.busca(), request.despensa());
+        return service.obter(id);
     }
 
     @GetMapping("/favoritas")

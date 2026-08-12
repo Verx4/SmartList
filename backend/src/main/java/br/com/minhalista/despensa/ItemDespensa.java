@@ -42,8 +42,14 @@ public class ItemDespensa {
     @Column(nullable = false, precision = 14, scale = 3)
     private BigDecimal quantidade = BigDecimal.ZERO;
 
+    @Column(name = "quantidade_conhecida", nullable = false, columnDefinition = "boolean default true")
+    private boolean quantidadeConhecida = true;
+
     @Column(nullable = false, length = 30)
     private String unidade;
+
+    @Column(nullable = false, length = 80, columnDefinition = "varchar(80) default 'Alimento'")
+    private String categoria = "Alimento";
 
     @Column(name = "atualizado_em", nullable = false)
     private Instant atualizadoEm;
@@ -63,7 +69,11 @@ public class ItemDespensa {
     public void setChaveProduto(String chaveProduto) { this.chaveProduto = chaveProduto; }
     public BigDecimal getQuantidade() { return quantidade; }
     public void setQuantidade(BigDecimal quantidade) { this.quantidade = quantidade; }
+    public boolean isQuantidadeConhecida() { return quantidadeConhecida; }
+    public void setQuantidadeConhecida(boolean quantidadeConhecida) { this.quantidadeConhecida = quantidadeConhecida; }
     public String getUnidade() { return unidade; }
     public void setUnidade(String unidade) { this.unidade = unidade; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
     public Instant getAtualizadoEm() { return atualizadoEm; }
 }

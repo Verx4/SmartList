@@ -49,6 +49,9 @@ public class ReceitaDataInitializer implements ApplicationRunner {
         receita.setTempoMinutos(origem.tempoMinutos());
         receita.setDificuldade(origem.dificuldade());
         receita.setRendimento(origem.rendimento());
+        receita.setOrigem("SMART_LIST");
+        receita.setFonte("Smart List");
+        receita.setReferenciaExterna(null);
         receita.getUtensilios().clear();
         receita.getUtensilios().addAll(lista(origem.utensilios()));
         receita.getIngredientes().clear();

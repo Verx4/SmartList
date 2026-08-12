@@ -19,7 +19,9 @@ public final class NormalizadorIngrediente {
         Map.entry("mucarela", "queijo"),
         Map.entry("goma de tapioca", "tapioca"),
         Map.entry("flocos de milho", "flocao de milho"),
-        Map.entry("oleo", "azeite")
+        Map.entry("oleo", "azeite"),
+        Map.entry("macaxeira", "mandioca"),
+        Map.entry("aipim", "mandioca")
     );
 
     private NormalizadorIngrediente() {

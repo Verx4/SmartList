@@ -9,7 +9,9 @@ public record ItemDespensaResponse(
     String nome,
     String chaveProduto,
     BigDecimal quantidade,
+    boolean quantidadeConhecida,
     String unidade,
+    String categoria,
     Instant atualizadoEm
 ) {
     public static ItemDespensaResponse de(ItemDespensa item) {
@@ -17,8 +19,10 @@ public record ItemDespensaResponse(
             item.getId(),
             item.getNome(),
             item.getChaveProduto(),
-            item.getQuantidade(),
+            item.isQuantidadeConhecida() ? item.getQuantidade() : null,
+            item.isQuantidadeConhecida(),
             item.getUnidade(),
+            item.getCategoria(),
             item.getAtualizadoEm()
         );
     }

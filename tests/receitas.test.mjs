@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
+    agruparSugestoes,
     avaliarReceita,
     criarInventario,
     descontarDoEstoque,
@@ -11,6 +12,11 @@ import {
     proximoPasso,
     somarAoEstoque
 } from "../js/receitas-core.js";
+import {
+    classificarProduto,
+    filtrarAlimentos,
+    TIPOS_PRODUTO
+} from "../js/classificacao-produtos.js";
 
 const receitas = JSON.parse(await readFile(new URL("../data/receitas.json", import.meta.url), "utf8"));
 const tropeiro = receitas.find(receita => receita.id === "feijao-tropeiro");
@@ -168,4 +174,77 @@ test("Preparo guiado — modo cozinha oferece progresso e consultas sem perder a
     assert.match(js, /estadoPassoCozinha/);
     assert.match(js, /abrirConsultaCozinha/);
     assert.match(css, /\.modo-cozinha footer button[\s\S]*min-height: 62px/);
+});
+
+test("Teste 74 — compra finalizada mantém o histórico completo e envia somente alimentos à despensa", () => {
+    const compraCompleta = [
+        { nome: "Arroz", categoria: "🌾 Grãos", quantidade: 2, unidade: "kg" },
+        { nome: "Detergente", categoria: "🧼 Limpeza", quantidade: 1, unidade: "unidade" },
+        { nome: "Shampoo", categoria: "🪥 Higiene", quantidade: 1, unidade: "unidade" },
+        { nome: "Suco pronto", categoria: "🥤 Bebidas", quantidade: 2, unidade: "unidade" }
+    ];
+    const itensDespensa = filtrarAlimentos(compraCompleta);
+    assert.equal(compraCompleta.length, 4);
+    assert.deepEqual(itensDespensa.map(item => item.nome), ["Arroz"]);
+});
+
+test("Teste 75 — classificação separa alimento, bebida, limpeza, higiene e utilidade doméstica", () => {
+    assert.equal(classificarProduto({ nome: "Feijão", categoria: "🌾 Grãos" }).tipo, TIPOS_PRODUTO.ALIMENTO);
+    assert.equal(classificarProduto({ nome: "Refrigerante", categoria: "🥤 Bebidas" }).tipo, TIPOS_PRODUTO.BEBIDA);
+    assert.equal(classificarProduto({ nome: "Detergente", categoria: "🧼 Limpeza" }).tipo, TIPOS_PRODUTO.LIMPEZA);
+    assert.equal(classificarProduto({ nome: "Shampoo", categoria: "🪥 Higiene" }).tipo, TIPOS_PRODUTO.HIGIENE);
+    assert.equal(classificarProduto({ nome: "Papel alumínio", categoria: "🔌 Utilidades" }).tipo, TIPOS_PRODUTO.DOMESTICO);
+});
+
+test("Teste 76 — alimento sem quantidade permanece presente e não é tratado como estoque zero", () => {
+    const estoque = somarAoEstoque([], [{ nome: "Ovos", quantidade: null, unidade: "unidade" }]);
+    const resultado = avaliarReceita(tropeiro, criarInventario(estoque));
+    const ovos = resultado.itens.find(item => item.nome === "Ovos");
+    assert.equal(ovos.presente, true);
+    assert.equal(ovos.quantidadeConhecida, false);
+    assert.ok(resultado.quantidadesDesconhecidas.some(item => item.nome === "Ovos"));
+    assert.ok(!resultado.faltantes.some(item => item.nome === "Ovos"));
+});
+
+test("Teste 77 — adições repetidas não duplicam o alimento da despensa", () => {
+    const estoque = somarAoEstoque([], [
+        { nome: "Arroz", quantidade: 1, unidade: "kg" },
+        { nome: "arroz", quantidade: 500, unidade: "g" }
+    ]);
+    assert.equal(estoque.filter(item => item.chaveProduto === "arroz").length, 1);
+    assert.equal(estoque[0].quantidade, 1500);
+});
+
+test("Teste 78 — página inicial limita sugestões a três por categoria sem repetir receita", () => {
+    const grupos = agruparSugestoes(receitas, criarInventario([], []), 3);
+    assert.ok(Object.values(grupos).every(grupo => grupo.length <= 3));
+    const ids = Object.values(grupos).flat().map(item => item.receita.id);
+    assert.equal(new Set(ids).size, ids.length);
+});
+
+test("Teste 79 — busca encontra por nome, ingrediente e pequena diferença de digitação", () => {
+    const inventario = criarInventario([], []);
+    assert.ok(filtrarEOrdenarReceitas(receitas, inventario, { busca: "tropeiro" }).some(item => item.receita.id === "feijao-tropeiro"));
+    assert.ok(filtrarEOrdenarReceitas(receitas, inventario, { busca: "charque" }).some(item => item.receita.id === "feijao-tropeiro"));
+    assert.ok(filtrarEOrdenarReceitas(receitas, inventario, { busca: "charquf" }).some(item => item.receita.id === "feijao-tropeiro"));
+});
+
+test("Teste 80 — falta parcial usa somente a diferença necessária", () => {
+    const resultado = avaliarReceita(tropeiro, criarInventario([
+        { nome: "Ovos", quantidade: 2, unidade: "unidade" }
+    ]));
+    const ovos = resultado.faltantes.find(item => item.nome === "Ovos");
+    assert.equal(ovos.falta, 2);
+    const lista = integrarFaltantesNaLista([{ nome: "Ovos", quantidade: 1, unidade: "unidade" }], [ovos]);
+    assert.equal(lista.find(item => item.nome === "Ovos").quantidade, 3);
+});
+
+test("Teste 81 — finalizar desconta apenas quantidades conhecidas e recalcula sem negativo", () => {
+    const estoque = [
+        { nome: "Ovos", quantidade: 5, quantidadeConhecida: true, unidade: "unidade" },
+        { nome: "Cebola", quantidade: null, quantidadeConhecida: false, unidade: "unidade" }
+    ];
+    const final = descontarDoEstoque(estoque, tropeiro.ingredientes);
+    assert.equal(final.find(item => item.nome === "Ovos").quantidade, 1);
+    assert.equal(final.find(item => item.nome === "Cebola").quantidade, null);
 });

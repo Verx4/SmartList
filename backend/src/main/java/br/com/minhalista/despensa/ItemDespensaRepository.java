@@ -10,4 +10,5 @@ public interface ItemDespensaRepository extends JpaRepository<ItemDespensa, UUID
     List<ItemDespensa> findByUsuarioIdOrderByNomeAsc(UUID usuarioId);
     Optional<ItemDespensa> findByIdAndUsuarioId(UUID id, UUID usuarioId);
     Optional<ItemDespensa> findByUsuarioIdAndChaveProdutoAndUnidade(UUID usuarioId, String chaveProduto, String unidade);
+    Optional<ItemDespensa> findFirstByUsuarioIdAndChaveProduto(UUID usuarioId, String chaveProduto);
 }
