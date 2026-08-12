@@ -5,10 +5,14 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
@@ -43,6 +47,12 @@ public class Receita {
 
     @Column(nullable = false, length = 80)
     private String rendimento;
+
+    @ElementCollection
+    @CollectionTable(name = "receitas_utensilios", joinColumns = @JoinColumn(name = "receita_id"))
+    @OrderColumn(name = "ordem")
+    @Column(name = "utensilio", nullable = false, length = 160)
+    private List<String> utensilios = new ArrayList<>();
 
     @OneToMany(mappedBy = "receita", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("ordem ASC")
@@ -80,6 +90,7 @@ public class Receita {
     public void setDificuldade(String dificuldade) { this.dificuldade = dificuldade; }
     public String getRendimento() { return rendimento; }
     public void setRendimento(String rendimento) { this.rendimento = rendimento; }
+    public List<String> getUtensilios() { return utensilios; }
     public List<IngredienteReceita> getIngredientes() { return ingredientes; }
     public List<PassoReceita> getPassos() { return passos; }
 }

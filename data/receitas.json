@@ -9,6 +9,7 @@
     "tempoMinutos": 45,
     "dificuldade": "M√©dia",
     "rendimento": "4 por√ß√µes",
+    "utensilios": ["1 panela de press√£o ou panela m√©dia com tampa", "1 panela ampla", "1 panela pequena", "1 escorredor", "1 faca", "1 t√°bua de corte", "1 colher de madeira", "2 tigelas"],
     "ingredientes": [
       { "nome": "Feij√£o", "quantidade": 500, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Couve", "quantidade": 1, "unidade": "ma√ßo", "obrigatorio": true, "basico": false },
@@ -18,16 +19,94 @@
       { "nome": "Charque", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Cebola", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false },
+      { "nome": "√ìleo", "quantidade": 15, "unidade": "ml", "obrigatorio": false, "basico": true },
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Prepare o feij√£o", "descricao": "Cozinhe o feij√£o at√© ficar macio, mas sem desmanchar. Escorra e reserve." },
-      { "titulo": "Prepare as carnes", "descricao": "Doure a calabresa e a charque dessalgada em uma panela ampla." },
-      { "titulo": "Refogue alho e cebola", "descricao": "Junte o alho e a cebola e refogue at√© ficarem levemente dourados." },
-      { "titulo": "Misture o feij√£o", "descricao": "Adicione o feij√£o preparado e misture delicadamente." },
-      { "titulo": "Adicione a couve", "descricao": "Acrescente a couve fatiada e cozinhe apenas at√© murchar." },
-      { "titulo": "Adicione a farinha", "descricao": "Incorpore a farinha aos poucos at√© atingir a textura desejada." },
-      { "titulo": "Finalize", "descricao": "Junte os ovos cozidos ou mexidos, ajuste o sal e sirva." }
+      {
+        "titulo": "Cozinhe o feij√£o",
+        "descricao": "Deixe o feij√£o macio, mas ainda inteiro, para que n√£o desmanche na mistura final.",
+        "ingredientes": [{ "nome": "Feij√£o", "quantidade": 500, "unidade": "g" }],
+        "utensilios": ["1 panela de press√£o ou panela m√©dia com tampa", "1 escorredor", "1 tigela"],
+        "continueUsando": [],
+        "acoes": ["Confira se os gr√£os est√£o limpos e lave-os em √°gua corrente.", "Coloque o feij√£o na panela, cubra com √°gua e tampe.", "Cozinhe at√© os gr√£os ficarem macios, acompanhando o tempo indicado para a panela utilizada.", "Desligue o fogo, aguarde toda a press√£o sair naturalmente se usar panela de press√£o e s√≥ ent√£o abra.", "Escorra o excesso de l√≠quido e reserve o feij√£o em uma tigela."],
+        "tempoAproximado": "Cerca de 15 a 25 minutos ap√≥s atingir press√£o; em panela comum, o tempo pode ser maior",
+        "intensidadeFogo": "M√©dio; reduza ap√≥s a panela atingir press√£o",
+        "pontoEsperado": "O gr√£o deve estar macio ao ser pressionado, mas manter o formato e n√£o virar pur√™.",
+        "observacoes": ["Nunca force a abertura da panela de press√£o. Aguarde a press√£o sair completamente."]
+      },
+      {
+        "titulo": "Prepare os ingredientes",
+        "descricao": "Deixe carnes, verduras, temperos e ovos prontos antes de come√ßar o refogado.",
+        "ingredientes": [{ "nome": "Calabresa", "quantidade": 200, "unidade": "g" }, { "nome": "Charque", "quantidade": 150, "unidade": "g" }, { "nome": "Couve", "quantidade": 1, "unidade": "ma√ßo" }, { "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }, { "nome": "Ovos", "quantidade": 4, "unidade": "unidade" }],
+        "utensilios": ["1 faca", "1 t√°bua de corte", "1 panela pequena", "1 tigela"],
+        "continueUsando": [],
+        "acoes": ["Higienize a couve, seque e corte em tiras finas.", "Descasque e pique a cebola e o alho.", "Corte a calabresa em rodelas ou cubos de tamanho parecido.", "Use a charque j√° dessalgada, cozida e desfiada; mantenha-a separada.", "Cozinhe os ovos em √°gua at√© a clara e a gema estarem firmes, espere amornar, descasque e corte."],
+        "tempoAproximado": "Aproximadamente 10 a 15 minutos",
+        "intensidadeFogo": "M√©dio para cozinhar os ovos",
+        "pontoEsperado": "Todos os ingredientes devem estar cortados e separados; os ovos devem estar firmes e a charque, previamente dessalgada.",
+        "observacoes": ["Use utens√≠lios limpos e lave as m√£os ap√≥s manipular ingredientes crus."]
+      },
+      {
+        "titulo": "Doure as carnes",
+        "descricao": "Crie sabor dourando primeiro a calabresa e depois aquecendo a charque.",
+        "ingredientes": [{ "nome": "Calabresa", "quantidade": 200, "unidade": "g" }, { "nome": "Charque", "quantidade": 150, "unidade": "g" }, { "nome": "√ìleo", "quantidade": 15, "unidade": "ml" }],
+        "utensilios": ["1 panela ampla", "1 colher de madeira"],
+        "continueUsando": [],
+        "acoes": ["Coloque a panela no fog√£o e aque√ßa em fogo m√©dio.", "Adicione o √≥leo e espalhe pelo fundo.", "Junte a calabresa e mexa de vez em quando at√© as bordas come√ßarem a dourar.", "Acrescente a charque preparada e misture at√© ficar bem aquecida e ganhar pontos dourados."],
+        "tempoAproximado": "Cerca de 6 a 8 minutos",
+        "intensidadeFogo": "M√©dio",
+        "pontoEsperado": "As carnes devem estar aquecidas e com algumas partes levemente douradas, sem cheiro ou pontos de queimado.",
+        "observacoes": ["O tempo varia com a espessura dos cortes e a panela; use o dourado como refer√™ncia principal."]
+      },
+      {
+        "titulo": "Refogue os temperos e a couve",
+        "descricao": "Amacie a cebola, perfume com alho e murche levemente a couve.",
+        "ingredientes": [{ "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }, { "nome": "Couve", "quantidade": 1, "unidade": "ma√ßo" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Mantenha a panela em fogo m√©dio e abra um espa√ßo entre as carnes.", "Adicione a cebola e mexa at√© come√ßar a ficar macia e levemente transparente.", "Junte o alho e mexa por alguns instantes, somente at√© liberar aroma.", "Acrescente a couve fatiada e misture com o restante at√© come√ßar a murchar."],
+        "tempoAproximado": "Aproximadamente 3 a 5 minutos",
+        "intensidadeFogo": "M√©dio",
+        "pontoEsperado": "A cebola deve estar macia, o alho arom√°tico sem escurecer demais e a couve ligeiramente murcha, ainda verde.",
+        "observacoes": ["O alho queima rapidamente; reduza o fogo se come√ßar a escurecer antes de perfumar."]
+      },
+      {
+        "titulo": "Misture o feij√£o",
+        "descricao": "Incorpore os gr√£os com cuidado para preservar a textura.",
+        "ingredientes": [{ "nome": "Feij√£o", "quantidade": 500, "unidade": "g" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Adicione o feij√£o escorrido √† panela.", "Misture devagar, puxando os ingredientes do fundo para cima.", "Deixe aquecer por alguns minutos, mexendo apenas o necess√°rio."],
+        "tempoAproximado": "Cerca de 2 a 3 minutos",
+        "intensidadeFogo": "M√©dio para baixo",
+        "pontoEsperado": "O feij√£o deve estar quente e bem distribu√≠do, com a maior parte dos gr√£os ainda inteira.",
+        "observacoes": []
+      },
+      {
+        "titulo": "Incorpore a farinha",
+        "descricao": "Adicione a farinha aos poucos para controlar a umidade do tropeiro.",
+        "ingredientes": [{ "nome": "Farinha de mandioca", "quantidade": 200, "unidade": "g" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Reduza o fogo.", "Espalhe parte da farinha sobre a mistura e mexa.", "Continue acrescentando aos poucos, parando quando a mistura ficar soltinha, mas n√£o ressecada.", "Desligue o fogo quando atingir a textura desejada."],
+        "tempoAproximado": "Aproximadamente 2 minutos",
+        "intensidadeFogo": "Baixo",
+        "pontoEsperado": "A farinha deve envolver os ingredientes sem formar uma massa seca; o tropeiro deve continuar √∫mido e soltinho.",
+        "observacoes": ["Talvez n√£o seja necess√°rio usar toda a farinha, pois a umidade do feij√£o pode variar."]
+      },
+      {
+        "titulo": "Finalize com os ovos",
+        "descricao": "Acrescente os ovos, prove e ajuste o tempero antes de servir.",
+        "ingredientes": [{ "nome": "Ovos", "quantidade": 4, "unidade": "unidade" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Com o fogo desligado, adicione os ovos cortados.", "Misture delicadamente para n√£o desfazer todos os peda√ßos.", "Prove uma pequena por√ß√£o e ajuste o sal somente se necess√°rio.", "Sirva enquanto estiver quente."],
+        "tempoAproximado": "Cerca de 2 minutos",
+        "intensidadeFogo": "Desligado",
+        "pontoEsperado": "Os ovos devem estar distribu√≠dos e o conjunto quente, soltinho e bem temperado.",
+        "observacoes": ["A calabresa e a charque j√° cont√™m sal; prove antes de acrescentar mais."]
+      }
     ]
   },
   {
@@ -40,6 +119,7 @@
     "tempoMinutos": 25,
     "dificuldade": "F√°cil",
     "rendimento": "3 por√ß√µes",
+    "utensilios": ["1 tigela m√©dia", "1 garfo ou batedor", "1 faca", "1 t√°bua de corte", "1 forma pequena", "1 esp√°tula", "1 par de luvas t√©rmicas"],
     "ingredientes": [
       { "nome": "Ovos", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Queijo", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -49,10 +129,10 @@
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Aque√ßa o forno", "descricao": "Preaque√ßa o forno a 180 ¬∞C e unte uma forma pequena." },
-      { "titulo": "Misture os ovos", "descricao": "Bata os ovos com o leite e uma pitada de sal." },
-      { "titulo": "Monte", "descricao": "Acrescente tomate, queijo e cebola e despeje na forma." },
-      { "titulo": "Asse", "descricao": "Asse por cerca de 18 minutos, at√© o centro ficar firme." }
+      { "titulo": "Prepare o forno e os ingredientes", "descricao": "Aque√ßa o forno e deixe os recheios cortados antes de bater os ovos.", "ingredientes": [{ "nome": "Tomate", "quantidade": 2, "unidade": "unidade" }, { "nome": "Queijo", "quantidade": 150, "unidade": "g" }, { "nome": "Cebola", "quantidade": 0.5, "unidade": "unidade" }], "utensilios": ["1 faca", "1 t√°bua de corte", "1 forma pequena"], "continueUsando": [], "acoes": ["Ligue o forno a 180 ¬∞C para preaquecer.", "Corte os tomates e a cebola em peda√ßos pequenos e uniformes.", "Rale ou corte o queijo.", "Unte levemente a forma e reserve."], "tempoAproximado": "Cerca de 7 minutos, al√©m do tempo de preaquecimento do forno", "intensidadeFogo": "Forno a 180 ¬∞C", "pontoEsperado": "Os ingredientes devem estar cortados e a forma pronta; o forno deve estar preaquecido.", "observacoes": ["Mantenha os dedos recolhidos ao cortar e use uma t√°bua firme."] },
+      { "titulo": "Bata os ovos", "descricao": "Misture os ovos e o leite at√© formar uma base uniforme.", "ingredientes": [{ "nome": "Ovos", "quantidade": 4, "unidade": "unidade" }, { "nome": "Leite", "quantidade": 100, "unidade": "ml" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }], "utensilios": ["1 tigela m√©dia", "1 garfo ou batedor"], "continueUsando": [], "acoes": ["Quebre cada ovo separadamente e transfira para a tigela.", "Adicione o leite e uma pitada de sal.", "Bata at√© claras e gemas se misturarem e a cor ficar uniforme."], "tempoAproximado": "Aproximadamente 2 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A mistura deve estar homog√™nea, sem partes grandes de clara separada.", "observacoes": ["Descarte cascas e lave as m√£os e superf√≠cies que tiveram contato com ovo cru."] },
+      { "titulo": "Monte a omelete", "descricao": "Distribua o recheio para que todas as por√ß√µes fiquem equilibradas.", "ingredientes": [{ "nome": "Tomate", "quantidade": 2, "unidade": "unidade" }, { "nome": "Queijo", "quantidade": 150, "unidade": "g" }, { "nome": "Cebola", "quantidade": 0.5, "unidade": "unidade" }], "utensilios": [], "continueUsando": ["A mesma tigela", "A forma j√° untada"], "acoes": ["Junte tomate, queijo e cebola √† mistura de ovos.", "Mexa apenas at√© distribuir os peda√ßos.", "Despeje tudo na forma, sem ultrapassar a borda."], "tempoAproximado": "Cerca de 2 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "Os recheios devem estar bem distribu√≠dos e a forma preenchida de maneira uniforme.", "observacoes": [] },
+      { "titulo": "Asse at√© firmar", "descricao": "Cozinhe a omelete por completo, sem ressecar as bordas.", "ingredientes": [], "utensilios": ["1 par de luvas t√©rmicas", "1 esp√°tula"], "continueUsando": ["A mesma forma"], "acoes": ["Coloque a forma no forno preaquecido, usando luvas t√©rmicas.", "Asse e observe o centro a partir de aproximadamente 15 minutos.", "Retire quando o centro estiver firme e n√£o houver ovo l√≠quido vis√≠vel.", "Espere alguns minutos antes de cortar com a esp√°tula."], "tempoAproximado": "Cerca de 15 a 20 minutos, conforme o forno e a altura da omelete", "intensidadeFogo": "Forno a 180 ¬∞C", "pontoEsperado": "O centro deve estar firme, sem l√≠quido, e as bordas podem come√ßar a dourar levemente.", "observacoes": ["Use luvas t√©rmicas; a forma e o vapor estar√£o muito quentes.", "Para seguran√ßa, n√£o sirva enquanto houver partes de ovo cru ou l√≠quido."] }
     ]
   },
   {
@@ -65,6 +145,7 @@
     "tempoMinutos": 50,
     "dificuldade": "M√©dia",
     "rendimento": "6 por√ß√µes",
+    "utensilios": ["1 panela grande", "1 panela ou frigideira ampla", "1 escorredor", "1 faca", "1 t√°bua de corte", "1 amassador ou garfo", "1 colher de madeira", "1 refrat√°rio", "1 par de luvas t√©rmicas"],
     "ingredientes": [
       { "nome": "Charque", "quantidade": 500, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Mandioca", "quantidade": 1000, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -75,193 +156,5 @@
       { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false }
     ],
     "passos": [
-      { "titulo": "Cozinhe a mandioca", "descricao": "Cozinhe at√© ficar macia e retire os fios centrais." },
-      { "titulo": "Fa√ßa o pur√™", "descricao": "Amasse a mandioca e misture leite e manteiga." },
-      { "titulo": "Prepare o recheio", "descricao": "Refogue cebola, alho e a charque dessalgada e desfiada." },
-      { "titulo": "Monte", "descricao": "Fa√ßa camadas de pur√™, recheio e pur√™ em um refrat√°rio." },
-      { "titulo": "Gratine", "descricao": "Cubra com queijo e leve ao forno at√© dourar." }
-    ]
-  },
-  {
-    "id": "pao-de-queijo-de-frigideira",
-    "nome": "P√£o de Queijo de Frigideira",
-    "descricao": "Lanche r√°pido de tapioca e queijo, sem usar forno.",
-    "icone": "‚óâ",
-    "categoria": "lanche",
-    "tipo": "salgada",
-    "tempoMinutos": 15,
-    "dificuldade": "F√°cil",
-    "rendimento": "1 por√ß√£o",
-    "ingredientes": [
-      { "nome": "Ovo", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Tapioca", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Queijo", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
-    ],
-    "passos": [
-      { "titulo": "Misture", "descricao": "Misture ovo, tapioca, queijo e sal at√© ficar uniforme." },
-      { "titulo": "Cozinhe", "descricao": "Despeje em frigideira antiaderente e cozinhe em fogo baixo." },
-      { "titulo": "Vire", "descricao": "Vire quando firmar e doure o outro lado." }
-    ]
-  },
-  {
-    "id": "sanduiche-quente",
-    "nome": "Sandu√≠che Quente",
-    "descricao": "Sandu√≠che dourado com queijo, presunto e tomate.",
-    "icone": "‚ñ±",
-    "categoria": "lanche",
-    "tipo": "salgada",
-    "tempoMinutos": 10,
-    "dificuldade": "F√°cil",
-    "rendimento": "2 por√ß√µes",
-    "ingredientes": [
-      { "nome": "P√£o", "quantidade": 4, "unidade": "fatia", "obrigatorio": true, "basico": false },
-      { "nome": "Queijo", "quantidade": 100, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Presunto", "quantidade": 100, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Tomate", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false }
-    ],
-    "passos": [
-      { "titulo": "Monte", "descricao": "Distribua queijo, presunto e tomate entre as fatias de p√£o." },
-      { "titulo": "Doure", "descricao": "Doure os dois lados na frigideira ou sanduicheira." }
-    ]
-  },
-  {
-    "id": "panqueca-doce",
-    "nome": "Panqueca Doce",
-    "descricao": "Massa macia para um caf√© da manh√£ r√°pido.",
-    "icone": "‚óé",
-    "categoria": "cafe-da-manha",
-    "tipo": "doce",
-    "tempoMinutos": 20,
-    "dificuldade": "F√°cil",
-    "rendimento": "6 unidades",
-    "ingredientes": [
-      { "nome": "Ovo", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Leite", "quantidade": 250, "unidade": "ml", "obrigatorio": true, "basico": false },
-      { "nome": "Farinha de trigo", "quantidade": 180, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "A√ß√∫car", "quantidade": 30, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false }
-    ],
-    "passos": [
-      { "titulo": "Prepare a massa", "descricao": "Misture ovo, leite, farinha e a√ß√∫car at√© ficar liso." },
-      { "titulo": "Aque√ßa", "descricao": "Aque√ßa uma frigideira e unte levemente." },
-      { "titulo": "Doure", "descricao": "Cozinhe pequenas por√ß√µes e vire para dourar os dois lados." }
-    ]
-  },
-  {
-    "id": "bolo-de-banana",
-    "nome": "Bolo de Banana",
-    "descricao": "Bolo caseiro de banana com massa simples.",
-    "icone": "‚ñ¶",
-    "categoria": "cafe-da-manha",
-    "tipo": "doce",
-    "tempoMinutos": 50,
-    "dificuldade": "M√©dia",
-    "rendimento": "10 por√ß√µes",
-    "ingredientes": [
-      { "nome": "Banana", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Ovos", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Farinha de trigo", "quantidade": 240, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "A√ß√∫car", "quantidade": 160, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Leite", "quantidade": 120, "unidade": "ml", "obrigatorio": true, "basico": false },
-      { "nome": "Fermento", "quantidade": 10, "unidade": "g", "obrigatorio": true, "basico": false }
-    ],
-    "passos": [
-      { "titulo": "Aque√ßa o forno", "descricao": "Preaque√ßa o forno a 180 ¬∞C e unte uma forma." },
-      { "titulo": "Misture", "descricao": "Amasse as bananas e misture ovos, a√ß√∫car e leite." },
-      { "titulo": "Finalize a massa", "descricao": "Junte a farinha e, por √∫ltimo, o fermento." },
-      { "titulo": "Asse", "descricao": "Asse por 35 a 40 minutos, at√© o centro ficar firme." }
-    ]
-  },
-  {
-    "id": "arroz-carreteiro",
-    "nome": "Arroz Carreteiro",
-    "descricao": "Arroz bem temperado com charque e vegetais.",
-    "icone": "‚ñß",
-    "categoria": "almoco",
-    "tipo": "salgada",
-    "tempoMinutos": 40,
-    "dificuldade": "M√©dia",
-    "rendimento": "4 por√ß√µes",
-    "ingredientes": [
-      { "nome": "Arroz", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Charque", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Cebola", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false },
-      { "nome": "Tomate", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "√Ågua", "quantidade": 700, "unidade": "ml", "obrigatorio": false, "basico": true }
-    ],
-    "passos": [
-      { "titulo": "Prepare a charque", "descricao": "Dessalgue, cozinhe e desfie a charque." },
-      { "titulo": "Refogue", "descricao": "Doure cebola, alho, tomate e a charque." },
-      { "titulo": "Cozinhe o arroz", "descricao": "Junte o arroz e a √°gua e cozinhe at√© secar." }
-    ]
-  },
-  {
-    "id": "cuscuz-com-ovo",
-    "nome": "Cuscuz com Ovo",
-    "descricao": "Cuscuz nordestino simples para come√ßar o dia.",
-    "icone": "‚ó´",
-    "categoria": "cafe-da-manha",
-    "tipo": "salgada",
-    "tempoMinutos": 20,
-    "dificuldade": "F√°cil",
-    "rendimento": "2 por√ß√µes",
-    "ingredientes": [
-      { "nome": "Floc√£o de milho", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Ovos", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
-      { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false },
-      { "nome": "√Ågua", "quantidade": 100, "unidade": "ml", "obrigatorio": false, "basico": true },
-      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
-    ],
-    "passos": [
-      { "titulo": "Hidrate", "descricao": "Misture o floc√£o com √°gua e sal e descanse por 8 minutos." },
-      { "titulo": "Cozinhe", "descricao": "Cozinhe o cuscuz na cuscuzeira at√© ficar macio." },
-      { "titulo": "Prepare os ovos", "descricao": "Fa√ßa os ovos como preferir e sirva com o cuscuz." }
-    ]
-  },
-  {
-    "id": "macarrao-alho-e-oleo",
-    "nome": "Macarr√£o Alho e √ìleo",
-    "descricao": "Jantar r√°pido com poucos ingredientes.",
-    "icone": "‚âã",
-    "categoria": "jantar",
-    "tipo": "salgada",
-    "tempoMinutos": 20,
-    "dificuldade": "F√°cil",
-    "rendimento": "3 por√ß√µes",
-    "ingredientes": [
-      { "nome": "Macarr√£o", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Alho", "quantidade": 4, "unidade": "dente", "obrigatorio": true, "basico": false },
-      { "nome": "Azeite", "quantidade": 45, "unidade": "ml", "obrigatorio": true, "basico": false },
-      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
-    ],
-    "passos": [
-      { "titulo": "Cozinhe a massa", "descricao": "Cozinhe o macarr√£o at√© ficar al dente e reserve um pouco da √°gua." },
-      { "titulo": "Doure o alho", "descricao": "Aque√ßa o azeite e doure o alho sem queimar." },
-      { "titulo": "Misture", "descricao": "Junte a massa, ajuste a textura com a √°gua reservada e sirva." }
-    ]
-  },
-  {
-    "id": "brigadeiro-de-panela",
-    "nome": "Brigadeiro de Panela",
-    "descricao": "Doce cremoso preparado em poucos minutos.",
-    "icone": "‚óè",
-    "categoria": "lanche",
-    "tipo": "doce",
-    "tempoMinutos": 20,
-    "dificuldade": "F√°cil",
-    "rendimento": "6 por√ß√µes",
-    "ingredientes": [
-      { "nome": "Leite condensado", "quantidade": 395, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Chocolate em p√≥", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
-      { "nome": "Manteiga", "quantidade": 15, "unidade": "g", "obrigatorio": true, "basico": false }
-    ],
-    "passos": [
-      { "titulo": "Misture", "descricao": "Coloque todos os ingredientes em uma panela de fundo grosso." },
-      { "titulo": "Cozinhe", "descricao": "Mexa em fogo baixo at√© engrossar e soltar do fundo." },
-      { "titulo": "Sirva", "descricao": "Desligue o fogo e sirva morno ou frio." }
-    ]
-  }
-]
+      { "titulo": "Cozinhe a mandioca", "descricao": "Cozinhe a mandioca at√© ela ficar bem macia para o pur√™.", "ingredientes": [{ "nomÁ≠y∂âûÀk∫wµÁHËÄâÕÕîÅÖ”§ÅºÅçïπ—…ºÅô•…µÖ»ÅîÅïÕ¡ï…îÅÖπ—ïÃÅëîÅëïÕïπôΩ…µÖ»∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Ö»ÅëîÅ±’ŸÖÃÅ”•…µ•çÖÃât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅlâÅµïÕµÑÅôΩ…µÑât∞ÄâÖçΩïÃàËÅlâ1ïŸîÅÑÅôΩ…µÑÅÖºÅôΩ…πºÅ¡…ïÖ≈’ïç•ëº∏à∞ÄâŸ•—îÅÖâ…•»ÅºÅôΩ…πºÅπΩÃÅ¡…•µï•…ΩÃÄ»‘Åµ•π’—ΩÃ∏à∞ÄâÅ¡Ö…—•»ÅëîÅÖ¡…Ω·•µÖëÖµïπ—îÄÃ‘Åµ•π’—ΩÃ∞Å—ïÕ—îÅºÅçïπ—…ºÅçΩ¥Å’¥Å¡Ö±•—ºÅ±•µ¡º∏à∞ÄâIï—•…îÅ≈’ÖπëºÅºÅ¡Ö±•—ºÅÕÖ•»ÅÕï¥ÅµÖÕÕÑÅç…’ÑÅîÅëï•·îÅÖµΩ…πÖ»∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄÃ‘ÅÑÄ–‘Åµ•π’—ΩÃ∞ÅçΩπôΩ…µîÅºÅôΩ…πºÅîÅÑÅôΩ…µÑà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâΩ…πºÅÑÄƒ‡¿É
+¡à∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ<Å—Ω¡ºÅëïŸîÅïÕ—Ö»Åô•…µîÅîÅëΩ’…Öëº∞ÅîÅºÅ¡Ö±•—ºÅëïŸîÅÕÖ•»ÅÕï¥ÅµÖÕÕÑÅç…’ÑÅÖëï…•ëÑ∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâUÕîÅ±’ŸÖÃÅ”•…µ•çÖÃÅîÅªçºÅëïÕïπôΩ…µîÅïπ≈’Öπ—ºÅÑÅôΩ…µÑÅïÕ—•Ÿï»Åµ’•—ºÅ≈’ïπ—î∏âtÅÙ(ÄÄÄÅt(ÄÅÙ∞(ÄÅÏ(ÄÄÄÄâ•êàËÄâÖ……ΩËµçÖ……ï—ï•…ºà∞(ÄÄÄÄâπΩµîàËÄâ……ΩËÅÖ……ï—ï•…ºà∞(ÄÄÄÄâëïÕç…•çÖºàËÄâ……ΩËÅâï¥Å—ïµ¡ï…ÖëºÅçΩ¥Åç°Ö…≈’îÅîÅŸïùï—Ö•Ã∏à∞(ÄÄÄÄâ•çΩπîàËÄãäZúà∞(ÄÄÄÄâçÖ—ïùΩ…•ÑàËÄâÖ±µΩçºà∞(ÄÄÄÄâ—•¡ºàËÄâÕÖ±ùÖëÑà∞(ÄÄÄÄâ—ïµ¡Ω5•π’—ΩÃàËÄ–¿∞(ÄÄÄÄâë•ô•ç’±ëÖëîàËÄâ7•ë•Ñà∞(ÄÄÄÄâ…ïπë•µïπ—ºàËÄà–Å¡ΩÀü’ïÃà∞(ÄÄÄÄâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅ∑•ë•ÑÅçΩ¥Å—Öµ¡Ñà∞ÄàƒÅ¡Öπï±ÑÅ¡Ö…ÑÅ¡…ï¡Ö…Ö»ÅÑÅç°Ö…≈’îà∞ÄàƒÅïÕçΩ……ïëΩ»à∞ÄàƒÅôÖçÑà∞ÄàƒÅ”Öâ’ÑÅëîÅçΩ…—îà∞ÄàƒÅçΩ±°ï»ÅëîÅµÖëï•…Ñà∞ÄàƒÅ—•ùï±Ñât∞(ÄÄÄÄâ•πù…ïë•ïπ—ïÃàËÅl(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ……ΩËà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ°Ö…≈’îà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâïâΩ±Ñà∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâëïπ—îà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâQΩµÖ—îà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄãù’Ñà∞Äâ≈’Öπ—•ëÖëîàËÄ‹¿¿∞Äâ’π•ëÖëîàËÄâµ∞à∞ÄâΩâ…•ùÖ—Ω…•ºàËÅôÖ±Õî∞ÄââÖÕ•çºàËÅ—…’îÅÙ(ÄÄÄÅt∞(ÄÄÄÄâ¡ÖÕÕΩÃàËÅl(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâA…ï¡Ö…îÅÑÅç°Ö…≈’îÅîÅΩÃÅŸïùï—Ö•Ãà∞ÄâëïÕç…•çÖºàËÄâï•·îÅÑÅçÖ…πîÅëïÕÕÖ±ùÖëÑÅîÅ—ΩëΩÃÅΩÃÅçΩ…—ïÃÅ¡…Ωπ—ΩÃÅÖπ—ïÃÅëîÅçΩµóùÖ»ÅºÅÖ……ΩË∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ°Ö…≈’îà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄâïâΩ±Ñà∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîàÅÙ∞ÅÏÄâπΩµîàËÄâ±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâëïπ—îàÅÙ∞ÅÏÄâπΩµîàËÄâQΩµÖ—îà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîàÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅ¡Ö…ÑÅ¡…ï¡Ö…Ö»ÅÑÅç°Ö…≈’îà∞ÄàƒÅïÕçΩ……ïëΩ»à∞ÄàƒÅôÖçÑà∞ÄàƒÅ”Öâ’ÑÅëîÅçΩ…—îà∞ÄàƒÅ—•ùï±Ñât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâUÕîÅÑÅç°Ö…≈’îÅ¡…ïŸ•Öµïπ—îÅëïÕÕÖ±ùÖëÑÏÅçΩÈ•π°îÅÖ”§Åô•çÖ»ÅµÖç•ÑÅîÅëïÕô•î∏à∞ÄâïÕçÖÕ≈’îÅîÅ¡•≈’îÅçïâΩ±ÑÅîÅÖ±°º∏à∞Äâ!•ù•ïπ•ÈîÅîÅçΩ…—îÅΩÃÅ—ΩµÖ—ïÃÅï¥Åç’âΩÃ∏à∞Äâ5Öπ—ïπ°ÑÅçÖëÑÅ•πù…ïë•ïπ—îÅÕï¡Ö…Öëº∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄƒ‘ÅÑÄ»‘Åµ•π’—ΩÃÅÕîÅÑÅç°Ö…≈’îÅ´ÑÅïÕ—•Ÿï»ÅëïÕÕÖ±ùÖëÑà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ7•ë•ºÅ¡Ö…ÑÅçΩÈ•π°Ö»ÅÑÅç°Ö…≈’îà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâÅç°Ö…≈’îÅëïŸîÅïÕ—Ö»ÅµÖç•ÑÅîÅëïÕô•ÖëÑÏÅΩÃÅŸïùï—Ö•Ã∞ÅçΩ…—ÖëΩÃÅîÅ¡…Ωπ—ΩÃÅ¡Ö…ÑÅºÅ…ïôΩùÖëº∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâ<Å—ïµ¡ºÅëîÅëïÕÕÖ±ùÑÉ§ÅÖπ—ï…•Ω»ÅÖºÅ¡…ï¡Ö…ºÅîÅŸÖ…•ÑÏÅ—…Ω≈’îÅÑÉÖù’ÑÅçΩπôΩ…µîÅºÅ∑•—ΩëºÅÕïù’…ºÅ’—•±•ÈÖëº∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâáùÑÅºÅ…ïôΩùÖëºà∞ÄâëïÕç…•çÖºàËÄâΩ’…îÅÑÅç°Ö…≈’îÅîÅÖµÖç•îÅΩÃÅŸïùï—Ö•ÃÅ¡Ö…ÑÅôΩ…µÖ»ÅÑÅâÖÕîÅëîÅÕÖâΩ»∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ°Ö…≈’îà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄâïâΩ±Ñà∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîàÅÙ∞ÅÏÄâπΩµîàËÄâ±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâëïπ—îàÅÙ∞ÅÏÄâπΩµîàËÄâQΩµÖ—îà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîàÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅ∑•ë•ÑÅçΩ¥Å—Öµ¡Ñà∞ÄàƒÅçΩ±°ï»ÅëîÅµÖëï•…Ñât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâ≈’óùÑÅÑÅ¡Öπï±ÑÅï¥ÅôΩùºÅ∑•ë•º∏à∞ÄâΩ±Ω≈’îÅÑÅç°Ö…≈’îÅîÅµï·ÑÅÖ”§ÅçΩµóùÖ»ÅÑÅëΩ’…Ö»∏à∞Äâ)’π—îÅÑÅçïâΩ±ÑÅîÅçΩÈ•π°îÅÖ”§ÅÖµÖç•Ö»∏à∞Äâë•ç•ΩπîÅºÅÖ±°ºÅîÅµï·ÑÅÖ¡ïπÖÃÅÖ”§Å¡ï…ô’µÖ»∏à∞Äâç…ïÕçïπ—îÅºÅ—ΩµÖ—îÅîÅçΩÈ•π°îÅÖ”§ÅçΩµóùÖ»ÅÑÅ±•âï…Ö»Å≥µ≈’•ëº∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ‹ÅÑÄƒ¿Åµ•π’—ΩÃà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ7•ë•ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâÅçÖ…πîÅëïŸîÅ—ï»Å¡Ωπ—ΩÃÅëΩ’…ÖëΩÃ∞ÅÑÅçïâΩ±ÑÅïÕ—Ö»ÅµÖç•ÑÅîÅºÅ—ΩµÖ—îÅçΩµóùÖ»ÅÑÅÕîÅëïÕôÖÈï»∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâA…ΩŸîÅÖπ—ïÃÅëîÅÖç…ïÕçïπ—Ö»ÅÕÖ∞ÏÅÑÅç°Ö…≈’îÅ¡ΩëîÅµÖπ—ï»ÅÕÖ∞Å…ïÕ•ë’Ö∞∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâΩÈ•π°îÅºÅÖ……ΩËà∞ÄâëïÕç…•çÖºàËÄâΩÈ•π°îÅÖ”§ÅΩÃÅùÀçΩÃÅô•çÖ…ï¥ÅµÖç•ΩÃÅîÅºÅ≥µ≈’•ëºÅÕï»ÅÖâÕΩ…Ÿ•ëº∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ……ΩËà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄãù’Ñà∞Äâ≈’Öπ—•ëÖëîàËÄ‹¿¿∞Äâ’π•ëÖëîàËÄâµ∞àÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅmt∞ÄâçΩπ—•π’ïUÕÖπëºàËÅlâÅµïÕµÑÅ¡Öπï±ÑÅ∑•ë•Ñà∞ÄâÅµïÕµÑÅçΩ±°ï»ÅëîÅµÖëï•…Ñât∞ÄâÖçΩïÃàËÅlâ)’π—îÅºÅÖ……ΩËÅÖºÅ…ïôΩùÖëºÅîÅµï·ÑÅ¡Ω»Åçï…çÑÅëîÅ’¥Åµ•π’—º∏à∞Äâë•ç•ΩπîÅÑÉÖù’ÑÅîÅµ•Õ—’…îÅ’µÑÅŸïË∏à∞ÄâE’ÖπëºÅôï…Ÿï»∞Å…ïë’ÈÑÅºÅôΩùºÅîÅëï•·îÅÑÅ¡Öπï±ÑÅ¡Ö…ç•Ö±µïπ—îÅ—Öµ¡ÖëÑ∏à∞Äâ=âÕï…ŸîÅÖ”§ÅÑÉÖù’ÑÅÕï»ÅÖâÕΩ…Ÿ•ëÑÅîÅ¡…ΩŸîÅÖ±ù’πÃÅùÀçΩÃ∏à∞ÄâïÕ±•ù’î∞Å—Öµ¡îÅîÅëï•·îÅëïÕçÖπÕÖ»ÅÖπ—ïÃÅëîÅÕΩ±—Ö»ÅçΩ¥ÅÑÅçΩ±°ï»∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄƒ‘ÅÑÄ»¿Åµ•π’—ΩÃ∞ÅµÖ•ÃÄ‘Åµ•π’—ΩÃÅëîÅëïÕçÖπÕºà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ7•ë•ºÅÖ”§Åôï…Ÿï»ÏÅëï¡Ω•ÃÅâÖ•·ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ=ÃÅùÀçΩÃÅëïŸï¥ÅïÕ—Ö»ÅµÖç•ΩÃÅîÅÕΩ±—ΩÃ∞ÅÕï¥Å≥µ≈’•ëºÅÖç’µ’±ÖëºÅπºÅô’πëº∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâMîÅºÅÖ……ΩËÅÖ•πëÑÅïÕ—•Ÿï»Åë’…ºÅ≈’ÖπëºÅÑÉÖù’ÑÅÖçÖâÖ»∞ÅÖë•ç•ΩπîÅ’¥Å¡Ω’çºÅëîÉÖù’ÑÅ≈’ïπ—îÅîÅçΩπ—•π’îÅï¥ÅôΩùºÅâÖ•·º∏âtÅÙ(ÄÄÄÅt(ÄÅÙ∞(ÄÅÏ(ÄÄÄÄâ•êàËÄâç’Õç’ËµçΩ¥µΩŸºà∞(ÄÄÄÄâπΩµîàËÄâ’Õç’ËÅçΩ¥Å=Ÿºà∞(ÄÄÄÄâëïÕç…•çÖºàËÄâ’Õç’ËÅπΩ…ëïÕ—•πºÅÕ•µ¡±ïÃÅ¡Ö…ÑÅçΩµóùÖ»ÅºÅë•Ñ∏à∞(ÄÄÄÄâ•çΩπîàËÄãä^¨à∞(ÄÄÄÄâçÖ—ïùΩ…•ÑàËÄâçÖôîµëÑµµÖπ°Ñà∞(ÄÄÄÄâ—•¡ºàËÄâÕÖ±ùÖëÑà∞(ÄÄÄÄâ—ïµ¡Ω5•π’—ΩÃàËÄ»¿∞(ÄÄÄÄâë•ô•ç’±ëÖëîàËÄâÖç•∞à∞(ÄÄÄÄâ…ïπë•µïπ—ºàËÄà»Å¡ΩÀü’ïÃà∞(ÄÄÄÄâ’—ïπÕ•±•ΩÃàËÅlàƒÅ—•ùï±Ñà∞ÄàƒÅçΩ±°ï»à∞ÄàƒÅç’Õç’Èï•…Ñà∞ÄàƒÅô…•ù•ëï•…Ñà∞ÄàƒÅïÕ√Ö—’±Ñât∞(ÄÄÄÄâ•πù…ïë•ïπ—ïÃàËÅl(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ±ΩèçºÅëîÅµ•±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄƒ‘¿∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ=ŸΩÃà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ5Öπ—ï•ùÑà∞Äâ≈’Öπ—•ëÖëîàËÄ»¿∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅôÖ±Õî∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄãù’Ñà∞Äâ≈’Öπ—•ëÖëîàËÄƒ¿¿∞Äâ’π•ëÖëîàËÄâµ∞à∞ÄâΩâ…•ùÖ—Ω…•ºàËÅôÖ±Õî∞ÄââÖÕ•çºàËÅ—…’îÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâMÖ∞à∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ¡•—ÖëÑà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅôÖ±Õî∞ÄââÖÕ•çºàËÅ—…’îÅÙ(ÄÄÄÅt∞(ÄÄÄÄâ¡ÖÕÕΩÃàËÅl(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâ!•ë…Ö—îÅºÅô±Ωèçºà∞ÄâëïÕç…•çÖºàËÄâUµïëóùÑÅºÅô±ΩèçºÅ¡Ω»Å•ù’Ö∞ÅîÅì®Å—ïµ¡ºÅ¡Ö…ÑÅï±îÅÖâÕΩ…Ÿï»ÅÑÉÖù’Ñ∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ±ΩèçºÅëîÅµ•±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄƒ‘¿∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄãù’Ñà∞Äâ≈’Öπ—•ëÖëîàËÄƒ¿¿∞Äâ’π•ëÖëîàËÄâµ∞àÅÙ∞ÅÏÄâπΩµîàËÄâMÖ∞à∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ¡•—ÖëÑàÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ—•ùï±Ñà∞ÄàƒÅçΩ±°ï»ât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâΩ±Ω≈’îÅºÅô±ΩèçºÅîÅºÅÕÖ∞ÅπÑÅ—•ùï±Ñ∏à∞Äâë•ç•ΩπîÅÑÉÖù’ÑÅÖΩÃÅ¡Ω’çΩÃÅïπ≈’Öπ—ºÅµ•Õ—’…Ñ∏à∞ÄâÕ¡ï…îÅºÅô±ΩèçºÅëïÕçÖπÕÖ»ÅîÅÖâÕΩ…Ÿï»ÅÑÅ’µ•ëÖëî∏à∞ÄâMΩ±—îÅΩÃÅù…’µΩÃÅµÖ•Ω…ïÃÅçΩ¥ÅÑÅçΩ±°ï»∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ‡ÅÑÄƒ¿Åµ•π’—ΩÃÅëîÅëïÕçÖπÕºà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâMï¥ÅôΩùºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ<Åô±ΩèçºÅëïŸîÅïÕ—Ö»ÉÈµ•ëºÅîÅÕΩ±—ºÏÅÖºÅÖ¡ï…—Ö»Å’µÑÅ¡ΩÀüçº∞Åï±ÑÅÕîÅ’πîÅÕï¥Å¡•πùÖ»ÉÖù’Ñ∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâÅÖâÕΩÀüçºÅŸÖ…•ÑÅïπ—…îÅµÖ…çÖÃÏÅÕîÅïÕ—•Ÿï»ÅÕïçºÅîÅªçºÅÕîÅ’π•»∞ÅÖç…ïÕçïπ—îÉÖù’ÑÅÖΩÃÅ¡Ω’çΩÃ∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâΩÈ•π°îÅºÅç’Õç’Ëà∞ÄâëïÕç…•çÖºàËÄâΩÈ•π°îÅπºÅŸÖ¡Ω»ÅÖ”§ÅΩÃÅô±ΩçΩÃÅô•çÖ…ï¥ÅµÖç•ΩÃ∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅç’Õç’Èï•…Ñât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅlâ<Åô±ΩèçºÅ°•ë…Ö—Öëºât∞ÄâÖçΩïÃàËÅlâΩ±Ω≈’îÉÖù’ÑÅπÑÅ¡Ö…—îÅ•πôï…•Ω»ÅëÑÅç’Õç’Èï•…ÑÅÕï¥Åëï•·Ö»ÅÖ±çÖªùÖ»ÅºÅçïÕ—º∏à∞Äâ•Õ—…•â’ÑÅºÅô±ΩèçºÅ°•ë…Ö—ÖëºÅÕï¥ÅÖ¡ï…—Ö»ÅëïµÖ•Ã∏à∞ÄâQÖµ¡îÅîÅ±ïŸîÅÖºÅôΩùº∏à∞ÄâΩÈ•π°îÅπºÅŸÖ¡Ω»ÅÖ”§ÅºÅç’Õç’ËÅô•çÖ»ÅµÖç•ºÅîÅ’π•ëº∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ‡ÅÑÄƒ»Åµ•π’—ΩÃÅëï¡Ω•ÃÅ≈’îÅºÅŸÖ¡Ω»ÅçΩµóùÖ»à∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ7•ë•ºÅ¡Ö…ÑÅâÖ•·ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ<Åç’Õç’ËÅëïŸîÅïÕ—Ö»Å≈’ïπ—î∞ÅµÖç•ºÅîÅÕîÅÕΩ±—Ö»ÅëºÅçïÕ—ºÅï¥Å’¥Åâ±ΩçºÉÈµ•ëº∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâ’•ëÖëºÅçΩ¥ÅºÅŸÖ¡Ω»ÅÖºÅÖâ…•»ÅÑÅ—Öµ¡ÑÏÅÖôÖÕ—îÅºÅ…ΩÕ—ºÅîÅÖÃÅ∑çΩÃ∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâA…ï¡Ö…îÅΩÃÅΩŸΩÃÅîÅÕ•…ŸÑà∞ÄâëïÕç…•çÖºàËÄâΩÈ•π°îÅΩÃÅΩŸΩÃÅ¡Ω»ÅçΩµ¡±ï—ºÅîÅÕ•…ŸÑÅçΩ¥ÅºÅç’Õç’ËÅÖ•πëÑÅ≈’ïπ—î∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ=ŸΩÃà∞Äâ≈’Öπ—•ëÖëîàËÄ»∞Äâ’π•ëÖëîàËÄâ’π•ëÖëîàÅÙ∞ÅÏÄâπΩµîàËÄâ5Öπ—ï•ùÑà∞Äâ≈’Öπ—•ëÖëîàËÄ»¿∞Äâ’π•ëÖëîàËÄâúàÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅô…•ù•ëï•…Ñà∞ÄàƒÅïÕ√Ö—’±Ñât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâ≈’óùÑÅÑÅô…•ù•ëï•…ÑÅï¥ÅôΩùºÅ∑•ë•ºÅ¡Ö…ÑÅâÖ•·ºÅîÅëï……ï—ÑÅÑÅµÖπ—ï•ùÑ∏à∞ÄâE’ïâ…îÅΩÃÅΩŸΩÃÅîÅçΩÈ•π°î∞Åµï·ïπëºÅÕîÅ¡…ïôï…•»ÅΩŸΩÃÅµï·•ëΩÃ∏à∞ÄâΩπ—•π’îÅÖ”§Åç±Ö…ÖÃÅîÅùïµÖÃÅÖ—•πù•…ï¥ÅºÅ¡Ωπ—ºÅëïÕï©Öëº∞ÅÕï¥Å¡Ö…—ïÃÅç…’ÖÃ∏à∞ÄâM•…ŸÑÅÕΩâ…îÅΩ‘ÅÖºÅ±ÖëºÅëºÅç’Õç’Ë∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄÃÅÑÄ‘Åµ•π’—ΩÃà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ7•ë•ºÅ¡Ö…ÑÅâÖ•·ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâÅç±Ö…ÑÅëïŸîÅïÕ—Ö»ÅçΩµ¡±ï—Öµïπ—îÅΩ¡ÖçÑÅîÅô•…µîÏÅ¡Ö…ÑÅµÖ•Ω»ÅÕïù’…ÖªùÑ∞ÅªçºÅëï•·îÅ¡Ö…—ïÃÅç…’ÖÃ∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâ1ÖŸîÅÖÃÅ∑çΩÃÅîÅÑÅÕ’¡ï…õµç•îÅÖ√ÕÃÅçΩπ—Ö—ºÅçΩ¥ÅΩŸºÅç…‘∏âtÅÙ(ÄÄÄÅt(ÄÅÙ∞(ÄÅÏ(ÄÄÄÄâ•êàËÄâµÖçÖ……ÖºµÖ±°ºµîµΩ±ïºà∞(ÄÄÄÄâπΩµîàËÄâ5ÖçÖ…ÀçºÅ±°ºÅîÉM±ïºà∞(ÄÄÄÄâëïÕç…•çÖºàËÄâ)Öπ—Ö»ÅÀÖ¡•ëºÅçΩ¥Å¡Ω’çΩÃÅ•πù…ïë•ïπ—ïÃ∏à∞(ÄÄÄÄâ•çΩπîàËÄãä&,à∞(ÄÄÄÄâçÖ—ïùΩ…•ÑàËÄâ©Öπ—Ö»à∞(ÄÄÄÄâ—•¡ºàËÄâÕÖ±ùÖëÑà∞(ÄÄÄÄâ—ïµ¡Ω5•π’—ΩÃàËÄ»¿∞(ÄÄÄÄâë•ô•ç’±ëÖëîàËÄâÖç•∞à∞(ÄÄÄÄâ…ïπë•µïπ—ºàËÄàÃÅ¡ΩÀü’ïÃà∞(ÄÄÄÄâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅù…Öπëîà∞ÄàƒÅïÕçΩ……ïëΩ»à∞ÄàƒÅô…•ù•ëï•…ÑÅÖµ¡±Ñà∞ÄàƒÅôÖçÑà∞ÄàƒÅ”Öâ’ÑÅëîÅçΩ…—îà∞ÄàƒÅ¡ïùÖëΩ»ÅΩ‘ÅçΩ±°ï»ât∞(ÄÄÄÄâ•πù…ïë•ïπ—ïÃàËÅl(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ5ÖçÖ…Àçºà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄ–∞Äâ’π•ëÖëîàËÄâëïπ—îà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâÈï•—îà∞Äâ≈’Öπ—•ëÖëîàËÄ–‘∞Äâ’π•ëÖëîàËÄâµ∞à∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâMÖ∞à∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ¡•—ÖëÑà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅôÖ±Õî∞ÄââÖÕ•çºàËÅ—…’îÅÙ(ÄÄÄÅt∞(ÄÄÄÄâ¡ÖÕÕΩÃàËÅl(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâΩÈ•π°îÅÑÅµÖÕÕÑà∞ÄâëïÕç…•çÖºàËÄâΩÈ•π°îÅÖ”§Åô•çÖ»ÅµÖç•Ñ∞ÅµÖÃÅÖ•πëÑÅô•…µîÅÖºÅµΩ…ëï»∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ5ÖçÖ…Àçºà∞Äâ≈’Öπ—•ëÖëîàËÄÃ¿¿∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄâMÖ∞à∞Äâ≈’Öπ—•ëÖëîàËÄƒ∞Äâ’π•ëÖëîàËÄâ¡•—ÖëÑàÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅù…Öπëîà∞ÄàƒÅïÕçΩ……ïëΩ»à∞ÄàƒÅçÖπïçÑât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâï…ŸÑÉÖù’ÑÅÕ’ô•ç•ïπ—îÅπÑÅ¡Öπï±ÑÅîÅÖë•ç•ΩπîÅÕÖ∞∏à∞ÄâΩ±Ω≈’îÅºÅµÖçÖ…ÀçºÅîÅµï·ÑÅπΩÃÅ¡…•µï•…ΩÃÅµ•π’—ΩÃÅ¡Ö…ÑÅªçºÅù…’ëÖ»∏à∞ÄâA…ΩŸîÅ’¥Åô•ºÅ¡ï…—ºÅëºÅ—ïµ¡ºÅ•πë•çÖëºÅπÑÅïµâÖ±Öùï¥∏à∞ÄâIïÕï…ŸîÅ’µÑÅçÖπïçÑÅëÑÉÖù’ÑÅëºÅçΩÈ•µïπ—ºÅîÅïÕçΩ……ÑÅºÅ…ïÕ—Öπ—î∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâΩπôΩ…µîÅÑÅïµâÖ±Öùï¥∞ÅπΩ…µÖ±µïπ—îÅçï…çÑÅëîÄ‡ÅÑÄƒ»Åµ•π’—ΩÃà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ±—ºÅÖ”§Åôï…Ÿï»ÏÅëï¡Ω•ÃÅ∑•ë•ºÅ¡Ö…ÑÅµÖπ—ï»ÅÑÅôï…Ÿ’…Ñà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâÅµÖÕÕÑÅëïŸîÅïÕ—Ö»ÅçΩÈ•ëÑÅ¡Ω»ÅôΩ…ÑÅîÅ±ïŸïµïπ—îÅô•…µîÅπºÅçïπ—…º∞ÅÕï¥ÅÕÖâΩ»ÅëîÅôÖ…•π°ÑÅç…’Ñ∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâÕçΩ……ÑÅÑÉÖù’ÑÅ≈’ïπ—îÅÖôÖÕ—ÖπëºÅºÅ…ΩÕ—ºÅëºÅŸÖ¡Ω»∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâAï…ô’µîÅºÅÖÈï•—îÅçΩ¥ÅÖ±°ºà∞ÄâëïÕç…•çÖºàËÄâ≈’óùÑÅºÅÖ±°ºÅëïŸÖùÖ»Å¡Ö…ÑÅ±•âï…Ö»ÅÖ…ΩµÑÅÕï¥ÅÖµÖ…ùÖ»∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ±°ºà∞Äâ≈’Öπ—•ëÖëîàËÄ–∞Äâ’π•ëÖëîàËÄâëïπ—îàÅÙ∞ÅÏÄâπΩµîàËÄâÈï•—îà∞Äâ≈’Öπ—•ëÖëîàËÄ–‘∞Äâ’π•ëÖëîàËÄâµ∞àÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅô…•ù•ëï•…ÑÅÖµ¡±Ñà∞ÄàƒÅôÖçÑà∞ÄàƒÅ”Öâ’ÑÅëîÅçΩ…—îà∞ÄàƒÅ¡ïùÖëΩ»ÅΩ‘ÅçΩ±°ï»ât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâïÕçÖÕ≈’îÅîÅçΩ…—îÅºÅÖ±°ºÅï¥Å≥âµ•πÖÃÅΩ‘Å¡ïëáùΩÃÅëîÅ—ÖµÖπ°ºÅ¡Ö…ïç•ëº∏à∞ÄâΩ±Ω≈’îÅºÅÖÈï•—îÅîÅºÅÖ±°ºÅπÑÅô…•ù•ëï•…ÑÅÖ•πëÑÅô…•Ñ∏à∞Äâ1ïŸîÅÖºÅôΩùºÅâÖ•·ºÅîÅµï·ÑÅïπ≈’Öπ—ºÅºÅÖ±°ºÅÖ≈’ïçî∏à∞ÄâIï—•…îÅëºÅôΩùºÅ≈’ÖπëºÅºÅÖ±°ºÅçΩµóùÖ»ÅÑÅô•çÖ»Å±ïŸïµïπ—îÅëΩ’…Öëº∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ»ÅÑÄ–Åµ•π’—ΩÃà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ	Ö•·ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ<ÅÖ±°ºÅëïŸîÅïÕ—Ö»ÅÖ…Ω∑Ö—•çºÅîÅÖ¡ïπÖÃÅëΩ’…Öëºµç±Ö…º∞Åπ’πçÑÅµÖ……Ω¥ÅïÕç’…º∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâ<ÅÖ±°ºÅçΩπ—•π’ÑÅçΩÈ•π°ÖπëºÅπºÅÖÈï•—îÅ≈’ïπ—îÏÅ…ï—•…îÅëºÅôΩùºÅÖπ—ïÃÅëîÅïÕç’…ïçï»ÅëïµÖ•Ã∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâ5•Õ—’…îÅîÅÖ©’Õ—îÅÑÅ—ï·—’…Ñà∞ÄâëïÕç…•çÖºàËÄâπŸΩ±ŸÑÅÑÅµÖÕÕÑÅπºÅÖÈï•—îÅîÅ’ÕîÅÑÉÖù’ÑÅ…ïÕï…ŸÖëÑÅ¡Ö…ÑÅ±•ùÖ»ÅºÅµΩ±°º∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmt∞Äâ’—ïπÕ•±•ΩÃàËÅmt∞ÄâçΩπ—•π’ïUÕÖπëºàËÅlâÅµïÕµÑÅô…•ù•ëï•…ÑÅÖµ¡±Ñà∞Äâ<ÅµïÕµºÅ¡ïùÖëΩ»ÅΩ‘ÅçΩ±°ï»à∞ÄâÉÖù’ÑÅëºÅçΩÈ•µïπ—ºÅ…ïÕï…ŸÖëÑât∞ÄâÖçΩïÃàËÅlâë•ç•ΩπîÅºÅµÖçÖ…ÀçºÅïÕçΩ……•ëºÉÄÅô…•ù•ëï•…Ñ∏à∞Äâ5•Õ—’…îÅÖ”§Å—ΩëΩÃÅΩÃÅô•ΩÃÅô•çÖ…ï¥Åâ…•±°Öπ—ïÃ∏à∞ÄâMîÅ¡Ö…ïçï»ÅÕïçº∞ÅÖç…ïÕçïπ—îÅ¡ï≈’ïπÖÃÅ≈’Öπ—•ëÖëïÃÅëÑÉÖù’ÑÅ…ïÕï…ŸÖëÑÅîÅµ•Õ—’…î∏à∞ÄâA…ΩŸî∞ÅÖ©’Õ—îÅºÅÕÖ∞ÅÕîÅπïçïÕœÖ…•ºÅîÅÕ•…ŸÑ∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ»Åµ•π’—ΩÃà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ	Ö•·ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâÅµÖÕÕÑÅëïŸîÅïÕ—Ö»Å≈’ïπ—î∞ÅÕΩ±—ÑÅîÅïπŸΩ±Ÿ•ëÑÅ¡Ω»Å’µÑÅçÖµÖëÑÅ±ïŸîÅëîÅÖÈï•—î∞ÅÕï¥Å≥µ≈’•ëºÅÖç’µ’±Öëº∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅmtÅÙ(ÄÄÄÅt(ÄÅÙ∞(ÄÅÏ(ÄÄÄÄâ•êàËÄââ…•ùÖëï•…ºµëîµ¡Öπï±Ñà∞(ÄÄÄÄâπΩµîàËÄâ	…•ùÖëï•…ºÅëîÅAÖπï±Ñà∞(ÄÄÄÄâëïÕç…•çÖºàËÄâΩçîÅç…ïµΩÕºÅ¡…ï¡Ö…ÖëºÅï¥Å¡Ω’çΩÃÅµ•π’—ΩÃ∏à∞(ÄÄÄÄâ•çΩπîàËÄãä^<à∞(ÄÄÄÄâçÖ—ïùΩ…•ÑàËÄâ±Öπç°îà∞(ÄÄÄÄâ—•¡ºàËÄâëΩçîà∞(ÄÄÄÄâ—ïµ¡Ω5•π’—ΩÃàËÄ»¿∞(ÄÄÄÄâë•ô•ç’±ëÖëîàËÄâÖç•∞à∞(ÄÄÄÄâ…ïπë•µïπ—ºàËÄàÿÅ¡ΩÀü’ïÃà∞(ÄÄÄÄâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅëîÅô’πëºÅù…ΩÕÕºà∞ÄàƒÅçΩ±°ï»ÅΩ‘ÅïÕ√Ö—’±ÑÅ…ïÕ•Õ—ïπ—îÅÖºÅçÖ±Ω»à∞ÄàƒÅ…ïç•¡•ïπ—îÅ¡Ö…ÑÅÕï…Ÿ•»ât∞(ÄÄÄÄâ•πù…ïë•ïπ—ïÃàËÅl(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ1ï•—îÅçΩπëïπÕÖëºà∞Äâ≈’Öπ—•ëÖëîàËÄÃ‰‘∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ°ΩçΩ±Ö—îÅï¥Å√Ãà∞Äâ≈’Öπ—•ëÖëîàËÄ–¿∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ∞(ÄÄÄÄÄÅÏÄâπΩµîàËÄâ5Öπ—ï•ùÑà∞Äâ≈’Öπ—•ëÖëîàËÄƒ‘∞Äâ’π•ëÖëîàËÄâúà∞ÄâΩâ…•ùÖ—Ω…•ºàËÅ—…’î∞ÄââÖÕ•çºàËÅôÖ±ÕîÅÙ(ÄÄÄÅt∞(ÄÄÄÄâ¡ÖÕÕΩÃàËÅl(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâ5•Õ—’…îÅôΩ…ÑÅëºÅôΩùºà∞ÄâëïÕç…•çÖºàËÄâ•ÕÕΩ±ŸÑÅºÅç°ΩçΩ±Ö—îÅÖπ—ïÃÅëîÅÖ≈’ïçï»Å¡Ö…ÑÅïŸ•—Ö»Åù…’µΩÃ∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmÏÄâπΩµîàËÄâ1ï•—îÅçΩπëïπÕÖëºà∞Äâ≈’Öπ—•ëÖëîàËÄÃ‰‘∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄâ°ΩçΩ±Ö—îÅï¥Å√Ãà∞Äâ≈’Öπ—•ëÖëîàËÄ–¿∞Äâ’π•ëÖëîàËÄâúàÅÙ∞ÅÏÄâπΩµîàËÄâ5Öπ—ï•ùÑà∞Äâ≈’Öπ—•ëÖëîàËÄƒ‘∞Äâ’π•ëÖëîàËÄâúàÅıt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ¡Öπï±ÑÅëîÅô’πëºÅù…ΩÕÕºà∞ÄàƒÅçΩ±°ï»ÅΩ‘ÅïÕ√Ö—’±ÑÅ…ïÕ•Õ—ïπ—îÅÖºÅçÖ±Ω»ât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅmt∞ÄâÖçΩïÃàËÅlâΩ¥ÅÑÅ¡Öπï±ÑÅôΩ…ÑÅëºÅôΩùº∞ÅçΩ±Ω≈’îÅºÅ±ï•—îÅçΩπëïπÕÖëºÅîÅºÅç°ΩçΩ±Ö—îÅï¥Å√Ã∏à∞Äâ5•Õ—’…îÅÖ”§ÅºÅç°ΩçΩ±Ö—îÅÕîÅë•Õ—…•â’•»ÅîÅΩÃÅµÖ•Ω…ïÃÅù…’µΩÃÅëïÕÖ¡Ö…ïçï…ï¥∏à∞Äâë•ç•ΩπîÅÑÅµÖπ—ï•ùÑ∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ»Åµ•π’—ΩÃà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâMï¥ÅôΩùºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâÅµ•Õ—’…ÑÅëïŸîÅïÕ—Ö»Å’π•ôΩ…µî∞ÅÕï¥ÅâΩ±œ’ïÃÅÕïçΩÃÅëîÅç°ΩçΩ±Ö—î∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅmtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâΩÈ•π°îÅÖ”§ÅºÅ¡Ωπ—ºà∞ÄâëïÕç…•çÖºàËÄâ5ï·ÑÅçΩπ—•π’Öµïπ—îÅîÅΩâÕï…ŸîÅÑÅ—ï·—’…Ñ∞ÅªçºÅÖ¡ïπÖÃÅºÅ…ï≥Õù•º∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmt∞Äâ’—ïπÕ•±•ΩÃàËÅmt∞ÄâçΩπ—•π’ïUÕÖπëºàËÅlâÅµïÕµÑÅ¡Öπï±Ñà∞ÄâÅµïÕµÑÅçΩ±°ï»ÅΩ‘ÅïÕ√Ö—’±Ñât∞ÄâÖçΩïÃàËÅlâ1ïŸîÅÑÅ¡Öπï±ÑÅÖºÅôΩùºÅâÖ•·º∏à∞Äâ5ï·ÑÅçΩπ—•π’Öµïπ—î∞Å¡ÖÕÕÖπëºÅÑÅçΩ±°ï»Å¡ï±ºÅô’πëºÅîÅ¡ï±ÖÃÅ±Ö—ï…Ö•Ã∏à∞Äâ=âÕï…ŸîÅÑÅµ•Õ—’…ÑÅïπù…ΩÕÕÖ»Åù…Öë’Ö±µïπ—î∏à∞ÄâïÕ±•ù’îÅ≈’ÖπëºÅ’µÑÅ¡ÖÕÕÖùï¥ÅëÑÅçΩ±°ï»ÅÖâ…•»Å’¥ÅçÖµ•π°ºÅ≈’îÅëïµΩ…ÑÅ’¥Å¡Ω’çºÅ¡Ö…ÑÅÕîÅôïç°Ö»ÅîÅºÅâ…•ùÖëï•…ºÅçΩµóùÖ»ÅÑÅÕîÅÕΩ±—Ö»ÅëºÅô’πëº∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâï…çÑÅëîÄ‡ÅÑÄƒ»Åµ•π’—ΩÃ∞ÅçΩπôΩ…µîÅÑÅ¡Öπï±ÑÅîÅºÅôΩüçºà∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâ	Ö•·ºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ<Åâ…•ùÖëï•…ºÅëïŸîÅïÕ—Ö»ÅïÕ¡ïÕÕº∞Åâ…•±°Öπ—îÅîÅÕîÅÖôÖÕ—Ö»ÅëºÅô’πëºÅ¡Ω»ÅÖ±ù’πÃÅ•πÕ—Öπ—ïÃÅ≈’ÖπëºÅÑÅ¡Öπï±ÑÅôΩ»Å•πç±•πÖëÑ∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâÅµ•Õ—’…ÑÅ≈’ïπ—îÅ¡ΩëîÅçÖ’ÕÖ»Å≈’ï•µÖë’…ÖÃÏÅïŸ•—îÅ…ïÕ¡•πùΩÃÅîÅªçºÅ—Ω≈’îÅ¡Ö…ÑÅ—ïÕ—Ö»ÅºÅ¡Ωπ—º∏âtÅÙ∞(ÄÄÄÄÄÅÏÄâ—•—’±ºàËÄâQ…ÖπÕô•…ÑÅîÅëï•·îÅïÕô…•Ö»à∞ÄâëïÕç…•çÖºàËÄâ%π—ï……Ωµ¡ÑÅºÅçΩÈ•µïπ—ºÅîÅïÕ¡ï…îÅÑÅ—ïµ¡ï…Ö—’…ÑÅô•çÖ»ÅÕïù’…ÑÅ¡Ö…ÑÅÕï…Ÿ•»∏à∞Äâ•πù…ïë•ïπ—ïÃàËÅmt∞Äâ’—ïπÕ•±•ΩÃàËÅlàƒÅ…ïç•¡•ïπ—îÅ¡Ö…ÑÅÕï…Ÿ•»ât∞ÄâçΩπ—•π’ïUÕÖπëºàËÅlâÅµïÕµÑÅçΩ±°ï»ÅΩ‘ÅïÕ√Ö—’±Ñât∞ÄâÖçΩïÃàËÅlâIï—•…îÅÑÅ¡Öπï±ÑÅëºÅôΩùº∏à∞ÄâQ…ÖπÕô•…ÑÅºÅâ…•ùÖëï•…ºÅ¡Ö…ÑÅºÅ…ïç•¡•ïπ—î∏à∞Äâï•·îÅÖµΩ…πÖ»ÅÖπ—ïÃÅëîÅÕï…Ÿ•»ÅΩ‘Åç’â…ÑÅëï¡Ω•ÃÅëîÅô…•ºÅ¡Ö…ÑÅù’Ö…ëÖ»∏ât∞Äâ—ïµ¡Ω¡…Ω·•µÖëºàËÄâAï±ºÅµïπΩÃÄƒ¿Åµ•π’—ΩÃÅ¡Ö…ÑÅÖµΩ…πÖ»à∞Äâ•π—ïπÕ•ëÖëïΩùºàËÄâïÕ±•ùÖëºà∞Äâ¡Ωπ—ΩÕ¡ï…ÖëºàËÄâ<ÅëΩçîÅëïŸîÅïÕ—Ö»ÅµΩ…πºÅΩ‘Åô…•ºÅºÅÕ’ô•ç•ïπ—îÅ¡Ö…ÑÅÕï»ÅçΩπÕ’µ•ëºÅçΩ¥ÅÕïù’…ÖªùÑ∏à∞ÄâΩâÕï…ŸÖçΩïÃàËÅlâ;çºÅëï•·îÅç…•ÖªùÖÃÅµÖπ’ÕïÖ…ï¥ÅÑÅ¡Öπï±ÑÅΩ‘ÅºÅëΩçîÅïπ≈’Öπ—ºÅïÕ—•Ÿï…ï¥Å≈’ïπ—ïÃ∏âtÅÙ(ÄÄÄÅt(ÄÅÙ)t

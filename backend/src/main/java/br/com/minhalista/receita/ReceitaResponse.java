@@ -13,6 +13,7 @@ public record ReceitaResponse(
     int tempoMinutos,
     String dificuldade,
     String rendimento,
+    List<String> utensilios,
     List<IngredienteResponse> ingredientes,
     List<PassoResponse> passos,
     int ingredientesDisponiveis,
@@ -35,5 +36,23 @@ public record ReceitaResponse(
         boolean suficiente
     ) { }
 
-    public record PassoResponse(int numero, String titulo, String descricao) { }
+    public record PassoResponse(
+        int numero,
+        String titulo,
+        String descricao,
+        List<IngredientePassoResponse> ingredientes,
+        List<String> utensilios,
+        List<String> continueUsando,
+        List<String> acoes,
+        String tempoAproximado,
+        String intensidadeFogo,
+        String pontoEsperado,
+        List<String> observacoes
+    ) { }
+
+    public record IngredientePassoResponse(
+        String nome,
+        BigDecimal quantidade,
+        String unidade
+    ) { }
 }

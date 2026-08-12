@@ -21,6 +21,7 @@ import br.com.minhalista.lista.ItemListaRequest;
 import br.com.minhalista.lista.ListaCompraResponse;
 import br.com.minhalista.lista.ListaCompraService;
 import br.com.minhalista.receita.NormalizadorIngrediente.UnidadeCanonica;
+import br.com.minhalista.receita.ReceitaResponse.IngredientePassoResponse;
 import br.com.minhalista.receita.ReceitaResponse.IngredienteResponse;
 import br.com.minhalista.receita.ReceitaResponse.PassoResponse;
 import br.com.minhalista.usuario.Usuario;
@@ -176,7 +177,25 @@ public class ReceitaService {
             : BigDecimal.valueOf(disponiveis)
                 .divide(BigDecimal.valueOf(obrigatorios.size()), 4, RoundingMode.HALF_UP);
         List<PassoResponse> passos = receita.getPassos().stream()
-            .map(passo -> new PassoResponse(passo.getOrdem() + 1, passo.getTitulo(), passo.getDescricao()))
+            .map(passo -> new PassoResponse(
+                passo.getOrdem() + 1,
+                passo.getTitulo(),
+                passo.getDescricao(),
+                passo.getIngredientes().stream()
+                    .map(item -> new IngredientePassoResponse(
+                        item.getNome(),
+                        item.getQuantidade(),
+                        item.getUnidade()
+                    ))
+                    .toList(),
+                passo.getUtensilios(),
+                passo.getContinueUsando(),
+                passo.getAcoes(),
+                passo.getTempoAproximado(),
+                passo.getIntensidadeFogo(),
+                passo.getPontoEsperado(),
+                passo.getObservacoes()
+            ))
             .toList();
 
         return new ReceitaResponse(
@@ -189,6 +208,7 @@ public class ReceitaService {
             receita.getTempoMinutos(),
             receita.getDificuldade(),
             receita.getRendimento(),
+            receita.getUtensilios(),
             ingredientes,
             passos,
             disponiveis,
