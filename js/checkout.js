@@ -2,6 +2,7 @@ import {
     normalizarMedidaProduto,
     produtoEhPorPeso
 } from "./medidas-produtos.js";
+import { adicionarCompraADespensa } from "./despensa.js";
 
 const CHAVE_HISTORICO = "historicoCompras";
 const CHAVE_ULTIMA_COMPRA = "ultimaCompra";
@@ -222,6 +223,8 @@ export function finalizarCompra(produtos = []) {
         economia
 
     };
+
+    adicionarCompraADespensa(itens);
 
     historico.unshift(compra);
 
