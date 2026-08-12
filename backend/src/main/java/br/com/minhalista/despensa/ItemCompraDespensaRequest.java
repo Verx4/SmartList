@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ItemCompraDespensaRequest(
@@ -11,10 +12,14 @@ public record ItemCompraDespensaRequest(
     @Size(max = 160)
     String nome,
 
+    @NotNull
     @DecimalMin(value = "0.000", inclusive = false)
     BigDecimal quantidade,
 
     @NotBlank
     @Size(max = 30)
-    String unidade
+    String unidade,
+
+    @Size(max = 80)
+    String categoria
 ) { }

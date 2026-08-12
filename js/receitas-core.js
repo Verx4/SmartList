@@ -12,7 +12,9 @@ const ALIASES = new Map([
     ["muçarela", "queijo"],
     ["goma de tapioca", "tapioca"],
     ["flocos de milho", "flocão de milho"],
-    ["oleo", "azeite"]
+    ["oleo", "azeite"],
+    ["macaxeira", "mandioca"],
+    ["aipim", "mandioca"]
 ]);
 
 const ROTULOS_CATEGORIA = Object.freeze({
@@ -23,9 +25,7 @@ const ROTULOS_CATEGORIA = Object.freeze({
 });
 
 function semAcentos(valor) {
-    return String(valor || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+    return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function textoLimpo(valor) {
@@ -41,11 +41,7 @@ export function normalizarIngrediente(valor) {
     const comparavel = semAcentos(original);
     const aliasEncontrado = [...ALIASES.entries()].find(([alias]) => semAcentos(alias) === comparavel);
     const canonico = aliasEncontrado ? semAcentos(aliasEncontrado[1]) : comparavel;
-
-    return canonico
-        .replace(/\b(de|da|do)\b/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+    return canonico.replace(/\b(de|da|do)\b/g, " ").replace(/\s+/g, " ").trim();
 }
 
 export function normalizarUnidade(valor) {
@@ -72,21 +68,28 @@ function chaveInventario(nome, unidade) {
 
 export function criarInventario(itens = [], ingredientesManuais = []) {
     const inventario = new Map();
-
     for (const item of itens || []) {
         const nome = item?.nome || item?.produto || "";
         if (!nome) continue;
-        const canonica = quantidadeCanonica(item.quantidade ?? item.peso ?? 0, item.unidade || item.medida || "unidade");
+        const quantidadeConhecida = item.quantidadeConhecida !== false
+            && item.quantidade !== null
+            && item.quantidade !== undefined;
+        const canonica = quantidadeCanonica(
+            quantidadeConhecida ? item.quantidade ?? item.peso ?? 0 : 0,
+            item.unidade || item.medida || "unidade"
+        );
         const chave = chaveInventario(nome, canonica.unidade);
         const atual = inventario.get(chave);
+        const ambasConhecidas = quantidadeConhecida && atual?.quantidadeConhecida !== false;
         inventario.set(chave, {
             nome,
             unidade: canonica.unidade,
-            quantidade: (atual?.quantidade || 0) + canonica.quantidade,
+            quantidade: ambasConhecidas ? (atual?.quantidade || 0) + canonica.quantidade : null,
+            quantidadeConhecida: ambasConhecidas,
+            presente: true,
             manual: false
         });
     }
-
     for (const nome of ingredientesManuais || []) {
         const ingrediente = textoLimpo(nome);
         if (!ingrediente) continue;
@@ -94,17 +97,18 @@ export function criarInventario(itens = [], ingredientesManuais = []) {
         const existente = [...inventario.entries()].find(([chave]) => chave.startsWith(`${canonico}::`));
         if (existente) {
             existente[1].manual = true;
-            existente[1].quantidade = Number.POSITIVE_INFINITY;
+            existente[1].presente = true;
             continue;
         }
         inventario.set(`${canonico}::*`, {
             nome: ingrediente,
             unidade: "*",
-            quantidade: Number.POSITIVE_INFINITY,
+            quantidade: null,
+            quantidadeConhecida: false,
+            presente: true,
             manual: true
         });
     }
-
     return inventario;
 }
 
@@ -122,26 +126,41 @@ export function avaliarReceita(receita, inventario) {
     const itens = (receita.ingredientes || []).map(ingrediente => {
         const necessario = quantidadeCanonica(ingrediente.quantidade, ingrediente.unidade);
         const disponivel = ingrediente.basico
-            ? { quantidade: Number.POSITIVE_INFINITY, unidade: necessario.unidade, manual: true }
+            ? { quantidade: Number.POSITIVE_INFINITY, unidade: necessario.unidade, quantidadeConhecida: true, presente: true }
             : localizarNoInventario(ingrediente, inventario);
         const unidadeCompativel = Boolean(disponivel)
-            && (disponivel.unidade === necessario.unidade || disponivel.unidade === "*" || disponivel.manual);
+            && (disponivel.quantidadeConhecida === false
+                || disponivel.unidade === necessario.unidade
+                || disponivel.unidade === "*"
+                || disponivel.manual);
+        const presente = unidadeCompativel && disponivel.presente !== false;
+        const quantidadeConhecida = presente && disponivel.quantidadeConhecida !== false;
         const suficiente = !ingrediente.obrigatorio
             || ingrediente.basico
-            || (unidadeCompativel && disponivel.quantidade >= necessario.quantidade);
-        const quantidadeDisponivel = unidadeCompativel ? disponivel.quantidade : 0;
-        const falta = suficiente ? 0 : Math.max(0, necessario.quantidade - quantidadeDisponivel);
+            || (quantidadeConhecida && disponivel.quantidade >= necessario.quantidade);
+        const quantidadeDisponivel = quantidadeConhecida ? disponivel.quantidade : null;
+        const falta = suficiente || (presente && !quantidadeConhecida)
+            ? 0
+            : Math.max(0, necessario.quantidade - (quantidadeDisponivel || 0));
         return {
             ...ingrediente,
-            disponivel: Number.isFinite(quantidadeDisponivel) ? quantidadeDisponivel : necessario.quantidade,
+            disponivel: quantidadeDisponivel,
+            presente,
+            quantidadeConhecida,
+            quantidadeDesconhecida: presente && !quantidadeConhecida,
             unidadeCanonica: necessario.unidade,
             quantidadeCanonica: necessario.quantidade,
             falta,
             suficiente
         };
     });
-    const tem = itens.filter(item => item.obrigatorio && !item.basico && item.suficiente).length;
-    const faltantes = itens.filter(item => item.obrigatorio && !item.basico && !item.suficiente);
+    const tem = itens.filter(item => item.obrigatorio && !item.basico && item.presente).length;
+    const faltantes = itens.filter(item => item.obrigatorio && !item.basico && (
+        !item.presente || (item.quantidadeConhecida && !item.suficiente)
+    ));
+    const quantidadesDesconhecidas = itens.filter(item =>
+        item.obrigatorio && !item.basico && item.quantidadeDesconhecida
+    );
     const total = obrigatorios.length;
     return {
         receita,
@@ -149,16 +168,14 @@ export function avaliarReceita(receita, inventario) {
         tem,
         total,
         faltantes,
+        quantidadesDesconhecidas,
         compatibilidade: total ? tem / total : 1,
-        podeFazer: faltantes.length === 0
+        podeFazer: faltantes.length === 0 && quantidadesDesconhecidas.length === 0
     };
 }
 
 export function ingredientesDoTexto(valor) {
-    return String(valor || "")
-        .split(",")
-        .map(textoLimpo)
-        .filter(Boolean);
+    return String(valor || "").split(",").map(textoLimpo).filter(Boolean);
 }
 
 export function tempoCompativel(minutos, filtro) {
@@ -172,10 +189,37 @@ export function tempoCompativel(minutos, filtro) {
     return true;
 }
 
+function distanciaEdicao(a, b) {
+    const anterior = Array.from({ length: b.length + 1 }, (_, indice) => indice);
+    for (let i = 1; i <= a.length; i += 1) {
+        const atual = [i];
+        for (let j = 1; j <= b.length; j += 1) {
+            atual[j] = Math.min(
+                atual[j - 1] + 1,
+                anterior[j] + 1,
+                anterior[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+            );
+        }
+        anterior.splice(0, anterior.length, ...atual);
+    }
+    return anterior[b.length];
+}
+
+function correspondeBusca(receita, busca) {
+    const campos = [receita.nome, ...(receita.ingredientes || []).map(item => item.nome)]
+        .map(item => semAcentos(textoLimpo(item)));
+    if (campos.some(campo => campo.includes(busca))) return true;
+    return campos.some(campo => campo.split(" ").some(palavra =>
+        busca.length >= 5
+        && Math.abs(palavra.length - busca.length) <= 1
+        && distanciaEdicao(palavra, busca) <= 1
+    ));
+}
+
 export function filtrarEOrdenarReceitas(receitas, inventario, filtros = {}) {
     const busca = semAcentos(textoLimpo(filtros.busca));
     return (receitas || [])
-        .filter(receita => !busca || semAcentos(receita.nome).toLocaleLowerCase("pt-BR").includes(busca))
+        .filter(receita => !busca || correspondeBusca(receita, busca))
         .filter(receita => !filtros.categoria || filtros.categoria === "todas" || receita.categoria === filtros.categoria)
         .filter(receita => !filtros.tipo || filtros.tipo === "todas" || receita.tipo === filtros.tipo)
         .filter(receita => tempoCompativel(receita.tempoMinutos, filtros.tempo))
@@ -190,23 +234,48 @@ export function filtrarEOrdenarReceitas(receitas, inventario, filtros = {}) {
         });
 }
 
+export function agruparSugestoes(receitas, inventario, limite = 3) {
+    const ordenadas = filtrarEOrdenarReceitas(receitas, inventario);
+    return Object.keys(ROTULOS_CATEGORIA).reduce((grupos, categoria) => {
+        grupos[categoria] = ordenadas
+            .filter(item => item.receita.categoria === categoria)
+            .slice(0, Math.max(0, Number(limite) || 3));
+        return grupos;
+    }, {});
+}
+
 export function somarAoEstoque(estoque = [], itens = []) {
     const resultado = (estoque || []).map(item => ({ ...item }));
     for (const item of itens || []) {
-        const canonica = quantidadeCanonica(item.quantidade ?? item.peso ?? 0, item.unidade || item.medida || "unidade");
-        if (!item.nome || canonica.quantidade <= 0) continue;
-        const chave = chaveInventario(item.nome, canonica.unidade);
-        const existente = resultado.find(entrada => chaveInventario(entrada.nome, entrada.unidade) === chave);
+        const quantidadeConhecida = item.quantidadeConhecida !== false
+            && item.quantidade !== null
+            && item.quantidade !== undefined;
+        const canonica = quantidadeCanonica(
+            quantidadeConhecida ? item.quantidade ?? item.peso ?? 0 : 0,
+            item.unidade || item.medida || "unidade"
+        );
+        if (!item.nome || (quantidadeConhecida && canonica.quantidade <= 0)) continue;
+        const existente = resultado.find(entrada =>
+            normalizarIngrediente(entrada.nome) === normalizarIngrediente(item.nome)
+        );
         if (existente) {
-            existente.quantidade = Math.max(0, Number(existente.quantidade) || 0) + canonica.quantidade;
+            if (existente.quantidadeConhecida !== false && quantidadeConhecida
+                && normalizarUnidade(existente.unidade).unidade === canonica.unidade) {
+                existente.quantidade = Math.max(0, Number(existente.quantidade) || 0) + canonica.quantidade;
+            } else if (existente.quantidadeConhecida === false || !quantidadeConhecida) {
+                existente.quantidade = null;
+                existente.quantidadeConhecida = false;
+            }
             existente.atualizadoEm = new Date().toISOString();
         } else {
             resultado.push({
                 id: globalThis.crypto?.randomUUID?.() || `${Date.now()}-${resultado.length}`,
                 nome: item.nome,
                 chaveProduto: normalizarIngrediente(item.nome),
-                quantidade: canonica.quantidade,
+                quantidade: quantidadeConhecida ? canonica.quantidade : null,
+                quantidadeConhecida,
                 unidade: canonica.unidade,
+                categoria: item.categoria || "Alimento",
                 atualizadoEm: new Date().toISOString()
             });
         }
@@ -216,6 +285,7 @@ export function somarAoEstoque(estoque = [], itens = []) {
 
 export function descontarDoEstoque(estoque = [], ingredientes = []) {
     return (estoque || []).map(item => {
+        if (item.quantidadeConhecida === false || item.quantidade === null) return { ...item };
         const ingrediente = (ingredientes || []).find(candidato =>
             normalizarIngrediente(candidato.nome) === normalizarIngrediente(item.nome)
             && quantidadeCanonica(candidato.quantidade, candidato.unidade).unidade === normalizarUnidade(item.unidade).unidade
@@ -251,6 +321,7 @@ export function integrarFaltantesNaLista(lista = [], faltantes = []) {
 }
 
 export function formatarQuantidade(quantidade, unidade) {
+    if (quantidade === null || quantidade === undefined) return "Quantidade não informada";
     const numero = Number(quantidade) || 0;
     const texto = Number.isInteger(numero)
         ? String(numero)

@@ -11,10 +11,12 @@ public record ItemDespensaRequest(
     @Size(max = 160, message = "O produto deve possuir no máximo 160 caracteres.")
     String nome,
 
-    @DecimalMin(value = "0.000", inclusive = false, message = "A quantidade deve ser maior que zero.")
+    @DecimalMin(value = "0.000", inclusive = false, message = "A quantidade deve ser maior que zero quando informada.")
     BigDecimal quantidade,
 
-    @NotBlank(message = "Informe a unidade.")
     @Size(max = 30, message = "A unidade deve possuir no máximo 30 caracteres.")
-    String unidade
+    String unidade,
+
+    @Size(max = 80, message = "A categoria deve possuir no máximo 80 caracteres.")
+    String categoria
 ) { }

@@ -63,7 +63,7 @@ public class ReceitaService {
         boolean somenteDisponiveis
     ) {
         Usuario usuario = usuarioService.obterAutenticado();
-        Map<String, BigDecimal> inventario = inventario(usuario);
+        Map<String, Disponibilidade> inventario = inventario(usuario);
         Set<String> manuais = ingredientesManuais(ingredientes);
         Set<String> favoritas = favoritoRepository.findByUsuarioId(usuario.getId()).stream()
             .map(item -> item.getReceita().getId())
@@ -71,8 +71,7 @@ public class ReceitaService {
         String buscaNormalizada = NormalizadorIngrediente.chave(busca);
 
         return receitaRepository.findAll().stream()
-            .filter(receita -> buscaNormalizada.isBlank()
-                || NormalizadorIngrediente.chave(receita.getNome()).contains(buscaNormalizada))
+            .filter(receita -> buscaCompativel(receita, buscaNormalizada))
             .filter(receita -> categoria == null || categoria.isBlank() || "todas".equals(categoria)
                 || receita.getCategoria().equals(categoria))
             .filter(receita -> tipo == null || tipo.isBlank() || "todas".equals(tipo)
@@ -102,7 +101,7 @@ public class ReceitaService {
     @Transactional(readOnly = true)
     public List<ReceitaResponse> favoritas() {
         Usuario usuario = usuarioService.obterAutenticado();
-        Map<String, BigDecimal> inventario = inventario(usuario);
+        Map<String, Disponibilidade> inventario = inventario(usuario);
         return favoritoRepository.findByUsuarioId(usuario.getId()).stream()
             .map(FavoritoReceita::getReceita)
             .map(receita -> avaliar(receita, inventario, Set.of(), true))
@@ -157,7 +156,7 @@ public class ReceitaService {
 
     private ReceitaResponse avaliar(
         Receita receita,
-        Map<String, BigDecimal> inventario,
+        Map<String, Disponibilidade> inventario,
         Set<String> manuais,
         boolean favorita
     ) {
@@ -169,9 +168,13 @@ public class ReceitaService {
             .filter(item -> !item.basico())
             .toList();
         List<IngredienteResponse> faltantes = obrigatorios.stream()
-            .filter(item -> !item.suficiente())
+            .filter(item -> !item.presente() || (item.quantidadeConhecida() && !item.suficiente()))
             .toList();
-        int disponiveis = obrigatorios.size() - faltantes.size();
+        List<IngredienteResponse> quantidadesDesconhecidas = obrigatorios.stream()
+            .filter(IngredienteResponse::presente)
+            .filter(item -> !item.quantidadeConhecida())
+            .toList();
+        int disponiveis = (int) obrigatorios.stream().filter(IngredienteResponse::presente).count();
         BigDecimal compatibilidade = obrigatorios.isEmpty()
             ? BigDecimal.ONE
             : BigDecimal.valueOf(disponiveis)
@@ -208,21 +211,25 @@ public class ReceitaService {
             receita.getTempoMinutos(),
             receita.getDificuldade(),
             receita.getRendimento(),
+            receita.getOrigem(),
+            receita.getFonte(),
+            receita.getReferenciaExterna(),
             receita.getUtensilios(),
             ingredientes,
             passos,
             disponiveis,
             obrigatorios.size(),
             faltantes,
+            quantidadesDesconhecidas,
             compatibilidade,
-            faltantes.isEmpty(),
+            faltantes.isEmpty() && quantidadesDesconhecidas.isEmpty(),
             favorita
         );
     }
 
     private IngredienteResponse avaliarIngrediente(
         IngredienteReceita ingrediente,
-        Map<String, BigDecimal> inventario,
+        Map<String, Disponibilidade> inventario,
         Set<String> manuais
     ) {
         UnidadeCanonica necessario = NormalizadorIngrediente.converter(
@@ -230,15 +237,26 @@ public class ReceitaService {
             ingrediente.getUnidade()
         );
         String chave = ingrediente.getChaveProduto() + "::" + necessario.unidade();
-        BigDecimal disponivel = manuais.contains(ingrediente.getChaveProduto())
-            ? necessario.quantidade()
-            : inventario.getOrDefault(chave, BigDecimal.ZERO);
+        Disponibilidade disponibilidade = manuais.contains(ingrediente.getChaveProduto())
+            ? new Disponibilidade(BigDecimal.ZERO, false)
+            : inventario.get(chave);
+        if (disponibilidade == null) {
+            disponibilidade = inventario.entrySet().stream()
+                .filter(item -> item.getKey().startsWith(ingrediente.getChaveProduto() + "::"))
+                .map(Map.Entry::getValue)
+                .filter(item -> !item.conhecida())
+                .findFirst()
+                .orElse(null);
+        }
+        boolean presente = disponibilidade != null;
+        boolean quantidadeConhecida = presente && disponibilidade.conhecida();
+        BigDecimal disponivel = quantidadeConhecida ? disponibilidade.quantidade() : null;
         boolean suficiente = !ingrediente.isObrigatorio()
             || ingrediente.isBasico()
-            || disponivel.compareTo(necessario.quantidade()) >= 0;
-        BigDecimal falta = suficiente
+            || (quantidadeConhecida && disponivel.compareTo(necessario.quantidade()) >= 0);
+        BigDecimal falta = suficiente || (presente && !quantidadeConhecida)
             ? BigDecimal.ZERO
-            : necessario.quantidade().subtract(disponivel).max(BigDecimal.ZERO);
+            : necessario.quantidade().subtract(disponivel == null ? BigDecimal.ZERO : disponivel).max(BigDecimal.ZERO);
         return new IngredienteResponse(
             ingrediente.getNome(),
             ingrediente.getChaveProduto(),
@@ -247,17 +265,25 @@ public class ReceitaService {
             ingrediente.isObrigatorio(),
             ingrediente.isBasico(),
             disponivel,
+            presente || ingrediente.isBasico(),
+            quantidadeConhecida || ingrediente.isBasico(),
             falta,
             necessario.unidade(),
             suficiente
         );
     }
 
-    private Map<String, BigDecimal> inventario(Usuario usuario) {
-        Map<String, BigDecimal> resultado = new HashMap<>();
+    private Map<String, Disponibilidade> inventario(Usuario usuario) {
+        Map<String, Disponibilidade> resultado = new HashMap<>();
         for (ItemDespensa item : despensaService.listarDoUsuario(usuario)) {
             String chave = item.getChaveProduto() + "::" + item.getUnidade();
-            resultado.merge(chave, item.getQuantidade(), BigDecimal::add);
+            resultado.merge(
+                chave,
+                new Disponibilidade(item.getQuantidade(), item.isQuantidadeConhecida()),
+                (atual, novo) -> atual.conhecida() && novo.conhecida()
+                    ? new Disponibilidade(atual.quantidade().add(novo.quantidade()), true)
+                    : new Disponibilidade(BigDecimal.ZERO, false)
+            );
         }
         return resultado;
     }
@@ -282,6 +308,33 @@ public class ReceitaService {
             case "60-mais" -> minutos >= 60;
             default -> true;
         };
+    }
+
+    private boolean buscaCompativel(Receita receita, String busca) {
+        if (busca.isBlank()) return true;
+        List<String> campos = new java.util.ArrayList<>();
+        campos.add(NormalizadorIngrediente.chave(receita.getNome()));
+        receita.getIngredientes().stream().map(IngredienteReceita::getNome)
+            .map(NormalizadorIngrediente::chave).forEach(campos::add);
+        if (campos.stream().anyMatch(campo -> campo.contains(busca))) return true;
+        if (busca.length() < 5) return false;
+        return campos.stream().flatMap(campo -> Arrays.stream(campo.split("\\s+")))
+            .anyMatch(palavra -> Math.abs(palavra.length() - busca.length()) <= 1
+                && distanciaEdicao(palavra, busca) <= 1);
+    }
+
+    private int distanciaEdicao(String origem, String destino) {
+        int[] anterior = java.util.stream.IntStream.rangeClosed(0, destino.length()).toArray();
+        for (int i = 1; i <= origem.length(); i++) {
+            int[] atual = new int[destino.length() + 1];
+            atual[0] = i;
+            for (int j = 1; j <= destino.length(); j++) {
+                int custo = origem.charAt(i - 1) == destino.charAt(j - 1) ? 0 : 1;
+                atual[j] = Math.min(Math.min(atual[j - 1] + 1, anterior[j] + 1), anterior[j - 1] + custo);
+            }
+            anterior = atual;
+        }
+        return anterior[destino.length()];
     }
 
     private ItemListaRequest itemLista(IngredienteResponse falta) {
@@ -309,4 +362,6 @@ public class ReceitaService {
         return receitaRepository.findById(id)
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Receita não encontrada."));
     }
+
+    private record Disponibilidade(BigDecimal quantidade, boolean conhecida) { }
 }
