@@ -113,7 +113,56 @@ test("Teste 10 — modo cozinha possui layout específico para celular e web", a
     assert.equal(modoResponsivo(390), "mobile");
     assert.equal(modoResponsivo(1440), "web");
     assert.match(css, /@media \(max-width: 640px\)/);
-    assert.match(css, /\.modo-cozinha main h1/);
+    assert.match(css, /\.modo-cozinha \.cozinha-etapa > h1/);
     assert.match(css, /overflow-x: hidden/);
     assert.match(html, /id="modoCozinha"/);
+});
+
+test("Preparo guiado — todas as receitas possuem utensílios e etapas estruturadas", () => {
+    assert.ok(receitas.every(receita => Array.isArray(receita.utensilios) && receita.utensilios.length > 0));
+    assert.ok(receitas.every(receita => receita.passos.every(passo =>
+        Array.isArray(passo.ingredientes)
+        && Array.isArray(passo.utensilios)
+        && Array.isArray(passo.continueUsando)
+        && Array.isArray(passo.acoes)
+        && passo.acoes.length > 0
+        && passo.tempoAproximado
+        && passo.intensidadeFogo
+        && passo.pontoEsperado
+        && Array.isArray(passo.observacoes)
+    )));
+});
+
+test("Preparo guiado — ingredientes usados pertencem à lista geral da receita", () => {
+    for (const receita of receitas) {
+        const gerais = new Set(receita.ingredientes.map(item => item.nome));
+        for (const passo of receita.passos) {
+            assert.ok(passo.ingredientes.every(item => gerais.has(item.nome)), `${receita.nome}: ingrediente sem vínculo`);
+        }
+    }
+});
+
+test("Preparo guiado — Feijão Tropeiro orienta uso, fogo, ponto e continuidade", () => {
+    const carnes = tropeiro.passos.find(passo => passo.titulo === "Doure as carnes");
+    const temperos = tropeiro.passos.find(passo => passo.titulo === "Refogue os temperos e a couve");
+    assert.deepEqual(carnes.ingredientes.map(item => item.nome), ["Calabresa", "Charque", "Óleo"]);
+    assert.equal(carnes.intensidadeFogo, "Médio");
+    assert.match(carnes.pontoEsperado, /douradas/i);
+    assert.ok(temperos.continueUsando.some(item => /mesma panela/i.test(item)));
+    assert.ok(temperos.acoes.length >= 4);
+});
+
+test("Preparo guiado — modo cozinha oferece progresso e consultas sem perder a etapa", async () => {
+    const [css, html, js] = await Promise.all([
+        readFile(new URL("../css/receitas.css", import.meta.url), "utf8"),
+        readFile(new URL("../comparacao.html", import.meta.url), "utf8"),
+        readFile(new URL("../js/receitas.js", import.meta.url), "utf8")
+    ]);
+    assert.match(html, /id="barraModoCozinha"/);
+    assert.match(html, /id="verIngredientesCozinha"/);
+    assert.match(html, /id="verUtensiliosCozinha"/);
+    assert.match(html, /id="consultaCozinhaDialog"/);
+    assert.match(js, /estadoPassoCozinha/);
+    assert.match(js, /abrirConsultaCozinha/);
+    assert.match(css, /\.modo-cozinha footer button[\s\S]*min-height: 62px/);
 });

@@ -9,6 +9,7 @@
     "tempoMinutos": 45,
     "dificuldade": "Média",
     "rendimento": "4 porções",
+    "utensilios": ["1 panela de pressão ou panela média com tampa", "1 panela ampla", "1 panela pequena", "1 escorredor", "1 faca", "1 tábua de corte", "1 colher de madeira", "2 tigelas"],
     "ingredientes": [
       { "nome": "Feijão", "quantidade": 500, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Couve", "quantidade": 1, "unidade": "maço", "obrigatorio": true, "basico": false },
@@ -18,16 +19,94 @@
       { "nome": "Charque", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Cebola", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false },
+      { "nome": "Óleo", "quantidade": 15, "unidade": "ml", "obrigatorio": false, "basico": true },
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Prepare o feijão", "descricao": "Cozinhe o feijão até ficar macio, mas sem desmanchar. Escorra e reserve." },
-      { "titulo": "Prepare as carnes", "descricao": "Doure a calabresa e a charque dessalgada em uma panela ampla." },
-      { "titulo": "Refogue alho e cebola", "descricao": "Junte o alho e a cebola e refogue até ficarem levemente dourados." },
-      { "titulo": "Misture o feijão", "descricao": "Adicione o feijão preparado e misture delicadamente." },
-      { "titulo": "Adicione a couve", "descricao": "Acrescente a couve fatiada e cozinhe apenas até murchar." },
-      { "titulo": "Adicione a farinha", "descricao": "Incorpore a farinha aos poucos até atingir a textura desejada." },
-      { "titulo": "Finalize", "descricao": "Junte os ovos cozidos ou mexidos, ajuste o sal e sirva." }
+      {
+        "titulo": "Cozinhe o feijão",
+        "descricao": "Deixe o feijão macio, mas ainda inteiro, para que não desmanche na mistura final.",
+        "ingredientes": [{ "nome": "Feijão", "quantidade": 500, "unidade": "g" }],
+        "utensilios": ["1 panela de pressão ou panela média com tampa", "1 escorredor", "1 tigela"],
+        "continueUsando": [],
+        "acoes": ["Confira se os grãos estão limpos e lave-os em água corrente.", "Coloque o feijão na panela, cubra com água e tampe.", "Cozinhe até os grãos ficarem macios, acompanhando o tempo indicado para a panela utilizada.", "Desligue o fogo, aguarde toda a pressão sair naturalmente se usar panela de pressão e só então abra.", "Escorra o excesso de líquido e reserve o feijão em uma tigela."],
+        "tempoAproximado": "Cerca de 15 a 25 minutos após atingir pressão; em panela comum, o tempo pode ser maior",
+        "intensidadeFogo": "Médio; reduza após a panela atingir pressão",
+        "pontoEsperado": "O grão deve estar macio ao ser pressionado, mas manter o formato e não virar purê.",
+        "observacoes": ["Nunca force a abertura da panela de pressão. Aguarde a pressão sair completamente."]
+      },
+      {
+        "titulo": "Prepare os ingredientes",
+        "descricao": "Deixe carnes, verduras, temperos e ovos prontos antes de começar o refogado.",
+        "ingredientes": [{ "nome": "Calabresa", "quantidade": 200, "unidade": "g" }, { "nome": "Charque", "quantidade": 150, "unidade": "g" }, { "nome": "Couve", "quantidade": 1, "unidade": "maço" }, { "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }, { "nome": "Ovos", "quantidade": 4, "unidade": "unidade" }],
+        "utensilios": ["1 faca", "1 tábua de corte", "1 panela pequena", "1 tigela"],
+        "continueUsando": [],
+        "acoes": ["Higienize a couve, seque e corte em tiras finas.", "Descasque e pique a cebola e o alho.", "Corte a calabresa em rodelas ou cubos de tamanho parecido.", "Use a charque já dessalgada, cozida e desfiada; mantenha-a separada.", "Cozinhe os ovos em água até a clara e a gema estarem firmes, espere amornar, descasque e corte."],
+        "tempoAproximado": "Aproximadamente 10 a 15 minutos",
+        "intensidadeFogo": "Médio para cozinhar os ovos",
+        "pontoEsperado": "Todos os ingredientes devem estar cortados e separados; os ovos devem estar firmes e a charque, previamente dessalgada.",
+        "observacoes": ["Use utensílios limpos e lave as mãos após manipular ingredientes crus."]
+      },
+      {
+        "titulo": "Doure as carnes",
+        "descricao": "Crie sabor dourando primeiro a calabresa e depois aquecendo a charque.",
+        "ingredientes": [{ "nome": "Calabresa", "quantidade": 200, "unidade": "g" }, { "nome": "Charque", "quantidade": 150, "unidade": "g" }, { "nome": "Óleo", "quantidade": 15, "unidade": "ml" }],
+        "utensilios": ["1 panela ampla", "1 colher de madeira"],
+        "continueUsando": [],
+        "acoes": ["Coloque a panela no fogão e aqueça em fogo médio.", "Adicione o óleo e espalhe pelo fundo.", "Junte a calabresa e mexa de vez em quando até as bordas começarem a dourar.", "Acrescente a charque preparada e misture até ficar bem aquecida e ganhar pontos dourados."],
+        "tempoAproximado": "Cerca de 6 a 8 minutos",
+        "intensidadeFogo": "Médio",
+        "pontoEsperado": "As carnes devem estar aquecidas e com algumas partes levemente douradas, sem cheiro ou pontos de queimado.",
+        "observacoes": ["O tempo varia com a espessura dos cortes e a panela; use o dourado como referência principal."]
+      },
+      {
+        "titulo": "Refogue os temperos e a couve",
+        "descricao": "Amacie a cebola, perfume com alho e murche levemente a couve.",
+        "ingredientes": [{ "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }, { "nome": "Couve", "quantidade": 1, "unidade": "maço" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Mantenha a panela em fogo médio e abra um espaço entre as carnes.", "Adicione a cebola e mexa até começar a ficar macia e levemente transparente.", "Junte o alho e mexa por alguns instantes, somente até liberar aroma.", "Acrescente a couve fatiada e misture com o restante até começar a murchar."],
+        "tempoAproximado": "Aproximadamente 3 a 5 minutos",
+        "intensidadeFogo": "Médio",
+        "pontoEsperado": "A cebola deve estar macia, o alho aromático sem escurecer demais e a couve ligeiramente murcha, ainda verde.",
+        "observacoes": ["O alho queima rapidamente; reduza o fogo se começar a escurecer antes de perfumar."]
+      },
+      {
+        "titulo": "Misture o feijão",
+        "descricao": "Incorpore os grãos com cuidado para preservar a textura.",
+        "ingredientes": [{ "nome": "Feijão", "quantidade": 500, "unidade": "g" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Adicione o feijão escorrido à panela.", "Misture devagar, puxando os ingredientes do fundo para cima.", "Deixe aquecer por alguns minutos, mexendo apenas o necessário."],
+        "tempoAproximado": "Cerca de 2 a 3 minutos",
+        "intensidadeFogo": "Médio para baixo",
+        "pontoEsperado": "O feijão deve estar quente e bem distribuído, com a maior parte dos grãos ainda inteira.",
+        "observacoes": []
+      },
+      {
+        "titulo": "Incorpore a farinha",
+        "descricao": "Adicione a farinha aos poucos para controlar a umidade do tropeiro.",
+        "ingredientes": [{ "nome": "Farinha de mandioca", "quantidade": 200, "unidade": "g" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Reduza o fogo.", "Espalhe parte da farinha sobre a mistura e mexa.", "Continue acrescentando aos poucos, parando quando a mistura ficar soltinha, mas não ressecada.", "Desligue o fogo quando atingir a textura desejada."],
+        "tempoAproximado": "Aproximadamente 2 minutos",
+        "intensidadeFogo": "Baixo",
+        "pontoEsperado": "A farinha deve envolver os ingredientes sem formar uma massa seca; o tropeiro deve continuar úmido e soltinho.",
+        "observacoes": ["Talvez não seja necessário usar toda a farinha, pois a umidade do feijão pode variar."]
+      },
+      {
+        "titulo": "Finalize com os ovos",
+        "descricao": "Acrescente os ovos, prove e ajuste o tempero antes de servir.",
+        "ingredientes": [{ "nome": "Ovos", "quantidade": 4, "unidade": "unidade" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }],
+        "utensilios": [],
+        "continueUsando": ["A mesma panela ampla", "A mesma colher de madeira"],
+        "acoes": ["Com o fogo desligado, adicione os ovos cortados.", "Misture delicadamente para não desfazer todos os pedaços.", "Prove uma pequena porção e ajuste o sal somente se necessário.", "Sirva enquanto estiver quente."],
+        "tempoAproximado": "Cerca de 2 minutos",
+        "intensidadeFogo": "Desligado",
+        "pontoEsperado": "Os ovos devem estar distribuídos e o conjunto quente, soltinho e bem temperado.",
+        "observacoes": ["A calabresa e a charque já contêm sal; prove antes de acrescentar mais."]
+      }
     ]
   },
   {
@@ -40,6 +119,7 @@
     "tempoMinutos": 25,
     "dificuldade": "Fácil",
     "rendimento": "3 porções",
+    "utensilios": ["1 tigela média", "1 garfo ou batedor", "1 faca", "1 tábua de corte", "1 forma pequena", "1 espátula", "1 par de luvas térmicas"],
     "ingredientes": [
       { "nome": "Ovos", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Queijo", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -49,10 +129,10 @@
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Aqueça o forno", "descricao": "Preaqueça o forno a 180 °C e unte uma forma pequena." },
-      { "titulo": "Misture os ovos", "descricao": "Bata os ovos com o leite e uma pitada de sal." },
-      { "titulo": "Monte", "descricao": "Acrescente tomate, queijo e cebola e despeje na forma." },
-      { "titulo": "Asse", "descricao": "Asse por cerca de 18 minutos, até o centro ficar firme." }
+      { "titulo": "Prepare o forno e os ingredientes", "descricao": "Aqueça o forno e deixe os recheios cortados antes de bater os ovos.", "ingredientes": [{ "nome": "Tomate", "quantidade": 2, "unidade": "unidade" }, { "nome": "Queijo", "quantidade": 150, "unidade": "g" }, { "nome": "Cebola", "quantidade": 0.5, "unidade": "unidade" }], "utensilios": ["1 faca", "1 tábua de corte", "1 forma pequena"], "continueUsando": [], "acoes": ["Ligue o forno a 180 °C para preaquecer.", "Corte os tomates e a cebola em pedaços pequenos e uniformes.", "Rale ou corte o queijo.", "Unte levemente a forma e reserve."], "tempoAproximado": "Cerca de 7 minutos, além do tempo de preaquecimento do forno", "intensidadeFogo": "Forno a 180 °C", "pontoEsperado": "Os ingredientes devem estar cortados e a forma pronta; o forno deve estar preaquecido.", "observacoes": ["Mantenha os dedos recolhidos ao cortar e use uma tábua firme."] },
+      { "titulo": "Bata os ovos", "descricao": "Misture os ovos e o leite até formar uma base uniforme.", "ingredientes": [{ "nome": "Ovos", "quantidade": 4, "unidade": "unidade" }, { "nome": "Leite", "quantidade": 100, "unidade": "ml" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }], "utensilios": ["1 tigela média", "1 garfo ou batedor"], "continueUsando": [], "acoes": ["Quebre cada ovo separadamente e transfira para a tigela.", "Adicione o leite e uma pitada de sal.", "Bata até claras e gemas se misturarem e a cor ficar uniforme."], "tempoAproximado": "Aproximadamente 2 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A mistura deve estar homogênea, sem partes grandes de clara separada.", "observacoes": ["Descarte cascas e lave as mãos e superfícies que tiveram contato com ovo cru."] },
+      { "titulo": "Monte a omelete", "descricao": "Distribua o recheio para que todas as porções fiquem equilibradas.", "ingredientes": [{ "nome": "Tomate", "quantidade": 2, "unidade": "unidade" }, { "nome": "Queijo", "quantidade": 150, "unidade": "g" }, { "nome": "Cebola", "quantidade": 0.5, "unidade": "unidade" }], "utensilios": [], "continueUsando": ["A mesma tigela", "A forma já untada"], "acoes": ["Junte tomate, queijo e cebola à mistura de ovos.", "Mexa apenas até distribuir os pedaços.", "Despeje tudo na forma, sem ultrapassar a borda."], "tempoAproximado": "Cerca de 2 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "Os recheios devem estar bem distribuídos e a forma preenchida de maneira uniforme.", "observacoes": [] },
+      { "titulo": "Asse até firmar", "descricao": "Cozinhe a omelete por completo, sem ressecar as bordas.", "ingredientes": [], "utensilios": ["1 par de luvas térmicas", "1 espátula"], "continueUsando": ["A mesma forma"], "acoes": ["Coloque a forma no forno preaquecido, usando luvas térmicas.", "Asse e observe o centro a partir de aproximadamente 15 minutos.", "Retire quando o centro estiver firme e não houver ovo líquido visível.", "Espere alguns minutos antes de cortar com a espátula."], "tempoAproximado": "Cerca de 15 a 20 minutos, conforme o forno e a altura da omelete", "intensidadeFogo": "Forno a 180 °C", "pontoEsperado": "O centro deve estar firme, sem líquido, e as bordas podem começar a dourar levemente.", "observacoes": ["Use luvas térmicas; a forma e o vapor estarão muito quentes.", "Para segurança, não sirva enquanto houver partes de ovo cru ou líquido."] }
     ]
   },
   {
@@ -65,6 +145,7 @@
     "tempoMinutos": 50,
     "dificuldade": "Média",
     "rendimento": "6 porções",
+    "utensilios": ["1 panela grande", "1 panela ou frigideira ampla", "1 escorredor", "1 faca", "1 tábua de corte", "1 amassador ou garfo", "1 colher de madeira", "1 refratário", "1 par de luvas térmicas"],
     "ingredientes": [
       { "nome": "Charque", "quantidade": 500, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Mandioca", "quantidade": 1000, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -75,11 +156,11 @@
       { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false }
     ],
     "passos": [
-      { "titulo": "Cozinhe a mandioca", "descricao": "Cozinhe até ficar macia e retire os fios centrais." },
-      { "titulo": "Faça o purê", "descricao": "Amasse a mandioca e misture leite e manteiga." },
-      { "titulo": "Prepare o recheio", "descricao": "Refogue cebola, alho e a charque dessalgada e desfiada." },
-      { "titulo": "Monte", "descricao": "Faça camadas de purê, recheio e purê em um refratário." },
-      { "titulo": "Gratine", "descricao": "Cubra com queijo e leve ao forno até dourar." }
+      { "titulo": "Cozinhe a mandioca", "descricao": "Cozinhe a mandioca até ela ficar bem macia para o purê.", "ingredientes": [{ "nome": "Mandioca", "quantidade": 1000, "unidade": "g" }], "utensilios": ["1 panela grande", "1 escorredor", "1 faca"], "continueUsando": [], "acoes": ["Descasque, lave e corte a mandioca em pedaços de tamanho parecido.", "Cubra com água na panela e cozinhe com a tampa parcialmente aberta.", "Teste um pedaço com um garfo e desligue quando ele entrar sem resistência.", "Escorra com cuidado e retire os fios centrais enquanto ainda estiver morna."], "tempoAproximado": "Cerca de 20 a 30 minutos depois que a água ferver", "intensidadeFogo": "Médio", "pontoEsperado": "A mandioca deve se partir facilmente com o garfo, sem partes duras no centro.", "observacoes": ["Afaste o rosto do vapor ao abrir a panela e escorra a água quente com cuidado."] },
+      { "titulo": "Faça o purê", "descricao": "Transforme a mandioca ainda morna em um purê cremoso.", "ingredientes": [{ "nome": "Mandioca", "quantidade": 1000, "unidade": "g" }, { "nome": "Leite", "quantidade": 200, "unidade": "ml" }, { "nome": "Manteiga", "quantidade": 50, "unidade": "g" }], "utensilios": ["1 amassador ou garfo", "1 colher de madeira"], "continueUsando": ["A mesma panela grande"], "acoes": ["Amasse a mandioca até desfazer os pedaços maiores.", "Junte a manteiga e misture.", "Acrescente o leite aos poucos, mexendo, até obter um purê cremoso e firme o bastante para formar camadas."], "tempoAproximado": "Aproximadamente 5 minutos", "intensidadeFogo": "Baixo, somente se precisar manter o purê aquecido", "pontoEsperado": "O purê deve estar uniforme, cremoso e sustentar uma marca feita com a colher.", "observacoes": ["A mandioca pode absorver quantidades diferentes de leite; adicione gradualmente."] },
+      { "titulo": "Prepare o recheio", "descricao": "Refogue os temperos e aqueça a charque até o recheio ficar saboroso e úmido.", "ingredientes": [{ "nome": "Charque", "quantidade": 500, "unidade": "g" }, { "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }], "utensilios": ["1 panela ou frigideira ampla", "1 faca", "1 tábua de corte", "1 colher de madeira"], "continueUsando": [], "acoes": ["Use a charque previamente dessalgada, cozida e desfiada.", "Descasque e pique cebola e alho.", "Aqueça a panela em fogo médio e refogue a cebola até começar a amaciar.", "Adicione o alho e mexa apenas até perfumar.", "Junte a charque e misture até ficar quente e com alguns pontos dourados."], "tempoAproximado": "Cerca de 7 a 9 minutos", "intensidadeFogo": "Médio", "pontoEsperado": "A cebola deve estar macia, o alho não queimado e a charque quente, solta e levemente dourada.", "observacoes": ["Prove antes de acrescentar sal, pois a charque pode manter sal residual."] },
+      { "titulo": "Monte as camadas", "descricao": "Cubra o recheio completamente para manter o escondidinho úmido.", "ingredientes": [{ "nome": "Queijo", "quantidade": 150, "unidade": "g" }], "utensilios": ["1 refratário", "1 colher de madeira"], "continueUsando": ["O purê preparado", "O recheio preparado"], "acoes": ["Espalhe metade do purê no fundo do refratário.", "Distribua o recheio de charque sem concentrar em um só ponto.", "Cubra com o restante do purê e nivele a superfície.", "Espalhe o queijo por cima."], "tempoAproximado": "Aproximadamente 5 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "O recheio deve estar totalmente coberto e o queijo distribuído por toda a superfície.", "observacoes": [] },
+      { "titulo": "Gratine e descanse", "descricao": "Aqueça o conjunto e deixe o queijo derreter e dourar levemente.", "ingredientes": [], "utensilios": ["1 par de luvas térmicas"], "continueUsando": ["O mesmo refratário"], "acoes": ["Leve o refratário ao forno preaquecido a 200 °C.", "Observe até o queijo derreter e começar a ganhar pontos dourados.", "Retire com luvas térmicas e deixe descansar antes de servir."], "tempoAproximado": "Cerca de 10 a 15 minutos, conforme o forno", "intensidadeFogo": "Forno a 200 °C", "pontoEsperado": "O queijo deve estar derretido, com alguns pontos dourados, e as bordas do purê bem quentes.", "observacoes": ["O refratário permanece muito quente depois de sair do forno; apoie-o em superfície resistente ao calor."] }
     ]
   },
   {
@@ -92,6 +173,7 @@
     "tempoMinutos": 15,
     "dificuldade": "Fácil",
     "rendimento": "1 porção",
+    "utensilios": ["1 tigela pequena", "1 garfo", "1 frigideira antiaderente", "1 espátula"],
     "ingredientes": [
       { "nome": "Ovo", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Tapioca", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -99,9 +181,9 @@
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Misture", "descricao": "Misture ovo, tapioca, queijo e sal até ficar uniforme." },
-      { "titulo": "Cozinhe", "descricao": "Despeje em frigideira antiaderente e cozinhe em fogo baixo." },
-      { "titulo": "Vire", "descricao": "Vire quando firmar e doure o outro lado." }
+      { "titulo": "Prepare a massa", "descricao": "Misture os ingredientes até não haver partes secas de tapioca.", "ingredientes": [{ "nome": "Ovo", "quantidade": 1, "unidade": "unidade" }, { "nome": "Tapioca", "quantidade": 40, "unidade": "g" }, { "nome": "Queijo", "quantidade": 40, "unidade": "g" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }], "utensilios": ["1 tigela pequena", "1 garfo"], "continueUsando": [], "acoes": ["Quebre o ovo na tigela e bata até misturar clara e gema.", "Adicione a tapioca, o queijo e uma pequena pitada de sal.", "Misture até a massa ficar uniforme."], "tempoAproximado": "Cerca de 2 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A massa deve estar úmida e homogênea, sem bolsões de tapioca seca.", "observacoes": ["Lave as mãos e a superfície se houver contato com ovo cru."] },
+      { "titulo": "Cozinhe o primeiro lado", "descricao": "Use fogo baixo para a massa firmar sem queimar por baixo.", "ingredientes": [], "utensilios": ["1 frigideira antiaderente", "1 espátula"], "continueUsando": ["A massa preparada"], "acoes": ["Aqueça a frigideira em fogo baixo.", "Despeje a massa e espalhe sem deixar muito fina.", "Cozinhe sem mexer até as bordas firmarem e a parte de cima perder o aspecto líquido."], "tempoAproximado": "Cerca de 3 a 5 minutos", "intensidadeFogo": "Baixo", "pontoEsperado": "As bordas devem estar firmes e a espátula deve conseguir entrar por baixo sem rasgar a massa.", "observacoes": ["O tempo varia com a espessura da massa e a frigideira."] },
+      { "titulo": "Vire e finalize", "descricao": "Doure o outro lado e confirme que o ovo cozinhou por completo.", "ingredientes": [], "utensilios": [], "continueUsando": ["A mesma frigideira", "A mesma espátula"], "acoes": ["Passe a espátula por baixo da massa já firme.", "Vire com cuidado.", "Cozinhe o segundo lado até dourar levemente.", "Desligue o fogo e sirva."], "tempoAproximado": "Cerca de 2 a 3 minutos", "intensidadeFogo": "Baixo", "pontoEsperado": "Os dois lados devem estar firmes e levemente dourados, sem massa líquida no centro.", "observacoes": ["Se o centro ainda estiver úmido, mantenha em fogo baixo por mais um pouco antes de servir."] }
     ]
   },
   {
@@ -114,6 +196,7 @@
     "tempoMinutos": 10,
     "dificuldade": "Fácil",
     "rendimento": "2 porções",
+    "utensilios": ["1 faca", "1 tábua de corte", "1 frigideira ou sanduicheira", "1 espátula"],
     "ingredientes": [
       { "nome": "Pão", "quantidade": 4, "unidade": "fatia", "obrigatorio": true, "basico": false },
       { "nome": "Queijo", "quantidade": 100, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -122,8 +205,8 @@
       { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false }
     ],
     "passos": [
-      { "titulo": "Monte", "descricao": "Distribua queijo, presunto e tomate entre as fatias de pão." },
-      { "titulo": "Doure", "descricao": "Doure os dois lados na frigideira ou sanduicheira." }
+      { "titulo": "Monte os sanduíches", "descricao": "Distribua o recheio sem exagerar para os sanduíches fecharem bem.", "ingredientes": [{ "nome": "Pão", "quantidade": 4, "unidade": "fatia" }, { "nome": "Queijo", "quantidade": 100, "unidade": "g" }, { "nome": "Presunto", "quantidade": 100, "unidade": "g" }, { "nome": "Tomate", "quantidade": 1, "unidade": "unidade" }, { "nome": "Manteiga", "quantidade": 20, "unidade": "g" }], "utensilios": ["1 faca", "1 tábua de corte"], "continueUsando": [], "acoes": ["Higienize e corte o tomate em fatias finas.", "Divida queijo, presunto e tomate sobre duas fatias de pão.", "Cubra com as outras fatias e pressione levemente.", "Se desejar, espalhe uma camada fina de manteiga nas partes externas."], "tempoAproximado": "Cerca de 4 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "Os recheios devem estar bem distribuídos e permanecer dentro das bordas do pão.", "observacoes": [] },
+      { "titulo": "Doure e derreta o queijo", "descricao": "Aqueça devagar para dourar o pão enquanto o recheio esquenta.", "ingredientes": [], "utensilios": ["1 frigideira ou sanduicheira", "1 espátula"], "continueUsando": ["Os sanduíches montados"], "acoes": ["Aqueça a frigideira em fogo baixo ou ligue a sanduicheira.", "Coloque os sanduíches e pressione levemente.", "Vire com a espátula quando o primeiro lado estiver dourado, se usar frigideira.", "Retire quando os dois lados estiverem dourados e o queijo derretido."], "tempoAproximado": "Cerca de 4 a 6 minutos", "intensidadeFogo": "Baixo", "pontoEsperado": "O pão deve estar crocante e dourado, e o queijo visivelmente derretido.", "observacoes": ["O recheio fica quente; espere um instante antes da primeira mordida."] }
     ]
   },
   {
@@ -136,6 +219,7 @@
     "tempoMinutos": 20,
     "dificuldade": "Fácil",
     "rendimento": "6 unidades",
+    "utensilios": ["1 tigela média", "1 batedor ou garfo", "1 concha pequena", "1 frigideira antiaderente", "1 espátula"],
     "ingredientes": [
       { "nome": "Ovo", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Leite", "quantidade": 250, "unidade": "ml", "obrigatorio": true, "basico": false },
@@ -144,9 +228,9 @@
       { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false }
     ],
     "passos": [
-      { "titulo": "Prepare a massa", "descricao": "Misture ovo, leite, farinha e açúcar até ficar liso." },
-      { "titulo": "Aqueça", "descricao": "Aqueça uma frigideira e unte levemente." },
-      { "titulo": "Doure", "descricao": "Cozinhe pequenas porções e vire para dourar os dois lados." }
+      { "titulo": "Prepare a massa", "descricao": "Misture até obter uma massa lisa, sem bater além do necessário.", "ingredientes": [{ "nome": "Ovo", "quantidade": 1, "unidade": "unidade" }, { "nome": "Leite", "quantidade": 250, "unidade": "ml" }, { "nome": "Farinha de trigo", "quantidade": 180, "unidade": "g" }, { "nome": "Açúcar", "quantidade": 30, "unidade": "g" }], "utensilios": ["1 tigela média", "1 batedor ou garfo"], "continueUsando": [], "acoes": ["Quebre o ovo na tigela e misture com o leite.", "Adicione o açúcar.", "Junte a farinha aos poucos enquanto mexe.", "Pare quando a massa estiver uniforme e os maiores grumos tiverem desaparecido."], "tempoAproximado": "Cerca de 4 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A massa deve escorrer do batedor em uma faixa contínua, sem ficar aguada.", "observacoes": ["Pequenos grumos podem desaparecer durante o descanso; não é necessário bater excessivamente."] },
+      { "titulo": "Aqueça a frigideira", "descricao": "Prepare uma superfície quente e levemente untada.", "ingredientes": [{ "nome": "Manteiga", "quantidade": 20, "unidade": "g" }], "utensilios": ["1 frigideira antiaderente", "1 espátula"], "continueUsando": [], "acoes": ["Coloque a frigideira em fogo médio para baixo.", "Espalhe uma pequena quantidade de manteiga.", "Aguarde até a manteiga derreter, sem deixar escurecer."], "tempoAproximado": "Cerca de 1 a 2 minutos", "intensidadeFogo": "Médio para baixo", "pontoEsperado": "A manteiga deve estar derretida e a frigideira aquecida, sem fumaça.", "observacoes": [] },
+      { "titulo": "Cozinhe as panquecas", "descricao": "Prepare pequenas porções, virando somente quando a massa indicar o momento.", "ingredientes": [], "utensilios": ["1 concha pequena"], "continueUsando": ["A mesma frigideira", "A mesma espátula", "A massa preparada"], "acoes": ["Despeje uma porção pequena de massa no centro.", "Espere surgirem bolhas e as bordas começarem a firmar.", "Passe a espátula por baixo e vire.", "Cozinhe o segundo lado até dourar levemente.", "Repita, untando de novo apenas quando necessário."], "tempoAproximado": "Cerca de 2 a 3 minutos por panqueca", "intensidadeFogo": "Médio para baixo", "pontoEsperado": "Cada panqueca deve estar firme no centro e dourada dos dois lados.", "observacoes": ["A primeira unidade ajuda a ajustar o fogo; reduza se dourar antes de firmar."] }
     ]
   },
   {
@@ -159,6 +243,7 @@
     "tempoMinutos": 50,
     "dificuldade": "Média",
     "rendimento": "10 porções",
+    "utensilios": ["1 forma média", "2 tigelas", "1 garfo", "1 colher ou espátula", "1 peneira opcional", "1 par de luvas térmicas"],
     "ingredientes": [
       { "nome": "Banana", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
       { "nome": "Ovos", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
@@ -168,10 +253,10 @@
       { "nome": "Fermento", "quantidade": 10, "unidade": "g", "obrigatorio": true, "basico": false }
     ],
     "passos": [
-      { "titulo": "Aqueça o forno", "descricao": "Preaqueça o forno a 180 °C e unte uma forma." },
-      { "titulo": "Misture", "descricao": "Amasse as bananas e misture ovos, açúcar e leite." },
-      { "titulo": "Finalize a massa", "descricao": "Junte a farinha e, por último, o fermento." },
-      { "titulo": "Asse", "descricao": "Asse por 35 a 40 minutos, até o centro ficar firme." }
+      { "titulo": "Prepare o forno e a forma", "descricao": "Deixe o forno quente e a forma pronta antes de misturar o fermento.", "ingredientes": [], "utensilios": ["1 forma média"], "continueUsando": [], "acoes": ["Ligue o forno a 180 °C.", "Unte a forma e, se desejar, polvilhe uma camada fina de farinha.", "Reserve a forma em local seguro."], "tempoAproximado": "Cerca de 5 minutos, além do preaquecimento", "intensidadeFogo": "Forno a 180 °C", "pontoEsperado": "A forma deve estar totalmente preparada e o forno preaquecido.", "observacoes": [] },
+      { "titulo": "Misture os ingredientes úmidos", "descricao": "Amasse a banana e forme uma base uniforme para a massa.", "ingredientes": [{ "nome": "Banana", "quantidade": 4, "unidade": "unidade" }, { "nome": "Ovos", "quantidade": 2, "unidade": "unidade" }, { "nome": "Açúcar", "quantidade": 160, "unidade": "g" }, { "nome": "Leite", "quantidade": 120, "unidade": "ml" }], "utensilios": ["1 tigela", "1 garfo", "1 colher ou espátula"], "continueUsando": [], "acoes": ["Descasque e amasse as bananas com o garfo.", "Em outra tigela, misture os ovos e o açúcar.", "Junte o leite e a banana amassada.", "Mexa até a mistura ficar uniforme."], "tempoAproximado": "Cerca de 5 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A base deve estar úmida e homogênea, com pequenos pedaços de banana aceitáveis.", "observacoes": ["Lave as mãos e a superfície após contato com ovo cru."] },
+      { "titulo": "Finalize a massa", "descricao": "Incorpore a farinha e coloque o fermento por último.", "ingredientes": [{ "nome": "Farinha de trigo", "quantidade": 240, "unidade": "g" }, { "nome": "Fermento", "quantidade": 10, "unidade": "g" }], "utensilios": ["1 peneira opcional"], "continueUsando": ["A mesma tigela", "A mesma colher ou espátula"], "acoes": ["Acrescente a farinha aos poucos e misture até não restarem partes secas.", "Adicione o fermento por último.", "Misture delicadamente apenas até distribuir.", "Transfira a massa para a forma preparada."], "tempoAproximado": "Cerca de 4 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A massa deve estar espessa e uniforme, sem farinha seca visível.", "observacoes": ["Depois do fermento, evite mexer por muito tempo."] },
+      { "titulo": "Asse e deixe amornar", "descricao": "Asse até o centro firmar e espere antes de desenformar.", "ingredientes": [], "utensilios": ["1 par de luvas térmicas"], "continueUsando": ["A mesma forma"], "acoes": ["Leve a forma ao forno preaquecido.", "Evite abrir o forno nos primeiros 25 minutos.", "A partir de aproximadamente 35 minutos, teste o centro com um palito limpo.", "Retire quando o palito sair sem massa crua e deixe amornar."], "tempoAproximado": "Cerca de 35 a 45 minutos, conforme o forno e a forma", "intensidadeFogo": "Forno a 180 °C", "pontoEsperado": "O topo deve estar firme e dourado, e o palito deve sair sem massa crua aderida.", "observacoes": ["Use luvas térmicas e não desenforme enquanto a forma estiver muito quente."] }
     ]
   },
   {
@@ -184,6 +269,7 @@
     "tempoMinutos": 40,
     "dificuldade": "Média",
     "rendimento": "4 porções",
+    "utensilios": ["1 panela média com tampa", "1 panela para preparar a charque", "1 escorredor", "1 faca", "1 tábua de corte", "1 colher de madeira", "1 tigela"],
     "ingredientes": [
       { "nome": "Arroz", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Charque", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
@@ -193,9 +279,9 @@
       { "nome": "Água", "quantidade": 700, "unidade": "ml", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Prepare a charque", "descricao": "Dessalgue, cozinhe e desfie a charque." },
-      { "titulo": "Refogue", "descricao": "Doure cebola, alho, tomate e a charque." },
-      { "titulo": "Cozinhe o arroz", "descricao": "Junte o arroz e a água e cozinhe até secar." }
+      { "titulo": "Prepare a charque e os vegetais", "descricao": "Deixe a carne dessalgada e todos os cortes prontos antes de começar o arroz.", "ingredientes": [{ "nome": "Charque", "quantidade": 300, "unidade": "g" }, { "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }, { "nome": "Tomate", "quantidade": 2, "unidade": "unidade" }], "utensilios": ["1 panela para preparar a charque", "1 escorredor", "1 faca", "1 tábua de corte", "1 tigela"], "continueUsando": [], "acoes": ["Use a charque previamente dessalgada; cozinhe até ficar macia e desfie.", "Descasque e pique cebola e alho.", "Higienize e corte os tomates em cubos.", "Mantenha cada ingrediente separado."], "tempoAproximado": "Cerca de 15 a 25 minutos se a charque já estiver dessalgada", "intensidadeFogo": "Médio para cozinhar a charque", "pontoEsperado": "A charque deve estar macia e desfiada; os vegetais, cortados e prontos para o refogado.", "observacoes": ["O tempo de dessalga é anterior ao preparo e varia; troque a água conforme o método seguro utilizado."] },
+      { "titulo": "Faça o refogado", "descricao": "Doure a charque e amacie os vegetais para formar a base de sabor.", "ingredientes": [{ "nome": "Charque", "quantidade": 300, "unidade": "g" }, { "nome": "Cebola", "quantidade": 1, "unidade": "unidade" }, { "nome": "Alho", "quantidade": 2, "unidade": "dente" }, { "nome": "Tomate", "quantidade": 2, "unidade": "unidade" }], "utensilios": ["1 panela média com tampa", "1 colher de madeira"], "continueUsando": [], "acoes": ["Aqueça a panela em fogo médio.", "Coloque a charque e mexa até começar a dourar.", "Junte a cebola e cozinhe até amaciar.", "Adicione o alho e mexa apenas até perfumar.", "Acrescente o tomate e cozinhe até começar a liberar líquido."], "tempoAproximado": "Cerca de 7 a 10 minutos", "intensidadeFogo": "Médio", "pontoEsperado": "A carne deve ter pontos dourados, a cebola estar macia e o tomate começar a se desfazer.", "observacoes": ["Prove antes de acrescentar sal; a charque pode manter sal residual."] },
+      { "titulo": "Cozinhe o arroz", "descricao": "Cozinhe até os grãos ficarem macios e o líquido ser absorvido.", "ingredientes": [{ "nome": "Arroz", "quantidade": 300, "unidade": "g" }, { "nome": "Água", "quantidade": 700, "unidade": "ml" }], "utensilios": [], "continueUsando": ["A mesma panela média", "A mesma colher de madeira"], "acoes": ["Junte o arroz ao refogado e mexa por cerca de um minuto.", "Adicione a água e misture uma vez.", "Quando ferver, reduza o fogo e deixe a panela parcialmente tampada.", "Observe até a água ser absorvida e prove alguns grãos.", "Desligue, tampe e deixe descansar antes de soltar com a colher."], "tempoAproximado": "Cerca de 15 a 20 minutos, mais 5 minutos de descanso", "intensidadeFogo": "Médio até ferver; depois baixo", "pontoEsperado": "Os grãos devem estar macios e soltos, sem líquido acumulado no fundo.", "observacoes": ["Se o arroz ainda estiver duro quando a água acabar, adicione um pouco de água quente e continue em fogo baixo."] }
     ]
   },
   {
@@ -208,6 +294,7 @@
     "tempoMinutos": 20,
     "dificuldade": "Fácil",
     "rendimento": "2 porções",
+    "utensilios": ["1 tigela", "1 colher", "1 cuscuzeira", "1 frigideira", "1 espátula"],
     "ingredientes": [
       { "nome": "Flocão de milho", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Ovos", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
@@ -216,9 +303,9 @@
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Hidrate", "descricao": "Misture o flocão com água e sal e descanse por 8 minutos." },
-      { "titulo": "Cozinhe", "descricao": "Cozinhe o cuscuz na cuscuzeira até ficar macio." },
-      { "titulo": "Prepare os ovos", "descricao": "Faça os ovos como preferir e sirva com o cuscuz." }
+      { "titulo": "Hidrate o flocão", "descricao": "Umedeça o flocão por igual e dê tempo para ele absorver a água.", "ingredientes": [{ "nome": "Flocão de milho", "quantidade": 150, "unidade": "g" }, { "nome": "Água", "quantidade": 100, "unidade": "ml" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }], "utensilios": ["1 tigela", "1 colher"], "continueUsando": [], "acoes": ["Coloque o flocão e o sal na tigela.", "Adicione a água aos poucos enquanto mistura.", "Espere o flocão descansar e absorver a umidade.", "Solte os grumos maiores com a colher."], "tempoAproximado": "Cerca de 8 a 10 minutos de descanso", "intensidadeFogo": "Sem fogo", "pontoEsperado": "O flocão deve estar úmido e solto; ao apertar uma porção, ela se une sem pingar água.", "observacoes": ["A absorção varia entre marcas; se estiver seco e não se unir, acrescente água aos poucos."] },
+      { "titulo": "Cozinhe o cuscuz", "descricao": "Cozinhe no vapor até os flocos ficarem macios.", "ingredientes": [], "utensilios": ["1 cuscuzeira"], "continueUsando": ["O flocão hidratado"], "acoes": ["Coloque água na parte inferior da cuscuzeira sem deixar alcançar o cesto.", "Distribua o flocão hidratado sem apertar demais.", "Tampe e leve ao fogo.", "Cozinhe no vapor até o cuscuz ficar macio e unido."], "tempoAproximado": "Cerca de 8 a 12 minutos depois que o vapor começar", "intensidadeFogo": "Médio para baixo", "pontoEsperado": "O cuscuz deve estar quente, macio e se soltar do cesto em um bloco úmido.", "observacoes": ["Cuidado com o vapor ao abrir a tampa; afaste o rosto e as mãos."] },
+      { "titulo": "Prepare os ovos e sirva", "descricao": "Cozinhe os ovos por completo e sirva com o cuscuz ainda quente.", "ingredientes": [{ "nome": "Ovos", "quantidade": 2, "unidade": "unidade" }, { "nome": "Manteiga", "quantidade": 20, "unidade": "g" }], "utensilios": ["1 frigideira", "1 espátula"], "continueUsando": [], "acoes": ["Aqueça a frigideira em fogo médio para baixo e derreta a manteiga.", "Quebre os ovos e cozinhe, mexendo se preferir ovos mexidos.", "Continue até claras e gemas atingirem o ponto desejado, sem partes cruas.", "Sirva sobre ou ao lado do cuscuz."], "tempoAproximado": "Cerca de 3 a 5 minutos", "intensidadeFogo": "Médio para baixo", "pontoEsperado": "A clara deve estar completamente opaca e firme; para maior segurança, não deixe partes cruas.", "observacoes": ["Lave as mãos e a superfície após contato com ovo cru."] }
     ]
   },
   {
@@ -231,6 +318,7 @@
     "tempoMinutos": 20,
     "dificuldade": "Fácil",
     "rendimento": "3 porções",
+    "utensilios": ["1 panela grande", "1 escorredor", "1 frigideira ampla", "1 faca", "1 tábua de corte", "1 pegador ou colher"],
     "ingredientes": [
       { "nome": "Macarrão", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Alho", "quantidade": 4, "unidade": "dente", "obrigatorio": true, "basico": false },
@@ -238,9 +326,9 @@
       { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
     ],
     "passos": [
-      { "titulo": "Cozinhe a massa", "descricao": "Cozinhe o macarrão até ficar al dente e reserve um pouco da água." },
-      { "titulo": "Doure o alho", "descricao": "Aqueça o azeite e doure o alho sem queimar." },
-      { "titulo": "Misture", "descricao": "Junte a massa, ajuste a textura com a água reservada e sirva." }
+      { "titulo": "Cozinhe a massa", "descricao": "Cozinhe até ficar macia, mas ainda firme ao morder.", "ingredientes": [{ "nome": "Macarrão", "quantidade": 300, "unidade": "g" }, { "nome": "Sal", "quantidade": 1, "unidade": "pitada" }], "utensilios": ["1 panela grande", "1 escorredor", "1 caneca"], "continueUsando": [], "acoes": ["Ferva água suficiente na panela e adicione sal.", "Coloque o macarrão e mexa nos primeiros minutos para não grudar.", "Prove um fio perto do tempo indicado na embalagem.", "Reserve uma caneca da água do cozimento e escorra o restante."], "tempoAproximado": "Conforme a embalagem, normalmente cerca de 8 a 12 minutos", "intensidadeFogo": "Alto até ferver; depois médio para manter a fervura", "pontoEsperado": "A massa deve estar cozida por fora e levemente firme no centro, sem sabor de farinha crua.", "observacoes": ["Escorra a água quente afastando o rosto do vapor."] },
+      { "titulo": "Perfume o azeite com alho", "descricao": "Aqueça o alho devagar para liberar aroma sem amargar.", "ingredientes": [{ "nome": "Alho", "quantidade": 4, "unidade": "dente" }, { "nome": "Azeite", "quantidade": 45, "unidade": "ml" }], "utensilios": ["1 frigideira ampla", "1 faca", "1 tábua de corte", "1 pegador ou colher"], "continueUsando": [], "acoes": ["Descasque e corte o alho em lâminas ou pedaços de tamanho parecido.", "Coloque o azeite e o alho na frigideira ainda fria.", "Leve ao fogo baixo e mexa enquanto o alho aquece.", "Retire do fogo quando o alho começar a ficar levemente dourado."], "tempoAproximado": "Cerca de 2 a 4 minutos", "intensidadeFogo": "Baixo", "pontoEsperado": "O alho deve estar aromático e apenas dourado-claro, nunca marrom escuro.", "observacoes": ["O alho continua cozinhando no azeite quente; retire do fogo antes de escurecer demais."] },
+      { "titulo": "Misture e ajuste a textura", "descricao": "Envolva a massa no azeite e use a água reservada para ligar o molho.", "ingredientes": [], "utensilios": [], "continueUsando": ["A mesma frigideira ampla", "O mesmo pegador ou colher", "A água do cozimento reservada"], "acoes": ["Adicione o macarrão escorrido à frigideira.", "Misture até todos os fios ficarem brilhantes.", "Se parecer seco, acrescente pequenas quantidades da água reservada e misture.", "Prove, ajuste o sal se necessário e sirva."], "tempoAproximado": "Cerca de 2 minutos", "intensidadeFogo": "Baixo", "pontoEsperado": "A massa deve estar quente, solta e envolvida por uma camada leve de azeite, sem líquido acumulado.", "observacoes": [] }
     ]
   },
   {
@@ -253,15 +341,16 @@
     "tempoMinutos": 20,
     "dificuldade": "Fácil",
     "rendimento": "6 porções",
+    "utensilios": ["1 panela de fundo grosso", "1 colher ou espátula resistente ao calor", "1 recipiente para servir"],
     "ingredientes": [
       { "nome": "Leite condensado", "quantidade": 395, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Chocolate em pó", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
       { "nome": "Manteiga", "quantidade": 15, "unidade": "g", "obrigatorio": true, "basico": false }
     ],
     "passos": [
-      { "titulo": "Misture", "descricao": "Coloque todos os ingredientes em uma panela de fundo grosso." },
-      { "titulo": "Cozinhe", "descricao": "Mexa em fogo baixo até engrossar e soltar do fundo." },
-      { "titulo": "Sirva", "descricao": "Desligue o fogo e sirva morno ou frio." }
+      { "titulo": "Misture fora do fogo", "descricao": "Dissolva o chocolate antes de aquecer para evitar grumos.", "ingredientes": [{ "nome": "Leite condensado", "quantidade": 395, "unidade": "g" }, { "nome": "Chocolate em pó", "quantidade": 40, "unidade": "g" }, { "nome": "Manteiga", "quantidade": 15, "unidade": "g" }], "utensilios": ["1 panela de fundo grosso", "1 colher ou espátula resistente ao calor"], "continueUsando": [], "acoes": ["Com a panela fora do fogo, coloque o leite condensado e o chocolate em pó.", "Misture até o chocolate se distribuir e os maiores grumos desaparecerem.", "Adicione a manteiga."], "tempoAproximado": "Cerca de 2 minutos", "intensidadeFogo": "Sem fogo", "pontoEsperado": "A mistura deve estar uniforme, sem bolsões secos de chocolate.", "observacoes": [] },
+      { "titulo": "Cozinhe até o ponto", "descricao": "Mexa continuamente e observe a textura, não apenas o relógio.", "ingredientes": [], "utensilios": [], "continueUsando": ["A mesma panela", "A mesma colher ou espátula"], "acoes": ["Leve a panela ao fogo baixo.", "Mexa continuamente, passando a colher pelo fundo e pelas laterais.", "Observe a mistura engrossar gradualmente.", "Desligue quando uma passagem da colher abrir um caminho que demora um pouco para se fechar e o brigadeiro começar a se soltar do fundo."], "tempoAproximado": "Cerca de 8 a 12 minutos, conforme a panela e o fogão", "intensidadeFogo": "Baixo", "pontoEsperado": "O brigadeiro deve estar espesso, brilhante e se afastar do fundo por alguns instantes quando a panela for inclinada.", "observacoes": ["A mistura quente pode causar queimaduras; evite respingos e não toque para testar o ponto."] },
+      { "titulo": "Transfira e deixe esfriar", "descricao": "Interrompa o cozimento e espere a temperatura ficar segura para servir.", "ingredientes": [], "utensilios": ["1 recipiente para servir"], "continueUsando": ["A mesma colher ou espátula"], "acoes": ["Retire a panela do fogo.", "Transfira o brigadeiro para o recipiente.", "Deixe amornar antes de servir ou cubra depois de frio para guardar."], "tempoAproximado": "Pelo menos 10 minutos para amornar", "intensidadeFogo": "Desligado", "pontoEsperado": "O doce deve estar morno ou frio o suficiente para ser consumido com segurança.", "observacoes": ["Não deixe crianças manusearem a panela ou o doce enquanto estiverem quentes."] }
     ]
   }
 ]

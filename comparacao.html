@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/receitas.css?v=1">
+    <link rel="stylesheet" href="./css/receitas.css?v=2">
 </head>
 <body class="embalagens-page receitas-page sem-controle-tema">
     <main id="receitasConteudo" class="receitas-app">
@@ -144,6 +144,11 @@
                 <button id="adicionarFaltantes" class="acao-primaria" type="button">Adicionar itens que faltam à lista</button>
             </section>
 
+            <section class="utensilios-detalhe" aria-labelledby="tituloUtensilios">
+                <header><div><small>SEPARE ANTES DE COMEÇAR</small><h2 id="tituloUtensilios">Utensílios</h2></div><span id="totalUtensilios"></span></header>
+                <div id="listaUtensilios" class="utensilios-grade"></div>
+            </section>
+
             <section class="preparo-interativo" aria-labelledby="tituloPreparo">
                 <header><div><small>PASSO A PASSO INTERATIVO</small><h2 id="tituloPreparo">Modo de preparo</h2></div><button id="iniciarModoCozinha" type="button">Iniciar modo cozinha</button></header>
                 <div class="passo-progresso"><span id="numeroPasso">Passo 1 de 1</span><div><i id="barraPasso"></i></div></div>
@@ -178,14 +183,48 @@
     <div id="modoCozinha" class="modo-cozinha" hidden>
         <header><div><small>MODO COZINHA</small><strong id="nomeModoCozinha"></strong></div><button id="fecharModoCozinha" type="button" aria-label="Fechar modo cozinha">×</button></header>
         <main>
-            <aside><h2>Ingredientes deste passo</h2><p id="ingredientesModoCozinha"></p></aside>
-            <section><span id="numeroModoCozinha"></span><h1 id="tituloModoCozinha"></h1><p id="descricaoModoCozinha"></p></section>
+            <div class="cozinha-progresso">
+                <div><span id="numeroModoCozinha">Passo 1 de 1</span><small id="estadoPassoCozinha">● Etapa atual</small></div>
+                <div aria-hidden="true"><i id="barraModoCozinha"></i></div>
+            </div>
+            <nav class="cozinha-consultas" aria-label="Consultas rápidas da receita">
+                <button id="verIngredientesCozinha" type="button">Ver todos os ingredientes</button>
+                <button id="verUtensiliosCozinha" type="button">Ver utensílios</button>
+            </nav>
+            <article class="cozinha-etapa">
+                <small>ETAPA ATUAL</small>
+                <h1 id="tituloModoCozinha"></h1>
+                <p id="descricaoModoCozinha" class="cozinha-resumo"></p>
+
+                <section class="cozinha-bloco cozinha-uso-atual">
+                    <h2>Você vai usar agora</h2>
+                    <div id="ingredientesModoCozinha"></div>
+                </section>
+
+                <section class="cozinha-bloco cozinha-como-fazer">
+                    <h2>Como fazer</h2>
+                    <ol id="acoesModoCozinha"></ol>
+                </section>
+
+                <dl class="cozinha-metadados">
+                    <div id="tempoBlocoCozinha"><dt>Tempo aproximado</dt><dd id="tempoModoCozinha"></dd></div>
+                    <div id="fogoBlocoCozinha"><dt>Fogo / temperatura</dt><dd id="fogoModoCozinha"></dd></div>
+                </dl>
+
+                <aside id="comoSaberBlocoCozinha" class="cozinha-como-saber"><h2>Como saber</h2><p id="comoSaberModoCozinha"></p></aside>
+                <aside id="observacoesBlocoCozinha" class="cozinha-observacoes" hidden><h2>Atenção</h2><ul id="observacoesModoCozinha"></ul></aside>
+            </article>
         </main>
         <footer><button id="cozinhaAnterior" type="button">Anterior</button><button id="cozinhaProximo" type="button">Próximo passo</button></footer>
     </div>
 
+    <dialog id="consultaCozinhaDialog" class="consulta-cozinha-dialog">
+        <form method="dialog" class="dialog-topo"><div><small>CONSULTA RÁPIDA</small><h2 id="tituloConsultaCozinha"></h2></div><button value="cancel" aria-label="Fechar consulta">×</button></form>
+        <div id="conteudoConsultaCozinha"></div>
+    </dialog>
+
     <script src="./js/tema.js"></script>
-    <script type="module" src="./js/receitas.js?v=2"></script>
+    <script type="module" src="./js/receitas.js?v=3"></script>
     <script src="./js/mobile-nav.js"></script>
 </body>
 </html>

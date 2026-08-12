@@ -27,18 +27,19 @@ public class ReceitaDataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        if (repository.count() > 0) return;
         try (InputStream entrada = new ClassPathResource("data/receitas.json").getInputStream()) {
             List<ReceitaCatalogo> catalogo = objectMapper.readValue(
                 entrada,
                 new TypeReference<List<ReceitaCatalogo>>() { }
             );
-            repository.saveAll(catalogo.stream().map(this::mapear).toList());
+            repository.saveAll(catalogo.stream().map(origem -> mapear(
+                origem,
+                repository.findById(origem.id()).orElseGet(Receita::new)
+            )).toList());
         }
     }
 
-    private Receita mapear(ReceitaCatalogo origem) {
-        Receita receita = new Receita();
+    private Receita mapear(ReceitaCatalogo origem, Receita receita) {
         receita.setId(origem.id());
         receita.setNome(origem.nome());
         receita.setDescricao(origem.descricao());
@@ -48,6 +49,10 @@ public class ReceitaDataInitializer implements ApplicationRunner {
         receita.setTempoMinutos(origem.tempoMinutos());
         receita.setDificuldade(origem.dificuldade());
         receita.setRendimento(origem.rendimento());
+        receita.getUtensilios().clear();
+        receita.getUtensilios().addAll(lista(origem.utensilios()));
+        receita.getIngredientes().clear();
+        receita.getPassos().clear();
         for (int indice = 0; indice < origem.ingredientes().size(); indice++) {
             IngredienteCatalogo item = origem.ingredientes().get(indice);
             IngredienteReceita ingrediente = new IngredienteReceita();
@@ -65,10 +70,33 @@ public class ReceitaDataInitializer implements ApplicationRunner {
             PassoReceita passo = new PassoReceita();
             passo.setTitulo(item.titulo());
             passo.setDescricao(item.descricao());
+            for (IngredientePassoCatalogo usado : lista(item.ingredientes())) {
+                IngredientePasso ingrediente = new IngredientePasso();
+                ingrediente.setNome(usado.nome());
+                ingrediente.setChaveProduto(NormalizadorIngrediente.chave(usado.nome()));
+                ingrediente.setQuantidade(usado.quantidade());
+                ingrediente.setUnidade(usado.unidade());
+                passo.getIngredientes().add(ingrediente);
+            }
+            passo.getUtensilios().addAll(lista(item.utensilios()));
+            passo.getContinueUsando().addAll(lista(item.continueUsando()));
+            passo.getAcoes().addAll(
+                item.acoes() == null || item.acoes().isEmpty()
+                    ? List.of(item.descricao())
+                    : item.acoes()
+            );
+            passo.setTempoAproximado(item.tempoAproximado());
+            passo.setIntensidadeFogo(item.intensidadeFogo());
+            passo.setPontoEsperado(item.pontoEsperado());
+            passo.getObservacoes().addAll(lista(item.observacoes()));
             passo.setOrdem(indice);
             receita.adicionarPasso(passo);
         }
         return receita;
+    }
+
+    private <T> List<T> lista(List<T> itens) {
+        return itens == null ? List.of() : itens;
     }
 
     private record ReceitaCatalogo(
@@ -81,6 +109,7 @@ public class ReceitaDataInitializer implements ApplicationRunner {
         int tempoMinutos,
         String dificuldade,
         String rendimento,
+        List<String> utensilios,
         List<IngredienteCatalogo> ingredientes,
         List<PassoCatalogo> passos
     ) { }
@@ -93,5 +122,22 @@ public class ReceitaDataInitializer implements ApplicationRunner {
         boolean basico
     ) { }
 
-    private record PassoCatalogo(String titulo, String descricao) { }
+    private record PassoCatalogo(
+        String titulo,
+        String descricao,
+        List<IngredientePassoCatalogo> ingredientes,
+        List<String> utensilios,
+        List<String> continueUsando,
+        List<String> acoes,
+        String tempoAproximado,
+        String intensidadeFogo,
+        String pontoEsperado,
+        List<String> observacoes
+    ) { }
+
+    private record IngredientePassoCatalogo(
+        String nome,
+        BigDecimal quantidade,
+        String unidade
+    ) { }
 }

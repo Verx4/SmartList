@@ -186,6 +186,7 @@ function abrirDetalhe(id) {
     porId("dificuldadeReceitaDetalhe").textContent = receita.dificuldade;
     porId("categoriaMetricaReceita").textContent = rotuloCategoria(receita.categoria);
     renderizarIngredientesDetalhe();
+    renderizarUtensiliosDetalhe();
     renderizarPasso();
     atualizarBotaoFavoritoDetalhe();
 
@@ -234,13 +235,76 @@ function renderizarIngredientesDetalhe() {
     porId("adicionarFaltantes").hidden = avaliacao.faltantes.length === 0;
 }
 
+function lista(valor) {
+    return Array.isArray(valor) ? valor : [];
+}
+
+function passoGuiado(passo = {}) {
+    const acoes = lista(passo.acoes).filter(Boolean);
+    return {
+        ...passo,
+        ingredientes: lista(passo.ingredientes),
+        utensilios: lista(passo.utensilios),
+        continueUsando: lista(passo.continueUsando),
+        acoes: acoes.length ? acoes : passo.descricao ? [passo.descricao] : [],
+        observacoes: lista(passo.observacoes)
+    };
+}
+
+function renderizarUtensiliosDetalhe() {
+    const utensilios = lista(estado.receitaAtual?.utensilios);
+    porId("totalUtensilios").textContent = `${utensilios.length} ${utensilios.length === 1 ? "item" : "itens"}`;
+    porId("listaUtensilios").innerHTML = utensilios.length
+        ? utensilios.map(item => `<div class="utensilio-item"><span aria-hidden="true">▦</span><strong>${escapar(item)}</strong></div>`).join("")
+        : '<p class="conteudo-indisponivel">A receita de origem não informou utensílios.</p>';
+}
+
+function itensUsoDoPasso(passo) {
+    const guiado = passoGuiado(passo);
+    return [
+        ...guiado.continueUsando.map(item => ({ tipo: "continuar", texto: item })),
+        ...guiado.utensilios.map(item => ({ tipo: "utensilio", texto: item })),
+        ...guiado.ingredientes.map(item => ({
+            tipo: "ingrediente",
+            texto: `${formatarQuantidade(item.quantidade, item.unidade)} de ${item.nome}`
+        }))
+    ];
+}
+
+function renderizarUsoDoPasso(passo) {
+    const itens = itensUsoDoPasso(passo);
+    if (!itens.length) {
+        return '<p class="conteudo-indisponivel">Consulte os ingredientes gerais desta receita.</p>';
+    }
+    return `<ul class="lista-uso-passo">${itens.map(item => `<li class="${item.tipo}"><span aria-hidden="true">${item.tipo === "ingrediente" ? "◇" : item.tipo === "continuar" ? "↻" : "▦"}</span><span>${item.tipo === "continuar" ? "<small>Continue usando</small>" : ""}${escapar(item.texto)}</span></li>`).join("")}</ul>`;
+}
+
+function renderizarMetadadosPasso(passo) {
+    const metadados = [
+        passo.tempoAproximado ? ["Tempo aproximado", passo.tempoAproximado] : null,
+        passo.intensidadeFogo ? ["Fogo / temperatura", passo.intensidadeFogo] : null
+    ].filter(Boolean);
+    return metadados.length ? `<dl class="passo-metadados">${metadados.map(([titulo, valor]) => `<div><dt>${titulo}</dt><dd>${escapar(valor)}</dd></div>`).join("")}</dl>` : "";
+}
+
+function conteudoPassoDetalhe(passoOriginal) {
+    const passo = passoGuiado(passoOriginal);
+    return `<h3>${escapar(passo.titulo)}</h3>
+        ${passo.descricao ? `<p class="passo-resumo">${escapar(passo.descricao)}</p>` : ""}
+        <section class="passo-bloco"><h4>Você vai usar agora</h4>${renderizarUsoDoPasso(passo)}</section>
+        <section class="passo-bloco passo-como-fazer"><h4>Como fazer</h4><ol>${passo.acoes.map(acao => `<li>${escapar(acao)}</li>`).join("")}</ol></section>
+        ${renderizarMetadadosPasso(passo)}
+        ${passo.pontoEsperado ? `<aside class="passo-como-saber"><h4>Como saber</h4><p>${escapar(passo.pontoEsperado)}</p></aside>` : ""}
+        ${passo.observacoes.length ? `<aside class="passo-observacoes"><h4>Atenção</h4><ul>${passo.observacoes.map(item => `<li>${escapar(item)}</li>`).join("")}</ul></aside>` : ""}`;
+}
+
 function renderizarPasso() {
     const passos = estado.receitaAtual?.passos || [];
     if (!passos.length) return;
-    const passo = passos[estado.passoAtual];
+    const passo = passoGuiado(passos[estado.passoAtual]);
     porId("numeroPasso").textContent = `Passo ${estado.passoAtual + 1} de ${passos.length}`;
     porId("barraPasso").style.width = `${((estado.passoAtual + 1) / passos.length) * 100}%`;
-    porId("passoAtual").innerHTML = `<h3>${escapar(passo.titulo)}</h3><p>${escapar(passo.descricao)}</p>`;
+    porId("passoAtual").innerHTML = conteudoPassoDetalhe(passo);
     porId("indicadoresPassos").innerHTML = passos.map((_, indice) => `<button type="button" data-passo="${indice}" class="${indice < estado.passoAtual ? "concluido" : ""} ${indice === estado.passoAtual ? "ativo" : ""}" aria-label="Ir para o passo ${indice + 1}"></button>`).join("");
     porId("passoAnterior").disabled = estado.passoAtual === 0;
     porId("cozinhaAnterior").disabled = estado.passoAtual === 0;
@@ -258,15 +322,26 @@ function moverPasso(direcao) {
 
 function atualizarModoCozinha() {
     if (!estado.receitaAtual) return;
-    const passo = estado.receitaAtual.passos[estado.passoAtual];
+    const passo = passoGuiado(estado.receitaAtual.passos[estado.passoAtual]);
+    const total = estado.receitaAtual.passos.length;
     porId("nomeModoCozinha").textContent = estado.receitaAtual.nome;
-    porId("numeroModoCozinha").textContent = `Passo ${estado.passoAtual + 1} de ${estado.receitaAtual.passos.length}`;
+    porId("numeroModoCozinha").textContent = `Passo ${estado.passoAtual + 1} de ${total}`;
+    porId("estadoPassoCozinha").textContent = estado.passoAtual
+        ? `✓ ${estado.passoAtual} ${estado.passoAtual === 1 ? "etapa concluída" : "etapas concluídas"} · ● atual`
+        : "● Etapa atual";
+    porId("barraModoCozinha").style.width = `${((estado.passoAtual + 1) / total) * 100}%`;
     porId("tituloModoCozinha").textContent = passo.titulo;
-    porId("descricaoModoCozinha").textContent = passo.descricao;
-    porId("ingredientesModoCozinha").textContent = estado.receitaAtual.ingredientes
-        .filter(item => item.obrigatorio && !item.basico)
-        .map(item => `${item.nome} — ${formatarQuantidade(item.quantidade, item.unidade)}`)
-        .join(" · ");
+    porId("descricaoModoCozinha").textContent = passo.descricao || "";
+    porId("ingredientesModoCozinha").innerHTML = renderizarUsoDoPasso(passo);
+    porId("acoesModoCozinha").innerHTML = passo.acoes.map(acao => `<li>${escapar(acao)}</li>`).join("");
+    porId("tempoBlocoCozinha").hidden = !passo.tempoAproximado;
+    porId("tempoModoCozinha").textContent = passo.tempoAproximado || "";
+    porId("fogoBlocoCozinha").hidden = !passo.intensidadeFogo;
+    porId("fogoModoCozinha").textContent = passo.intensidadeFogo || "";
+    porId("comoSaberBlocoCozinha").hidden = !passo.pontoEsperado;
+    porId("comoSaberModoCozinha").textContent = passo.pontoEsperado || "";
+    porId("observacoesBlocoCozinha").hidden = passo.observacoes.length === 0;
+    porId("observacoesModoCozinha").innerHTML = passo.observacoes.map(item => `<li>${escapar(item)}</li>`).join("");
 }
 
 function abrirModoCozinha() {
@@ -278,6 +353,17 @@ function abrirModoCozinha() {
 function fecharModoCozinha() {
     porId("modoCozinha").hidden = true;
     document.body.style.removeProperty("overflow");
+}
+
+function abrirConsultaCozinha(tipo) {
+    const receita = estado.receitaAtual;
+    if (!receita) return;
+    const ingredientes = tipo === "ingredientes";
+    porId("tituloConsultaCozinha").textContent = ingredientes ? "Todos os ingredientes" : "Utensílios";
+    porId("conteudoConsultaCozinha").innerHTML = ingredientes
+        ? `<div class="consulta-lista">${receita.ingredientes.map(item => `<div><span>◇</span><strong>${escapar(item.nome)}</strong><small>${escapar(formatarQuantidade(item.quantidade, item.unidade))}</small></div>`).join("")}</div>`
+        : `<div class="consulta-lista">${lista(receita.utensilios).map(item => `<div><span>▦</span><strong>${escapar(item)}</strong></div>`).join("") || '<p class="conteudo-indisponivel">A receita de origem não informou utensílios.</p>'}</div>`;
+    porId("consultaCozinhaDialog").showModal();
 }
 
 function produtoParaFalta(falta) {
@@ -446,6 +532,8 @@ function configurarEventos() {
     });
     porId("iniciarModoCozinha").addEventListener("click", abrirModoCozinha);
     porId("fecharModoCozinha").addEventListener("click", fecharModoCozinha);
+    porId("verIngredientesCozinha").addEventListener("click", () => abrirConsultaCozinha("ingredientes"));
+    porId("verUtensiliosCozinha").addEventListener("click", () => abrirConsultaCozinha("utensilios"));
     porId("cozinhaAnterior").addEventListener("click", () => moverPasso(-1));
     porId("cozinhaProximo").addEventListener("click", () => moverPasso(1));
     porId("adicionarFaltantes").addEventListener("click", adicionarFaltantesALista);
