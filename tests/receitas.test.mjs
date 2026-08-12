@@ -116,6 +116,9 @@ test("Teste 10 — modo cozinha possui layout específico para celular e web", a
     assert.match(css, /\.modo-cozinha \.cozinha-etapa > h1/);
     assert.match(css, /overflow-x: hidden/);
     assert.match(html, /id="modoCozinha"/);
+    assert.match(html, /class="preparo-guiado-destaque"/);
+    assert.match(html, /js\/pwa\.js\?v=2/);
+    assert.match(css, /\.preparo-guiado-destaque button[\s\S]*min-height: 54px/);
 });
 
 test("Preparo guiado — todas as receitas possuem utensílios e etapas estruturadas", () => {

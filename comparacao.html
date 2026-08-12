@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/receitas.css?v=2">
+    <link rel="stylesheet" href="./css/receitas.css?v=3">
 </head>
 <body class="embalagens-page receitas-page sem-controle-tema">
     <main id="receitasConteudo" class="receitas-app">
@@ -29,6 +29,16 @@
             <small>PLANEJE, COZINHE E ECONOMIZE</small>
             <h1>Receitas</h1>
             <p>Encontre receitas com o que você tem em casa</p>
+        </section>
+
+        <section class="preparo-guiado-destaque" aria-labelledby="tituloPreparoGuiado">
+            <div class="preparo-guiado-icone" aria-hidden="true">✦</div>
+            <div class="preparo-guiado-texto">
+                <small>NOVO NO SMART LIST</small>
+                <h2 id="tituloPreparoGuiado">Modo de preparo guiado</h2>
+                <p>Veja o que pegar, quanto usar, o fogo indicado e como saber o ponto certo em cada etapa.</p>
+            </div>
+            <button type="button" data-receita-id="feijao-tropeiro">Experimentar agora</button>
         </section>
 
         <form id="formBuscaReceitas" class="receitas-busca" role="search">
@@ -223,6 +233,7 @@
         <div id="conteudoConsultaCozinha"></div>
     </dialog>
 
+    <script type="module" src="./js/pwa.js?v=2"></script>
     <script src="./js/tema.js"></script>
     <script type="module" src="./js/receitas.js?v=3"></script>
     <script src="./js/mobile-nav.js"></script>

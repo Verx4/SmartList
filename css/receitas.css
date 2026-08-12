@@ -47,6 +47,62 @@
     font-size: clamp(16px, 2vw, 20px);
 }
 
+.preparo-guiado-destaque {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding: 17px 19px;
+    background: linear-gradient(135deg, rgba(var(--cor-primaria-rgb), .22), rgba(var(--cor-destaque-rgb), .08));
+    border: 1px solid rgba(var(--cor-destaque-rgb), .48);
+    border-radius: 17px;
+}
+
+.preparo-guiado-icone {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    color: var(--cor-destaque);
+    background: rgba(var(--cor-primaria-rgb), .2);
+    border: 1px solid rgba(var(--cor-destaque-rgb), .35);
+    border-radius: 14px;
+    font-size: 25px;
+}
+
+.preparo-guiado-destaque small {
+    color: var(--cor-destaque);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .1em;
+}
+
+.preparo-guiado-destaque h2 {
+    margin: 3px 0 4px;
+    font-size: clamp(19px, 2.5vw, 24px);
+}
+
+.preparo-guiado-destaque p {
+    color: var(--cor-texto-secundario);
+    line-height: 1.5;
+}
+
+.preparo-guiado-destaque button {
+    min-height: 48px;
+    padding: 10px 18px;
+    color: var(--cor-texto-botao);
+    background: var(--cor-primaria);
+    border: 0;
+    border-radius: 11px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.preparo-guiado-destaque button:hover {
+    background: var(--cor-primaria-hover);
+}
+
 .receitas-busca {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1261,6 +1317,17 @@
 
     .receitas-cabecalho {
         margin-top: 24px;
+    }
+
+    .preparo-guiado-destaque {
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 16px;
+    }
+
+    .preparo-guiado-destaque button {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-height: 54px;
     }
 
     .receitas-busca {
