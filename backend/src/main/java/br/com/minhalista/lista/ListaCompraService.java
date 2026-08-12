@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.minhalista.common.RegraNegocioException;
+import br.com.minhalista.despensa.DespensaService;
 import br.com.minhalista.mercado.Mercado;
 import br.com.minhalista.mercado.MercadoService;
+import br.com.minhalista.receita.NormalizadorIngrediente;
 import br.com.minhalista.usuario.Usuario;
 import br.com.minhalista.usuario.UsuarioService;
 
@@ -23,17 +25,20 @@ public class ListaCompraService {
     private final ItemListaRepository itemRepository;
     private final UsuarioService usuarioService;
     private final MercadoService mercadoService;
+    private final DespensaService despensaService;
 
     public ListaCompraService(
         ListaCompraRepository listaRepository,
         ItemListaRepository itemRepository,
         UsuarioService usuarioService,
-        MercadoService mercadoService
+        MercadoService mercadoService,
+        DespensaService despensaService
     ) {
         this.listaRepository = listaRepository;
         this.itemRepository = itemRepository;
         this.usuarioService = usuarioService;
         this.mercadoService = mercadoService;
+        this.despensaService = despensaService;
     }
 
     @Transactional
@@ -69,6 +74,29 @@ public class ListaCompraService {
         ItemLista item = new ItemLista();
         preencherItem(item, request);
         lista.adicionarItem(item);
+        return montarResposta(listaRepository.save(lista));
+    }
+
+    @Transactional
+    public ListaCompraResponse adicionarItens(List<ItemListaRequest> requests) {
+        Usuario usuario = usuarioService.obterAutenticado();
+        ListaCompra lista = obterOuCriarAtual(usuario);
+        for (ItemListaRequest request : requests) {
+            ItemLista item = lista.getItens().stream()
+                .filter(existente -> NormalizadorIngrediente.chave(existente.getNome())
+                    .equals(NormalizadorIngrediente.chave(request.nome())))
+                .findFirst()
+                .orElse(null);
+            if (item == null) {
+                item = new ItemLista();
+                preencherItem(item, request);
+                lista.adicionarItem(item);
+            } else if (request.peso() != null && request.peso().signum() > 0) {
+                item.setPeso(item.getPeso().add(request.peso()));
+            } else {
+                item.setQuantidade(item.getQuantidade() + (request.quantidade() == null ? 1 : request.quantidade()));
+            }
+        }
         return montarResposta(listaRepository.save(lista));
     }
 
@@ -113,7 +141,9 @@ public class ListaCompraService {
         lista.setStatus(StatusLista.FINALIZADA);
         lista.setFinalizadoEm(Instant.now());
 
-        return montarResposta(listaRepository.save(lista));
+        ListaCompra finalizada = listaRepository.save(lista);
+        despensaService.adicionarCompra(usuario, finalizada.getItens());
+        return montarResposta(finalizada);
     }
 
     @Transactional(readOnly = true)
@@ -146,6 +176,12 @@ public class ListaCompraService {
                 ? "Outros"
                 : request.categoria().trim()
         );
+        item.setMedida(
+            request.medida() == null || request.medida().isBlank()
+                ? request.peso() != null && request.peso().signum() > 0 ? "kg" : "unidade"
+                : request.medida().trim().toLowerCase()
+        );
+        item.setChaveProduto(NormalizadorIngrediente.chave(request.nome()));
         item.setQuantidade(request.quantidade() == null ? 1 : request.quantidade());
         item.setPreco(moeda(request.preco()));
         item.setPeso(peso(request.peso()));

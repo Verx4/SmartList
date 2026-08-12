@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v34`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v34`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v36`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v36`;
 
 const PRECACHE_URLS = [
     "./",
@@ -27,6 +27,7 @@ const PRECACHE_URLS = [
     "./css/temas.css",
     "./css/mobile-app.css",
     "./css/comparar-embalagens.css",
+    "./css/receitas.css",
     "./css/inicio.css",
     "./css/comparacao-lista-v2.css",
     "./css/ofertas.css",
@@ -46,6 +47,10 @@ const PRECACHE_URLS = [
     "./js/tema.js",
     "./js/mobile-nav.js",
     "./js/comparar-embalagens.js",
+    "./js/receitas-core.js",
+    "./js/despensa.js",
+    "./js/receitas.js",
+    "./data/receitas.json",
     "./js/inicio.js",
     "./js/ofertas.js",
     "./js/historico-page.js",
@@ -105,6 +110,11 @@ self.addEventListener("fetch", (event) => {
 
     if (request.mode === "navigate") {
         event.respondWith(responderNavegacao(request));
+        return;
+    }
+
+    if (url.pathname.endsWith("/data/receitas.json")) {
+        event.respondWith(responderRecursoEstatico(request));
         return;
     }
 

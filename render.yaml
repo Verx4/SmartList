@@ -2,11 +2,16 @@ services:
   - type: web
     name: smart-list-backend
     runtime: docker
-    rootDir: backend
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
     plan: free
     region: virginia
     healthCheckPath: /api/health
     autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - backend/**
+        - data/**
     envVars:
       - key: DATABASE_URL
         sync: false

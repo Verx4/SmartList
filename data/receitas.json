@@ -1,0 +1,267 @@
+[
+  {
+    "id": "feijao-tropeiro",
+    "nome": "Feijão Tropeiro",
+    "descricao": "Feijão soltinho com couve, farinha e carnes, preparado em uma única panela.",
+    "icone": "♨",
+    "categoria": "almoco",
+    "tipo": "salgada",
+    "tempoMinutos": 45,
+    "dificuldade": "Média",
+    "rendimento": "4 porções",
+    "ingredientes": [
+      { "nome": "Feijão", "quantidade": 500, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Couve", "quantidade": 1, "unidade": "maço", "obrigatorio": true, "basico": false },
+      { "nome": "Farinha de mandioca", "quantidade": 200, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Calabresa", "quantidade": 200, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Ovos", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Charque", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Cebola", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false },
+      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
+    ],
+    "passos": [
+      { "titulo": "Prepare o feijão", "descricao": "Cozinhe o feijão até ficar macio, mas sem desmanchar. Escorra e reserve." },
+      { "titulo": "Prepare as carnes", "descricao": "Doure a calabresa e a charque dessalgada em uma panela ampla." },
+      { "titulo": "Refogue alho e cebola", "descricao": "Junte o alho e a cebola e refogue até ficarem levemente dourados." },
+      { "titulo": "Misture o feijão", "descricao": "Adicione o feijão preparado e misture delicadamente." },
+      { "titulo": "Adicione a couve", "descricao": "Acrescente a couve fatiada e cozinhe apenas até murchar." },
+      { "titulo": "Adicione a farinha", "descricao": "Incorpore a farinha aos poucos até atingir a textura desejada." },
+      { "titulo": "Finalize", "descricao": "Junte os ovos cozidos ou mexidos, ajuste o sal e sirva." }
+    ]
+  },
+  {
+    "id": "omelete-de-forno",
+    "nome": "Omelete de Forno",
+    "descricao": "Omelete leve e prática, com queijo e tomate.",
+    "icone": "◇",
+    "categoria": "jantar",
+    "tipo": "salgada",
+    "tempoMinutos": 25,
+    "dificuldade": "Fácil",
+    "rendimento": "3 porções",
+    "ingredientes": [
+      { "nome": "Ovos", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Queijo", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Tomate", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Leite", "quantidade": 100, "unidade": "ml", "obrigatorio": true, "basico": false },
+      { "nome": "Cebola", "quantidade": 0.5, "unidade": "unidade", "obrigatorio": false, "basico": false },
+      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
+    ],
+    "passos": [
+      { "titulo": "Aqueça o forno", "descricao": "Preaqueça o forno a 180 °C e unte uma forma pequena." },
+      { "titulo": "Misture os ovos", "descricao": "Bata os ovos com o leite e uma pitada de sal." },
+      { "titulo": "Monte", "descricao": "Acrescente tomate, queijo e cebola e despeje na forma." },
+      { "titulo": "Asse", "descricao": "Asse por cerca de 18 minutos, até o centro ficar firme." }
+    ]
+  },
+  {
+    "id": "escondidinho-de-charque",
+    "nome": "Escondidinho de Charque",
+    "descricao": "Purê de mandioca cremoso com recheio de charque refogada.",
+    "icone": "▤",
+    "categoria": "almoco",
+    "tipo": "salgada",
+    "tempoMinutos": 50,
+    "dificuldade": "Média",
+    "rendimento": "6 porções",
+    "ingredientes": [
+      { "nome": "Charque", "quantidade": 500, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Mandioca", "quantidade": 1000, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Leite", "quantidade": 200, "unidade": "ml", "obrigatorio": true, "basico": false },
+      { "nome": "Manteiga", "quantidade": 50, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Queijo", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Cebola", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false }
+    ],
+    "passos": [
+      { "titulo": "Cozinhe a mandioca", "descricao": "Cozinhe até ficar macia e retire os fios centrais." },
+      { "titulo": "Faça o purê", "descricao": "Amasse a mandioca e misture leite e manteiga." },
+      { "titulo": "Prepare o recheio", "descricao": "Refogue cebola, alho e a charque dessalgada e desfiada." },
+      { "titulo": "Monte", "descricao": "Faça camadas de purê, recheio e purê em um refratário." },
+      { "titulo": "Gratine", "descricao": "Cubra com queijo e leve ao forno até dourar." }
+    ]
+  },
+  {
+    "id": "pao-de-queijo-de-frigideira",
+    "nome": "Pão de Queijo de Frigideira",
+    "descricao": "Lanche rápido de tapioca e queijo, sem usar forno.",
+    "icone": "◉",
+    "categoria": "lanche",
+    "tipo": "salgada",
+    "tempoMinutos": 15,
+    "dificuldade": "Fácil",
+    "rendimento": "1 porção",
+    "ingredientes": [
+      { "nome": "Ovo", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Tapioca", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Queijo", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
+    ],
+    "passos": [
+      { "titulo": "Misture", "descricao": "Misture ovo, tapioca, queijo e sal até ficar uniforme." },
+      { "titulo": "Cozinhe", "descricao": "Despeje em frigideira antiaderente e cozinhe em fogo baixo." },
+      { "titulo": "Vire", "descricao": "Vire quando firmar e doure o outro lado." }
+    ]
+  },
+  {
+    "id": "sanduiche-quente",
+    "nome": "Sanduíche Quente",
+    "descricao": "Sanduíche dourado com queijo, presunto e tomate.",
+    "icone": "▱",
+    "categoria": "lanche",
+    "tipo": "salgada",
+    "tempoMinutos": 10,
+    "dificuldade": "Fácil",
+    "rendimento": "2 porções",
+    "ingredientes": [
+      { "nome": "Pão", "quantidade": 4, "unidade": "fatia", "obrigatorio": true, "basico": false },
+      { "nome": "Queijo", "quantidade": 100, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Presunto", "quantidade": 100, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Tomate", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false }
+    ],
+    "passos": [
+      { "titulo": "Monte", "descricao": "Distribua queijo, presunto e tomate entre as fatias de pão." },
+      { "titulo": "Doure", "descricao": "Doure os dois lados na frigideira ou sanduicheira." }
+    ]
+  },
+  {
+    "id": "panqueca-doce",
+    "nome": "Panqueca Doce",
+    "descricao": "Massa macia para um café da manhã rápido.",
+    "icone": "◎",
+    "categoria": "cafe-da-manha",
+    "tipo": "doce",
+    "tempoMinutos": 20,
+    "dificuldade": "Fácil",
+    "rendimento": "6 unidades",
+    "ingredientes": [
+      { "nome": "Ovo", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Leite", "quantidade": 250, "unidade": "ml", "obrigatorio": true, "basico": false },
+      { "nome": "Farinha de trigo", "quantidade": 180, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Açúcar", "quantidade": 30, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false }
+    ],
+    "passos": [
+      { "titulo": "Prepare a massa", "descricao": "Misture ovo, leite, farinha e açúcar até ficar liso." },
+      { "titulo": "Aqueça", "descricao": "Aqueça uma frigideira e unte levemente." },
+      { "titulo": "Doure", "descricao": "Cozinhe pequenas porções e vire para dourar os dois lados." }
+    ]
+  },
+  {
+    "id": "bolo-de-banana",
+    "nome": "Bolo de Banana",
+    "descricao": "Bolo caseiro de banana com massa simples.",
+    "icone": "▦",
+    "categoria": "cafe-da-manha",
+    "tipo": "doce",
+    "tempoMinutos": 50,
+    "dificuldade": "Média",
+    "rendimento": "10 porções",
+    "ingredientes": [
+      { "nome": "Banana", "quantidade": 4, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Ovos", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Farinha de trigo", "quantidade": 240, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Açúcar", "quantidade": 160, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Leite", "quantidade": 120, "unidade": "ml", "obrigatorio": true, "basico": false },
+      { "nome": "Fermento", "quantidade": 10, "unidade": "g", "obrigatorio": true, "basico": false }
+    ],
+    "passos": [
+      { "titulo": "Aqueça o forno", "descricao": "Preaqueça o forno a 180 °C e unte uma forma." },
+      { "titulo": "Misture", "descricao": "Amasse as bananas e misture ovos, açúcar e leite." },
+      { "titulo": "Finalize a massa", "descricao": "Junte a farinha e, por último, o fermento." },
+      { "titulo": "Asse", "descricao": "Asse por 35 a 40 minutos, até o centro ficar firme." }
+    ]
+  },
+  {
+    "id": "arroz-carreteiro",
+    "nome": "Arroz Carreteiro",
+    "descricao": "Arroz bem temperado com charque e vegetais.",
+    "icone": "▧",
+    "categoria": "almoco",
+    "tipo": "salgada",
+    "tempoMinutos": 40,
+    "dificuldade": "Média",
+    "rendimento": "4 porções",
+    "ingredientes": [
+      { "nome": "Arroz", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Charque", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Cebola", "quantidade": 1, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Alho", "quantidade": 2, "unidade": "dente", "obrigatorio": true, "basico": false },
+      { "nome": "Tomate", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Água", "quantidade": 700, "unidade": "ml", "obrigatorio": false, "basico": true }
+    ],
+    "passos": [
+      { "titulo": "Prepare a charque", "descricao": "Dessalgue, cozinhe e desfie a charque." },
+      { "titulo": "Refogue", "descricao": "Doure cebola, alho, tomate e a charque." },
+      { "titulo": "Cozinhe o arroz", "descricao": "Junte o arroz e a água e cozinhe até secar." }
+    ]
+  },
+  {
+    "id": "cuscuz-com-ovo",
+    "nome": "Cuscuz com Ovo",
+    "descricao": "Cuscuz nordestino simples para começar o dia.",
+    "icone": "◫",
+    "categoria": "cafe-da-manha",
+    "tipo": "salgada",
+    "tempoMinutos": 20,
+    "dificuldade": "Fácil",
+    "rendimento": "2 porções",
+    "ingredientes": [
+      { "nome": "Flocão de milho", "quantidade": 150, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Ovos", "quantidade": 2, "unidade": "unidade", "obrigatorio": true, "basico": false },
+      { "nome": "Manteiga", "quantidade": 20, "unidade": "g", "obrigatorio": false, "basico": false },
+      { "nome": "Água", "quantidade": 100, "unidade": "ml", "obrigatorio": false, "basico": true },
+      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
+    ],
+    "passos": [
+      { "titulo": "Hidrate", "descricao": "Misture o flocão com água e sal e descanse por 8 minutos." },
+      { "titulo": "Cozinhe", "descricao": "Cozinhe o cuscuz na cuscuzeira até ficar macio." },
+      { "titulo": "Prepare os ovos", "descricao": "Faça os ovos como preferir e sirva com o cuscuz." }
+    ]
+  },
+  {
+    "id": "macarrao-alho-e-oleo",
+    "nome": "Macarrão Alho e Óleo",
+    "descricao": "Jantar rápido com poucos ingredientes.",
+    "icone": "≋",
+    "categoria": "jantar",
+    "tipo": "salgada",
+    "tempoMinutos": 20,
+    "dificuldade": "Fácil",
+    "rendimento": "3 porções",
+    "ingredientes": [
+      { "nome": "Macarrão", "quantidade": 300, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Alho", "quantidade": 4, "unidade": "dente", "obrigatorio": true, "basico": false },
+      { "nome": "Azeite", "quantidade": 45, "unidade": "ml", "obrigatorio": true, "basico": false },
+      { "nome": "Sal", "quantidade": 1, "unidade": "pitada", "obrigatorio": false, "basico": true }
+    ],
+    "passos": [
+      { "titulo": "Cozinhe a massa", "descricao": "Cozinhe o macarrão até ficar al dente e reserve um pouco da água." },
+      { "titulo": "Doure o alho", "descricao": "Aqueça o azeite e doure o alho sem queimar." },
+      { "titulo": "Misture", "descricao": "Junte a massa, ajuste a textura com a água reservada e sirva." }
+    ]
+  },
+  {
+    "id": "brigadeiro-de-panela",
+    "nome": "Brigadeiro de Panela",
+    "descricao": "Doce cremoso preparado em poucos minutos.",
+    "icone": "●",
+    "categoria": "lanche",
+    "tipo": "doce",
+    "tempoMinutos": 20,
+    "dificuldade": "Fácil",
+    "rendimento": "6 porções",
+    "ingredientes": [
+      { "nome": "Leite condensado", "quantidade": 395, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Chocolate em pó", "quantidade": 40, "unidade": "g", "obrigatorio": true, "basico": false },
+      { "nome": "Manteiga", "quantidade": 15, "unidade": "g", "obrigatorio": true, "basico": false }
+    ],
+    "passos": [
+      { "titulo": "Misture", "descricao": "Coloque todos os ingredientes em uma panela de fundo grosso." },
+      { "titulo": "Cozinhe", "descricao": "Mexa em fogo baixo até engrossar e soltar do fundo." },
+      { "titulo": "Sirva", "descricao": "Desligue o fogo e sirva morno ou frio." }
+    ]
+  }
+]

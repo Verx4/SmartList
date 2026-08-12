@@ -4,120 +4,188 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#071525">
-    <title>Ofertas próximas | Smart List</title>
+    <title>Receitas | Smart List</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="stylesheet" href="./css/global.css">
     <link rel="stylesheet" href="./css/comparar-embalagens.css">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/ofertas.css?v=2">
+    <link rel="stylesheet" href="./css/receitas.css?v=1">
 </head>
-<body class="embalagens-page mercados-page sem-controle-tema">
-    <main class="embalagens-app ofertas-shell">
-        <header class="embalagens-header">
+<body class="embalagens-page receitas-page sem-controle-tema">
+    <main id="receitasConteudo" class="receitas-app">
+        <header class="embalagens-header receitas-topo">
             <a class="icon-button" href="./inicio.html" aria-label="Voltar">←</a>
             <h1>Comparação</h1>
-            <button id="ajudaOfertas" class="help-button" type="button" aria-label="Ajuda">?</button>
+            <button id="abrirDespensaTopo" class="help-button" type="button" aria-label="Abrir despensa" title="Despensa">▣</button>
         </header>
 
         <nav class="comparison-tabs" aria-label="Tipos de comparação">
             <a href="./comparar-embalagens.html">Embalagens</a>
-            <a class="active" href="./comparacao.html" aria-current="page">Ofertas</a>
+            <a class="active" href="./comparacao.html" aria-current="page">Receitas</a>
         </nav>
 
-        <section class="ofertas-cabecalho">
-            <small>ENCARTES E FOLDERS PÚBLICOS</small>
-            <h1>Ofertas próximas da sua lista</h1>
-            <p>Veja promoções em texto, com endereço, distância e validade. Nenhuma imagem de encarte é exibida.</p>
+        <section class="receitas-cabecalho">
+            <small>PLANEJE, COZINHE E ECONOMIZE</small>
+            <h1>Receitas</h1>
+            <p>Encontre receitas com o que você tem em casa</p>
         </section>
 
-        <section class="localizacao-card" aria-labelledby="tituloLocalizacao">
-            <div>
-                <small>LOCALIZAÇÃO DA CONTA</small>
-                <h2 id="tituloLocalizacao">Ofertas da sua região</h2>
-                <p id="statusLocalizacao">Sua posição não é coletada em segundo plano.</p>
-            </div>
-            <div class="localizacao-acoes">
-                <button id="usarLocalizacao" class="btn-localizacao primario" type="button" hidden>Usar localização atual</button>
-                <button id="informarLocalidade" class="btn-localizacao" type="button" hidden>Informar cidade</button>
-                <button id="revogarLocalizacao" class="btn-localizacao perigo" type="button" hidden>Apagar localização</button>
-            </div>
-        </section>
-
-        <form id="formLocalidade" class="localidade-form" hidden>
-            <h2>Informe sua região</h2>
-            <p>No GPS, usamos uma posição aproximada no OpenStreetMap para identificar cidade e mercados próximos.</p>
-            <div class="localidade-grid">
-                <label>Cidade
-                    <input id="localidadeCidade" name="cidade" type="text" maxlength="100" required>
-                </label>
-                <label>Estado
-                    <input id="localidadeEstado" name="estado" type="text" maxlength="2" minlength="2" placeholder="PE" required>
-                </label>
-                <label>Bairro
-                    <input id="localidadeBairro" name="bairro" type="text" maxlength="100">
-                </label>
-            </div>
-            <label class="consentimento-localizacao">
-                <input id="consentimentoLocalizacao" type="checkbox" required>
-                <span>Autorizo o uso aproximado desta localidade para encontrar mercados e ofertas. Posso apagar quando quiser.</span>
-            </label>
-            <div class="localidade-botoes">
-                <button class="btn-localizacao primario" type="submit">Salvar e buscar</button>
-                <button id="cancelarLocalidade" class="btn-localizacao" type="button">Cancelar</button>
-            </div>
+        <form id="formBuscaReceitas" class="receitas-busca" role="search">
+            <label class="sr-only" for="buscaReceitas">Buscar receitas</label>
+            <span aria-hidden="true">⌕</span>
+            <input id="buscaReceitas" type="search" maxlength="100" placeholder="Buscar receitas..." autocomplete="off">
+            <button type="submit">Buscar</button>
         </form>
 
-        <form id="formFiltrosOfertas" class="filtros-ofertas">
-            <div class="resumo-lista-ofertas">
-                <div><span>Produtos na lista</span><strong id="quantidadeItensOfertas">0</strong></div>
-                <a href="./dashboard.html">Editar lista</a>
+        <section class="ingredientes-destaque" aria-labelledby="tituloIngredientes">
+            <div class="destaque-icone" aria-hidden="true">⌁</div>
+            <div>
+                <small>BUSCA POR INGREDIENTES</small>
+                <h2 id="tituloIngredientes">O que você tem em casa?</h2>
+                <p>Digite os ingredientes que você tem em casa e encontraremos receitas para você.</p>
             </div>
-            <div class="filtros-grid">
-                <label>Produto
-                    <input id="filtroProduto" type="search" maxlength="180" placeholder="Todos os produtos da lista">
-                </label>
-                <label>Mercado
-                    <input id="filtroMercado" type="search" maxlength="120" placeholder="Todos">
-                </label>
-                <label>Categoria
-                    <input id="filtroCategoria" type="search" maxlength="100" placeholder="Todas">
-                </label>
-                <label>Distância
-                    <select id="filtroRaio">
-                        <option value="5">Até 5 km</option>
-                        <option value="10">Até 10 km</option>
-                        <option value="25" selected>Até 25 km</option>
-                        <option value="50">Até 50 km</option>
-                        <option value="100">Até 100 km</option>
+            <form id="formIngredientes" class="ingredientes-form">
+                <label class="sr-only" for="ingredientesManuais">Ingredientes separados por vírgula</label>
+                <textarea id="ingredientesManuais" rows="2" maxlength="500" placeholder="Ex.: feijão, couve, farofa, calabresa, ovos, charque..."></textarea>
+                <button type="submit">Encontrar receitas</button>
+            </form>
+        </section>
+
+        <section class="despensa-resumo" aria-labelledby="tituloDespensaResumo">
+            <div>
+                <span class="despensa-resumo-icone" aria-hidden="true">▦</span>
+                <div><small>SUA DESPENSA</small><h2 id="tituloDespensaResumo">Receitas com o que você comprou</h2></div>
+            </div>
+            <div class="despensa-resumo-acoes">
+                <strong id="quantidadeDespensa">0 itens</strong>
+                <button id="abrirDespensa" type="button">Gerenciar despensa</button>
+            </div>
+        </section>
+
+        <section class="receitas-filtros" aria-labelledby="tituloFiltros">
+            <header><div><small>REFINE OS RESULTADOS</small><h2 id="tituloFiltros">Categorias e filtros</h2></div><button id="limparFiltros" type="button">Limpar filtros</button></header>
+
+            <fieldset>
+                <legend>Categorias</legend>
+                <div class="filtro-chips categorias-chips">
+                    <button class="ativo" type="button" data-categoria="todas">Todas</button>
+                    <button type="button" data-categoria="cafe-da-manha"><span aria-hidden="true">☀</span>Café da manhã</button>
+                    <button type="button" data-categoria="almoco"><span aria-hidden="true">◉</span>Almoço</button>
+                    <button type="button" data-categoria="lanche"><span aria-hidden="true">◇</span>Lanche</button>
+                    <button type="button" data-categoria="jantar"><span aria-hidden="true">☾</span>Jantar</button>
+                </div>
+            </fieldset>
+
+            <div class="filtros-linha">
+                <fieldset>
+                    <legend>Tipo</legend>
+                    <div class="filtro-chips">
+                        <button class="ativo" type="button" data-tipo="todas">Todas</button>
+                        <button type="button" data-tipo="salgada">Salgada</button>
+                        <button type="button" data-tipo="doce">Doce</button>
+                    </div>
+                </fieldset>
+                <label class="filtro-tempo">Tempo de preparo
+                    <select id="filtroTempo">
+                        <option value="todos">Todos os tempos</option>
+                        <option value="ate-20">Até 20 minutos</option>
+                        <option value="ate-30">Até 30 minutos</option>
+                        <option value="20-30">20–30 minutos</option>
+                        <option value="40-50">40–50 minutos</option>
+                        <option value="60-mais">1 hora ou mais</option>
                     </select>
                 </label>
             </div>
-            <button id="buscarOfertas" class="buscar-ofertas" type="submit">Buscar melhores ofertas</button>
-            <p id="mensagemOfertas" class="mensagem-ofertas" aria-live="polite"></p>
-        </form>
 
-        <section id="unidadesProximas" class="unidades-proximas" hidden>
-            <header>
-                <div><small>CONFIRMAÇÃO OPCIONAL</small><h2>Em qual unidade você está comprando?</h2></div>
-                <button id="fecharUnidades" type="button" aria-label="Fechar">×</button>
-            </header>
-            <p>Escolha somente se quiser confirmar a unidade. A localização sozinha não define o mercado.</p>
-            <div id="listaUnidadesProximas"></div>
+            <label class="somente-disponiveis" for="somenteDisponiveis">
+                <input id="somenteDisponiveis" type="checkbox">
+                <span><strong>Só mostrar receitas que posso fazer agora</strong><small>Todos os ingredientes obrigatórios precisam estar disponíveis.</small></span>
+            </label>
         </section>
 
-        <section id="resultadoOfertas" class="resultado-ofertas" hidden>
+        <section id="favoritasSecao" class="favoritas-secao" hidden>
+            <header><div><small>SELECIONADAS POR VOCÊ</small><h2>Minhas receitas favoritas</h2></div><span id="totalFavoritas"></span></header>
+            <div id="listaFavoritas" class="receitas-grade compacta"></div>
+        </section>
+
+        <section class="resultados-receitas" aria-labelledby="tituloResultados">
             <header>
-                <div><small>RESULTADOS</small><h2>Ofertas encontradas</h2></div>
-                <span id="atualizacaoOfertas"></span>
+                <div><small>ORDENADAS POR COMPATIBILIDADE</small><h2 id="tituloResultados">Receitas para você</h2></div>
+                <span id="resumoResultados" aria-live="polite">Carregando...</span>
             </header>
-            <p id="avisoOfertas"></p>
-            <div id="listaResultadosOfertas"></div>
+            <p id="mensagemReceitas" class="mensagem-receitas" aria-live="polite"></p>
+            <div id="listaReceitas" class="receitas-grade"></div>
         </section>
     </main>
 
+    <section id="receitaDetalhe" class="receita-detalhe" hidden aria-labelledby="nomeReceitaDetalhe">
+        <header class="detalhe-topo">
+            <button id="fecharDetalhe" type="button" aria-label="Voltar para as receitas">←</button>
+            <span>Receita</span>
+            <button id="favoritarDetalhe" type="button" aria-label="Favoritar receita" aria-pressed="false">♡</button>
+        </header>
+        <main class="detalhe-conteudo">
+            <section class="detalhe-cabecalho">
+                <span id="iconeReceitaDetalhe" aria-hidden="true">♨</span>
+                <div><small id="categoriaReceitaDetalhe"></small><h1 id="nomeReceitaDetalhe"></h1><p id="descricaoReceitaDetalhe"></p></div>
+            </section>
+            <dl class="receita-metricas">
+                <div><dt>Tempo</dt><dd id="tempoReceitaDetalhe"></dd></div>
+                <div><dt>Rendimento</dt><dd id="rendimentoReceitaDetalhe"></dd></div>
+                <div><dt>Dificuldade</dt><dd id="dificuldadeReceitaDetalhe"></dd></div>
+                <div><dt>Categoria</dt><dd id="categoriaMetricaReceita"></dd></div>
+            </dl>
+
+            <section class="ingredientes-detalhe">
+                <header><div><small>CONFIRA ANTES DE COMEÇAR</small><h2>Itens necessários</h2></div><span id="compatibilidadeDetalhe"></span></header>
+                <div id="itensNecessarios"></div>
+                <div id="faltantesBloco" class="faltantes-bloco" hidden><h3>Faltam</h3><div id="itensFaltantes"></div></div>
+                <button id="adicionarFaltantes" class="acao-primaria" type="button">Adicionar itens que faltam à lista</button>
+            </section>
+
+            <section class="preparo-interativo" aria-labelledby="tituloPreparo">
+                <header><div><small>PASSO A PASSO INTERATIVO</small><h2 id="tituloPreparo">Modo de preparo</h2></div><button id="iniciarModoCozinha" type="button">Iniciar modo cozinha</button></header>
+                <div class="passo-progresso"><span id="numeroPasso">Passo 1 de 1</span><div><i id="barraPasso"></i></div></div>
+                <article id="passoAtual" class="passo-atual"></article>
+                <div id="indicadoresPassos" class="indicadores-passos" aria-label="Progresso do preparo"></div>
+                <div class="passo-acoes"><button id="passoAnterior" type="button">Anterior</button><button id="proximoPasso" type="button">Próximo passo</button></div>
+            </section>
+
+            <button id="finalizarReceita" class="finalizar-receita" type="button">Finalizar receita</button>
+        </main>
+    </section>
+
+    <dialog id="despensaDialog" class="despensa-dialog">
+        <form method="dialog" class="dialog-topo"><div><small>ESTOQUE ESTIMADO</small><h2>Despensa</h2></div><button value="cancel" aria-label="Fechar">×</button></form>
+        <p>Produtos comprados são somados automaticamente. Ajuste as quantidades quando consumir algo.</p>
+        <form id="formNovoItemDespensa" class="novo-item-despensa">
+            <label>Produto<input id="nomeItemDespensa" maxlength="160" required placeholder="Ex.: arroz"></label>
+            <label>Quantidade<input id="quantidadeItemDespensa" type="number" min="0.001" step="0.001" required value="1"></label>
+            <label>Unidade<select id="unidadeItemDespensa"><option value="unidade">Unidade</option><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="l">L</option></select></label>
+            <button type="submit">Adicionar</button>
+        </form>
+        <div id="listaDespensa" class="lista-despensa"></div>
+    </dialog>
+
+    <dialog id="finalizarDialog" class="finalizar-dialog">
+        <div class="finalizar-icone" aria-hidden="true">✓</div>
+        <h2>Receita concluída</h2>
+        <p>Deseja atualizar sua despensa com os ingredientes utilizados nesta receita?</p>
+        <div><button id="confirmarAtualizarDespensa" type="button">Atualizar despensa</button><button id="naoAtualizarDespensa" type="button">Não atualizar</button></div>
+    </dialog>
+
+    <div id="modoCozinha" class="modo-cozinha" hidden>
+        <header><div><small>MODO COZINHA</small><strong id="nomeModoCozinha"></strong></div><button id="fecharModoCozinha" type="button" aria-label="Fechar modo cozinha">×</button></header>
+        <main>
+            <aside><h2>Ingredientes deste passo</h2><p id="ingredientesModoCozinha"></p></aside>
+            <section><span id="numeroModoCozinha"></span><h1 id="tituloModoCozinha"></h1><p id="descricaoModoCozinha"></p></section>
+        </main>
+        <footer><button id="cozinhaAnterior" type="button">Anterior</button><button id="cozinhaProximo" type="button">Próximo passo</button></footer>
+    </div>
+
     <script src="./js/tema.js"></script>
-    <script type="module" src="./js/ofertas.js?v=2"></script>
+    <script type="module" src="./js/receitas.js?v=2"></script>
     <script src="./js/mobile-nav.js"></script>
 </body>
 </html>

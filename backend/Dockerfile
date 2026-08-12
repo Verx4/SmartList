@@ -1,17 +1,18 @@
 FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
 
-WORKDIR /workspace
-COPY pom.xml ./
+WORKDIR /workspace/backend
+COPY backend/pom.xml ./
 RUN mvn --no-transfer-progress -B dependency:go-offline
 
-COPY src ./src
+COPY backend/src ./src
+COPY data /workspace/data
 RUN mvn --no-transfer-progress -B -DskipTests package
 
 FROM eclipse-temurin:21-jre-alpine
 
 RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
-COPY --from=build /workspace/target/*.jar app.jar
+COPY --from=build /workspace/backend/target/*.jar app.jar
 
 USER app
 EXPOSE 8080
