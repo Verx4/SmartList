@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./css/pwa.css">
     <script type="module" src="./js/pwa.js"></script>
 
-    <title>Sugestões | Smart List</title>
+    <title>Sugestões e feedback | Smart List</title>
 
     <link rel="stylesheet" href="./css/global.css">
     <link rel="stylesheet" href="./css/layout.css">
@@ -45,14 +45,14 @@
 
         <section class="page-header">
             <span class="page-eyebrow">Comunidade</span>
-            <h1>Caixa de sugestões</h1>
+            <h1>Sugestões e feedback</h1>
             <p>
-                Envie ideias e vote nas melhorias que gostaria de ver.
+                Envie uma ideia ou dúvida e acompanhe a resposta da equipe.
             </p>
         </section>
 
         <section class="card">
-            <h2>Enviar nova sugestão</h2>
+            <h2>Enviar mensagem</h2>
 
             <form id="formSugestao" class="form" novalidate>
 
@@ -79,6 +79,7 @@
                         <option value="relatorios">Relatórios</option>
                         <option value="notificacoes">Notificações</option>
                         <option value="acessibilidade">Acessibilidade</option>
+                        <option value="duvidas">Dúvidas</option>
                         <option value="outros">Outros</option>
                     </select>
                 </div>
@@ -90,12 +91,12 @@
                         name="descricao"
                         rows="5"
                         maxlength="1000"
-                        placeholder="Explique como sua sugestão funcionaria"
+                        placeholder="Explique sua sugestão ou dúvida"
                         required></textarea>
                 </div>
 
                 <button class="btn btn-primary" type="submit">
-                    Enviar sugestão
+                    Enviar mensagem
                 </button>
 
                 <div
@@ -105,6 +106,19 @@
                 </div>
 
             </form>
+        </section>
+
+        <section class="card minhas-sugestoes-card" aria-labelledby="minhasSugestoesTitulo">
+            <div class="section-header">
+                <div>
+                    <span class="page-eyebrow">Sua conta</span>
+                    <h2 id="minhasSugestoesTitulo">Suas mensagens</h2>
+                    <p>Acompanhe o status e veja a resposta do ADM para cada envio.</p>
+                </div>
+            </div>
+            <div id="listaMinhasSugestoes" class="lista-sugestoes" aria-live="polite">
+                <p class="estado-vazio">Carregando suas mensagens...</p>
+            </div>
         </section>
 
     </main>

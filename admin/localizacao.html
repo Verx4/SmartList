@@ -39,6 +39,18 @@
                 <article class="card resumo-card"><span>Localidades</span><strong id="totalLocalidades">0</strong></article>
                 <article class="card resumo-card"><span>Redes confirmadas</span><strong id="totalRedes">0</strong></article>
             </section>
+            <section class="card admin-grafico-card" aria-labelledby="graficoEstadosTitulo">
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Cadastros</span>
+                        <h2 id="graficoEstadosTitulo">Usuários por estado</h2>
+                        <p>Quantidade de contas por estado informado durante a criação do cadastro.</p>
+                    </div>
+                </div>
+                <div id="graficoUsuariosEstado" class="admin-grafico-estados" role="list" aria-live="polite">
+                    <p class="estado-vazio">Carregando gráfico...</p>
+                </div>
+            </section>
             <section class="card tabela-card">
                 <div class="section-header"><div><span class="card-label">Distribuição</span><h2>Usuários por localidade</h2></div></div>
                 <div class="table-wrapper">

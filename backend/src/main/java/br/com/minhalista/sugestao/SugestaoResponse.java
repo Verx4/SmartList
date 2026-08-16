@@ -12,7 +12,9 @@ public record SugestaoResponse(
     String descricao,
     int votos,
     SugestaoStatus status,
-    Instant criadoEm
+    Instant criadoEm,
+    String respostaAdmin,
+    Instant respondidoEm
 ) {
     static SugestaoResponse de(Sugestao sugestao) {
         return new SugestaoResponse(
@@ -24,7 +26,9 @@ public record SugestaoResponse(
             sugestao.getDescricao(),
             sugestao.getVotos(),
             sugestao.getStatus(),
-            sugestao.getCriadoEm()
+            sugestao.getCriadoEm(),
+            sugestao.getRespostaAdmin(),
+            sugestao.getRespondidoEm()
         );
     }
 }

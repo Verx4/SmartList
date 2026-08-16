@@ -625,4 +625,18 @@
         align-items: flex-start;
         flex-direction: column;
     }
+
+    .admin-feedback-acoes {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .admin-feedback-acoes .btn {
+        width: 100%;
+    }
+
+    .admin-grafico-linha {
+        grid-template-columns: 34px minmax(80px, 1fr) 36px;
+        gap: 8px;
+    }
 }

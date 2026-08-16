@@ -8,6 +8,7 @@ public record LocalizacaoAdminResponse(
     long usuariosComLocalidade,
     long novosCadastrosNasUltimas24Horas,
     List<LocalidadeAgregadaResponse> localidades,
+    List<EstadoAgregadoResponse> estados,
     List<RedeConfirmadaResponse> redesConfirmadas,
     String privacidade
 ) {

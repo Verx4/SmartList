@@ -46,6 +46,15 @@ public class Sugestao {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private Instant criadoEm;
 
+    @Column(name = "resposta_admin", length = 2000)
+    private String respostaAdmin;
+
+    @Column(name = "respondido_em")
+    private Instant respondidoEm;
+
+    @Column(name = "respondido_por", length = 180)
+    private String respondidoPor;
+
     @PrePersist
     void antesDeSalvar() {
         if (criadoEm == null) {
@@ -118,5 +127,29 @@ public class Sugestao {
 
     public Instant getCriadoEm() {
         return criadoEm;
+    }
+
+    public String getRespostaAdmin() {
+        return respostaAdmin;
+    }
+
+    public void setRespostaAdmin(String respostaAdmin) {
+        this.respostaAdmin = respostaAdmin;
+    }
+
+    public Instant getRespondidoEm() {
+        return respondidoEm;
+    }
+
+    public void setRespondidoEm(Instant respondidoEm) {
+        this.respondidoEm = respondidoEm;
+    }
+
+    public String getRespondidoPor() {
+        return respondidoPor;
+    }
+
+    public void setRespondidoPor(String respondidoPor) {
+        this.respondidoPor = respondidoPor;
     }
 }

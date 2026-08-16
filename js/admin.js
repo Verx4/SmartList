@@ -181,7 +181,7 @@ function renderizarUsuarios(usuarios = []) {
     if (!usuarios.length) {
         corpo.innerHTML = `
             <tr>
-                <td colspan="8" class="estado-vazio">
+                <td colspan="10" class="estado-vazio">
                     Nenhum usuário encontrado.
                 </td>
             </tr>
@@ -199,6 +199,8 @@ function renderizarUsuarios(usuarios = []) {
             <tr>
                 <td>${escaparHtml(usuario.nome || "-")}</td>
                 <td>${escaparHtml(usuario.email || "-")}</td>
+                <td>${escaparHtml(usuario.cidade || "Não informado")}</td>
+                <td>${escaparHtml(usuario.estado || "-")}</td>
                 <td>${escaparHtml(usuario.perfil || "USUARIO")}</td>
                 <td>
                     <div class="admin-acesso-controle">
@@ -279,7 +281,9 @@ function aplicarFiltrosUsuarios() {
     const filtrados = usuariosAdmin.filter(usuario => {
         const correspondeBusca = !busca
             || String(usuario.nome || "").toLowerCase().includes(busca)
-            || String(usuario.email || "").toLowerCase().includes(busca);
+            || String(usuario.email || "").toLowerCase().includes(busca)
+            || String(usuario.cidade || "").toLowerCase().includes(busca)
+            || String(usuario.estado || "").toLowerCase().includes(busca);
         const correspondeAcesso = !acesso || usuario.tipoAcesso === acesso;
         const correspondeCiclo = !ciclo || usuario.ciclo === ciclo;
         const statusUsuario = usuario.ativo === false ? "BLOQUEADO" : "ATIVO";

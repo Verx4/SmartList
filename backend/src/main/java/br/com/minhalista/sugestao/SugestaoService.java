@@ -1,5 +1,6 @@
 package br.com.minhalista.sugestao;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +35,14 @@ public class SugestaoService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<SugestaoResponse> listarDoUsuario(String email) {
+        return repository.findAllByUsuarioEmailIgnoreCaseOrderByCriadoEmDesc(email)
+            .stream()
+            .map(SugestaoResponse::de)
+            .toList();
+    }
+
     @Transactional
     public SugestaoResponse criar(String email, SugestaoRequest request) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
@@ -61,6 +70,20 @@ public class SugestaoService {
         Sugestao sugestao = buscar(id);
         sugestao.setStatus(status);
         return SugestaoResponse.de(repository.save(sugestao));
+    }
+
+    @Transactional
+    public SugestaoResponse responder(UUID id, String resposta, String administradorEmail) {
+        Sugestao sugestao = buscar(id);
+        sugestao.setRespostaAdmin(resposta.trim());
+        sugestao.setRespondidoEm(Instant.now());
+        sugestao.setRespondidoPor(administradorEmail);
+        return SugestaoResponse.de(repository.save(sugestao));
+    }
+
+    @Transactional
+    public void excluir(UUID id) {
+        repository.delete(buscar(id));
     }
 
     private Sugestao buscar(UUID id) {

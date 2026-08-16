@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SugestaoRepository extends JpaRepository<Sugestao, UUID> {
     List<Sugestao> findAllByOrderByCriadoEmDesc();
+
+    List<Sugestao> findAllByUsuarioEmailIgnoreCaseOrderByCriadoEmDesc(String usuarioEmail);
 }

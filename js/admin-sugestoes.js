@@ -99,6 +99,31 @@ function renderizar() {
                         </select>
                     </label>
                 </div>
+                ${item.respostaAdmin ? `
+                    <div class="admin-feedback-resposta-atual">
+                        <strong>Resposta enviada</strong>
+                        <p>${escaparHTML(item.respostaAdmin)}</p>
+                        <small>${escaparHTML(formatarData(item.respondidoEm))}</small>
+                    </div>
+                ` : ""}
+                <div class="admin-feedback-resposta">
+                    <label for="resposta-${escaparHTML(item.id)}">Resposta do ADM</label>
+                    <textarea
+                        id="resposta-${escaparHTML(item.id)}"
+                        data-resposta-admin
+                        rows="3"
+                        maxlength="2000"
+                        placeholder="Digite a resposta que aparecerá na conta do usuário"
+                    >${escaparHTML(item.respostaAdmin || "")}</textarea>
+                    <div class="admin-feedback-acoes">
+                        <button class="btn btn-primary btn-pequeno" type="button" data-enviar-resposta>
+                            ${item.respostaAdmin ? "Atualizar resposta" : "Enviar resposta"}
+                        </button>
+                        <button class="btn btn-danger btn-pequeno" type="button" data-excluir-sugestao>
+                            Excluir
+                        </button>
+                    </div>
+                </div>
             </article>
         `).join("")
         : `<p class="estado-vazio">Nenhuma sugestão encontrada.</p>`;
@@ -154,6 +179,74 @@ document.getElementById("listaAdminSugestoes")?.addEventListener("change", async
         );
     } finally {
         seletor.disabled = false;
+    }
+});
+
+document.getElementById("listaAdminSugestoes")?.addEventListener("click", async evento => {
+    const botaoResponder = evento.target.closest("[data-enviar-resposta]");
+    const botaoExcluir = evento.target.closest("[data-excluir-sugestao]");
+
+    if (!botaoResponder && !botaoExcluir) {
+        return;
+    }
+
+    const cartao = evento.target.closest("[data-sugestao-id]");
+    const sugestao = sugestoes.find(item => String(item.id) === cartao?.dataset.sugestaoId);
+
+    if (!sugestao) {
+        return;
+    }
+
+    if (botaoExcluir) {
+        const confirmar = window.confirm(
+            `Excluir definitivamente a mensagem “${sugestao.titulo}”?`
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        botaoExcluir.disabled = true;
+        try {
+            await api.delete(`/admin/sugestoes/${sugestao.id}`);
+            sugestoes = sugestoes.filter(item => item.id !== sugestao.id);
+            atualizarResumo();
+            renderizar();
+            mostrarMensagem("Sugestão excluída com sucesso.");
+        } catch (erro) {
+            botaoExcluir.disabled = false;
+            mostrarMensagem(
+                erro instanceof ApiError ? erro.message : "Não foi possível excluir a sugestão.",
+                "erro"
+            );
+        }
+        return;
+    }
+
+    const campo = cartao.querySelector("[data-resposta-admin]");
+    const resposta = campo?.value.trim() || "";
+
+    if (!resposta) {
+        mostrarMensagem("Digite uma resposta antes de enviar.", "erro");
+        campo?.focus();
+        return;
+    }
+
+    botaoResponder.disabled = true;
+    try {
+        const atualizada = await api.patch(
+            `/admin/sugestoes/${sugestao.id}/resposta`,
+            { resposta }
+        );
+        Object.assign(sugestao, atualizada);
+        renderizar();
+        mostrarMensagem("Resposta enviada para a conta do usuário.");
+    } catch (erro) {
+        botaoResponder.disabled = false;
+        mostrarMensagem(
+            erro instanceof ApiError ? erro.message : "Não foi possível enviar a resposta.",
+            "erro"
+        );
     }
 });
 

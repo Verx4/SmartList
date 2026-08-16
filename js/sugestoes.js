@@ -1,6 +1,16 @@
 import { api, ApiError } from "./api.js";
+import { escaparHTML } from "./utils.js";
 
 const CHAVE_LOCAL = "sugestoesLocais";
+const textosStatus = {
+    NOVA: "Nova",
+    EM_ANALISE: "Em análise",
+    PLANEJADA: "Planejada",
+    CONCLUIDA: "Concluída",
+    ARQUIVADA: "Arquivada"
+};
+
+let minhasSugestoes = [];
 
 function lerLocais() {
     try {
@@ -29,6 +39,79 @@ function mostrarMensagem(texto, tipo = "sucesso") {
 
     elemento.textContent = texto;
     elemento.className = `mensagem mensagem-${tipo}`;
+}
+
+function formatarData(valor) {
+    const data = new Date(valor);
+    return Number.isNaN(data.getTime()) ? "-" : data.toLocaleString("pt-BR");
+}
+
+function renderizarMinhasSugestoes() {
+    const container = document.getElementById("listaMinhasSugestoes");
+    if (!container) {
+        return;
+    }
+
+    const pendentesLocais = lerLocais().map(item => ({
+        ...item,
+        criadoEm: item.data,
+        status: "PENDENTE_ENVIO",
+        pendenteLocal: true
+    }));
+    const itens = [...pendentesLocais, ...minhasSugestoes];
+
+    container.innerHTML = itens.length
+        ? itens.map(item => {
+            const respondida = Boolean(item.respostaAdmin);
+            const status = item.pendenteLocal
+                ? "Pendente de envio"
+                : textosStatus[item.status] || "Em acompanhamento";
+
+            return `
+                <article class="sugestao-item">
+                    <div class="minha-sugestao-meta">
+                        <span>${escaparHTML(item.categoria || "Outros")} · ${escaparHTML(status)}</span>
+                        <time>${escaparHTML(formatarData(item.criadoEm))}</time>
+                    </div>
+                    <h3>${escaparHTML(item.titulo)}</h3>
+                    <p>${escaparHTML(item.descricao)}</p>
+                    <div class="resposta-admin-usuario ${respondida ? "respondida" : "aguardando"}">
+                        <strong>Resposta do ADM</strong>
+                        <p>${respondida
+                            ? escaparHTML(item.respostaAdmin)
+                            : "Aguardando resposta da equipe Smart List."}</p>
+                        ${respondida && item.respondidoEm
+                            ? `<small>Respondida em ${escaparHTML(formatarData(item.respondidoEm))}</small>`
+                            : ""}
+                    </div>
+                </article>
+            `;
+        }).join("")
+        : '<p class="estado-vazio">Você ainda não enviou sugestões ou dúvidas.</p>';
+}
+
+async function carregarMinhasSugestoes() {
+    const container = document.getElementById("listaMinhasSugestoes");
+    if (!container) {
+        return;
+    }
+
+    try {
+        const resposta = await api.get("/sugestoes/minhas");
+        minhasSugestoes = Array.isArray(resposta) ? resposta : [];
+        renderizarMinhasSugestoes();
+    } catch (erro) {
+        minhasSugestoes = [];
+        renderizarMinhasSugestoes();
+
+        if (!lerLocais().length) {
+            container.innerHTML = `<p class="estado-vazio">${escaparHTML(
+                erro instanceof ApiError
+                    ? erro.message
+                    : "Não foi possível carregar suas mensagens."
+            )}</p>`;
+        }
+    }
 }
 
 async function migrarSugestoesLocais() {
@@ -69,9 +152,11 @@ document.getElementById("formSugestao")?.addEventListener("submit", async evento
     botao.disabled = true;
 
     try {
-        await api.post("/sugestoes", dados);
+        const criada = await api.post("/sugestoes", dados);
+        minhasSugestoes = [criada, ...minhasSugestoes];
         formulario.reset();
-        mostrarMensagem("Sugestão enviada para a equipe Smart List.");
+        renderizarMinhasSugestoes();
+        mostrarMensagem("Mensagem enviada para a equipe Smart List.");
     } catch (erro) {
         const erroCliente =
             erro instanceof ApiError &&
@@ -83,8 +168,9 @@ document.getElementById("formSugestao")?.addEventListener("submit", async evento
         } else {
             salvarLocal(dados);
             formulario.reset();
+            renderizarMinhasSugestoes();
             mostrarMensagem(
-                "Sugestão salva neste aparelho e será enviada quando o servidor voltar.",
+                "Mensagem salva neste aparelho e será enviada quando o servidor voltar.",
                 "aviso"
             );
         }
@@ -93,9 +179,11 @@ document.getElementById("formSugestao")?.addEventListener("submit", async evento
     }
 });
 
-migrarSugestoesLocais().catch(() => {
-    mostrarMensagem(
-        "As sugestões pendentes serão enviadas quando o servidor voltar.",
-        "aviso"
-    );
-});
+migrarSugestoesLocais()
+    .catch(() => {
+        mostrarMensagem(
+            "As mensagens pendentes serão enviadas quando o servidor voltar.",
+            "aviso"
+        );
+    })
+    .finally(carregarMinhasSugestoes);

@@ -1,7 +1,9 @@
 package br.com.minhalista.sugestao;
 
 import java.security.Principal;
+import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +30,11 @@ public class SugestaoController {
         @Valid @RequestBody SugestaoRequest request
     ) {
         return service.criar(principal.getName(), request);
+    }
+
+    @GetMapping("/minhas")
+    public List<SugestaoResponse> listarMinhas(Principal principal) {
+        return service.listarDoUsuario(principal.getName());
     }
 
 }

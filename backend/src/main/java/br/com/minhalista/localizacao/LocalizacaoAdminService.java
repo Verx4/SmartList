@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -38,13 +39,16 @@ public class LocalizacaoAdminService {
             .toList();
 
         Map<ChaveLocalidade, Long> porLocalidade = new LinkedHashMap<>();
+        Map<String, Long> porEstado = new LinkedHashMap<>();
         Map<String, Long> porRede = new LinkedHashMap<>();
         usuariosComLocalidade.forEach(usuario -> {
+            String estado = usuario.getEstado().trim().toUpperCase(Locale.ROOT);
             ChaveLocalidade chave = new ChaveLocalidade(
-                usuario.getEstado(),
+                estado,
                 usuario.getCidade()
             );
             porLocalidade.merge(chave, 1L, Long::sum);
+            porEstado.merge(estado, 1L, Long::sum);
         });
 
         localizacaoRepository.buscarAtivasParaAgregacao(agora).forEach(localizacao -> {
@@ -62,6 +66,10 @@ public class LocalizacaoAdminService {
             .sorted(Comparator.comparingLong(LocalidadeAgregadaResponse::usuarios).reversed())
             .limit(500)
             .toList();
+        List<EstadoAgregadoResponse> estados = porEstado.entrySet().stream()
+            .map(item -> new EstadoAgregadoResponse(item.getKey(), item.getValue()))
+            .sorted(Comparator.comparingLong(EstadoAgregadoResponse::usuarios).reversed())
+            .toList();
         List<RedeConfirmadaResponse> redes = porRede.entrySet().stream()
             .map(item -> new RedeConfirmadaResponse(item.getKey(), item.getValue()))
             .sorted(Comparator.comparingLong(RedeConfirmadaResponse::confirmacoes).reversed())
@@ -76,6 +84,7 @@ public class LocalizacaoAdminService {
                 .filter(usuario -> usuario.getCriadoEm().isAfter(agora.minus(Duration.ofHours(24))))
                 .count(),
             localidades,
+            estados,
             redes,
             "Dados agregados de estado e cidade informados no cadastro. O GPS do aparelho não é solicitado."
         );
