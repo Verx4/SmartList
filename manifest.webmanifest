@@ -54,10 +54,10 @@
       ]
     },
     {
-      "name": "Encontrar receitas",
-      "short_name": "Receitas",
-      "description": "Encontrar receitas com os itens da despensa",
-      "url": "./comparacao.html?origem=atalho",
+      "name": "Comparar preços",
+      "short_name": "Comparar",
+      "description": "Comparar os preços da lista",
+      "url": "./comparar-embalagens.html?origem=atalho",
       "icons": [
         {
           "src": "./assets/icons/icon-192.png",

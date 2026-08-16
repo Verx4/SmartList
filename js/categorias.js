@@ -313,9 +313,7 @@ export function identificarCategoria(nomeProduto) {
                 "cenoura",
                 "beterraba",
                 "repolho",
-                "couve",
                 "pepino",
-                "pimentao",
                 "abobora",
                 "mandioca",
                 "verdura",
@@ -460,8 +458,6 @@ export function identificarCategoria(nomeProduto) {
                 "amido de milho",
                 "cuscuz",
                 "granola"
-                ,"ovo"
-                ,"ovos"
 
             ]
 

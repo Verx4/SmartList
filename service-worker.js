@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v40`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v40`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v35`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v35`;
 
 const PRECACHE_URLS = [
     "./",
@@ -27,11 +27,7 @@ const PRECACHE_URLS = [
     "./css/temas.css",
     "./css/mobile-app.css",
     "./css/comparar-embalagens.css",
-    "./css/receitas.css",
     "./css/inicio.css",
-    "./css/comparacao-lista-v2.css",
-    "./css/ofertas.css",
-    "./css/comparacao-embalagens-padrao.css",
     "./css/historico-v2.css",
     "./css/historico-topo.css",
     "./css/scanner-nota.css",
@@ -43,17 +39,11 @@ const PRECACHE_URLS = [
     "./js/animations.js",
     "./js/login-intro.js",
     "./js/categorias.js",
-    "./js/classificacao-produtos.js",
     "./js/medidas-produtos.js",
     "./js/tema.js",
     "./js/mobile-nav.js",
     "./js/comparar-embalagens.js",
-    "./js/receitas-core.js",
-    "./js/despensa.js",
-    "./js/receitas.js",
-    "./data/receitas.json",
     "./js/inicio.js",
-    "./js/ofertas.js",
     "./js/historico-page.js",
     "./js/scanner-nota.js",
     "./js/listas-salvas-ui.js",
@@ -111,11 +101,6 @@ self.addEventListener("fetch", (event) => {
 
     if (request.mode === "navigate") {
         event.respondWith(responderNavegacao(request));
-        return;
-    }
-
-    if (url.pathname.endsWith("/data/receitas.json")) {
-        event.respondWith(responderRecursoEstatico(request));
         return;
     }
 

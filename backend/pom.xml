@@ -81,18 +81,6 @@
     <build>
         <directory>${build.output}</directory>
         <testSourceDirectory>${test.sources}</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>${project.basedir}/src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>${project.basedir}/../data</directory>
-                <targetPath>data</targetPath>
-                <includes>
-                    <include>receitas.json</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

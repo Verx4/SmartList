@@ -1,8 +1,0 @@
-{
-  "name": "smart-list-web",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test:receitas": "node --test tests/receitas.test.mjs"
-  }
-}

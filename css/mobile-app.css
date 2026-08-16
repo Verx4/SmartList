@@ -137,7 +137,7 @@ body.app-mobile {
 
 .comparison-tabs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 8px;
     margin: 0 0 16px;
 }

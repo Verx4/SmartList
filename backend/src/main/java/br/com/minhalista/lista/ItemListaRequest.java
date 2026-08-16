@@ -16,9 +16,6 @@ public record ItemListaRequest(
     @Size(max = 80, message = "A categoria deve possuir no máximo 80 caracteres.")
     String categoria,
 
-    @Size(max = 30, message = "A medida deve possuir no máximo 30 caracteres.")
-    String medida,
-
     @Min(value = 1, message = "A quantidade mínima é 1.")
     @Max(value = 9999, message = "A quantidade é muito alta.")
     Integer quantidade,

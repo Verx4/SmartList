@@ -35,12 +35,6 @@ public class ItemLista {
     @Column(nullable = false, length = 80)
     private String categoria = "Outros";
 
-    @Column(nullable = false, length = 30, columnDefinition = "varchar(30) default 'unidade'")
-    private String medida = "unidade";
-
-    @Column(name = "chave_produto", nullable = false, length = 180, columnDefinition = "varchar(180) default ''")
-    private String chaveProduto = "";
-
     @Column(nullable = false)
     private int quantidade = 1;
 
@@ -100,22 +94,6 @@ public class ItemLista {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
-    }
-
-    public String getMedida() {
-        return medida;
-    }
-
-    public void setMedida(String medida) {
-        this.medida = medida;
-    }
-
-    public String getChaveProduto() {
-        return chaveProduto;
-    }
-
-    public void setChaveProduto(String chaveProduto) {
-        this.chaveProduto = chaveProduto;
     }
 
     public int getQuantidade() {
