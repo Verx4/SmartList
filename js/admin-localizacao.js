@@ -14,14 +14,14 @@ async function carregar() {
         const resposta = await api.get("/admin/localizacoes/resumo");
         const localidades = Array.isArray(resposta.localidades) ? resposta.localidades : [];
         const redes = Array.isArray(resposta.redesConfirmadas) ? resposta.redesConfirmadas : [];
-        porId("totalConsentimentos").textContent = resposta.usuariosComConsentimentoAtivo || 0;
-        porId("atualizados24h").textContent = resposta.atualizadosNasUltimas24Horas || 0;
+        porId("totalConsentimentos").textContent = resposta.usuariosComLocalidade || 0;
+        porId("atualizados24h").textContent = resposta.novosCadastrosNasUltimas24Horas || 0;
         porId("totalLocalidades").textContent = localidades.length;
         porId("totalRedes").textContent = redes.length;
         porId("avisoPrivacidade").textContent = resposta.privacidade;
         porId("tabelaLocalidades").innerHTML = localidades.map(item => `
-            <tr><td>${escapar(item.estado)}</td><td>${escapar(item.cidade)}</td><td>${escapar(item.bairro || "Não informado")}</td><td>${item.usuarios}</td></tr>
-        `).join("") || '<tr><td colspan="4" class="estado-vazio">Nenhum consentimento ativo.</td></tr>';
+            <tr><td>${escapar(item.estado)}</td><td>${escapar(item.cidade)}</td><td>${item.usuarios}</td></tr>
+        `).join("") || '<tr><td colspan="3" class="estado-vazio">Nenhum cadastro com estado e cidade.</td></tr>';
         porId("tabelaRedesConfirmadas").innerHTML = redes.map(item => `
             <tr><td>${escapar(item.rede)}</td><td>${item.confirmacoes}</td></tr>
         `).join("") || '<tr><td colspan="2" class="estado-vazio">Nenhuma unidade confirmada.</td></tr>';

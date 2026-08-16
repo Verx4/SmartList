@@ -45,6 +45,8 @@ public class AuthService {
 
         Usuario usuario = new Usuario();
         usuario.setNome(request.nome().trim());
+        usuario.setEstado(request.estado().trim().toUpperCase(Locale.ROOT));
+        usuario.setCidade(request.cidade().trim());
         usuario.setEmail(email);
         usuario.setSenhaHash(passwordEncoder.encode(request.senha()));
         usuario.setPerfil(Perfil.USUARIO);

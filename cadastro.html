@@ -30,7 +30,7 @@
     <main class="auth-container">
 
         <section class="auth-info">
-            <a class="brand" href="./index.html">🛒 Smart List</a>
+            <a class="brand" href="./login.html">🛒 Smart List</a>
 
             <h1>Economize em todas as suas compras.</h1>
 
@@ -58,14 +58,67 @@
             <form id="formCadastro" class="form" novalidate>
 
                 <div class="form-group">
-                    <label for="cadastroNome">Nome completo</label>
+                    <label for="cadastroNome">Primeiro nome</label>
                     <input
                         type="text"
                         id="cadastroNome"
                         name="nome"
-                        placeholder="Digite seu nome"
-                        autocomplete="name"
+                        placeholder="Digite seu primeiro nome"
+                        autocomplete="given-name"
+                        maxlength="60"
                         required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cadastroEstado">Estado</label>
+                        <select
+                            id="cadastroEstado"
+                            name="estado"
+                            autocomplete="address-level1"
+                            required>
+                            <option value="">Selecione</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cadastroCidade">Cidade</label>
+                        <input
+                            type="text"
+                            id="cadastroCidade"
+                            name="cidade"
+                            placeholder="Digite sua cidade"
+                            autocomplete="address-level2"
+                            maxlength="100"
+                            required>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -124,9 +177,8 @@
                 </label>
 
                 <p class="auth-location-note">
-                    Depois de criar a conta, o navegador pedirá sua localização.
-                    As opções “só esta vez”, “durante o uso” ou equivalentes são
-                    exibidas e controladas pelo seu aparelho.
+                    Estado e cidade serão usados apenas para entendermos onde o
+                    Smart List é utilizado. Não solicitamos a localização do aparelho.
                 </p>
 
                 <button class="btn btn-primary btn-block" type="submit">
@@ -144,10 +196,6 @@
             <p class="auth-link">
                 Já possui uma conta?
                 <a href="./login.html">Entrar</a>
-            </p>
-
-            <p class="auth-voltar">
-                <a href="./index.html">← Voltar para o início</a>
             </p>
 
         </section>

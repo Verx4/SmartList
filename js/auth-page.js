@@ -4,7 +4,6 @@ import {
     solicitarRecuperacao
 } from "./auth.js";
 import { verificarApi } from "./api.js";
-import { atualizarLocalizacaoAtual } from "./localizacao-app.js";
 let temporizadorMensagem = null;
 const STATUS_SERVIDOR_TRANSITORIO = new Set([0, 408, 502, 503, 504]);
 
@@ -271,6 +270,14 @@ function configurarCadastro() {
                 await cadastrar({
                     nome: String(
                         dados.get("nome") || ""
+                    ).trim(),
+
+                    estado: String(
+                        dados.get("estado") || ""
+                    ).trim(),
+
+                    cidade: String(
+                        dados.get("cidade") || ""
                     ).trim(),
 
                     email: String(

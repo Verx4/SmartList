@@ -5,7 +5,7 @@
   "description": "Organize sua lista de compras e compare preços entre supermercados.",
   "lang": "pt-BR",
   "dir": "ltr",
-  "start_url": "./index.html?origem=pwa",
+  "start_url": "./login.html?origem=pwa",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],

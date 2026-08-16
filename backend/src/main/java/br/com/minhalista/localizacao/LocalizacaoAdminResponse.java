@@ -5,8 +5,8 @@ import java.util.List;
 
 public record LocalizacaoAdminResponse(
     Instant geradoEm,
-    long usuariosComConsentimentoAtivo,
-    long atualizadosNasUltimas24Horas,
+    long usuariosComLocalidade,
+    long novosCadastrosNasUltimas24Horas,
     List<LocalidadeAgregadaResponse> localidades,
     List<RedeConfirmadaResponse> redesConfirmadas,
     String privacidade

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b1220">
-    <title>Localização | Administração</title>
+    <title>Uso por região | Administração</title>
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/cards.css">
@@ -24,8 +24,8 @@
             <header class="admin-header">
                 <div>
                     <span class="page-eyebrow">ADMINISTRAÇÃO</span>
-                    <h1>Localização</h1>
-                    <p>Visão nacional agregada de consentimentos e unidades confirmadas.</p>
+                    <h1>Uso por região</h1>
+                    <p>Visão agregada dos estados e cidades informados no cadastro.</p>
                 </div>
                 <button id="atualizarLocalizacoes" class="btn btn-primary" type="button">Atualizar</button>
             </header>
@@ -34,8 +34,8 @@
                 <p id="avisoPrivacidade">Nenhuma coordenada ou identidade individual é exibida nesta área.</p>
             </aside>
             <section class="grid-resumo">
-                <article class="card resumo-card"><span>Consentimentos ativos</span><strong id="totalConsentimentos">0</strong></article>
-                <article class="card resumo-card"><span>Atualizados em 24 h</span><strong id="atualizados24h">0</strong></article>
+                <article class="card resumo-card"><span>Usuários com localidade</span><strong id="totalConsentimentos">0</strong></article>
+                <article class="card resumo-card"><span>Novos cadastros em 24 h</span><strong id="atualizados24h">0</strong></article>
                 <article class="card resumo-card"><span>Localidades</span><strong id="totalLocalidades">0</strong></article>
                 <article class="card resumo-card"><span>Redes confirmadas</span><strong id="totalRedes">0</strong></article>
             </section>
@@ -43,8 +43,8 @@
                 <div class="section-header"><div><span class="card-label">Distribuição</span><h2>Usuários por localidade</h2></div></div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Estado</th><th>Cidade</th><th>Bairro</th><th>Usuários</th></tr></thead>
-                        <tbody id="tabelaLocalidades"><tr><td colspan="4">Carregando...</td></tr></tbody>
+                        <thead><tr><th>Estado</th><th>Cidade</th><th>Usuários</th></tr></thead>
+                        <tbody id="tabelaLocalidades"><tr><td colspan="3">Carregando...</td></tr></tbody>
                     </table>
                 </div>
             </section>

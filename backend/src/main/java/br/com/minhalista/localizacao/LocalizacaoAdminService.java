@@ -10,29 +10,44 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.minhalista.usuario.Usuario;
+import br.com.minhalista.usuario.UsuarioRepository;
+
 @Service
 public class LocalizacaoAdminService {
 
-    private final LocalizacaoUsuarioRepository repository;
+    private final LocalizacaoUsuarioRepository localizacaoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public LocalizacaoAdminService(LocalizacaoUsuarioRepository repository) {
-        this.repository = repository;
+    public LocalizacaoAdminService(
+        LocalizacaoUsuarioRepository localizacaoRepository,
+        UsuarioRepository usuarioRepository
+    ) {
+        this.localizacaoRepository = localizacaoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Transactional(readOnly = true)
     public LocalizacaoAdminResponse resumo() {
         Instant agora = Instant.now();
-        List<LocalizacaoUsuario> ativas = repository.buscarAtivasParaAgregacao(agora);
+        List<Usuario> usuarios = usuarioRepository.findAllByOrderByCriadoEmDesc();
+        List<Usuario> usuariosComLocalidade = usuarios.stream()
+            .filter(Usuario::isAtivo)
+            .filter(usuario -> preenchido(usuario.getEstado()))
+            .filter(usuario -> preenchido(usuario.getCidade()))
+            .toList();
 
         Map<ChaveLocalidade, Long> porLocalidade = new LinkedHashMap<>();
         Map<String, Long> porRede = new LinkedHashMap<>();
-        ativas.forEach(localizacao -> {
+        usuariosComLocalidade.forEach(usuario -> {
             ChaveLocalidade chave = new ChaveLocalidade(
-                localizacao.getEstado(),
-                localizacao.getCidade(),
-                localizacao.getBairro()
+                usuario.getEstado(),
+                usuario.getCidade()
             );
             porLocalidade.merge(chave, 1L, Long::sum);
+        });
+
+        localizacaoRepository.buscarAtivasParaAgregacao(agora).forEach(localizacao -> {
             if (localizacao.getUnidadeConfirmada() != null) {
                 porRede.merge(localizacao.getUnidadeConfirmada().getRede(), 1L, Long::sum);
             }
@@ -42,7 +57,6 @@ public class LocalizacaoAdminService {
             .map(item -> new LocalidadeAgregadaResponse(
                 item.getKey().estado(),
                 item.getKey().cidade(),
-                item.getKey().bairro(),
                 item.getValue()
             ))
             .sorted(Comparator.comparingLong(LocalidadeAgregadaResponse::usuarios).reversed())
@@ -56,14 +70,21 @@ public class LocalizacaoAdminService {
 
         return new LocalizacaoAdminResponse(
             agora,
-            repository.countByLocalidadeExpiraEmAfter(agora),
-            repository.countByAtualizadaEmAfter(agora.minus(Duration.ofHours(24))),
+            usuariosComLocalidade.size(),
+            usuarios.stream()
+                .filter(usuario -> usuario.getCriadoEm() != null)
+                .filter(usuario -> usuario.getCriadoEm().isAfter(agora.minus(Duration.ofHours(24))))
+                .count(),
             localidades,
             redes,
-            "Dados agregados por localidade; coordenadas e identificação individual não são exibidas."
+            "Dados agregados de estado e cidade informados no cadastro. O GPS do aparelho não é solicitado."
         );
     }
 
-    private record ChaveLocalidade(String estado, String cidade, String bairro) {
+    private boolean preenchido(String valor) {
+        return valor != null && !valor.isBlank();
+    }
+
+    private record ChaveLocalidade(String estado, String cidade) {
     }
 }
