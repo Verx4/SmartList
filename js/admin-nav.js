@@ -59,7 +59,7 @@
             marca.href = "./index.html";
             marca.className = "brand admin-brand";
             marca.innerHTML = `
-                <img src="../assets/logo/smart-list-app.png" alt="" width="38" height="38">
+                <img class="brand-logo" src="../assets/logo/smart-list-app.png" alt="" width="38" height="38">
                 <span>Smart List</span>
             `;
         }

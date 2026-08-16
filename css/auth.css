@@ -26,7 +26,7 @@
 }
 
 .auth-info .brand {
-    display: inline-block;
+    display: inline-flex;
     margin-bottom: 70px;
 }
 
