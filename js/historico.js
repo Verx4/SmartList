@@ -13,6 +13,10 @@ import {
     numeroSeguro
 } from "./utils.js";
 
+import {
+    totalItensComprados
+} from "./historico-calculos.js";
+
 export function migrarHistoricoAntigo() {
     if (!Array.isArray(estado.historico)) {
         estado.historico = [];
@@ -32,9 +36,8 @@ export function migrarHistoricoAntigo() {
                 numeroSeguro(compra.total),
 
             totalItens:
-                numeroSeguro(
-                    compra.totalItens
-                ),
+                totalItensComprados(compra)
+                || numeroSeguro(compra.totalItens),
 
             totalPeso:
                 numeroSeguro(
@@ -75,6 +78,13 @@ export function migrarHistoricoAntigo() {
                             preco:
                                 numeroSeguro(
                                     item.preco
+                                    ?? item.precoAtual
+                                ),
+
+                            precoUnitario:
+                                numeroSeguro(
+                                    item.precoUnitario
+                                    ?? item.preco
                                     ?? item.precoAtual
                                 )
                         })

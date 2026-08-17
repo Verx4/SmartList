@@ -1,0 +1,125 @@
+.historico-periodo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 17px;
+    padding: 14px 15px;
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: 17px;
+}
+
+.historico-topo .historico-economia-link {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    min-height: 40px;
+    padding: 0 11px;
+    place-items: initial;
+    align-items: center;
+    color: var(--cor-texto);
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.historico-periodo h2 {
+    margin: 3px 0;
+    font-size: 18px;
+}
+
+.historico-periodo p,
+.detalhe-categoria-historico header span {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+    font-size: 10px;
+}
+
+.historico-periodo label {
+    flex: 0 1 280px;
+}
+
+.historico-periodo label span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--cor-texto-secundario);
+    font-size: 10px;
+}
+
+.historico-periodo select {
+    width: 100%;
+    min-height: 43px;
+    padding: 0 38px 0 12px;
+    color: var(--cor-texto);
+    background: var(--cor-superficie-secundaria);
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+    font: inherit;
+}
+
+.historico-resumo {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin-top: 10px;
+}
+
+.detalhe-categoria-historico article {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.detalhe-categoria-historico article div > span {
+    display: block;
+    margin-top: 5px;
+    color: var(--cor-destaque);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.detalhe-categoria-historico article > b {
+    white-space: nowrap;
+}
+
+.lista-historico-v2 p > span strong,
+.lista-historico-v2 p > span small {
+    display: block;
+}
+
+.lista-historico-v2 p > span small {
+    margin-top: 3px;
+    color: var(--cor-texto-secundario);
+    font-size: 9px;
+}
+
+.lista-historico-v2 p > strong {
+    align-self: center;
+    white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+    .historico-resumo {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 540px) {
+    .historico-periodo {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 11px;
+    }
+
+    .historico-periodo label {
+        flex-basis: auto;
+    }
+
+    .historico-resumo {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .historico-resumo article:last-child {
+        grid-column: 1 / -1;
+    }
+}

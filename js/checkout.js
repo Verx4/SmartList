@@ -173,6 +173,16 @@ export function finalizarCompra(produtos = []) {
         const valorKg = Math.max(0, numeroSeguro(
             produto.precos?.[0]?.valor ?? produto.preco
         ));
+        const precoUnitario = porPeso
+            ? valorKg
+            : resumo.precos.length
+                ? resumo.media
+                : numeroSeguro(produto.preco);
+        const quantidade = porPeso
+            ? 0
+            : resumo.precos.length
+                ? resumo.quantidade
+                : numeroSeguro(produto.quantidade);
 
         return {
             id: produto.id,
@@ -181,8 +191,9 @@ export function finalizarCompra(produtos = []) {
             medida: normalizarMedidaProduto(produto),
             supermercado: produto.supermercado,
             precos: resumo.precos.map(item => ({ ...item })),
-            preco: porPeso ? valorKg : resumo.precos.length ? resumo.media : numeroSeguro(produto.preco),
-            quantidade: porPeso ? 0 : resumo.precos.length ? resumo.quantidade : numeroSeguro(produto.quantidade),
+            preco: precoUnitario,
+            precoUnitario,
+            quantidade,
             peso: numeroSeguro(produto.peso),
             subtotal: calcularSubtotal(produto)
         };
@@ -191,6 +202,10 @@ export function finalizarCompra(produtos = []) {
 
     const total = itens.reduce(
         (soma, item) => soma + item.subtotal,
+        0
+    );
+    const totalItens = itens.reduce(
+        (soma, item) => soma + item.quantidade,
         0
     );
 
@@ -218,6 +233,7 @@ export function finalizarCompra(produtos = []) {
             descobrirMercadoPrincipal(itensValidos),
 
         itens,
+        totalItens,
         total,
         economia
 
