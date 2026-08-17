@@ -67,10 +67,11 @@ body {
     border-radius: 17px;
 }
 
-.historico-topo .historico-economia-link {
+.historico-topo > a.historico-economia-link:last-child {
     display: inline-flex;
     flex: 0 0 auto;
     width: auto;
+    min-width: max-content;
     height: auto;
     min-height: 40px;
     padding: 0 11px;
@@ -213,7 +214,7 @@ body {
         border-radius: 10px;
     }
 
-    .historico-topo .historico-economia-link {
+    .historico-topo > a.historico-economia-link:last-child {
         min-height: 36px;
         padding-inline: 9px;
         font-size: 10px;
@@ -248,7 +249,7 @@ body {
         height: 34px;
     }
 
-    .historico-topo .historico-economia-link {
+    .historico-topo > a.historico-economia-link:last-child {
         padding-inline: 7px;
         font-size: 9px;
     }
