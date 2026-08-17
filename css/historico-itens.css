@@ -51,7 +51,7 @@ body {
     color: var(--cor-destaque);
 }
 
-.historico-marca .list {
+.historico-topo .historico-marca .list {
     color: var(--cor-verde);
 }
 
