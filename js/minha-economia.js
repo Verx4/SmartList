@@ -46,6 +46,9 @@ const tituloDiferenca = document.getElementById("tituloDiferencaMes");
 const valorDiferenca = document.getElementById("valorDiferencaMes");
 const textoDiferenca = document.getElementById("textoDiferencaMes");
 
+cardDiferenca.className = "neutro";
+valorDiferenca.textContent = moeda(0);
+
 if (analise.tipo === "menor") {
     cardDiferenca.className = "positiva";
     tituloDiferenca.textContent = "Você gastou a menos";
@@ -64,6 +67,8 @@ if (analise.tipo === "menor") {
 }
 
 const destaque = document.getElementById("economiaDestaque");
+document.getElementById("economiaDestaqueValor").textContent = moeda(0);
+
 if (analise.economiaConfiavel) {
     destaque.classList.add("confirmada");
     document.getElementById("economiaDestaqueTitulo").textContent = "Você já economizou";
