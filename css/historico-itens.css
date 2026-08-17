@@ -1,3 +1,60 @@
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.historico-shell {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+.historico-topo {
+    gap: 12px;
+    min-width: 0;
+}
+
+.historico-topo .historico-marca {
+    display: inline-flex;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    height: auto;
+    align-items: center;
+    gap: 10px;
+    color: var(--cor-texto);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: 25px;
+    font-weight: 900;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.historico-marca img {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    background: #03060b;
+    border: 1px solid var(--cor-borda);
+    border-radius: 12px;
+}
+
+.historico-marca > span {
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.historico-marca .smart {
+    color: var(--cor-destaque);
+}
+
+.historico-marca .list {
+    color: var(--cor-verde);
+}
+
 .historico-periodo {
     display: flex;
     align-items: center;
@@ -12,6 +69,7 @@
 
 .historico-topo .historico-economia-link {
     display: inline-flex;
+    flex: 0 0 auto;
     width: auto;
     height: auto;
     min-height: 40px;
@@ -24,7 +82,42 @@
     border-radius: 11px;
     font-size: 11px;
     font-weight: 800;
+    line-height: 1;
     text-decoration: none;
+    white-space: nowrap;
+}
+
+.historico-periodo > *,
+.historico-resumo > *,
+.historico-grafico-card,
+.detalhe-categoria-historico,
+.compras-historico-v2,
+.historico-grafico-card header > *,
+.detalhe-categoria-historico header > *,
+.compras-historico-v2 header > *,
+.lista-historico-v2 summary > *,
+.lista-historico-v2 p > * {
+    min-width: 0;
+}
+
+.historico-periodo select,
+.busca-historico input {
+    max-width: 100%;
+}
+
+.historico-cabecalho,
+.historico-periodo,
+.historico-resumo,
+.historico-grafico-card,
+.detalhe-categoria-historico,
+.compras-historico-v2,
+.lista-historico-v2 {
+    overflow-wrap: anywhere;
+}
+
+.lista-historico-v2 summary span,
+.lista-historico-v2 p > span {
+    overflow: hidden;
 }
 
 .historico-periodo h2 {
@@ -105,6 +198,27 @@
 }
 
 @media (max-width: 540px) {
+    .historico-topo {
+        gap: 8px;
+    }
+
+    .historico-topo .historico-marca {
+        gap: 8px;
+        font-size: 21px;
+    }
+
+    .historico-marca img {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .historico-topo .historico-economia-link {
+        min-height: 36px;
+        padding-inline: 9px;
+        font-size: 10px;
+    }
+
     .historico-periodo {
         align-items: stretch;
         flex-direction: column;
@@ -121,5 +235,21 @@
 
     .historico-resumo article:last-child {
         grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 350px) {
+    .historico-topo .historico-marca {
+        font-size: 19px;
+    }
+
+    .historico-marca img {
+        width: 34px;
+        height: 34px;
+    }
+
+    .historico-topo .historico-economia-link {
+        padding-inline: 7px;
+        font-size: 9px;
     }
 }
