@@ -30,7 +30,7 @@ public class PagamentoPixService {
         if (ciclo == null) {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "Plano Premium invÃ¡lido."
+                "Plano Premium inválido."
             );
         }
 
@@ -39,7 +39,7 @@ public class PagamentoPixService {
         if (!CpfValidator.valido(cpfNormalizado)) {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "Informe um CPF vÃ¡lido para gerar o PIX."
+                "Informe um CPF válido para gerar o PIX."
             );
         }
 
