@@ -164,6 +164,23 @@
     line-height: 1.45;
 }
 
+.dados-pagador-pix {
+    margin: 18px 0 20px;
+    padding: 18px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #334155);
+    border-radius: 12px;
+}
+
+.dados-pagador-pix[hidden] {
+    display: none;
+}
+
+.dados-pagador-pix small {
+    color: var(--cor-texto-secundario, #94a3b8);
+    line-height: 1.5;
+}
+
 .painel-pix {
     display: grid;
     gap: 20px;
@@ -275,3 +292,4 @@
         width: fit-content;
     }
 }
+
