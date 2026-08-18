@@ -120,7 +120,7 @@ public class MercadoPagoService {
                 || !urlCheckoutValida(checkoutUrl)) {
                 throw new RegraNegocioException(
                     HttpStatus.BAD_GATEWAY,
-                    "O Mercado Pago nÃ£o retornou um checkout vÃ¡lido."
+                    "O Mercado Pago não retornou um checkout válido."
                 );
             }
 
@@ -132,18 +132,18 @@ public class MercadoPagoService {
             );
         } catch (RestClientResponseException erro) {
             LOG.warn(
-                "Mercado Pago recusou a criaÃ§Ã£o da preferÃªncia com HTTP {}.",
+                "Mercado Pago recusou a criação da preferência com HTTP {}.",
                 erro.getStatusCode().value()
             );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "O Mercado Pago recusou a criaÃ§Ã£o do pagamento. Tente novamente."
+                "O Mercado Pago recusou a criação do pagamento. Tente novamente."
             );
         } catch (RestClientException erro) {
-            LOG.warn("Falha de comunicaÃ§Ã£o ao criar preferÃªncia no Mercado Pago.");
+            LOG.warn("Falha de comunicação ao criar preferência no Mercado Pago.");
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "NÃ£o foi possÃ­vel conectar ao Mercado Pago. Tente novamente em instantes."
+                "Não foi possível conectar ao Mercado Pago. Tente novamente em instantes."
             );
         }
     }
@@ -217,10 +217,10 @@ public class MercadoPagoService {
         } catch (RestClientResponseException erro) {
             throw erroCriacaoPix(erro);
         } catch (RestClientException erro) {
-            LOG.warn("Falha de comunicaÃ§Ã£o ao criar PIX no Mercado Pago.");
+            LOG.warn("Falha de comunicação ao criar PIX no Mercado Pago.");
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "NÃ£o foi possÃ­vel gerar o PIX neste momento. Tente novamente."
+                "Não foi possível gerar o PIX neste momento. Tente novamente."
             );
         }
     }
@@ -239,7 +239,7 @@ public class MercadoPagoService {
             if (resposta == null) {
                 throw new RegraNegocioException(
                     HttpStatus.BAD_GATEWAY,
-                    "Pagamento nÃ£o encontrado no Mercado Pago."
+                    "Pagamento não encontrado no Mercado Pago."
                 );
             }
 
@@ -263,18 +263,18 @@ public class MercadoPagoService {
             );
         } catch (RestClientResponseException erro) {
             LOG.warn(
-                "NÃ£o foi possÃ­vel consultar pagamento no Mercado Pago: HTTP {}.",
+                "Não foi possível consultar pagamento no Mercado Pago: HTTP {}.",
                 erro.getStatusCode().value()
             );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "NÃ£o foi possÃ­vel confirmar o pagamento no Mercado Pago."
+                "Não foi possível confirmar o pagamento no Mercado Pago."
             );
         } catch (RestClientException erro) {
-            LOG.warn("Falha de comunicaÃ§Ã£o ao consultar pagamento no Mercado Pago.");
+            LOG.warn("Falha de comunicação ao consultar pagamento no Mercado Pago.");
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "NÃ£o foi possÃ­vel conectar ao Mercado Pago para confirmar o pagamento."
+                "Não foi possível conectar ao Mercado Pago para confirmar o pagamento."
             );
         }
     }
@@ -287,10 +287,10 @@ public class MercadoPagoService {
         if (!StringUtils.hasText(accessToken)
             || !StringUtils.hasText(webhookSecret)
             || !webhookUrlValida(webhookUrl)) {
-            LOG.warn("ConfiguraÃ§Ã£o privada do Mercado Pago incompleta no backend.");
+            LOG.warn("Configuração privada do Mercado Pago incompleta no backend.");
             throw new RegraNegocioException(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "O pagamento estÃ¡ temporariamente indisponÃ­vel. Tente novamente mais tarde."
+                "O pagamento está temporariamente indisponível. Tente novamente mais tarde."
             );
         }
     }
@@ -331,7 +331,7 @@ public class MercadoPagoService {
         String detalheNormalizado = detalhe.toLowerCase();
 
         LOG.warn(
-            "Mercado Pago recusou a criaÃ§Ã£o do PIX com HTTP {} e motivo {}.",
+            "Mercado Pago recusou a criação do PIX com HTTP {} e motivo {}.",
             status,
             codigoSeguroParaLog(detalhe)
         );
@@ -341,7 +341,7 @@ public class MercadoPagoService {
             || detalheNormalizado.contains("access token")) {
             return new RegraNegocioException(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "O PIX estÃ¡ temporariamente indisponÃ­vel por uma configuraÃ§Ã£o do Mercado Pago."
+                "O PIX está temporariamente indisponível por uma configuração do Mercado Pago."
             );
         }
 
@@ -350,7 +350,7 @@ public class MercadoPagoService {
             || detalheNormalizado.contains("cpf")) {
             return new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "O Mercado Pago nÃ£o aceitou os dados do pagador. Confira o CPF e tente novamente."
+                "O Mercado Pago não aceitou os dados do pagador. Confira o CPF e tente novamente."
             );
         }
 
@@ -360,13 +360,13 @@ public class MercadoPagoService {
             || detalheNormalizado.contains("payment_method")) {
             return new RegraNegocioException(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "A conta recebedora ainda nÃ£o estÃ¡ habilitada para gerar PIX no Mercado Pago."
+                "A conta recebedora ainda não está habilitada para gerar PIX no Mercado Pago."
             );
         }
 
         return new RegraNegocioException(
             HttpStatus.BAD_GATEWAY,
-            "NÃ£o foi possÃ­vel gerar o PIX neste momento. Tente novamente."
+            "Não foi possível gerar o PIX neste momento. Tente novamente."
         );
     }
 
@@ -456,7 +456,7 @@ public class MercadoPagoService {
 
             return url;
         } catch (IllegalArgumentException erro) {
-            throw new IllegalStateException("app.frontend-url precisa ser uma URL HTTP(S) vÃ¡lida.");
+            throw new IllegalStateException("app.frontend-url precisa ser uma URL HTTP(S) válida.");
         }
     }
 
@@ -513,7 +513,7 @@ public class MercadoPagoService {
     private RegraNegocioException respostaPixInvalida() {
         return new RegraNegocioException(
             HttpStatus.BAD_GATEWAY,
-            "O Mercado Pago nÃ£o retornou um PIX vÃ¡lido. Tente novamente."
+            "O Mercado Pago não retornou um PIX válido. Tente novamente."
         );
     }
 }
