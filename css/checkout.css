@@ -82,6 +82,10 @@
     margin-bottom: 20px;
 }
 
+.checkout-form-card .checkbox-label {
+    color: var(--cor-texto, #f8fafc);
+}
+
 .forma-pagamento {
     position: relative;
     cursor: pointer;
