@@ -87,7 +87,9 @@ public class MercadoPagoWebhookValidator {
         Instant instante;
 
         try {
-            instante = Instant.ofEpochMilli(timestamp);
+            instante = timestamp < 100_000_000_000L
+                ? Instant.ofEpochSecond(timestamp)
+                : Instant.ofEpochMilli(timestamp);
         } catch (RuntimeException erro) {
             return false;
         }

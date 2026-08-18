@@ -3,6 +3,7 @@
 !.env.example
 backend/.env
 backend/target/
+backend/target-pix/
 backend/dados/*.db
 backend/dados/*.trace.db
 *.log
