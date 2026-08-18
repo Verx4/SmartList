@@ -62,7 +62,7 @@ import {
     medidaPadraoParaNovoProduto,
     obterRegraMedida
 } from "./medidas-produtos.js";
-import { identificarCategoria } from "./categorias.js";
+import { resolverCategoriaSelecionada } from "./categorias.js";
 
 import {
     animarAberturaModal,
@@ -596,14 +596,17 @@ function salvarNovoProduto(evento) {
         elemento("novaCategoria")?.value ||
         "automatico";
 
-    if (
-        categoria === "automatico" ||
-        categoria === "Automático"
-    ) {
+    const regraMedida = obterRegraMedida(nomeDigitado);
+    const medidaSelecionada =
+        elemento("novaMedida")?.value || MEDIDA_UNIDADE;
+    const medidaParaCategoria =
+        regraMedida.medida || medidaSelecionada;
 
-        categoria = identificarCategoria(nome);
-
-    }
+    categoria = resolverCategoriaSelecionada(
+        nome,
+        categoria,
+        medidaParaCategoria
+    );
 
     const preco =
         Number(elemento("novoPreco")?.value || 0);
@@ -613,11 +616,10 @@ function salvarNovoProduto(evento) {
         numeroDigitado(elemento("novaQuantidade")?.value)
     );
 
-    const regraMedida = obterRegraMedida(nomeDigitado);
     const medida = regraMedida.medida || medidaPadraoParaNovoProduto(
         nomeDigitado,
         categoria,
-        elemento("novaMedida")?.value
+        medidaSelecionada
     );
     const quantidade = medida === MEDIDA_KG
         ? 0
