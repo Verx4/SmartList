@@ -166,10 +166,46 @@ function formaPagamentoSelecionada() {
         || "cartao";
 }
 
+function somenteDigitos(valor) {
+    return String(valor || "").replace(/\D/g, "");
+}
+
+function cpfValido(valor) {
+    const cpf = somenteDigitos(valor);
+
+    if (!/^\d{11}$/.test(cpf) || /^(\d)\1{10}$/.test(cpf)) {
+        return false;
+    }
+
+    const calcularDigito = (tamanho, pesoInicial) => {
+        let soma = 0;
+
+        for (let indice = 0; indice < tamanho; indice += 1) {
+            soma += Number(cpf[indice]) * (pesoInicial - indice);
+        }
+
+        const resto = (soma * 10) % 11;
+        return resto === 10 ? 0 : resto;
+    };
+
+    return calcularDigito(9, 10) === Number(cpf[9])
+        && calcularDigito(10, 11) === Number(cpf[10]);
+}
+
+function formatarCpf(valor) {
+    const cpf = somenteDigitos(valor).slice(0, 11);
+    return cpf
+        .replace(/^(\d{3})(\d)/, "$1.$2")
+        .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+        .replace(/\.(\d{3})(\d)/, ".$1-$2");
+}
+
 function atualizarFormaPagamento() {
     const pix = formaPagamentoSelecionada() === "pix";
     const explicacaoCartao = document.getElementById("explicacaoCartao");
     const explicacaoPix = document.getElementById("explicacaoPix");
+    const dadosPagadorPix = document.getElementById("dadosPagadorPix");
+    const cpfPagadorPix = document.getElementById("cpfPagadorPix");
     const botao = document.getElementById("btnConfirmarPagamento");
 
     if (explicacaoCartao) {
@@ -177,6 +213,13 @@ function atualizarFormaPagamento() {
     }
     if (explicacaoPix) {
         explicacaoPix.hidden = !pix;
+    }
+    if (dadosPagadorPix) {
+        dadosPagadorPix.hidden = !pix;
+    }
+    if (cpfPagadorPix) {
+        cpfPagadorPix.required = pix;
+        cpfPagadorPix.setCustomValidity("");
     }
     if (botao && !botao.disabled) {
         botao.textContent = pix ? "Gerar PIX" : "Continuar com cartão";
@@ -247,7 +290,16 @@ async function enviarCheckoutCartao(formulario) {
 
 async function gerarPix() {
     const botao = document.getElementById("btnConfirmarPagamento");
+    const campoCpf = document.getElementById("cpfPagadorPix");
     const dados = CICLOS[cicloDoCheckout()];
+    const cpf = somenteDigitos(campoCpf?.value);
+
+    if (!cpfValido(cpf)) {
+        campoCpf?.setCustomValidity("Informe um CPF válido para gerar o PIX.");
+        campoCpf?.reportValidity();
+        campoCpf?.focus();
+        return;
+    }
 
     pararPollingPix();
 
@@ -258,7 +310,8 @@ async function gerarPix() {
 
     try {
         const resposta = await api.post("/payments/pix", {
-            planId: dados.planId
+            planId: dados.planId,
+            cpf
         });
         exibirPix(resposta);
     } catch (erro) {
@@ -630,6 +683,12 @@ async function iniciar() {
         opcao.addEventListener("change", atualizarFormaPagamento);
     });
 
+    const cpfPagadorPix = document.getElementById("cpfPagadorPix");
+    cpfPagadorPix?.addEventListener("input", () => {
+        cpfPagadorPix.value = formatarCpf(cpfPagadorPix.value);
+        cpfPagadorPix.setCustomValidity("");
+    });
+
     const botaoAssinar = document.getElementById("btnAssinarPremium");
     if (botaoAssinar && botaoAssinar.tagName !== "A") {
         botaoAssinar.addEventListener("click", abrirCheckout);
@@ -653,3 +712,4 @@ async function iniciar() {
 document.addEventListener("DOMContentLoaded", () => {
     void iniciar();
 });
+
