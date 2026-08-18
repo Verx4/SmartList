@@ -9,6 +9,10 @@ public record PixCheckoutRequest(
         regexp = "premium_(monthly|quarterly|yearly)",
         message = "Plano Premium inválido."
     )
-    String planId
+    String planId,
+
+    @NotBlank(message = "Informe o CPF do pagador.")
+    String cpf
 ) {
 }
+
