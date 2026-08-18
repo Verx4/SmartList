@@ -24,13 +24,22 @@ public class PagamentoPixService {
         this.mercadoPagoService = mercadoPagoService;
     }
 
-    public PixPagamentoResponse criar(Usuario usuario, String planId) {
+    public PixPagamentoResponse criar(Usuario usuario, String planId, String cpf) {
         CicloAssinatura ciclo = CicloAssinatura.porPlanId(planId);
 
         if (ciclo == null) {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "Plano Premium inválido."
+                "Plano Premium invÃ¡lido."
+            );
+        }
+
+        String cpfNormalizado = CpfValidator.normalizar(cpf);
+
+        if (!CpfValidator.valido(cpfNormalizado)) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Informe um CPF vÃ¡lido para gerar o PIX."
             );
         }
 
@@ -40,7 +49,8 @@ public class PagamentoPixService {
         if (pagamento.getProviderPaymentId() == null) {
             MercadoPagoPixCriado criado = mercadoPagoService.criarPagamentoPix(
                 usuario,
-                pagamento
+                pagamento,
+                cpfNormalizado
             );
             pagamento = transacaoService.vincular(pagamento.getId(), criado);
         }
@@ -88,3 +98,4 @@ public class PagamentoPixService {
         return transacaoService.processarSePix(pagamento);
     }
 }
+
