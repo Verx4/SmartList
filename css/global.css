@@ -25,6 +25,12 @@
     box-sizing: border-box;
 }
 
+html,
+body {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
 html {
     scroll-behavior: smooth;
 }
@@ -52,6 +58,24 @@ textarea {
     font-size: inherit;
 }
 
+button,
+a,
+input,
+select,
+textarea,
+summary,
+[role="button"] {
+    touch-action: manipulation;
+}
+
+@media (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+    select,
+    textarea,
+    [contenteditable="true"] {
+        font-size: max(16px, 1em) !important;
+    }
+}
 button {
     transition: 0.2s;
 }
