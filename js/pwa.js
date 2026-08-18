@@ -5,7 +5,7 @@ const serviceWorkerUrl = new URL("service-worker.js", appRoot);
 const manifestUrl = new URL("manifest.webmanifest", appRoot);
 const iconUrl = new URL("assets/icons/icon-192.png", appRoot);
 const themeStyleUrl = new URL("css/temas.css", appRoot);
-const themeScriptUrl = new URL("js/tema.js?v=10", appRoot);
+const themeScriptUrl = new URL("js/tema.js?v=11", appRoot);
 
 const PAGINAS_COM_RETORNO_AO_INICIO = new Set([
     "perfil.html",

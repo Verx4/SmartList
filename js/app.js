@@ -163,7 +163,7 @@ function atualizarCampoMedidaNovoProduto() {
         : "1";
     campoQuantidade.placeholder = porPeso
         ? "Ex.: 1,5"
-        : "0";
+        : "Ex.: 1";
 
 }
 
@@ -504,6 +504,12 @@ function abrirModal() {
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-aberto");
 
+    const quantidade = elemento("novaQuantidade");
+
+    if (quantidade) {
+        quantidade.value = "";
+    }
+
     atualizarMercadoNoModal();
     atualizarCampoMedidaNovoProduto();
     animarAberturaModal(modal);
@@ -556,7 +562,7 @@ function limparFormularioProduto() {
 
     if (quantidade) {
 
-        quantidade.value = "0";
+        quantidade.value = "";
 
     }
 
@@ -611,9 +617,11 @@ function salvarNovoProduto(evento) {
     const preco =
         Number(elemento("novoPreco")?.value || 0);
 
+    const campoQuantidade = elemento("novaQuantidade");
+    const valorQuantidade = campoQuantidade?.value.trim() || "";
     const quantidadeInformada = Math.max(
         0,
-        numeroDigitado(elemento("novaQuantidade")?.value)
+        numeroDigitado(valorQuantidade)
     );
 
     const medida = regraMedida.medida || medidaPadraoParaNovoProduto(
@@ -643,6 +651,21 @@ function salvarNovoProduto(evento) {
         );
 
         elemento("novoNome")?.focus();
+
+        return;
+
+    }
+
+    if (!valorQuantidade || quantidadeInformada <= 0) {
+
+        notificar(
+            medida === MEDIDA_KG
+                ? "Informe um peso maior que zero."
+                : "Informe uma quantidade maior que zero.",
+            "erro"
+        );
+
+        campoQuantidade?.focus();
 
         return;
 

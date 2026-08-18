@@ -1,6 +1,86 @@
 (function () {
     "use strict";
 
+    const CHAVE_PROTECAO_ZOOM = "__smartListProtecaoZoomAtiva";
+
+    function impedirZoom(evento) {
+        if (evento.cancelable) {
+            evento.preventDefault();
+        }
+    }
+
+    function configurarProtecaoZoom() {
+        if (window[CHAVE_PROTECAO_ZOOM]) {
+            return;
+        }
+
+        window[CHAVE_PROTECAO_ZOOM] = true;
+
+        const seletorInterativo = [
+            "button",
+            "a",
+            "input",
+            "select",
+            "textarea",
+            "label",
+            "summary",
+            "details",
+            "[role='button']",
+            "[onclick]",
+            "[tabindex]",
+            "[contenteditable='true']",
+            "[data-acao]",
+            "[data-action]"
+        ].join(",");
+        let ultimoToque = 0;
+        let ultimoAlvo = null;
+
+        const bloquearMultitoque = (evento) => {
+            if (evento.touches?.length > 1) {
+                impedirZoom(evento);
+            }
+        };
+
+        document.addEventListener("touchstart", bloquearMultitoque, {
+            passive: false,
+            capture: true
+        });
+        document.addEventListener("touchmove", bloquearMultitoque, {
+            passive: false,
+            capture: true
+        });
+
+        ["gesturestart", "gesturechange", "gestureend"].forEach((tipo) => {
+            document.addEventListener(tipo, impedirZoom, { passive: false });
+        });
+
+        document.addEventListener("dblclick", impedirZoom, { passive: false });
+        document.addEventListener("wheel", (evento) => {
+            if (evento.ctrlKey) {
+                impedirZoom(evento);
+            }
+        }, { passive: false });
+
+        document.addEventListener("touchend", (evento) => {
+            const agora = Date.now();
+            const alvo = evento.target instanceof Element
+                ? evento.target
+                : null;
+            const toqueDuploNaoInterativo = alvo
+                && alvo === ultimoAlvo
+                && agora - ultimoToque <= 300
+                && !alvo.closest(seletorInterativo);
+
+            if (toqueDuploNaoInterativo) {
+                impedirZoom(evento);
+            }
+
+            ultimoToque = agora;
+            ultimoAlvo = alvo;
+        }, { passive: false });
+    }
+
+    configurarProtecaoZoom();
     if (window.TemaMinhaLista?.paletasPremium) {
         return;
     }
