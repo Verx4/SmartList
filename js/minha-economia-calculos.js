@@ -19,6 +19,35 @@ const normalizarNome = valor => String(valor || "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
+/*
+ * Alguns nomes genéricos não identificam uma apresentação específica.
+ * Compará-los poderia misturar, por exemplo, leite em pó com leite em caixa
+ * quando um registro antigo foi salvo apenas como "Leite".
+ */
+const NOMES_AMBIGUOS_PARA_PRECO = new Set([
+    "leite"
+]);
+
+const medidaDoItem = item => normalizarNome(
+    item?.medida
+    || item?.tipoMedida
+    || (Number(item?.peso) > 0 ? "kg" : "unidade")
+);
+
+const chaveComparacaoProduto = item => {
+    const nome = normalizarNome(item?.nome);
+
+    if (!nome || NOMES_AMBIGUOS_PARA_PRECO.has(nome)) {
+        return "";
+    }
+
+    /*
+     * O nome completo preserva diferenças como "leite em pó" e
+     * "leite em caixa". A medida impede comparar preço por kg com unidade.
+     */
+    return `${nome}|${medidaDoItem(item)}`;
+};
+
 export function comprasDoMes(compras = [], referencia = new Date(), deslocamento = 0) {
     const alvo = new Date(
         referencia.getFullYear(),
@@ -89,7 +118,7 @@ export function produtoComMaiorAumento(compras = []) {
     [...compras]
         .sort((a, b) => dataDaCompra(a) - dataDaCompra(b))
         .forEach(compra => itensDaCompra(compra).forEach(item => {
-            const chave = normalizarNome(item.nome);
+            const chave = chaveComparacaoProduto(item);
             const preco = precoUnitarioDoItem(item);
 
             if (!chave || preco <= 0) return;
