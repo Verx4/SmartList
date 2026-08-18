@@ -45,24 +45,48 @@
             <span class="page-eyebrow">Checkout seguro</span>
             <h1>Finalizar assinatura</h1>
             <p>
-                Confira o plano. Na próxima etapa, você escolherá Pix, cartão ou
-                outro meio disponível diretamente no ambiente seguro do Mercado Pago.
+                Confira o plano e escolha entre cartão ou PIX.
             </p>
         </section>
 
         <div class="checkout-grid">
             <section class="card checkout-form-card">
-                <h2>Pagamento protegido</h2>
+                <h2>Forma de pagamento</h2>
 
                 <form id="formCheckout" class="form">
-                    <div class="texto-seguranca">
+                    <div class="formas-pagamento" role="radiogroup" aria-label="Forma de pagamento">
+                        <label class="forma-pagamento">
+                            <input type="radio" name="formaPagamento" value="cartao" checked>
+                            <span class="forma-pagamento-conteudo">
+                                <strong>Cartão</strong>
+                                <small>Continue no ambiente seguro do Mercado Pago.</small>
+                            </span>
+                        </label>
+
+                        <label class="forma-pagamento">
+                            <input type="radio" name="formaPagamento" value="pix">
+                            <span class="forma-pagamento-conteudo">
+                                <strong>PIX</strong>
+                                <small>Receba o QR Code e o PIX Copia e Cola aqui.</small>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div id="explicacaoCartao" class="texto-seguranca">
                         <p>
-                            🔒 O Smart List não solicita, recebe nem armazena número
+                            O Smart List não solicita, recebe nem armazena número
                             de cartão, código de segurança ou senha de pagamento.
                         </p>
                         <p>
                             Seu nome e e-mail de cadastro identificam a assinatura.
                             Os dados financeiros serão informados apenas ao Mercado Pago.
+                        </p>
+                    </div>
+
+                    <div id="explicacaoPix" class="texto-seguranca" hidden>
+                        <p>
+                            O PIX será gerado pelo Mercado Pago com o valor oficial do
+                            plano. O Premium só será ativado após a confirmação do pagamento.
                         </p>
                     </div>
 
@@ -82,7 +106,7 @@
                         id="btnConfirmarPagamento"
                         class="btn btn-primary btn-block"
                         type="submit">
-                        Ir para o Mercado Pago
+                        Continuar com cartão
                     </button>
 
                     <div
@@ -91,6 +115,47 @@
                         aria-live="polite">
                     </div>
                 </form>
+
+                <section id="painelPix" class="painel-pix" aria-live="polite" hidden>
+                    <div class="painel-pix-cabecalho">
+                        <div>
+                            <span class="card-label">Pagamento via PIX</span>
+                            <h2 id="pixTitulo">Aguardando pagamento</h2>
+                        </div>
+                        <span id="pixStatus" class="pix-status">Pendente</span>
+                    </div>
+
+                    <div id="pixConteudoPagamento">
+                        <img id="pixQrCode" class="pix-qr-code" alt="QR Code do PIX" hidden>
+
+                        <label for="pixCopiaCola">PIX Copia e Cola</label>
+                        <textarea id="pixCopiaCola" rows="4" readonly></textarea>
+
+                        <button id="btnCopiarPix" class="btn btn-primary btn-block" type="button">
+                            Copiar PIX
+                        </button>
+
+                        <p id="pixExpiracao" class="pix-expiracao"></p>
+                        <p class="texto-seguranca">
+                            Seu Premium será liberado automaticamente após a confirmação
+                            oficial do Mercado Pago.
+                        </p>
+                    </div>
+
+                    <div id="pixResultado" class="pix-resultado" hidden></div>
+
+                    <div class="pix-acoes">
+                        <button id="btnVerificarPix" class="btn btn-secondary" type="button">
+                            Verificar pagamento
+                        </button>
+                        <button id="btnNovoPix" class="btn btn-primary" type="button" hidden>
+                            Gerar novo PIX
+                        </button>
+                        <button id="btnCancelarPix" class="btn btn-secondary" type="button">
+                            Cancelar
+                        </button>
+                    </div>
+                </section>
             </section>
 
             <aside id="resumoPlano" class="card checkout-resumo">
@@ -142,7 +207,7 @@
     </footer>
 
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/assinatura.js"></script>
+    <script type="module" src="./js/assinatura.js?v=3"></script>
 </body>
 
 </html>

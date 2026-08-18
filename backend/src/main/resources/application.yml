@@ -14,6 +14,11 @@
         jdbc:
           time_zone: UTC
         format_sql: true
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration/{vendor}
   jackson:
     time-zone: America/Fortaleza
   servlet:
@@ -51,6 +56,7 @@ app:
     webhook-url: ${MERCADO_PAGO_WEBHOOK_URL:}
     webhook-secret: ${MERCADO_PAGO_WEBHOOK_SECRET:}
     webhook-tolerancia-minutos: ${MERCADO_PAGO_WEBHOOK_TOLERANCE_MINUTES:5}
+    pix-expiracao-minutos: ${MERCADO_PAGO_PIX_EXPIRATION_MINUTES:30}
   scraper:
     margem-percentual: 5.00
   ofertas:

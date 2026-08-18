@@ -61,6 +61,8 @@ class AssinaturaServicePagamentoTest {
 
         when(repository.findByMercadoPagoPagamentoId("123456"))
             .thenReturn(Optional.empty());
+        when(usuarioService.obterPorIdParaAtualizacao(usuario.getId()))
+            .thenReturn(usuario);
         when(repository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
             usuario.getId(),
             StatusAssinatura.ATIVA
