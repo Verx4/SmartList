@@ -34,7 +34,7 @@ public class PagamentoController {
         @Valid @RequestBody PixCheckoutRequest request
     ) {
         Usuario usuario = usuarioService.obterAutenticado();
-        return pagamentoPixService.criar(usuario, request.planId());
+        return pagamentoPixService.criar(usuario, request.planId(), request.cpf());
     }
 
     @GetMapping("/{paymentId}/status")
@@ -53,3 +53,4 @@ public class PagamentoController {
             .orElseGet(() -> ResponseEntity.noContent().build());
     }
 }
+
