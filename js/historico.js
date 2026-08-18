@@ -62,7 +62,12 @@ export function migrarHistoricoAntigo() {
                                 )
                                     ? item.categoria
                                     : detectarCategoria(
-                                        item.nome
+                                        item.nome,
+                                        item.medida || (
+                                            numeroSeguro(item.peso) > 0
+                                                ? "kg"
+                                                : "unidade"
+                                        )
                                     ),
 
                             quantidade:

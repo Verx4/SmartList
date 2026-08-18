@@ -1,745 +1,463 @@
 /*
- * Categorias disponíveis no sistema.
+ * Categorias e regras usadas pela classificação automática.
  *
- * Este arquivo centraliza as categorias para que
- * produtos, formulários e filtros utilizem os
- * mesmos nomes.
+ * A ordem do seletor continua centralizada aqui. Já a classificação usa
+ * exceções e expressões completas antes de produtos genéricos, evitando que
+ * uma palavra curta vença uma descrição mais específica.
  */
-
 
 export const CATEGORIA_AUTOMATICA = "automatico";
-
-export const CATEGORIA_HORTIFRUTI =
-    "🍎 Hortifruti";
-
-export const CATEGORIA_OUTROS =
-    "📦 Outros";
-
+export const CATEGORIA_HORTIFRUTI = "🍎 Hortifruti";
+export const CATEGORIA_OUTROS = "📦 Outros";
 
 export const CATEGORIAS = [
-
     "🥛 Laticínios",
-
     "🥩 Carnes",
-
     "🍗 Frango",
-
     "🐟 Peixes e Frutos do Mar",
-
-    "🍎 Hortifruti",
-
+    CATEGORIA_HORTIFRUTI,
     "🍞 Padaria",
-
     "🥤 Bebidas",
-
     "⚡ Energéticos",
-
     "🍺 Bebidas Alcoólicas",
-
     "🌾 Grãos",
-
     "🍚 Mercearia",
-
     "🍪 Doces e Snacks",
-
     "🧼 Limpeza",
-
     "🪥 Higiene",
-
     "🐶 Pet",
-
     "💊 Farmácia",
-
     "🥫 Enlatados e Conservas",
-
     "❄️ Congelados",
-
     "🌶️ Temperos",
-
     "🍽️ Descartáveis",
-
     "🔌 Utilidades",
-
-    "📦 Outros"
-
+    CATEGORIA_OUTROS
 ];
 
+/*
+ * Exceções explícitas têm prioridade sobre o dicionário geral. As expressões
+ * são comparadas como palavras completas, nunca como pedaços inseguros.
+ */
+export const EXCECOES_CATEGORIZACAO = [
+    { categoria: "❄️ Congelados", termos: ["pão de queijo", "nugget", "nuggets", "lasanha congelada"] },
+    { categoria: "🍚 Mercearia", termos: ["chocolate em pó", "papel filme", "filme plástico", "margarina", "manteiga"] },
+    { categoria: "🌾 Grãos", termos: ["ervilha seca"] },
+    { categoria: "🥫 Enlatados e Conservas", termos: ["atum em lata", "atum enlatado", "sardinha em lata", "sardinha enlatada"] },
+    { categoria: CATEGORIA_HORTIFRUTI, termos: ["pimentão", "coentro"] },
+    { categoria: "🥛 Laticínios", termos: ["cream cheese", "cream-cheese"] }
+];
 
 /*
- * Remove acentos e transforma o texto em minúsculo.
- *
- * Exemplo:
- * "Sabão em Pó" vira "sabao em po".
+ * Dicionário extensível. Expressões com mais palavras recebem prioridade
+ * automática sobre termos curtos, independentemente da ordem das categorias.
  */
+export const REGRAS_CATEGORIZACAO = [
+    {
+        categoria: "🥛 Laticínios",
+        termos: [
+            "leite integral", "leite desnatado", "leite semidesnatado",
+            "leite zero lactose", "leite em pó", "leite fermentado",
+            "queijo coalho", "queijo mussarela", "queijo muçarela",
+            "queijo prato", "queijo minas", "queijo parmesão",
+            "queijo provolone", "queijo cheddar", "iogurte natural",
+            "iogurte grego", "bebida láctea", "creme de leite",
+            "leite condensado", "cream cheese", "requeijão", "ricota",
+            "cottage", "gorgonzola", "mussarela", "muçarela", "parmesão",
+            "provolone", "leite", "queijo", "iogurte", "nata"
+        ]
+    },
+    {
+        categoria: "🥩 Carnes",
+        termos: [
+            "carne bovina", "carne moída", "carne seca", "carne de sol",
+            "carne suína", "carne de porco", "filé mignon", "contra filé",
+            "contrafilé", "costela bovina", "costela suína", "coxão mole",
+            "coxão duro", "fígado bovino", "língua bovina", "linguiça toscana",
+            "linguiça calabresa", "lombo suíno", "bisteca suína", "peito de peru",
+            "carne", "bife", "costela", "picanha", "alcatra", "acém",
+            "patinho", "maminha", "fraldinha", "cupim", "lagarto", "paleta",
+            "músculo", "ossobuco", "charque", "rabada", "mocotó", "pernil",
+            "lombo", "bisteca", "bacon", "linguiça", "calabresa", "paio",
+            "presunto", "salame", "mortadela"
+        ]
+    },
+    {
+        categoria: "🍗 Frango",
+        termos: [
+            "peito de frango", "filé de frango", "filé de peito",
+            "coxa e sobrecoxa", "meio da asa", "coração de frango",
+            "fígado de frango", "pé de frango", "frango inteiro",
+            "frango", "coxa", "sobrecoxa", "asa", "asinha", "drumette",
+            "tulipa", "moela", "galinha"
+        ]
+    },
+    {
+        categoria: "🐟 Peixes e Frutos do Mar",
+        termos: [
+            "filé de peixe", "atum fresco", "sardinha fresca", "peixe",
+            "tilápia", "salmão", "merluza", "pescada", "dourado", "bacalhau",
+            "corvina", "robalo", "linguado", "tambaqui", "tucunaré", "traíra",
+            "cavala", "anchova", "atum", "sardinha", "camarão", "lula", "polvo",
+            "mexilhão", "marisco", "ostra", "siri", "caranguejo", "lagosta"
+        ]
+    },
+    {
+        categoria: CATEGORIA_HORTIFRUTI,
+        termos: [
+            "banana prata", "banana nanica", "banana da terra", "tomate cereja",
+            "couve-flor", "batata-doce", "batata inglesa", "cebola roxa",
+            "alho-poró", "coentro fresco", "maço de coentro", "repolho roxo",
+            "banana", "maçã", "pera", "laranja", "tangerina", "mexerica", "limão",
+            "mamão", "manga", "melancia", "melão", "uva", "morango", "abacaxi",
+            "goiaba", "maracujá", "acerola", "kiwi", "ameixa", "pêssego",
+            "nectarina", "coco", "abacate", "caqui", "pitaya", "caju", "alface",
+            "rúcula", "couve", "espinafre", "acelga", "agrião", "chicória",
+            "escarola", "repolho", "brócolis", "salsa", "salsinha", "cebolinha",
+            "coentro", "tomate", "pimentão", "pepino", "cenoura", "beterraba",
+            "abóbora", "abobrinha", "chuchu", "berinjela", "quiabo", "jiló",
+            "vagem", "batata", "inhame", "macaxeira", "mandioca", "mandioquinha",
+            "aipim", "cebola", "alho", "rabanete", "nabo", "verdura", "legume",
+            "fruta"
+        ]
+    },
+    {
+        categoria: "🍞 Padaria",
+        termos: [
+            "pão francês", "pão de forma", "pão integral", "pão australiano",
+            "pão italiano", "pão sírio", "pão brioche", "pão de leite", "pão doce",
+            "biscoito de polvilho", "bolo de aniversário", "pão", "pães", "baguete",
+            "bisnaguinha", "croissant", "torrada", "bolo", "sonho", "rosca", "broa",
+            "cuca"
+        ]
+    },
+    {
+        categoria: "⚡ Energéticos",
+        termos: [
+            "tnt energy", "flying horse", "fusion energy", "nitro energy",
+            "vibe energy", "red bull", "energético", "monster", "baly", "burn"
+        ]
+    },
+    {
+        categoria: "🍺 Bebidas Alcoólicas",
+        termos: [
+            "cerveja puro malte", "cerveja sem álcool", "vinho tinto", "vinho branco",
+            "vinho rosé", "smirnoff ice", "xeque mate", "cerveja", "chope", "vinho",
+            "espumante", "frisante", "whisky", "whiskey", "vodka", "gin", "rum",
+            "tequila", "cachaça", "aguardente", "conhaque", "licor", "vermute",
+            "beats", "corote"
+        ]
+    },
+    {
+        categoria: "🥤 Bebidas",
+        termos: [
+            "água mineral", "água com gás", "água de coco", "suco integral",
+            "chá gelado", "água tônica", "bebida não alcoólica", "água",
+            "refrigerante", "suco", "néctar", "refresco", "isotônico", "bebida"
+        ]
+    },
+    {
+        categoria: "🌾 Grãos",
+        termos: [
+            "arroz branco", "arroz integral", "arroz parboilizado", "arroz arbóreo",
+            "feijão carioca", "feijão preto", "feijão branco", "feijão fradinho",
+            "grão-de-bico", "ervilha seca", "aveia em grãos", "arroz", "feijão",
+            "lentilha", "soja", "quinoa", "chia", "linhaça"
+        ]
+    },
+    {
+        categoria: "🍚 Mercearia",
+        termos: [
+            "massa para preparo", "massa para lasanha", "farinha de trigo",
+            "farinha de mandioca", "farinha de milho", "farinha de rosca",
+            "goma de tapioca", "açúcar cristal", "açúcar refinado", "açúcar demerara",
+            "açúcar mascavo", "café solúvel", "óleo de soja", "óleo de milho",
+            "molho inglês", "molho barbecue", "extrato de tomate", "amido de milho",
+            "manteiga com sal", "manteiga sem sal", "manteiga de garrafa",
+            "creme vegetal", "papel filme", "filme plástico", "cacau em pó",
+            "chocolate em pó", "leite de coco", "coco ralado", "macarrão", "espaguete",
+            "penne", "parafuso", "talharim", "massa", "lasanha", "farinha", "fubá",
+            "flocão", "tapioca", "polvilho", "açúcar", "adoçante", "café", "cappuccino",
+            "óleo", "azeite", "vinagre", "molho", "extrato", "ketchup", "catchup",
+            "mostarda", "maionese", "shoyu", "fermento", "cuscuz", "granola",
+            "margarina", "manteiga", "cacau", "achocolatado"
+        ]
+    },
+    {
+        categoria: "🍪 Doces e Snacks",
+        termos: [
+            "goma de mascar", "pé de moleque", "doce de leite", "barra de cereal",
+            "barra de proteína", "batata chips", "chocolate", "bombom", "trufa", "bala",
+            "chiclete", "pirulito", "doce", "paçoca", "cocada", "goiabada", "geleia",
+            "biscoito", "bolacha", "cookie", "wafer", "salgadinho", "chips", "pipoca",
+            "snack", "amendoim", "castanha", "sorvete"
+        ]
+    },
+    {
+        categoria: "🧼 Limpeza",
+        termos: [
+            "detergente líquido", "água sanitária", "sabão em pó", "sabão líquido",
+            "sabão em barra", "lava-roupas", "limpa-vidros", "limpador multiuso",
+            "limpa piso", "esponja de aço", "palha de aço", "pano de chão",
+            "pano multiuso", "saco de lixo", "lustra-móveis", "detergente", "desinfetante",
+            "alvejante", "amaciante", "desengordurante", "limpador", "esponja", "álcool",
+            "inseticida"
+        ]
+    },
+    {
+        categoria: "🪥 Higiene",
+        termos: [
+            "sabonete líquido", "pasta de dente", "creme dental", "escova de dente",
+            "fio dental", "enxaguante bucal", "papel higiênico", "protetor diário",
+            "lenço umedecido", "aparelho de barbear", "espuma de barbear",
+            "creme para cabelo", "hidratante corporal", "shampoo", "condicionador",
+            "sabonete", "desodorante", "absorvente", "fralda", "cotonete", "barbeador"
+        ]
+    },
+    {
+        categoria: "🐶 Pet",
+        termos: [
+            "ração para cachorro", "ração para gato", "sachê para cachorro",
+            "sachê para gato", "areia para gato", "tapete higiênico", "brinquedo pet",
+            "shampoo pet", "ração", "petisco", "coleira", "cachorro", "gato", "pet"
+        ]
+    },
+    {
+        categoria: "💊 Farmácia",
+        termos: [
+            "suplemento vitamínico", "água oxigenada", "remédio", "medicamento",
+            "analgésico", "antialérgico", "antitérmico", "vitamina", "curativo",
+            "bandagem", "gaze", "algodão", "antisséptico", "termômetro", "farmácia"
+        ]
+    },
+    {
+        categoria: "🥫 Enlatados e Conservas",
+        termos: [
+            "milho verde", "milho em lata", "ervilha em lata", "seleta de legumes",
+            "atum em lata", "atum enlatado", "sardinha em lata", "sardinha enlatada",
+            "cogumelo em conserva", "pepino em conserva", "molho de tomate",
+            "extrato de tomate", "enlatado", "conserva", "milho", "ervilha", "palmito",
+            "azeitona", "champignon"
+        ]
+    },
+    {
+        categoria: "❄️ Congelados",
+        termos: [
+            "pizza congelada", "pão de queijo", "batata congelada", "batata pré-frita",
+            "polpa de fruta", "lasanha congelada", "escondidinho congelado",
+            "almôndega congelada", "legumes congelados", "açaí congelado",
+            "refeição congelada", "congelado", "pizza", "hambúrguer", "nugget", "nuggets",
+            "empanado", "steak"
+        ]
+    },
+    {
+        categoria: "🌶️ Temperos",
+        termos: [
+            "pimenta-do-reino", "pimenta calabresa", "páprica doce", "páprica picante",
+            "noz-moscada", "caldo de carne", "caldo de galinha", "caldo de legumes",
+            "tempero pronto", "tempero", "pimenta", "colorau", "orégano", "cominho",
+            "canela", "açafrão", "cúrcuma", "páprica", "cravo", "louro"
+        ]
+    },
+    {
+        categoria: "🍽️ Descartáveis",
+        termos: [
+            "papel-alumínio", "papel-manteiga", "copo descartável", "prato descartável",
+            "talher descartável", "garfo descartável", "faca descartável",
+            "colher descartável", "pote descartável", "saco zip", "sacola plástica",
+            "guardanapo", "canudo", "marmita"
+        ]
+    },
+    {
+        categoria: "🔌 Utilidades",
+        termos: [
+            "filtro de linha", "fita adesiva", "pilha", "bateria", "lâmpada", "extensão",
+            "carvão", "acendedor", "gelo", "espeto", "fósforo", "isqueiro", "vela",
+            "supercola", "cola", "barbante", "pregador", "organizador"
+        ]
+    }
+];
 
 function normalizarTexto(valor) {
-
     return String(valor || "")
         .trim()
         .toLocaleLowerCase("pt-BR")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, " ");
-
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
-
-/*
- * Retorna uma cópia da lista de categorias.
- */
-
-export function listarCategorias() {
-
-    return [...CATEGORIAS];
-
+function singularSeguro(token) {
+    return token.length > 3 && token.endsWith("s")
+        ? token.slice(0, -1)
+        : token;
 }
 
-
-/*
- * Confere se uma categoria existe.
- */
-
-export function categoriaExiste(categoria) {
-
-    const categoriaNormalizada =
-        normalizarTexto(categoria);
-
-    return CATEGORIAS.some(
-        item =>
-            normalizarTexto(item) ===
-            categoriaNormalizada
-    );
-
+function tokensCorrespondem(tokenNome, tokenTermo) {
+    return tokenNome === tokenTermo
+        || singularSeguro(tokenNome) === singularSeguro(tokenTermo);
 }
 
+function localizarTermo(nomeNormalizado, termo) {
+    const tokensNome = nomeNormalizado.split(" ").filter(Boolean);
+    const termoNormalizado = normalizarTexto(termo);
+    const tokensTermo = termoNormalizado.split(" ").filter(Boolean);
 
-/*
- * Verifica se o produto pertence ao Hortifruti.
- */
-
-export function categoriaEhHortifruti(categoria) {
-
-    return normalizarTexto(categoria)
-        .includes("hortifruti");
-
-}
-
-
-/*
- * Recebe uma categoria e retorna o nome correto.
- *
- * Caso a categoria não exista, retorna "Outros".
- */
-
-export function normalizarCategoria(categoria) {
-
-    const categoriaNormalizada =
-        normalizarTexto(categoria);
-
-    if (
-        !categoriaNormalizada ||
-        categoriaNormalizada === "automatico"
-    ) {
-
-        return CATEGORIA_OUTROS;
-
+    if (!tokensTermo.length || tokensTermo.length > tokensNome.length) {
+        return null;
     }
 
-    const encontrada =
-        CATEGORIAS.find(item => {
-
-            const itemNormalizado =
-                normalizarTexto(item);
-
-            return (
-                itemNormalizado ===
-                    categoriaNormalizada ||
-
-                itemNormalizado.includes(
-                    categoriaNormalizada
-                ) ||
-
-                categoriaNormalizada.includes(
-                    itemNormalizado
-                )
-            );
-
-        });
-
-    return encontrada || CATEGORIA_OUTROS;
-
-}
-
-
-/*
- * Identifica automaticamente a categoria
- * utilizando o nome do produto.
- */
-
-export function identificarCategoria(nomeProduto) {
-
-    const nome =
-        normalizarTexto(nomeProduto);
-
-
-    if (!nome) {
-
-        return CATEGORIA_OUTROS;
-
-    }
-
-
-    const regras = [
-
-        {
-
-            categoria: "🥛 Laticínios",
-
-            palavras: [
-
-                "leite",
-                "queijo",
-                "iogurte",
-                "manteiga",
-                "margarina",
-                "requeijao",
-                "creme de leite",
-                "leite condensado",
-                "nata"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🥩 Carnes",
-
-            palavras: [
-
-                "carne",
-                "bife",
-                "costela",
-                "linguica",
-                "bacon",
-                "pernil",
-                "lombo",
-                "calabresa",
-                "carne seca",
-                "charque",
-                "patinho",
-                "picanha",
-                "alcatra",
-                "acem",
-                "maminha",
-                "fraldinha",
-                "cupim",
-                "coxao",
-                "lagarto",
-                "paleta",
-                "musculo",
-                "ossobuco"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🍗 Frango",
-
-            palavras: [
-
-                "frango",
-                "coxa",
-                "sobrecoxa",
-                "drumette",
-                "tulipa",
-                "coracao de frango",
-                "moela",
-                "figado de frango",
-                "nugget"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🐟 Peixes e Frutos do Mar",
-
-            palavras: [
-
-                "peixe",
-                "tilapia",
-                "salmao",
-                "merluza",
-                "pescada",
-                "dourado",
-                "atum",
-                "sardinha",
-                "bacalhau",
-                "camarao",
-                "lula",
-                "polvo",
-                "mexilhao",
-                "siri",
-                "caranguejo"
-
-            ]
-
-        },
-
-        {
-
-            categoria: CATEGORIA_HORTIFRUTI,
-
-            palavras: [
-
-                "banana",
-                "maca",
-                "laranja",
-                "mamao",
-                "melancia",
-                "uva",
-                "morango",
-                "abacaxi",
-                "limao",
-                "tomate",
-                "batata",
-                "cebola",
-                "alho",
-                "alface",
-                "cenoura",
-                "beterraba",
-                "repolho",
-                "pepino",
-                "abobora",
-                "mandioca",
-                "verdura",
-                "legume",
-                "fruta"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🍞 Padaria",
-
-            palavras: [
-
-                "pao",
-                "bolo",
-                "torrada",
-                "biscoito de polvilho",
-                "croissant",
-                "sonho",
-                "rosca"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "⚡ Energéticos",
-
-            palavras: [
-
-                "energetico",
-                "red bull",
-                "monster",
-                "tnt energy",
-                "baly",
-                "burn",
-                "flying horse",
-                "fusion energy",
-                "nitro energy",
-                "vibe energy"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🍺 Bebidas Alcoólicas",
-
-            palavras: [
-
-                "cerveja",
-                "vinho",
-                "espumante",
-                "frisante",
-                "whisky",
-                "vodka",
-                "gin",
-                "rum",
-                "tequila",
-                "cachaca",
-                "conhaque",
-                "licor",
-                "smirnoff ice",
-                "beats",
-                "corote",
-                "xeque mate"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🥤 Bebidas",
-
-            palavras: [
-
-                "agua",
-                "suco",
-                "refrigerante",
-                "isotonico",
-                "cha gelado",
-                "bebida"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🌾 Grãos",
-
-            palavras: [
-
-                "arroz",
-                "feijao",
-                "milho",
-                "grao de bico",
-                "lentilha",
-                "ervilha seca",
-                "soja",
-                "quinoa",
-                "chia",
-                "linhaca",
-                "aveia em graos"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🍚 Mercearia",
-
-            palavras: [
-
-                "macarrao",
-                "lasanha",
-                "massa para",
-                "farinha",
-                "fuba",
-                "flocao",
-                "tapioca",
-                "polvilho",
-                "acucar",
-                "cafe",
-                "oleo",
-                "azeite",
-                "vinagre",
-                "molho",
-                "extrato",
-                "ketchup",
-                "mostarda",
-                "maionese",
-                "shoyu",
-                "fermento",
-                "amido de milho",
-                "cuscuz",
-                "granola"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🍪 Doces e Snacks",
-
-            palavras: [
-
-                "chocolate",
-                "bombom",
-                "bala",
-                "doce",
-                "sorvete",
-                "biscoito",
-                "bolacha",
-                "salgadinho",
-                "pipoca",
-                "barra de cereal",
-                "snack"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🧼 Limpeza",
-
-            palavras: [
-
-                "detergente",
-                "desinfetante",
-                "agua sanitaria",
-                "sabao em po",
-                "amaciante",
-                "limpador",
-                "esponja",
-                "pano de chao",
-                "saco de lixo",
-                "alcool",
-                "lustra moveis"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🪥 Higiene",
-
-            palavras: [
-
-                "shampoo",
-                "condicionador",
-                "sabonete",
-                "desodorante",
-                "pasta de dente",
-                "creme dental",
-                "escova de dente",
-                "papel higienico",
-                "fio dental",
-                "absorvente",
-                "fralda",
-                "barbeador"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🐶 Pet",
-
-            palavras: [
-
-                "racao",
-                "petisco",
-                "areia para gato",
-                "tapete higienico",
-                "coleira",
-                "gato",
-                "cachorro",
-                "pet"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "💊 Farmácia",
-
-            palavras: [
-
-                "remedio",
-                "medicamento",
-                "vitamina",
-                "analgesico",
-                "antialergico",
-                "curativo",
-                "algodao",
-                "termometro",
-                "farmacia"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🥫 Enlatados e Conservas",
-
-            palavras: [
-
-                "enlatado",
-                "sardinha",
-                "atum",
-                "ervilha em lata",
-                "milho em lata",
-                "molho de tomate",
-                "extrato de tomate",
-                "palmito",
-                "azeitona"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "❄️ Congelados",
-
-            palavras: [
-
-                "congelado",
-                "pizza",
-                "lasanha",
-                "hamburguer",
-                "nugget",
-                "batata congelada",
-                "polpa de fruta"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🌶️ Temperos",
-
-            palavras: [
-
-                "tempero",
-                "pimenta",
-                "colorau",
-                "oregano",
-                "cominho",
-                "canela",
-                "acafrao",
-                "paprica",
-                "caldo",
-                "coentro"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🍽️ Descartáveis",
-
-            palavras: [
-
-                "papel aluminio",
-                "filme plastico",
-                "papel manteiga",
-                "guardanapo",
-                "copo descartavel",
-                "prato descartavel",
-                "talher descartavel",
-                "canudo",
-                "marmita",
-                "pote descartavel",
-                "saco zip",
-                "sacola plastica"
-
-            ]
-
-        },
-
-        {
-
-            categoria: "🔌 Utilidades",
-
-            palavras: [
-
-                "pilha",
-                "bateria",
-                "lampada",
-                "extensao",
-                "filtro de linha",
-                "carvao",
-                "acendedor",
-                "gelo",
-                "espeto",
-                "fosforo",
-                "isqueiro",
-                "vela",
-                "fita adesiva",
-                "supercola",
-                "barbante",
-                "pregador",
-                "organizador"
-
-            ]
-
-        }
-
-    ];
-
-
-    const regraEncontrada =
-        regras.find(regra =>
-
-            regra.palavras.some(
-                palavra =>
-                    nome.includes(
-                        normalizarTexto(palavra)
-                    )
-            )
-
+    for (let inicio = 0; inicio <= tokensNome.length - tokensTermo.length; inicio += 1) {
+        const corresponde = tokensTermo.every(
+            (token, indice) => tokensCorrespondem(tokensNome[inicio + indice], token)
         );
 
+        if (corresponde) {
+            return {
+                inicio,
+                quantidadeTokens: tokensTermo.length,
+                tamanho: termoNormalizado.length
+            };
+        }
+    }
 
-    return regraEncontrada?.categoria ||
-        CATEGORIA_OUTROS;
-
+    return null;
 }
 
+function melhorCorrespondencia(nomeNormalizado, regras) {
+    const encontradas = [];
 
-/*
- * Nome alternativo para manter compatibilidade
- * com códigos anteriores.
- */
+    regras.forEach((regra, prioridadeCategoria) => {
+        regra.termos.forEach(termo => {
+            const local = localizarTermo(nomeNormalizado, termo);
+            if (local) {
+                encontradas.push({
+                    categoria: regra.categoria,
+                    prioridadeCategoria,
+                    ...local
+                });
+            }
+        });
+    });
 
-export const detectarCategoria =
-    identificarCategoria;
+    encontradas.sort((a, b) =>
+        b.quantidadeTokens - a.quantidadeTokens
+        || b.tamanho - a.tamanho
+        || a.inicio - b.inicio
+        || a.prioridadeCategoria - b.prioridadeCategoria
+    );
 
-export const descobrirCategoria =
-    identificarCategoria;
+    return encontradas[0]?.categoria || null;
+}
 
+function normalizarMedida(medida) {
+    const valor = normalizarTexto(
+        typeof medida === "object"
+            ? medida?.medida || medida?.unidade || medida?.tipoMedida
+            : medida
+    );
 
-/*
- * Monta as opções HTML das categorias.
- *
- * Essa função pode ser usada em formulários
- * e campos select.
- */
+    if (["kg", "quilo", "quilos", "quilograma", "quilogramas"].includes(valor)) {
+        return "kg";
+    }
 
-export function montarOpcoesCategorias(
-    categoriaSelecionada = ""
+    if (["un", "und", "unid", "unidade", "unidades"].includes(valor)) {
+        return "unidade";
+    }
+
+    return "";
+}
+
+function aplicarRegraDaUnidade(categoria, medida) {
+    const categoriasPorPeso = new Set([
+        "🥩 Carnes",
+        "🍗 Frango",
+        "🐟 Peixes e Frutos do Mar"
+    ]);
+
+    return categoriasPorPeso.has(categoria) && normalizarMedida(medida) === "unidade"
+        ? "❄️ Congelados"
+        : categoria;
+}
+
+export function listarCategorias() {
+    return [...CATEGORIAS];
+}
+
+export function categoriaExiste(categoria) {
+    const categoriaNormalizada = normalizarTexto(categoria);
+    return CATEGORIAS.some(
+        item => normalizarTexto(item) === categoriaNormalizada
+    );
+}
+
+export const categoriaValida = categoriaExiste;
+
+export function categoriaEhHortifruti(categoria) {
+    return normalizarTexto(categoria).includes("hortifruti");
+}
+
+export function normalizarCategoria(categoria) {
+    const categoriaNormalizada = normalizarTexto(categoria);
+
+    if (!categoriaNormalizada || categoriaNormalizada === CATEGORIA_AUTOMATICA) {
+        return CATEGORIA_OUTROS;
+    }
+
+    const encontrada = CATEGORIAS.find(item => {
+        const itemNormalizado = normalizarTexto(item);
+        return itemNormalizado === categoriaNormalizada
+            || itemNormalizado.includes(categoriaNormalizada)
+            || categoriaNormalizada.includes(itemNormalizado);
+    });
+
+    return encontrada || CATEGORIA_OUTROS;
+}
+
+export function identificarCategoria(nomeProduto, medida = "") {
+    const nomeNormalizado = normalizarTexto(nomeProduto);
+
+    if (!nomeNormalizado) {
+        return CATEGORIA_OUTROS;
+    }
+
+    const excecao = melhorCorrespondencia(nomeNormalizado, EXCECOES_CATEGORIZACAO);
+    if (excecao) {
+        return aplicarRegraDaUnidade(excecao, medida);
+    }
+
+    const categoria = melhorCorrespondencia(nomeNormalizado, REGRAS_CATEGORIZACAO);
+    return categoria
+        ? aplicarRegraDaUnidade(categoria, medida)
+        : CATEGORIA_OUTROS;
+}
+
+export function resolverCategoriaSelecionada(
+    nomeProduto,
+    categoriaSelecionada = CATEGORIA_AUTOMATICA,
+    medida = ""
 ) {
+    return normalizarTexto(categoriaSelecionada) === CATEGORIA_AUTOMATICA
+        ? identificarCategoria(nomeProduto, medida)
+        : normalizarCategoria(categoriaSelecionada);
+}
 
+export const detectarCategoria = identificarCategoria;
+export const descobrirCategoria = identificarCategoria;
+
+export function montarOpcoesCategorias(categoriaSelecionada = "") {
     return CATEGORIAS.map(categoria => {
-
-        const selecionada =
-            categoria === categoriaSelecionada
-                ? "selected"
-                : "";
+        const selecionada = categoria === categoriaSelecionada
+            ? "selected"
+            : "";
 
         return `
-            <option
-                value="${categoria}"
-                ${selecionada}
-            >
+            <option value="${categoria}" ${selecionada}>
                 ${categoria}
             </option>
         `;
-
     }).join("");
-
 }
+

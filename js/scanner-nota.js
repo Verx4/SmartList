@@ -305,14 +305,15 @@ function importarSelecionados(modal, nota, fechar, criarNova) {
         const quantidade = Math.max(0, Number(item.quantidade || 1));
         const unidade = String(item.unidade || "UN").toUpperCase();
         const porPeso = ["KG", "G", "GR"].includes(unidade) || !Number.isInteger(quantidade);
+        const medida = porPeso ? MEDIDA_KG : MEDIDA_UNIDADE;
         adicionarProduto({
             nome: item.nome,
-            categoria: identificarCategoria(item.nome),
+            categoria: identificarCategoria(item.nome, medida),
             precos: [{
                 valor: Math.max(0, Number(item.valorUnitario || 0)),
                 quantidade: porPeso ? quantidade : Math.max(1, Math.round(quantidade))
             }],
-            medida: porPeso ? MEDIDA_KG : MEDIDA_UNIDADE,
+            medida,
             peso: porPeso ? quantidade : 0,
             supermercado: mercado,
             favorito: false

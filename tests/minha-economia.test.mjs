@@ -114,6 +114,58 @@ test("maior aumento compara o preço anterior com o mais recente do mesmo produt
     assert.equal(Math.round(aumento.percentual), 12);
 });
 
+test("não compara leite em pó com leite em caixa", () => {
+    const aumento = produtoComMaiorAumento([
+        compra("2026-07-05T12:00:00", 10, [
+            item("Leite em pó", "Laticínios", 1, 10)
+        ]),
+        compra("2026-08-05T12:00:00", 12, [
+            item("Leite em caixa", "Laticínios", 1, 12)
+        ])
+    ]);
+
+    assert.equal(aumento, null);
+});
+
+test("compara novamente quando a apresentação do leite é realmente a mesma", () => {
+    const aumento = produtoComMaiorAumento([
+        compra("2026-07-05T12:00:00", 10, [
+            item("Leite em pó", "Laticínios", 1, 10)
+        ]),
+        compra("2026-08-05T12:00:00", 12, [
+            item("Leite em pó", "Laticínios", 1, 12)
+        ])
+    ]);
+
+    assert.equal(aumento.nome, "Leite em pó");
+    assert.equal(Math.round(aumento.percentual), 20);
+});
+
+test("não atribui aumento a leite salvo sem apresentação suficiente", () => {
+    const aumento = produtoComMaiorAumento([
+        compra("2026-07-05T12:00:00", 5, [
+            item("Leite", "Laticínios", 1, 5)
+        ]),
+        compra("2026-08-05T12:00:00", 6, [
+            item("Leite", "Laticínios", 1, 6)
+        ])
+    ]);
+
+    assert.equal(aumento, null);
+});
+
+test("não compara preços com medidas diferentes", () => {
+    const anterior = item("Picanha", "Carnes", 1, 40);
+    anterior.medida = "kg";
+    const atual = item("Picanha", "Carnes", 1, 50);
+    atual.medida = "unidade";
+
+    assert.equal(produtoComMaiorAumento([
+        compra("2026-07-05T12:00:00", 40, [anterior]),
+        compra("2026-08-05T12:00:00", 50, [atual])
+    ]), null);
+});
+
 test("gráfico produz períodos reais de 3, 6 e 12 meses", () => {
     const compras = [
         compra("2026-07-05T12:00:00", 100, [item("Arroz", "Alimentos", 10, 10)]),
