@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -72,6 +74,35 @@ class AdminServiceAcessoTest {
         usuario.setAtivo(true);
 
         when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
+    }
+
+    @Test
+    void deveContarAssinaturaPagaAtivaComoPremiumNoResumo() {
+        when(usuarioRepository.countUsuariosComPremiumAtivo(
+            eq(TipoAcesso.PREMIUM),
+            eq(StatusAssinatura.ATIVA),
+            any(Instant.class)
+        )).thenReturn(2L);
+
+        ResumoAdminResponse resumo = service.resumo();
+
+        assertEquals(2L, resumo.usuariosPremium());
+    }
+
+    @Test
+    void deveExporVencimentoDaAssinaturaPagaAtiva() {
+        Assinatura assinatura = assinaturaAtiva();
+        when(usuarioRepository.findAllByOrderByCriadoEmDesc()).thenReturn(List.of(usuario));
+        when(assinaturaRepository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
+            null,
+            StatusAssinatura.ATIVA
+        )).thenReturn(Optional.of(assinatura));
+
+        UsuarioAdminResponse resposta = service.usuarios().getFirst();
+
+        assertEquals("MENSAL", resposta.ciclo());
+        assertEquals(assinatura.getVenceEm(), resposta.assinaturaVenceEm());
+        assertEquals(true, resposta.assinaturaAtiva());
     }
 
     @Test
