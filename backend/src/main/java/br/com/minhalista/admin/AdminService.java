@@ -58,7 +58,11 @@ public class AdminService {
         return new ResumoAdminResponse(
             usuarioRepository.count(),
             usuarioRepository.countByTipoAcesso(TipoAcesso.FREE),
-            usuarioRepository.countByTipoAcesso(TipoAcesso.PREMIUM),
+            usuarioRepository.countUsuariosComPremiumAtivo(
+                TipoAcesso.PREMIUM,
+                StatusAssinatura.ATIVA,
+                Instant.now()
+            ),
             usuarioRepository.countByTipoAcesso(TipoAcesso.CORTESIA),
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.MENSAL, StatusAssinatura.ATIVA),
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.TRIMESTRAL, StatusAssinatura.ATIVA),
@@ -182,15 +186,20 @@ public class AdminService {
     }
 
     private UsuarioAdminResponse respostaUsuario(Usuario usuario) {
-        String ciclo = assinaturaRepository
+        Assinatura assinaturaAtiva = assinaturaRepository
             .findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
                 usuario.getId(),
                 StatusAssinatura.ATIVA
             )
-            .map(item -> item.getCiclo().name())
+            .filter(this::assinaturaAindaValida)
             .orElse(null);
 
-        return UsuarioAdminResponse.de(usuario, ciclo);
+        return UsuarioAdminResponse.de(usuario, assinaturaAtiva);
+    }
+
+    private boolean assinaturaAindaValida(Assinatura assinatura) {
+        return assinatura.getVenceEm() != null
+            && assinatura.getVenceEm().isAfter(Instant.now());
     }
 
     @Transactional
@@ -198,6 +207,6 @@ public class AdminService {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
         usuario.setAtivo(!usuario.isAtivo());
-        return UsuarioAdminResponse.de(usuarioRepository.save(usuario), null);
+        return respostaUsuario(usuarioRepository.save(usuario));
     }
 }
