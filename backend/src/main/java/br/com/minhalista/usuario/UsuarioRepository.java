@@ -1,5 +1,6 @@
 package br.com.minhalista.usuario;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import br.com.minhalista.assinatura.StatusAssinatura;
 import jakarta.persistence.LockModeType;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
@@ -18,6 +20,24 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     boolean existsByEmailIgnoreCase(String email);
 
     long countByTipoAcesso(TipoAcesso tipoAcesso);
+
+    @Query("""
+        select count(u)
+        from Usuario u
+        where u.tipoAcesso = :tipoAcesso
+           or exists (
+                select a.id
+                from Assinatura a
+                where a.usuario = u
+                  and a.status = :status
+                  and a.venceEm > :agora
+           )
+        """)
+    long countUsuariosComPremiumAtivo(
+        @Param("tipoAcesso") TipoAcesso tipoAcesso,
+        @Param("status") StatusAssinatura status,
+        @Param("agora") Instant agora
+    );
 
     List<Usuario> findAllByOrderByCriadoEmDesc();
 
