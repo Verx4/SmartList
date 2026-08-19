@@ -3,6 +3,7 @@ package br.com.minhalista.admin;
 import java.time.Instant;
 import java.util.UUID;
 
+import br.com.minhalista.assinatura.Assinatura;
 import br.com.minhalista.usuario.Usuario;
 
 public record UsuarioAdminResponse(
@@ -15,11 +16,12 @@ public record UsuarioAdminResponse(
     String tipoAcesso,
     String ciclo,
     boolean assinaturaAtiva,
+    Instant assinaturaVenceEm,
     boolean ativo,
     Instant cortesiaAte,
     Instant criadoEm
 ) {
-    public static UsuarioAdminResponse de(Usuario usuario, String ciclo) {
+    public static UsuarioAdminResponse de(Usuario usuario, Assinatura assinaturaAtiva) {
         return new UsuarioAdminResponse(
             usuario.getId(),
             usuario.getNome(),
@@ -28,8 +30,9 @@ public record UsuarioAdminResponse(
             usuario.getEstado(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
-            ciclo,
-            ciclo != null,
+            assinaturaAtiva == null ? null : assinaturaAtiva.getCiclo().name(),
+            assinaturaAtiva != null,
+            assinaturaAtiva == null ? null : assinaturaAtiva.getVenceEm(),
             usuario.isAtivo(),
             usuario.getCortesiaAte(),
             usuario.getCriadoEm()
