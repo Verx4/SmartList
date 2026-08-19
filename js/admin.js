@@ -160,6 +160,39 @@ function formatarData(valor) {
 }
 
 
+function formatarValidadeAcesso(usuario) {
+    const venceEm = usuario.assinaturaVenceEm || usuario.cortesiaAte;
+
+    if (!venceEm) {
+        return "-";
+    }
+
+    const data = new Date(venceEm);
+
+    if (Number.isNaN(data.getTime())) {
+        return "-";
+    }
+
+    const dataFormatada = data.toLocaleString("pt-BR");
+
+    if (!usuario.assinaturaVenceEm) {
+        return dataFormatada;
+    }
+
+    const milissegundosPorDia = 24 * 60 * 60 * 1000;
+    const diferenca = data.getTime() - Date.now();
+
+    if (diferenca <= 0) {
+        return `${dataFormatada} (expirada)`;
+    }
+
+    const diasRestantes = Math.ceil(diferenca / milissegundosPorDia);
+    const unidade = diasRestantes === 1 ? "dia" : "dias";
+
+    return `${dataFormatada} (${diasRestantes} ${unidade})`;
+}
+
+
 function opcoesAcesso(acessoAtual) {
     return ["FREE", "PREMIUM", "CORTESIA"]
         .map(acesso => `
@@ -192,7 +225,7 @@ function renderizarUsuarios(usuarios = []) {
     corpo.innerHTML = usuarios.map(usuario => {
         const acesso = usuario.tipoAcesso || "FREE";
         const assinatura = usuario.assinaturaAtiva
-            ? `<span class="status status-alerta" title="Assinatura paga ativa">Paga ativa</span>`
+            ? `<span class="status status-alerta" title="Assinatura Premium paga ativa">Premium pago</span>`
             : "";
 
         return `
@@ -214,7 +247,7 @@ function renderizarUsuarios(usuarios = []) {
                     </div>
                 </td>
                 <td>${escaparHtml(usuario.ciclo || "-")}</td>
-                <td>${formatarData(usuario.cortesiaAte)}</td>
+                <td>${formatarValidadeAcesso(usuario)}</td>
                 <td>
                     <span class="status ${usuario.ativo === false ? "status-erro" : "status-ok"}">
                         ${usuario.ativo === false ? "Bloqueado" : "Ativo"}
