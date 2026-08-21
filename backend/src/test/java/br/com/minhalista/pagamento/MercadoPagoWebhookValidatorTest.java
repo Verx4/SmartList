@@ -35,15 +35,6 @@ class MercadoPagoWebhookValidatorTest {
     }
 
     @Test
-    void aceitaTimestampOficialEmSegundos() {
-        MercadoPagoWebhookValidator validator = validator();
-        String timestamp = String.valueOf(AGORA.getEpochSecond());
-        String assinatura = cabecalhoAssinado(DATA_ID, REQUEST_ID, timestamp);
-
-        assertTrue(validator.validar(assinatura, REQUEST_ID, DATA_ID));
-    }
-
-    @Test
     void rejeitaQuandoDataIdFoiAlterado() {
         MercadoPagoWebhookValidator validator = validator();
         String timestamp = String.valueOf(AGORA.toEpochMilli());

@@ -1,7 +1,6 @@
 package br.com.minhalista.usuario;
 
 import java.util.Locale;
-import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,15 +56,6 @@ public class UsuarioService {
                 "Este recurso faz parte do plano Premium."
             );
         }
-    }
-
-    @Transactional
-    public Usuario obterPorIdParaAtualizacao(UUID id) {
-        return repository.buscarPorIdParaAtualizacao(id)
-            .orElseThrow(() -> new RegraNegocioException(
-                HttpStatus.NOT_FOUND,
-                "Usuário não encontrado."
-            ));
     }
 
     private String limparOpcional(String valor) {

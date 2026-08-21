@@ -25,18 +25,15 @@ public class WebhookMercadoPagoController {
     private final MercadoPagoService mercadoPagoService;
     private final MercadoPagoWebhookValidator webhookValidator;
     private final AssinaturaService assinaturaService;
-    private final PagamentoPixService pagamentoPixService;
 
     public WebhookMercadoPagoController(
         MercadoPagoService mercadoPagoService,
         MercadoPagoWebhookValidator webhookValidator,
-        AssinaturaService assinaturaService,
-        PagamentoPixService pagamentoPixService
+        AssinaturaService assinaturaService
     ) {
         this.mercadoPagoService = mercadoPagoService;
         this.webhookValidator = webhookValidator;
         this.assinaturaService = assinaturaService;
-        this.pagamentoPixService = pagamentoPixService;
     }
 
     @PostMapping
@@ -79,9 +76,7 @@ public class WebhookMercadoPagoController {
             return ResponseEntity.ok().build();
         }
 
-        if (!pagamentoPixService.processarNotificacao(pagamento)) {
-            assinaturaService.processarPagamento(pagamento);
-        }
+        assinaturaService.processarPagamento(pagamento);
         return ResponseEntity.ok().build();
     }
 

@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v51`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v51`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v52`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v52`;
 
 const PRECACHE_URLS = [
     "./",
@@ -8,8 +8,6 @@ const PRECACHE_URLS = [
     "./login.html",
     "./cadastro.html",
     "./inicio.html",
-    "./assinatura.html",
-    "./checkout.html",
     "./menu.html",
     "./comparar-embalagens.html",
     "./comparacao.html",
@@ -17,6 +15,8 @@ const PRECACHE_URLS = [
     "./suporte.html",
     "./historico.html",
     "./minha-economia.html",
+    "./assinatura.html",
+    "./checkout.html",
     "./offline.html",
     "./manifest.webmanifest",
     "./css/global.css",
@@ -24,7 +24,6 @@ const PRECACHE_URLS = [
     "./css/login-intro.css",
     "./css/layout.css",
     "./css/cards.css",
-    "./css/checkout.css",
     "./css/buttons.css",
     "./css/auth.css",
     "./css/responsive.css",
@@ -36,6 +35,7 @@ const PRECACHE_URLS = [
     "./css/historico-itens.css",
     "./css/minha-economia.css",
     "./css/historico-topo.css",
+    "./css/checkout.css",
     "./css/scanner-nota.css",
     "./css/listas-salvas.css",
     "./css/produtos-multivalores.css",
@@ -44,7 +44,6 @@ const PRECACHE_URLS = [
     "./js/animations.js",
     "./js/login-intro.js",
     "./js/categorias.js",
-    "./js/assinatura.js",
     "./js/medidas-produtos.js",
     "./js/tema.js",
     "./js/mobile-nav.js",
@@ -54,6 +53,7 @@ const PRECACHE_URLS = [
     "./js/historico-calculos.js",
     "./js/minha-economia.js",
     "./js/minha-economia-calculos.js",
+    "./js/assinatura.js",
     "./js/scanner-nota.js",
     "./js/listas-salvas-ui.js",
     "./js/admin-return.js",

@@ -26,7 +26,6 @@ app:
     webhook-url: ""
     webhook-secret: ""
     webhook-tolerancia-minutos: 5
-    pix-expiracao-minutos: 30
   scraper:
     margem-percentual: 5.00
   ofertas:
