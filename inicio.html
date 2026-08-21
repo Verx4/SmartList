@@ -28,19 +28,19 @@
             <a class="inicio-lista-atalho" href="./dashboard.html">Abrir lista <span>→</span></a>
         </section>
 
-        <section class="inicio-destaque" aria-label="Resumo mensal">
+        <section class="inicio-destaque" aria-label="Resumo mensal" data-premium-content>
             <div class="inicio-destaque-topo"><span>Gasto neste mês</span><small id="mesReferencia"></small></div>
             <strong id="gastoMes">R$ 0,00</strong>
             <div class="inicio-destaque-rodape"><span id="variacaoMes" class="inicio-variacao neutra">Sem compras registradas</span><span id="mediaCompra">Média R$ 0,00</span></div>
         </section>
 
-        <section class="inicio-metricas" aria-label="Indicadores das compras">
+        <section class="inicio-metricas" aria-label="Indicadores das compras" data-premium-content>
             <article><span>Compras no mês</span><strong id="comprasMes">0</strong></article>
             <article><span>Economia no mês</span><strong id="economiaMes">R$ 0,00</strong></article>
             <article><span>Itens na lista</span><strong id="itensLista">0</strong></article>
         </section>
 
-        <section class="inicio-painel">
+        <section class="inicio-painel" data-premium-content>
             <header><div><small>Este mês</small><h2>Gastos por categoria</h2></div><a href="./historico.html">Ver detalhes</a></header>
             <div id="graficoGastos" class="inicio-grafico" aria-label="Gráfico de gastos por categoria"></div>
             <div class="inicio-insights">
@@ -70,6 +70,7 @@
     </div>
 
     <script src="./js/tema.js?v=11"></script>
+    <script src="./js/acesso-premium.js?v=1"></script>
     <script type="module" src="./js/inicio.js?v=1"></script>
     <script src="./js/admin-return.js"></script>
     <script src="./js/mobile-nav.js"></script>
