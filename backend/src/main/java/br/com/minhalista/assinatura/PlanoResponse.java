@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 public record PlanoResponse(
     String plano,
-    String planId,
     String ciclo,
     String nome,
     BigDecimal valor,
@@ -13,7 +12,6 @@ public record PlanoResponse(
     public static PlanoResponse de(CicloAssinatura ciclo) {
         return new PlanoResponse(
             "PREMIUM",
-            ciclo.getPlanId(),
             ciclo.name(),
             ciclo.getNome(),
             ciclo.getValor(),

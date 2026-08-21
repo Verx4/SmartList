@@ -104,7 +104,7 @@ public class AssinaturaService {
             : pagamento.status().toLowerCase(Locale.ROOT);
 
         switch (status) {
-            case "approved" -> ativarPremium(assinatura, pagamento.id());
+            case "approved" -> ativar(assinatura, pagamento.id());
             case "refunded", "charged_back", "cancelled" ->
                 cancelar(assinatura, pagamento.id());
             default -> LOG.info(
@@ -115,29 +115,6 @@ public class AssinaturaService {
         }
     }
 
-    @Transactional
-    public Assinatura ativarPremium(UUID assinaturaId, String pagamentoId) {
-        Optional<Assinatura> assinaturaEncontrada =
-            repository.buscarPorIdParaAtualizacao(assinaturaId);
-
-        if (assinaturaEncontrada.isEmpty()) {
-            LOG.warn(
-                "Assinatura {} não encontrada ao ativar pagamento {}.",
-                assinaturaId,
-                pagamentoId
-            );
-            return null;
-        }
-
-        return ativarPremium(assinaturaEncontrada.get(), pagamentoId);
-    }
-
-    @Transactional
-    public void cancelarPagamento(UUID assinaturaId, String pagamentoId) {
-        repository.buscarPorIdParaAtualizacao(assinaturaId)
-            .ifPresent(assinatura -> cancelar(assinatura, pagamentoId));
-    }
-
     private boolean dadosConferem(Assinatura assinatura, PagamentoConsultado pagamento) {
         return assinatura.getId().toString().equals(pagamento.assinaturaIdMetadata())
             && assinatura.getCiclo().name().equalsIgnoreCase(pagamento.cicloMetadata())
@@ -146,12 +123,12 @@ public class AssinaturaService {
             && "BRL".equalsIgnoreCase(pagamento.moeda());
     }
 
-    private Assinatura ativarPremium(Assinatura assinatura, String pagamentoId) {
+    private void ativar(Assinatura assinatura, String pagamentoId) {
         Optional<Assinatura> pagamentoExistente =
             repository.findByMercadoPagoPagamentoId(pagamentoId);
 
         if (pagamentoExistente.isPresent()) {
-            return pagamentoExistente.get();
+            return;
         }
 
         if (assinatura.getStatus() == StatusAssinatura.ATIVA) {
@@ -159,16 +136,14 @@ public class AssinaturaService {
                 "Checkout {} já está ativo e não será creditado novamente.",
                 assinatura.getId()
             );
-            return assinatura;
+            return;
         }
 
         if (assinatura.getStatus() != StatusAssinatura.PENDENTE) {
-            return assinatura;
+            return;
         }
 
-        Usuario usuario = usuarioService.obterPorIdParaAtualizacao(
-            assinatura.getUsuario().getId()
-        );
+        Usuario usuario = assinatura.getUsuario();
         Instant agora = Instant.now();
         Instant base = repository
             .findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(usuario.getId(), StatusAssinatura.ATIVA)
@@ -186,7 +161,6 @@ public class AssinaturaService {
         assinatura.setVenceEm(vencimento);
 
         usuario.setTipoAcesso(TipoAcesso.PREMIUM);
-        return assinatura;
     }
 
     private void cancelar(Assinatura assinatura, String pagamentoId) {

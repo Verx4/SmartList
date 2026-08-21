@@ -56,7 +56,6 @@ app:
     webhook-url: ${MERCADO_PAGO_WEBHOOK_URL:}
     webhook-secret: ${MERCADO_PAGO_WEBHOOK_SECRET:}
     webhook-tolerancia-minutos: ${MERCADO_PAGO_WEBHOOK_TOLERANCE_MINUTES:5}
-    pix-expiracao-minutos: ${MERCADO_PAGO_PIX_EXPIRATION_MINUTES:30}
   scraper:
     margem-percentual: 5.00
   ofertas:
