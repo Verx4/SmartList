@@ -223,8 +223,12 @@ async function preencherPlanoAtual() {
     exibirPlano(usuario, null);
 
     try {
-        const assinatura = await api.get("/assinaturas/atual");
-        exibirPlano(usuario, assinatura);
+        const [assinatura, usuarioAtualizado] = await Promise.all([
+            api.get("/assinaturas/atual"),
+            api.get("/usuarios/me")
+        ]);
+        localStorage.setItem("usuarioAtual", JSON.stringify(usuarioAtualizado));
+        exibirPlano(usuarioAtualizado, assinatura);
     } catch {
         // A página de planos também pode ser visitada antes do login.
     }
