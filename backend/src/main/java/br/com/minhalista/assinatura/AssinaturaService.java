@@ -25,24 +25,32 @@ public class AssinaturaService {
 
     private final AssinaturaRepository repository;
     private final UsuarioService usuarioService;
+    private final AssinaturaValidadeService validadeService;
 
     public AssinaturaService(
         AssinaturaRepository repository,
-        UsuarioService usuarioService
+        UsuarioService usuarioService,
+        AssinaturaValidadeService validadeService
     ) {
         this.repository = repository;
         this.usuarioService = usuarioService;
+        this.validadeService = validadeService;
     }
 
     public List<PlanoResponse> catalogo() {
         return Arrays.stream(CicloAssinatura.values()).map(PlanoResponse::de).toList();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Optional<AssinaturaResponse> atual() {
         Usuario usuario = usuarioService.obterAutenticado();
+        validadeService.sincronizarUsuario(usuario);
         return repository
-            .findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(usuario.getId(), StatusAssinatura.ATIVA)
+            .findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+                usuario.getId(),
+                StatusAssinatura.ATIVA,
+                Instant.now()
+            )
             .map(AssinaturaResponse::de);
     }
 
@@ -145,8 +153,13 @@ public class AssinaturaService {
 
         Usuario usuario = assinatura.getUsuario();
         Instant agora = Instant.now();
+        validadeService.sincronizarUsuario(usuario);
         Instant base = repository
-            .findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(usuario.getId(), StatusAssinatura.ATIVA)
+            .findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+                usuario.getId(),
+                StatusAssinatura.ATIVA,
+                agora
+            )
             .map(Assinatura::getVenceEm)
             .filter(data -> data != null && data.isAfter(agora))
             .orElse(agora);
@@ -176,7 +189,11 @@ public class AssinaturaService {
         Usuario usuario = assinatura.getUsuario();
 
         if (usuario.getTipoAcesso() == TipoAcesso.PREMIUM
-            && !repository.existsByUsuarioIdAndStatus(usuario.getId(), StatusAssinatura.ATIVA)) {
+            && !repository.existsByUsuarioIdAndStatusAndVenceEmAfter(
+                usuario.getId(),
+                StatusAssinatura.ATIVA,
+                Instant.now()
+            )) {
             usuario.setTipoAcesso(TipoAcesso.FREE);
         }
     }

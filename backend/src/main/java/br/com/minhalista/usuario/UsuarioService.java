@@ -7,15 +7,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.minhalista.assinatura.AssinaturaValidadeService;
 import br.com.minhalista.common.RegraNegocioException;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final AssinaturaValidadeService assinaturaValidadeService;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(
+        UsuarioRepository repository,
+        AssinaturaValidadeService assinaturaValidadeService
+    ) {
         this.repository = repository;
+        this.assinaturaValidadeService = assinaturaValidadeService;
     }
 
     public Usuario obterAutenticado() {
@@ -28,9 +34,11 @@ public class UsuarioService {
             ));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Usuario consultarPerfil() {
-        return obterAutenticado();
+        Usuario usuario = obterAutenticado();
+        assinaturaValidadeService.sincronizarUsuario(usuario);
+        return usuario;
     }
 
     @Transactional
@@ -50,6 +58,8 @@ public class UsuarioService {
     }
 
     public void exigirPremium(Usuario usuario) {
+        assinaturaValidadeService.sincronizarUsuario(usuario);
+
         if (!usuario.temAcessoPremium()) {
             throw new RegraNegocioException(
                 HttpStatus.FORBIDDEN,

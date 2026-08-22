@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.minhalista.assinatura.Assinatura;
 import br.com.minhalista.assinatura.AssinaturaRepository;
+import br.com.minhalista.assinatura.AssinaturaValidadeService;
 import br.com.minhalista.assinatura.CicloAssinatura;
 import br.com.minhalista.assinatura.StatusAssinatura;
 import br.com.minhalista.common.RegraNegocioException;
@@ -40,6 +43,9 @@ class AdminServiceAcessoTest {
 
     @Mock
     private AssinaturaRepository assinaturaRepository;
+
+    @Mock
+    private AssinaturaValidadeService assinaturaValidadeService;
 
     @Mock
     private ListaCompraRepository listaRepository;
@@ -76,9 +82,10 @@ class AdminServiceAcessoTest {
 
     @Test
     void deveConcederPremiumManualESalvarAuditoria() {
-        when(assinaturaRepository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
-            null,
-            StatusAssinatura.ATIVA
+        when(assinaturaRepository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            isNull(),
+            eq(StatusAssinatura.ATIVA),
+            any(Instant.class)
         )).thenReturn(Optional.empty());
 
         AlterarAcessoResponse resposta = service.alterarAcesso(
@@ -101,9 +108,10 @@ class AdminServiceAcessoTest {
     @Test
     void deveExigirConfirmacaoParaRemoverPremiumComAssinaturaAtiva() {
         Assinatura assinatura = assinaturaAtiva();
-        when(assinaturaRepository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
-            null,
-            StatusAssinatura.ATIVA
+        when(assinaturaRepository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            isNull(),
+            eq(StatusAssinatura.ATIVA),
+            any(Instant.class)
         )).thenReturn(Optional.of(assinatura));
         usuario.setTipoAcesso(TipoAcesso.PREMIUM);
 
@@ -128,9 +136,10 @@ class AdminServiceAcessoTest {
     @Test
     void devePermitirFreeAposConfirmacaoMesmoComAssinaturaAtiva() {
         Assinatura assinatura = assinaturaAtiva();
-        when(assinaturaRepository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
-            null,
-            StatusAssinatura.ATIVA
+        when(assinaturaRepository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            isNull(),
+            eq(StatusAssinatura.ATIVA),
+            any(Instant.class)
         )).thenReturn(Optional.of(assinatura));
         usuario.setTipoAcesso(TipoAcesso.PREMIUM);
 
@@ -152,9 +161,10 @@ class AdminServiceAcessoTest {
 
     @Test
     void deveExigirDuracaoValidaParaCortesia() {
-        when(assinaturaRepository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
-            null,
-            StatusAssinatura.ATIVA
+        when(assinaturaRepository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            isNull(),
+            eq(StatusAssinatura.ATIVA),
+            any(Instant.class)
         )).thenReturn(Optional.empty());
 
         assertThrows(

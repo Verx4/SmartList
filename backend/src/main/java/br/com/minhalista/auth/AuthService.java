@@ -12,6 +12,7 @@ import br.com.minhalista.auth.dto.AuthResponse;
 import br.com.minhalista.auth.dto.CadastroRequest;
 import br.com.minhalista.auth.dto.LoginRequest;
 import br.com.minhalista.auth.dto.UsuarioResponse;
+import br.com.minhalista.assinatura.AssinaturaValidadeService;
 import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.usuario.Perfil;
 import br.com.minhalista.usuario.TipoAcesso;
@@ -24,15 +25,18 @@ public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AssinaturaValidadeService assinaturaValidadeService;
 
     public AuthService(
         UsuarioRepository usuarioRepository,
         PasswordEncoder passwordEncoder,
-        JwtService jwtService
+        JwtService jwtService,
+        AssinaturaValidadeService assinaturaValidadeService
     ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.assinaturaValidadeService = assinaturaValidadeService;
     }
 
     @Transactional
@@ -58,7 +62,7 @@ public class AuthService {
         return UsuarioResponse.de(usuarioRepository.save(usuario));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(normalizarEmail(request.email()))
             .orElseThrow(this::credenciaisInvalidas);
@@ -66,6 +70,8 @@ public class AuthService {
         if (!usuario.isAtivo() || !passwordEncoder.matches(request.senha(), usuario.getSenhaHash())) {
             throw credenciaisInvalidas();
         }
+
+        assinaturaValidadeService.sincronizarUsuario(usuario);
 
         return new AuthResponse(
             jwtService.gerarToken(usuario),

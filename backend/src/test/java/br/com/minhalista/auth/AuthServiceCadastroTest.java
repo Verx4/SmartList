@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.minhalista.auth.dto.CadastroRequest;
 import br.com.minhalista.auth.dto.UsuarioResponse;
+import br.com.minhalista.assinatura.AssinaturaValidadeService;
 import br.com.minhalista.usuario.Usuario;
 import br.com.minhalista.usuario.UsuarioRepository;
 
@@ -29,6 +30,9 @@ class AuthServiceCadastroTest {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private AssinaturaValidadeService assinaturaValidadeService;
 
     @InjectMocks
     private AuthService service;
