@@ -1,5 +1,7 @@
 package br.com.minhalista.assinatura;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,14 +14,30 @@ import jakarta.persistence.LockModeType;
 
 public interface AssinaturaRepository extends JpaRepository<Assinatura, UUID> {
 
-    Optional<Assinatura> findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
+    Optional<Assinatura> findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
         UUID usuarioId,
-        StatusAssinatura status
+        StatusAssinatura status,
+        Instant agora
+    );
+
+    List<Assinatura> findAllByStatusAndVenceEmLessThanEqual(
+        StatusAssinatura status,
+        Instant agora
+    );
+
+    List<Assinatura> findAllByUsuarioIdAndStatusAndVenceEmLessThanEqual(
+        UUID usuarioId,
+        StatusAssinatura status,
+        Instant agora
     );
 
     Optional<Assinatura> findByMercadoPagoPagamentoId(String pagamentoId);
 
-    boolean existsByUsuarioIdAndStatus(UUID usuarioId, StatusAssinatura status);
+    boolean existsByUsuarioIdAndStatusAndVenceEmAfter(
+        UUID usuarioId,
+        StatusAssinatura status,
+        Instant agora
+    );
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Assinatura a join fetch a.usuario where a.id = :id")

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.minhalista.assinatura.Assinatura;
 import br.com.minhalista.assinatura.AssinaturaRepository;
+import br.com.minhalista.assinatura.AssinaturaValidadeService;
 import br.com.minhalista.assinatura.CicloAssinatura;
 import br.com.minhalista.assinatura.StatusAssinatura;
 import br.com.minhalista.common.RegraNegocioException;
@@ -29,6 +30,7 @@ public class AdminService {
 
     private final UsuarioRepository usuarioRepository;
     private final AssinaturaRepository assinaturaRepository;
+    private final AssinaturaValidadeService assinaturaValidadeService;
     private final ListaCompraRepository listaRepository;
     private final ItemListaRepository itemRepository;
     private final MercadoRepository mercadoRepository;
@@ -38,6 +40,7 @@ public class AdminService {
     public AdminService(
         UsuarioRepository usuarioRepository,
         AssinaturaRepository assinaturaRepository,
+        AssinaturaValidadeService assinaturaValidadeService,
         ListaCompraRepository listaRepository,
         ItemListaRepository itemRepository,
         MercadoRepository mercadoRepository,
@@ -46,6 +49,7 @@ public class AdminService {
     ) {
         this.usuarioRepository = usuarioRepository;
         this.assinaturaRepository = assinaturaRepository;
+        this.assinaturaValidadeService = assinaturaValidadeService;
         this.listaRepository = listaRepository;
         this.itemRepository = itemRepository;
         this.mercadoRepository = mercadoRepository;
@@ -53,8 +57,9 @@ public class AdminService {
         this.historicoRepository = historicoRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ResumoAdminResponse resumo() {
+        assinaturaValidadeService.sincronizarAssinaturasExpiradas();
         return new ResumoAdminResponse(
             usuarioRepository.count(),
             usuarioRepository.countByTipoAcesso(TipoAcesso.FREE),
@@ -70,8 +75,9 @@ public class AdminService {
         );
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<UsuarioAdminResponse> usuarios() {
+        assinaturaValidadeService.sincronizarAssinaturasExpiradas();
         return usuarioRepository.findAllByOrderByCriadoEmDesc().stream()
             .map(this::respostaUsuario)
             .toList();
@@ -122,16 +128,16 @@ public class AdminService {
         AlterarAcessoRequest request,
         String administradorEmail
     ) {
+        assinaturaValidadeService.sincronizarUsuario(usuario);
         TipoAcesso acessoNovo = request.tipoAcesso();
         TipoAcesso acessoAnterior = usuario.getTipoAcesso();
         Optional<Assinatura> assinatura = assinaturaRepository
-            .findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
+            .findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
                 usuario.getId(),
-                StatusAssinatura.ATIVA
+                StatusAssinatura.ATIVA,
+                Instant.now()
             );
-        boolean assinaturaAtiva = assinatura
-            .filter(item -> item.getVenceEm() == null || item.getVenceEm().isAfter(Instant.now()))
-            .isPresent();
+        boolean assinaturaAtiva = assinatura.isPresent();
 
         if (assinaturaAtiva
             && acessoNovo != TipoAcesso.PREMIUM
@@ -182,15 +188,15 @@ public class AdminService {
     }
 
     private UsuarioAdminResponse respostaUsuario(Usuario usuario) {
-        String ciclo = assinaturaRepository
-            .findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
+        Assinatura assinatura = assinaturaRepository
+            .findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
                 usuario.getId(),
-                StatusAssinatura.ATIVA
+                StatusAssinatura.ATIVA,
+                Instant.now()
             )
-            .map(item -> item.getCiclo().name())
             .orElse(null);
 
-        return UsuarioAdminResponse.de(usuario, ciclo);
+        return UsuarioAdminResponse.deComAssinatura(usuario, assinatura);
     }
 
     @Transactional
@@ -198,6 +204,7 @@ public class AdminService {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
         usuario.setAtivo(!usuario.isAtivo());
-        return UsuarioAdminResponse.de(usuarioRepository.save(usuario), null);
+        usuarioRepository.save(usuario);
+        return respostaUsuario(usuario);
     }
 }

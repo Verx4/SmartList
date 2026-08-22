@@ -1,6 +1,8 @@
 package br.com.minhalista.assinatura;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +32,9 @@ class AssinaturaServicePagamentoTest {
     @Mock
     private UsuarioService usuarioService;
 
+    @Mock
+    private AssinaturaValidadeService validadeService;
+
     private AssinaturaService service;
     private Assinatura assinatura;
     private Usuario usuario;
@@ -37,7 +42,7 @@ class AssinaturaServicePagamentoTest {
 
     @BeforeEach
     void preparar() {
-        service = new AssinaturaService(repository, usuarioService);
+        service = new AssinaturaService(repository, usuarioService, validadeService);
         assinaturaId = UUID.randomUUID();
 
         usuario = new Usuario();
@@ -61,9 +66,10 @@ class AssinaturaServicePagamentoTest {
 
         when(repository.findByMercadoPagoPagamentoId("123456"))
             .thenReturn(Optional.empty());
-        when(repository.findFirstByUsuarioIdAndStatusOrderByVenceEmDesc(
-            usuario.getId(),
-            StatusAssinatura.ATIVA
+        when(repository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            eq(usuario.getId()),
+            eq(StatusAssinatura.ATIVA),
+            any()
         )).thenReturn(Optional.empty());
 
         service.processarPagamento(pagamento);

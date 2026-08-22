@@ -4,6 +4,8 @@ import { estaAutenticado, usuarioAtual } from "./auth.js";
 
 const MARGEM_SCRAPER = 5;
 let usuariosAdmin = [];
+let atualizacaoAssinaturasEmAndamento = false;
+let intervaloAtualizacaoAssinaturas = null;
 
 
 function formatarMoeda(valor) {
@@ -214,7 +216,7 @@ function renderizarUsuarios(usuarios = []) {
                     </div>
                 </td>
                 <td>${escaparHtml(usuario.ciclo || "-")}</td>
-                <td>${formatarData(usuario.cortesiaAte)}</td>
+                <td>${formatarData(usuario.assinaturaVenceEm || usuario.cortesiaAte)}</td>
                 <td>
                     <span class="status ${usuario.ativo === false ? "status-erro" : "status-ok"}">
                         ${usuario.ativo === false ? "Bloqueado" : "Ativo"}
@@ -327,6 +329,50 @@ async function carregarUsuarios() {
             "erro"
         );
     }
+}
+
+
+async function atualizarAssinaturasAdmin() {
+    if (atualizacaoAssinaturasEmAndamento || document.hidden) {
+        return;
+    }
+
+    atualizacaoAssinaturasEmAndamento = true;
+
+    try {
+        await Promise.all([carregarUsuarios(), carregarResumo()]);
+    } finally {
+        atualizacaoAssinaturasEmAndamento = false;
+    }
+}
+
+
+function iniciarAtualizacaoAutomaticaAssinaturas() {
+    const exibeAssinaturas =
+        document.getElementById("tabelaAdminUsuarios")
+        || document.getElementById("adminUltimosUsuarios")
+        || document.getElementById("usuariosPremium")
+        || document.getElementById("adminTotalPremium");
+
+    if (!exibeAssinaturas || intervaloAtualizacaoAssinaturas) {
+        return;
+    }
+
+    intervaloAtualizacaoAssinaturas = window.setInterval(
+        atualizarAssinaturasAdmin,
+        30000
+    );
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+            atualizarAssinaturasAdmin();
+        }
+    });
+
+    window.addEventListener("pagehide", () => {
+        window.clearInterval(intervaloAtualizacaoAssinaturas);
+        intervaloAtualizacaoAssinaturas = null;
+    }, { once: true });
 }
 
 
@@ -748,6 +794,7 @@ function iniciar() {
     carregarResumo();
     carregarUsuarios();
     carregarAuditoriaAcessos();
+    iniciarAtualizacaoAutomaticaAssinaturas();
 
     atualizarExemploMargem();
 
