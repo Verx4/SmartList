@@ -85,11 +85,26 @@ public class AssinaturaService {
 
     @Transactional
     public void processarPagamento(PagamentoConsultado pagamento) {
+        processarPagamentoInterno(pagamento, null);
+    }
+
+    @Transactional
+    public boolean confirmarPagamentoDoUsuario(
+        PagamentoConsultado pagamento,
+        UUID usuarioId
+    ) {
+        return processarPagamentoInterno(pagamento, usuarioId);
+    }
+
+    private boolean processarPagamentoInterno(
+        PagamentoConsultado pagamento,
+        UUID usuarioIdEsperado
+    ) {
         UUID assinaturaId = converterReferencia(pagamento.referenciaExterna());
 
         if (assinaturaId == null) {
             LOG.warn("Pagamento Mercado Pago {} ignorado: referência externa inválida.", pagamento.id());
-            return;
+            return false;
         }
 
         Optional<Assinatura> assinaturaEncontrada =
@@ -97,30 +112,50 @@ public class AssinaturaService {
 
         if (assinaturaEncontrada.isEmpty()) {
             LOG.warn("Pagamento Mercado Pago {} ignorado: checkout local não encontrado.", pagamento.id());
-            return;
+            return false;
         }
 
         Assinatura assinatura = assinaturaEncontrada.get();
 
+        if (usuarioIdEsperado != null
+            && !usuarioIdEsperado.equals(assinatura.getUsuario().getId())) {
+            LOG.warn(
+                "Pagamento Mercado Pago {} não pertence ao usuário autenticado.",
+                pagamento.id()
+            );
+            return false;
+        }
+
         if (!dadosConferem(assinatura, pagamento)) {
             LOG.warn("Pagamento Mercado Pago {} ignorado: valor, moeda ou metadados divergentes.", pagamento.id());
-            return;
+            return false;
         }
 
         String status = pagamento.status() == null
             ? ""
             : pagamento.status().toLowerCase(Locale.ROOT);
 
-        switch (status) {
-            case "approved" -> ativar(assinatura, pagamento.id());
-            case "refunded", "charged_back", "cancelled" ->
+        return switch (status) {
+            case "approved" -> {
+                ativar(assinatura, pagamento.id());
+                yield assinatura.getStatus() == StatusAssinatura.ATIVA
+                    && pagamento.id().equals(assinatura.getMercadoPagoPagamentoId())
+                    && assinatura.getVenceEm() != null
+                    && assinatura.getVenceEm().isAfter(Instant.now());
+            }
+            case "refunded", "charged_back", "cancelled" -> {
                 cancelar(assinatura, pagamento.id());
-            default -> LOG.info(
-                "Pagamento Mercado Pago {} mantido pendente com status {}.",
-                pagamento.id(),
-                status
-            );
-        }
+                yield false;
+            }
+            default -> {
+                LOG.info(
+                    "Pagamento Mercado Pago {} mantido pendente com status {}.",
+                    pagamento.id(),
+                    status
+                );
+                yield false;
+            }
+        };
     }
 
     private boolean dadosConferem(Assinatura assinatura, PagamentoConsultado pagamento) {
