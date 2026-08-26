@@ -87,13 +87,18 @@
                 </article>
 
                 <article class="card resumo-card">
-                    <span>Premium</span>
+                    <span>Pagantes</span>
                     <strong id="usuariosPremium">0</strong>
                 </article>
 
                 <article class="card resumo-card">
                     <span>Cortesia</span>
                     <strong id="usuariosCortesia">0</strong>
+                </article>
+
+                <article class="card resumo-card">
+                    <span>Premium manual</span>
+                    <strong id="usuariosPremiumManual">0</strong>
                 </article>
 
             </section>
@@ -112,13 +117,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="filtroPlanoUsuario">Acesso</label>
+                        <label for="filtroPlanoUsuario">Classificação</label>
 
                         <select id="filtroPlanoUsuario">
                             <option value="">Todos</option>
+                            <option value="PAGANTE">Pagante</option>
                             <option value="FREE">Free</option>
-                            <option value="PREMIUM">Premium</option>
                             <option value="CORTESIA">Cortesia</option>
+                            <option value="PREMIUM_MANUAL">Premium manual</option>
                         </select>
                     </div>
 
@@ -267,7 +273,8 @@
                                 <th>Cidade</th>
                                 <th>Estado</th>
                                 <th>Perfil</th>
-                                <th>Acesso</th>
+                                <th>Acesso administrativo</th>
+                                <th>Classificação</th>
                                 <th>Ciclo</th>
                                 <th>Validade</th>
                                 <th>Status</th>
@@ -277,7 +284,7 @@
 
                         <tbody id="tabelaAdminUsuarios">
                             <tr>
-                                <td colspan="10" class="estado-vazio">
+                                <td colspan="11" class="estado-vazio">
                                     Nenhum usuário encontrado.
                                 </td>
                             </tr>
@@ -301,7 +308,7 @@
 
     <script src="../js/tema.js?v=11"></script>
     <script src="../js/admin-nav.js"></script>
-    <script type="module" src="../js/admin.js?v=54"></script>
+    <script type="module" src="../js/admin.js?v=55"></script>
 
 </body>
 
