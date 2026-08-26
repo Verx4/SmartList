@@ -10,7 +10,7 @@ test("recursos pagos ficam visíveis, bloqueados e abrem os planos", async () =>
         ler("../inicio.html"),
         ler("../historico.html"),
         ler("../minha-economia.html"),
-        ler("../js/comparar-embalagens.js"),
+        ler("../comparar-embalagens.html"),
         ler("../css/global.css"),
         ler("../backend/src/main/java/br/com/minhalista/comparacao/ComparacaoController.java")
     ]);
@@ -21,7 +21,10 @@ test("recursos pagos ficam visíveis, bloqueados e abrem os planos", async () =>
     assert.match(inicio, /data-premium-content/);
     assert.match(controle, /elemento\.hidden = false/);
     assert.match(controle, /recurso-pago-bloqueado/);
+    assert.match(controle, /bloquearPaginaPaga/);
+    assert.match(controle, /tipoAcesso === "CORTESIA"/);
     assert.match(controle, /window\.location\.assign\(urlPlanos\(recurso\)\)/);
+    assert.doesNotMatch(controle, /link\.href = urlPlanos/);
     assert.doesNotMatch(controle, /selo\.textContent = "Premium"/);
     assert.match(estilos, /conteudo-pago-bloqueado::after/);
     assert.match(historico, /acesso-premium\.js/);

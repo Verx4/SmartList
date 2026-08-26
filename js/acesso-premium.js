@@ -34,8 +34,11 @@
     }
 
     function possuiPremium(usuario = usuarioAtual()) {
-        return usuario?.assinaturaAtiva === true
-            || String(usuario?.tipoAcesso || "").toUpperCase() === "PREMIUM";
+        const tipoAcesso = String(usuario?.tipoAcesso || "").toUpperCase();
+
+        return tipoAcesso === "PREMIUM"
+            || (tipoAcesso === "CORTESIA" && usuario?.assinaturaAtiva === true)
+            || usuario?.assinaturaAtiva === true;
     }
 
     function urlPlanos(recurso) {
@@ -61,8 +64,7 @@
         }
 
         if (!possuiPremium()) {
-            document.documentElement.style.visibility = "hidden";
-            window.location.replace(urlPlanos(recurso));
+            document.documentElement.classList.add("acesso-pago-limitado");
         }
     }
 
@@ -82,7 +84,7 @@
         }
     }
 
-    function bloquearLinksPagos() {
+    function sinalizarLinksPagos() {
         if (possuiPremium()) {
             return;
         }
@@ -95,13 +97,12 @@
             }
 
             const nomeRecurso = link.textContent.trim() || "Recurso pago";
-            link.href = urlPlanos(recurso);
             link.classList.add("recurso-pago-bloqueado");
             link.dataset.recursoPago = recurso;
-            link.title = "Ver planos para liberar este recurso";
+            link.title = "Abrir recurso e ver as opções de acesso";
             link.setAttribute(
                 "aria-label",
-                `${nomeRecurso}. Ver planos para liberar este recurso.`
+                `${nomeRecurso}. Recurso disponível para Premium ou cortesia.`
             );
             link.querySelector(".premium-selo")?.remove();
         });
@@ -147,9 +148,54 @@
         document.querySelector(".premium-free-callout")?.remove();
     }
 
+    function bloquearPaginaPaga() {
+        const recurso = RECURSOS_PREMIUM.get(paginaAtual());
+
+        if (!recurso || possuiPremium()) {
+            return;
+        }
+
+        const conteudo = document.querySelector("main");
+
+        if (!conteudo) {
+            return;
+        }
+
+        document.body.classList.add("pagina-paga-bloqueada");
+        conteudo.querySelectorAll(":scope > section, :scope > form, :scope > article, :scope > details")
+            .forEach(elemento => {
+                elemento.classList.add("conteudo-pago-bloqueado");
+                elemento.tabIndex = 0;
+                elemento.setAttribute("role", "link");
+                elemento.setAttribute(
+                    "aria-label",
+                    "Conteúdo disponível para Premium ou cortesia. Ver planos."
+                );
+
+                if (elemento.dataset.bloqueioPlanos === "true") {
+                    return;
+                }
+
+                elemento.dataset.bloqueioPlanos = "true";
+                elemento.addEventListener("click", () => abrirPlanos(recurso));
+                elemento.addEventListener("keydown", evento => {
+                    if (evento.key === "Enter" || evento.key === " ") {
+                        evento.preventDefault();
+                        abrirPlanos(recurso);
+                    }
+                });
+            });
+
+        conteudo.querySelectorAll("button, input, select, textarea")
+            .forEach(campo => {
+                campo.disabled = true;
+            });
+    }
+
     function aplicar() {
-        bloquearLinksPagos();
+        sinalizarLinksPagos();
         bloquearConteudoPagoInicio();
+        bloquearPaginaPaga();
     }
 
     window.SmartListPremium = {

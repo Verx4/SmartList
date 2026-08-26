@@ -1,5 +1,4 @@
 import "./animations.js";
-import "./acesso-premium.js";
 
 const $ = (id) => document.getElementById(id);
 

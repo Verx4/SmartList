@@ -189,6 +189,16 @@ export function finalizarCompra(produtos = []) {
             nome: produto.nome,
             categoria: produto.categoria,
             medida: normalizarMedidaProduto(produto),
+            quantidadeEmbalagem:
+                produto.quantidadeEmbalagem
+                ?? produto.conteudoEmbalagem
+                ?? produto.tamanhoEmbalagem
+                ?? null,
+            unidadeEmbalagem:
+                produto.unidadeEmbalagem
+                ?? produto.unidadeMedida
+                ?? produto.unidadeDaEmbalagem
+                ?? null,
             supermercado: produto.supermercado,
             precos: resumo.precos.map(item => ({ ...item })),
             preco: precoUnitario,
