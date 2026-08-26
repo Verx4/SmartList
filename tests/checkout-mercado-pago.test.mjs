@@ -38,3 +38,14 @@ test("API exclusiva do PIX personalizado não está presente", async () => {
     const resultados = await Promise.all(arquivosPix.map(arquivoExiste));
     assert.deepEqual(resultados, resultados.map(() => false));
 });
+
+
+test("retorno do Mercado Pago confirma e ativa o Premium automaticamente", () => {
+    assert.match(
+        assinatura,
+        /api\.post\(\s*"\/assinaturas\/confirmar-pagamento"/
+    );
+    assert.match(assinatura, /parametros\.get\("payment_id"\)/);
+    assert.match(assinatura, /confirmacao\.premiumAtivo/);
+    assert.match(assinatura, /await mostrarRetornoPagamento\(\)/);
+});
