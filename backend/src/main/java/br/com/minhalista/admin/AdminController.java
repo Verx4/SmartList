@@ -45,6 +45,11 @@ public class AdminController {
         return service.limparAuditoriaAcessos();
     }
 
+    @PostMapping("/usuarios/auditoria/limpar")
+    public LimparAuditoriaResponse limparAuditoriaAcessosViaPost() {
+        return service.limparAuditoriaAcessos();
+    }
+
     @PatchMapping("/usuarios/{id}/acesso")
     public AlterarAcessoResponse alterarAcesso(
         @PathVariable UUID id,
