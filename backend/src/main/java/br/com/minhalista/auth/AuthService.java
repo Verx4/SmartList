@@ -72,6 +72,7 @@ public class AuthService {
         }
 
         assinaturaValidadeService.sincronizarUsuario(usuario);
+        usuario.setUltimoAcessoEm(Instant.now());
 
         return new AuthResponse(
             jwtService.gerarToken(usuario),

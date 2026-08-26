@@ -52,10 +52,11 @@ test("formulário de cortesia mostra o resultado no local da ação", async () =
 });
 
 
-test("painel diferencia pagantes, free e cortesias", async () => {
-    const [admin, usuarios, resposta] = await Promise.all([
+test("painel diferencia acessos, inativos e permite atualização manual", async () => {
+    const [admin, usuarios, painel, resposta] = await Promise.all([
         ler("js/admin.js"),
         ler("admin/usuarios.html"),
+        ler("admin/index.html"),
         ler("backend/src/main/java/br/com/minhalista/admin/UsuarioAdminResponse.java")
     ]);
 
@@ -63,8 +64,15 @@ test("painel diferencia pagantes, free e cortesias", async () => {
     assert.match(resposta, /return "PAGANTE"/);
     assert.match(admin, /rotulo: "Pagante"/);
     assert.match(admin, /classificacaoUsuario\(usuario\) === acesso/);
+    assert.match(admin, /usuariosInativos/);
+    assert.match(admin, /atualizarPainelAdmin/);
     assert.match(usuarios, /<option value="PAGANTE">Pagante<\/option>/);
+    assert.match(usuarios, /<option value="INATIVO">Inativo há 40 dias<\/option>/);
     assert.match(usuarios, /<th>Classificação<\/th>/);
+    assert.match(painel, /id="graficoUsuariosAcesso"/);
+    assert.match(painel, /id="btnAtualizarAdmin"/);
+    assert.match(resposta, /DIAS_PARA_INATIVIDADE = 40/);
+    assert.match(resposta, /return "INATIVO"/);
 });
 
 

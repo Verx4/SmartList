@@ -388,6 +388,23 @@
     width: auto;
 }
 
+.admin-atualizacao {
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.admin-atualizacao .btn {
+    width: auto;
+    min-width: 176px;
+}
+
+.admin-atualizacao small {
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 12px;
+}
+
 .admin-feedback-lista {
     display: grid;
     gap: 12px;
@@ -513,6 +530,71 @@
     transition: width 0.25s ease;
 }
 
+.admin-grafico-usuarios-card .section-header p {
+    margin-top: 5px;
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+.admin-grafico-usuarios {
+    display: grid;
+    gap: 16px;
+}
+
+.admin-grafico-usuario-linha {
+    display: grid;
+    grid-template-columns: 92px minmax(140px, 1fr) 44px 58px;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-grafico-usuario-linha > strong {
+    color: var(--cor-texto, #ffffff);
+    font-size: 14px;
+}
+
+.admin-grafico-usuario-linha > span {
+    color: var(--cor-texto, #ffffff);
+    font-weight: 800;
+    text-align: right;
+}
+
+.admin-grafico-usuario-linha > small {
+    color: var(--cor-texto-secundario, #94a3b8);
+    text-align: right;
+}
+
+.admin-grafico-usuario-trilho {
+    height: 20px;
+    overflow: hidden;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 999px;
+}
+
+.admin-grafico-usuario-barra {
+    display: block;
+    min-width: 0;
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.25s ease;
+}
+
+.admin-grafico-usuario-free {
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+}
+
+.admin-grafico-usuario-premium {
+    background: linear-gradient(90deg, #16a34a, #4ade80);
+}
+
+.admin-grafico-usuario-cortesia {
+    background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+.admin-grafico-usuario-inativos {
+    background: linear-gradient(90deg, #dc2626, #f87171);
+}
+
 .admin-oferta-form {
     margin-bottom: 22px;
     padding: 22px;
@@ -564,6 +646,28 @@
 }
 
 @media (max-width: 560px) {
+    .admin-atualizacao {
+        width: 100%;
+        justify-items: stretch;
+    }
+
+    .admin-atualizacao .btn {
+        width: 100%;
+    }
+
+    .admin-atualizacao small {
+        text-align: center;
+    }
+
+    .admin-grafico-usuario-linha {
+        grid-template-columns: 72px minmax(80px, 1fr) 30px;
+        gap: 8px;
+    }
+
+    .admin-grafico-usuario-linha > small {
+        display: none;
+    }
+
     .admin-oferta-grid {
         grid-template-columns: 1fr;
     }
