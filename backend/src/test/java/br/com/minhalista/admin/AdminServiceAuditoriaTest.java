@@ -50,12 +50,12 @@ class AdminServiceAuditoriaTest {
 
     @Test
     void deveLimparTodosOsRegistrosDeAuditoria() {
-        when(historicoRepository.count()).thenReturn(7L);
+        when(historicoRepository.limparTodos()).thenReturn(7);
 
         LimparAuditoriaResponse resposta = service.limparAuditoriaAcessos();
 
         assertEquals(7L, resposta.registrosRemovidos());
         assertEquals("7 registros de auditoria removidos.", resposta.mensagem());
-        verify(historicoRepository).deleteAllInBatch();
+        verify(historicoRepository).limparTodos();
     }
 }
