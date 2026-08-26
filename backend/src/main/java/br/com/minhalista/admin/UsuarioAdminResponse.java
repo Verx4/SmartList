@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import br.com.minhalista.assinatura.Assinatura;
+import br.com.minhalista.usuario.TipoAcesso;
 import br.com.minhalista.usuario.Usuario;
 
 public record UsuarioAdminResponse(
@@ -14,6 +15,7 @@ public record UsuarioAdminResponse(
     String estado,
     String perfil,
     String tipoAcesso,
+    String classificacaoAcesso,
     String ciclo,
     boolean assinaturaAtiva,
     Instant assinaturaVenceEm,
@@ -30,6 +32,7 @@ public record UsuarioAdminResponse(
             usuario.getEstado(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
+            ciclo != null ? "PAGANTE" : classificar(usuario, null),
             ciclo,
             ciclo != null,
             null,
@@ -51,6 +54,7 @@ public record UsuarioAdminResponse(
             usuario.getEstado(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
+            classificar(usuario, assinatura),
             assinatura == null ? null : assinatura.getCiclo().name(),
             assinatura != null,
             assinatura == null ? null : assinatura.getVenceEm(),
@@ -58,5 +62,26 @@ public record UsuarioAdminResponse(
             usuario.getCortesiaAte(),
             usuario.getCriadoEm()
         );
+    }
+
+    private static String classificar(
+        Usuario usuario,
+        Assinatura assinatura
+    ) {
+        if (assinatura != null) {
+            return "PAGANTE";
+        }
+
+        if (usuario.getTipoAcesso() == TipoAcesso.CORTESIA
+            && usuario.getCortesiaAte() != null
+            && usuario.getCortesiaAte().isAfter(Instant.now())) {
+            return "CORTESIA";
+        }
+
+        if (usuario.getTipoAcesso() == TipoAcesso.PREMIUM) {
+            return "PREMIUM_MANUAL";
+        }
+
+        return "FREE";
     }
 }

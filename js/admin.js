@@ -129,7 +129,7 @@ function renderizarOpcoesCortesia(usuarios = []) {
         .filter(usuario => usuario?.email)
         .map(usuario => `
             <option value="${escaparHtml(usuario.email)}">
-                ${escaparHtml(usuario.nome || usuario.email)} — ${escaparHtml(usuario.tipoAcesso || "FREE")}
+                ${escaparHtml(usuario.nome || usuario.email)} — ${escaparHtml(apresentarClassificacao(usuario).rotulo)}
             </option>
         `)
         .join("");
@@ -171,10 +171,17 @@ async function carregarResumo() {
             ["usuariosFree", "adminTotalFree", "quantidadePlanoFree"],
             dados?.usuariosFree
         );
-        preencherTextos(["usuariosPremium", "adminTotalPremium"], dados?.usuariosPremium);
+        preencherTextos(
+            ["usuariosPremium", "adminTotalPremium"],
+            dados?.usuariosPremium
+        );
         preencherTextos(
             ["usuariosCortesia", "adminTotalCortesia", "quantidadeCortesia"],
             dados?.usuariosCortesia
+        );
+        preencherTexto(
+            "usuariosPremiumManual",
+            dados?.usuariosPremiumManual
         );
         preencherTextos(
             ["assinaturasMensais", "quantidadePremiumMensal"],
@@ -232,6 +239,56 @@ function opcoesAcesso(acessoAtual) {
 }
 
 
+function classificacaoUsuario(usuario) {
+    if (usuario?.classificacaoAcesso) {
+        return usuario.classificacaoAcesso;
+    }
+
+    if (usuario?.assinaturaAtiva) {
+        return "PAGANTE";
+    }
+
+    if (usuario?.tipoAcesso === "CORTESIA") {
+        return "CORTESIA";
+    }
+
+    if (usuario?.tipoAcesso === "PREMIUM") {
+        return "PREMIUM_MANUAL";
+    }
+
+    return "FREE";
+}
+
+
+function apresentarClassificacao(usuario) {
+    const classificacao = classificacaoUsuario(usuario);
+    const opcoes = {
+        PAGANTE: {
+            rotulo: "Pagante",
+            classe: "status-ok",
+            titulo: "Assinatura paga e ativa"
+        },
+        CORTESIA: {
+            rotulo: "Cortesia",
+            classe: "status-alerta",
+            titulo: "Acesso Premium concedido gratuitamente"
+        },
+        PREMIUM_MANUAL: {
+            rotulo: "Premium manual",
+            classe: "status-aviso",
+            titulo: "Premium administrativo sem assinatura paga"
+        },
+        FREE: {
+            rotulo: "Free",
+            classe: "status-inativo",
+            titulo: "Usuário sem assinatura paga ou cortesia ativa"
+        }
+    };
+
+    return opcoes[classificacao] || opcoes.FREE;
+}
+
+
 function renderizarUsuarios(usuarios = []) {
     const corpo = document.getElementById("tabelaAdminUsuarios");
 
@@ -242,7 +299,7 @@ function renderizarUsuarios(usuarios = []) {
     if (!usuarios.length) {
         corpo.innerHTML = `
             <tr>
-                <td colspan="10" class="estado-vazio">
+                <td colspan="11" class="estado-vazio">
                     Nenhum usuário encontrado.
                 </td>
             </tr>
@@ -252,9 +309,7 @@ function renderizarUsuarios(usuarios = []) {
 
     corpo.innerHTML = usuarios.map(usuario => {
         const acesso = usuario.tipoAcesso || "FREE";
-        const assinatura = usuario.assinaturaAtiva
-            ? `<span class="status status-alerta" title="Assinatura paga ativa">Paga ativa</span>`
-            : "";
+        const classificacao = apresentarClassificacao(usuario);
 
         return `
             <tr>
@@ -271,8 +326,14 @@ function renderizarUsuarios(usuarios = []) {
                         >
                             ${opcoesAcesso(acesso)}
                         </select>
-                        ${assinatura}
                     </div>
+                </td>
+                <td>
+                    <span
+                        class="status ${classificacao.classe}"
+                        title="${escaparHtml(classificacao.titulo)}">
+                        ${escaparHtml(classificacao.rotulo)}
+                    </span>
                 </td>
                 <td>${escaparHtml(usuario.ciclo || "-")}</td>
                 <td>${formatarData(usuario.assinaturaVenceEm || usuario.cortesiaAte)}</td>
@@ -317,17 +378,21 @@ function renderizarUltimosUsuarios(usuarios = []) {
         return;
     }
 
-    container.innerHTML = recentes.map(usuario => `
+    container.innerHTML = recentes.map(usuario => {
+        const classificacao = apresentarClassificacao(usuario);
+
+        return `
         <div class="status-item">
             <span>
                 <strong>${escaparHtml(usuario.nome || "-")}</strong><br>
                 <small>${escaparHtml(usuario.email || "-")}</small>
             </span>
-            <span class="status ${usuario.ativo === false ? "status-erro" : "status-ok"}">
-                ${escaparHtml(usuario.tipoAcesso || "FREE")}
+            <span class="status ${classificacao.classe}">
+                ${escaparHtml(classificacao.rotulo)}
             </span>
         </div>
-    `).join("");
+        `;
+    }).join("");
 }
 
 
@@ -345,7 +410,8 @@ function aplicarFiltrosUsuarios() {
             || String(usuario.email || "").toLowerCase().includes(busca)
             || String(usuario.cidade || "").toLowerCase().includes(busca)
             || String(usuario.estado || "").toLowerCase().includes(busca);
-        const correspondeAcesso = !acesso || usuario.tipoAcesso === acesso;
+        const correspondeAcesso =
+            !acesso || classificacaoUsuario(usuario) === acesso;
         const correspondeCiclo = !ciclo || usuario.ciclo === ciclo;
         const statusUsuario = usuario.ativo === false ? "BLOQUEADO" : "ATIVO";
         const correspondeStatus = !status || statusUsuario === status;

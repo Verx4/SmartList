@@ -5,6 +5,7 @@ public record ResumoAdminResponse(
     long usuariosFree,
     long usuariosPremium,
     long usuariosCortesia,
+    long usuariosPremiumManual,
     long assinaturasMensais,
     long assinaturasTrimestrais,
     long assinaturasAnuais,
