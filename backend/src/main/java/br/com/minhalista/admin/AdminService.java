@@ -60,11 +60,24 @@ public class AdminService {
     @Transactional
     public ResumoAdminResponse resumo() {
         assinaturaValidadeService.sincronizarAssinaturasExpiradas();
+        List<UsuarioAdminResponse> usuarios = usuarioRepository
+            .findAllByOrderByCriadoEmDesc()
+            .stream()
+            .map(this::respostaUsuario)
+            .toList();
+
+        long usuariosFree = contarClassificacao(usuarios, "FREE");
+        long usuariosPagantes = contarClassificacao(usuarios, "PAGANTE");
+        long usuariosCortesia = contarClassificacao(usuarios, "CORTESIA");
+        long usuariosPremiumManual =
+            contarClassificacao(usuarios, "PREMIUM_MANUAL");
+
         return new ResumoAdminResponse(
-            usuarioRepository.count(),
-            usuarioRepository.countByTipoAcesso(TipoAcesso.FREE),
-            usuarioRepository.countByTipoAcesso(TipoAcesso.PREMIUM),
-            usuarioRepository.countByTipoAcesso(TipoAcesso.CORTESIA),
+            usuarios.size(),
+            usuariosFree,
+            usuariosPagantes,
+            usuariosCortesia,
+            usuariosPremiumManual,
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.MENSAL, StatusAssinatura.ATIVA),
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.TRIMESTRAL, StatusAssinatura.ATIVA),
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.ANUAL, StatusAssinatura.ATIVA),
@@ -73,6 +86,15 @@ public class AdminService {
             mercadoRepository.count(),
             execucaoRepository.count()
         );
+    }
+
+    private long contarClassificacao(
+        List<UsuarioAdminResponse> usuarios,
+        String classificacao
+    ) {
+        return usuarios.stream()
+            .filter(usuario -> classificacao.equals(usuario.classificacaoAcesso()))
+            .count();
     }
 
     @Transactional
