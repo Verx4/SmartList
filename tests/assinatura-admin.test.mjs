@@ -50,3 +50,19 @@ test("formulário de cortesia mostra o resultado no local da ação", async () =
     assert.match(admin, /Promise\.allSettled/);
     assert.match(admin, /Nenhum usuário foi encontrado com o e-mail/);
 });
+
+
+test("painel diferencia pagantes, free e cortesias", async () => {
+    const [admin, usuarios, resposta] = await Promise.all([
+        ler("js/admin.js"),
+        ler("admin/usuarios.html"),
+        ler("backend/src/main/java/br/com/minhalista/admin/UsuarioAdminResponse.java")
+    ]);
+
+    assert.match(resposta, /String classificacaoAcesso/);
+    assert.match(resposta, /return "PAGANTE"/);
+    assert.match(admin, /rotulo: "Pagante"/);
+    assert.match(admin, /classificacaoUsuario\(usuario\) === acesso/);
+    assert.match(usuarios, /<option value="PAGANTE">Pagante<\/option>/);
+    assert.match(usuarios, /<th>Classificação<\/th>/);
+});
