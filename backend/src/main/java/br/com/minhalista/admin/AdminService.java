@@ -147,8 +147,7 @@ public class AdminService {
 
     @Transactional
     public LimparAuditoriaResponse limparAuditoriaAcessos() {
-        long registrosRemovidos = historicoRepository.count();
-        historicoRepository.deleteAllInBatch();
+        int registrosRemovidos = historicoRepository.limparTodos();
 
         String mensagem = registrosRemovidos == 1
             ? "1 registro de auditoria removido."

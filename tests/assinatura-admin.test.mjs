@@ -86,8 +86,8 @@ test("administrador pode limpar a auditoria após confirmação", async () => {
 
     assert.match(usuarios, /id="btnLimparAuditoria"/);
     assert.match(admin, /window\.confirm\([\s\S]*não pode ser desfeita/);
-    assert.match(admin, /api\.delete\("\/admin\/usuarios\/auditoria"\)/);
-    assert.match(admin, /renderizarAuditoriaAcessos\(\[\]\)/);
-    assert.match(controller, /@DeleteMapping\("\/usuarios\/auditoria"\)/);
-    assert.match(service, /historicoRepository\.deleteAllInBatch\(\)/);
+    assert.match(admin, /api\.post\([\s\S]*"\/admin\/usuarios\/auditoria\/limpar"/);
+    assert.match(admin, /await carregarAuditoriaAcessos\(\)/);
+    assert.match(controller, /@PostMapping\("\/usuarios\/auditoria\/limpar"\)/);
+    assert.match(service, /historicoRepository\.limparTodos\(\)/);
 });
