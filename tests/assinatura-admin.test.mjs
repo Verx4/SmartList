@@ -35,3 +35,18 @@ test("painel administrativo atualiza assinatura e validade automaticamente", asy
     assert.match(admin, /setInterval\([\s\S]*atualizarAssinaturasAdmin[\s\S]*30000/);
     assert.match(admin, /visibilitychange/);
 });
+
+
+test("formulário de cortesia mostra o resultado no local da ação", async () => {
+    const [admin, usuarios] = await Promise.all([
+        ler("js/admin.js"),
+        ler("admin/usuarios.html")
+    ]);
+
+    assert.match(usuarios, /id="mensagemCortesia"/);
+    assert.match(usuarios, /list="usuariosCortesiaDisponiveis"/);
+    assert.match(admin, /exibirResultadoCortesia/);
+    assert.match(admin, /botao\.disabled = true/);
+    assert.match(admin, /Promise\.allSettled/);
+    assert.match(admin, /Nenhum usuário foi encontrado com o e-mail/);
+});
