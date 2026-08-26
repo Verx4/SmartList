@@ -1,6 +1,8 @@
 package br.com.minhalista.assinatura;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -72,11 +74,31 @@ class AssinaturaServicePagamentoTest {
             any()
         )).thenReturn(Optional.empty());
 
-        service.processarPagamento(pagamento);
+        boolean confirmado = service.confirmarPagamentoDoUsuario(
+            pagamento,
+            usuario.getId()
+        );
 
+        assertTrue(confirmado);
         assertEquals(StatusAssinatura.ATIVA, assinatura.getStatus());
         assertEquals("123456", assinatura.getMercadoPagoPagamentoId());
         assertEquals(TipoAcesso.PREMIUM, usuario.getTipoAcesso());
+    }
+
+    @Test
+    void recusaConfirmacaoDePagamentoDeOutroUsuario() {
+        PagamentoConsultado pagamento =
+            pagamento(new BigDecimal("9.97"), "BRL");
+
+        boolean confirmado = service.confirmarPagamentoDoUsuario(
+            pagamento,
+            UUID.randomUUID()
+        );
+
+        assertFalse(confirmado);
+        assertEquals(StatusAssinatura.PENDENTE, assinatura.getStatus());
+        assertEquals(TipoAcesso.FREE, usuario.getTipoAcesso());
+        verify(repository, never()).findByMercadoPagoPagamentoId("123456");
     }
 
     @Test
