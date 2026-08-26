@@ -32,7 +32,7 @@ public record UsuarioAdminResponse(
             usuario.getEstado(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
-            classificar(usuario, null),
+            ciclo != null ? "PAGANTE" : classificar(usuario, null),
             ciclo,
             ciclo != null,
             null,
