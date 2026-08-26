@@ -66,3 +66,12 @@ test("painel diferencia pagantes, free e cortesias", async () => {
     assert.match(usuarios, /<option value="PAGANTE">Pagante<\/option>/);
     assert.match(usuarios, /<th>Classificação<\/th>/);
 });
+
+
+test("perfil mostra se o Premium é pagante ou cortesia", async () => {
+    const perfil = await ler("js/perfil.js");
+
+    assert.match(perfil, /Plano Premium — Pagante/);
+    assert.match(perfil, /Plano Premium — Cortesia/);
+    assert.match(perfil, /api\.get\("\/assinaturas\/atual"\)/);
+});
