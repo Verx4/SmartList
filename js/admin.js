@@ -5,6 +5,7 @@ import { estaAutenticado, usuarioAtual } from "./auth.js";
 const MARGEM_SCRAPER = 5;
 let usuariosAdmin = [];
 let atualizacaoAssinaturasEmAndamento = false;
+let atualizacaoPainelEmAndamento = false;
 let intervaloAtualizacaoAssinaturas = null;
 
 
@@ -152,6 +153,54 @@ function mostrarBackendOffline() {
 }
 
 
+function renderizarGraficoUsuarios(dados = {}) {
+    const grafico = document.getElementById("graficoUsuariosAcesso");
+
+    if (!grafico) {
+        return;
+    }
+
+    const categorias = [
+        { nome: "Free", valor: Number(dados.usuariosFree) || 0, classe: "free" },
+        { nome: "Premium", valor: Number(dados.usuariosPremium) || 0, classe: "premium" },
+        { nome: "Cortesia", valor: Number(dados.usuariosCortesia) || 0, classe: "cortesia" },
+        { nome: "Inativos", valor: Number(dados.usuariosInativos) || 0, classe: "inativos" }
+    ];
+    const totalCategorias = categorias.reduce((total, categoria) => total + categoria.valor, 0);
+    const totalUsuarios = Number(dados.totalUsuarios) || totalCategorias;
+
+    if (!totalUsuarios) {
+        grafico.innerHTML = '<p class="estado-vazio">Nenhum usuário encontrado.</p>';
+        return;
+    }
+
+    grafico.innerHTML = categorias.map(categoria => {
+        const percentual = Math.min(100, (categoria.valor / totalUsuarios) * 100);
+        const percentualFormatado = percentual.toLocaleString("pt-BR", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 1
+        });
+
+        return `
+            <div
+                class="admin-grafico-usuario-linha"
+                role="listitem"
+                aria-label="${categoria.nome}: ${categoria.valor} usuários, ${percentualFormatado}%">
+                <strong>${categoria.nome}</strong>
+                <div class="admin-grafico-usuario-trilho" aria-hidden="true">
+                    <span
+                        class="admin-grafico-usuario-barra admin-grafico-usuario-${categoria.classe}"
+                        style="width: ${percentual}%">
+                    </span>
+                </div>
+                <span>${categoria.valor}</span>
+                <small>${percentualFormatado}%</small>
+            </div>
+        `;
+    }).join("");
+}
+
+
 async function carregarResumo() {
     const possuiResumo =
         document.getElementById("totalUsuarios") ||
@@ -184,6 +233,10 @@ async function carregarResumo() {
             dados?.usuariosPremiumManual
         );
         preencherTextos(
+            ["usuariosInativos", "adminTotalInativos"],
+            dados?.usuariosInativos
+        );
+        preencherTextos(
             ["assinaturasMensais", "quantidadePremiumMensal"],
             dados?.assinaturasMensais
         );
@@ -205,6 +258,7 @@ async function carregarResumo() {
             dados?.totalSupermercados
         );
         preencherTexto("adminPrecosHoje", dados?.totalExecucoesScraper);
+        renderizarGraficoUsuarios(dados);
     } catch {
         mostrarBackendOffline();
     }
@@ -278,6 +332,11 @@ function apresentarClassificacao(usuario) {
             classe: "status-aviso",
             titulo: "Premium administrativo sem assinatura paga"
         },
+        INATIVO: {
+            rotulo: "Inativo",
+            classe: "status-erro",
+            titulo: "Sem uso do app há 40 dias ou mais"
+        },
         FREE: {
             rotulo: "Free",
             classe: "status-inativo",
@@ -299,7 +358,7 @@ function renderizarUsuarios(usuarios = []) {
     if (!usuarios.length) {
         corpo.innerHTML = `
             <tr>
-                <td colspan="11" class="estado-vazio">
+                <td colspan="12" class="estado-vazio">
                     Nenhum usuário encontrado.
                 </td>
             </tr>
@@ -337,6 +396,7 @@ function renderizarUsuarios(usuarios = []) {
                 </td>
                 <td>${escaparHtml(usuario.ciclo || "-")}</td>
                 <td>${formatarData(usuario.assinaturaVenceEm || usuario.cortesiaAte)}</td>
+                <td>${formatarData(usuario.ultimoAcessoEm)}</td>
                 <td>
                     <span class="status ${usuario.ativo === false ? "status-erro" : "status-ok"}">
                         ${usuario.ativo === false ? "Bloqueado" : "Ativo"}
@@ -458,6 +518,53 @@ async function carregarUsuarios() {
 }
 
 
+function registrarHorarioAtualizacao() {
+    const horario = document.getElementById("ultimaAtualizacaoAdmin");
+
+    if (horario) {
+        horario.textContent = `Atualizado às ${new Date().toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        })}`;
+    }
+}
+
+
+async function atualizarPainelAdmin() {
+    if (atualizacaoPainelEmAndamento) {
+        return;
+    }
+
+    atualizacaoPainelEmAndamento = true;
+    const botao = document.getElementById("btnAtualizarAdmin");
+    const textoOriginal = botao?.textContent;
+
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "↻ Atualizando...";
+        botao.setAttribute("aria-busy", "true");
+    }
+
+    try {
+        await Promise.allSettled([
+            carregarUsuarios(),
+            carregarResumo(),
+            carregarAuditoriaAcessos()
+        ]);
+        registrarHorarioAtualizacao();
+    } finally {
+        atualizacaoPainelEmAndamento = false;
+
+        if (botao) {
+            botao.disabled = false;
+            botao.textContent = textoOriginal || "↻ Atualizar painel";
+            botao.removeAttribute("aria-busy");
+        }
+    }
+}
+
+
 async function atualizarAssinaturasAdmin() {
     if (atualizacaoAssinaturasEmAndamento || document.hidden) {
         return;
@@ -467,6 +574,7 @@ async function atualizarAssinaturasAdmin() {
 
     try {
         await Promise.all([carregarUsuarios(), carregarResumo()]);
+        registrarHorarioAtualizacao();
     } finally {
         atualizacaoAssinaturasEmAndamento = false;
     }
@@ -1003,12 +1111,23 @@ function iniciar() {
         return;
     }
 
-    carregarResumo();
-    carregarUsuarios();
-    carregarAuditoriaAcessos();
+    if (document.getElementById("btnAtualizarAdmin")) {
+        atualizarPainelAdmin();
+    } else {
+        carregarResumo();
+        carregarUsuarios();
+        carregarAuditoriaAcessos();
+    }
     iniciarAtualizacaoAutomaticaAssinaturas();
 
     atualizarExemploMargem();
+
+    document
+        .getElementById("btnAtualizarAdmin")
+        ?.addEventListener(
+            "click",
+            atualizarPainelAdmin
+        );
 
     document
         .getElementById("formCortesia")

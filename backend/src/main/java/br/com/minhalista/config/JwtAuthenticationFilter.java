@@ -1,6 +1,8 @@
 package br.com.minhalista.config;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtService.extrairEmail(token);
 
                 usuarioRepository.findByEmailIgnoreCase(email)
-                    .filter(UsuarioAtivo -> UsuarioAtivo.isAtivo())
+                    .filter(usuarioAtivo -> usuarioAtivo.isAtivo())
                     .ifPresent(usuario -> {
                         UsernamePasswordAuthenticationToken autenticacao =
                             new UsernamePasswordAuthenticationToken(
@@ -58,6 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         );
 
                         SecurityContextHolder.getContext().setAuthentication(autenticacao);
+                        registrarAtividade(usuario.getId(), usuario.getUltimoAcessoEm());
                     });
             } catch (RuntimeException ignored) {
                 SecurityContextHolder.clearContext();
@@ -65,5 +68,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void registrarAtividade(java.util.UUID usuarioId, Instant ultimoAcessoEm) {
+        Instant agora = Instant.now();
+        Instant limite = agora.minus(1, ChronoUnit.HOURS);
+
+        if (ultimoAcessoEm != null && ultimoAcessoEm.isAfter(limite)) {
+            return;
+        }
+
+        try {
+            usuarioRepository.registrarAtividadeSeNecessario(usuarioId, agora, limite);
+        } catch (RuntimeException ignored) {
+            // A telemetria de uso não pode interromper uma requisição autenticada.
+        }
     }
 }

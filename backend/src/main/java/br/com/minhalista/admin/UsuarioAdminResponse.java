@@ -1,6 +1,7 @@
 package br.com.minhalista.admin;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import br.com.minhalista.assinatura.Assinatura;
@@ -21,8 +22,11 @@ public record UsuarioAdminResponse(
     Instant assinaturaVenceEm,
     boolean ativo,
     Instant cortesiaAte,
+    Instant ultimoAcessoEm,
     Instant criadoEm
 ) {
+    public static final long DIAS_PARA_INATIVIDADE = 40;
+
     public static UsuarioAdminResponse de(Usuario usuario, String ciclo) {
         return new UsuarioAdminResponse(
             usuario.getId(),
@@ -32,12 +36,13 @@ public record UsuarioAdminResponse(
             usuario.getEstado(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
-            ciclo != null ? "PAGANTE" : classificar(usuario, null),
+            classificar(usuario, ciclo != null),
             ciclo,
             ciclo != null,
             null,
             usuario.isAtivo(),
             usuario.getCortesiaAte(),
+            usuario.getUltimoAcessoEm(),
             usuario.getCriadoEm()
         );
     }
@@ -54,21 +59,26 @@ public record UsuarioAdminResponse(
             usuario.getEstado(),
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
-            classificar(usuario, assinatura),
+            classificar(usuario, assinatura != null),
             assinatura == null ? null : assinatura.getCiclo().name(),
             assinatura != null,
             assinatura == null ? null : assinatura.getVenceEm(),
             usuario.isAtivo(),
             usuario.getCortesiaAte(),
+            usuario.getUltimoAcessoEm(),
             usuario.getCriadoEm()
         );
     }
 
     private static String classificar(
         Usuario usuario,
-        Assinatura assinatura
+        boolean possuiAssinaturaAtiva
     ) {
-        if (assinatura != null) {
+        if (estaInativo(usuario)) {
+            return "INATIVO";
+        }
+
+        if (possuiAssinaturaAtiva) {
             return "PAGANTE";
         }
 
@@ -83,5 +93,14 @@ public record UsuarioAdminResponse(
         }
 
         return "FREE";
+    }
+
+    private static boolean estaInativo(Usuario usuario) {
+        Instant ultimoUso = usuario.getUltimoAcessoEm() != null
+            ? usuario.getUltimoAcessoEm()
+            : usuario.getCriadoEm();
+
+        return ultimoUso != null
+            && !ultimoUso.isAfter(Instant.now().minus(DIAS_PARA_INATIVIDADE, ChronoUnit.DAYS));
     }
 }

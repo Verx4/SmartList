@@ -71,13 +71,15 @@ public class AdminService {
         long usuariosCortesia = contarClassificacao(usuarios, "CORTESIA");
         long usuariosPremiumManual =
             contarClassificacao(usuarios, "PREMIUM_MANUAL");
+        long usuariosInativos = contarClassificacao(usuarios, "INATIVO");
 
         return new ResumoAdminResponse(
             usuarios.size(),
             usuariosFree,
-            usuariosPagantes,
+            usuariosPagantes + usuariosPremiumManual,
             usuariosCortesia,
             usuariosPremiumManual,
+            usuariosInativos,
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.MENSAL, StatusAssinatura.ATIVA),
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.TRIMESTRAL, StatusAssinatura.ATIVA),
             assinaturaRepository.countByCicloAndStatus(CicloAssinatura.ANUAL, StatusAssinatura.ATIVA),

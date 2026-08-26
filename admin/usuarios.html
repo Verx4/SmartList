@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="../css/cards.css">
     <link rel="stylesheet" href="../css/buttons.css">
     <link rel="stylesheet" href="../css/forms.css">
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin.css?v=2">
     <link rel="stylesheet" href="../css/responsive.css">
     <link rel="stylesheet" href="../css/temas.css">
 </head>
@@ -64,6 +64,15 @@
                     </p>
                 </div>
 
+                <div class="admin-atualizacao">
+                    <button type="button" class="btn btn-primary" id="btnAtualizarAdmin">
+                        ↻ Atualizar painel
+                    </button>
+                    <small id="ultimaAtualizacaoAdmin" aria-live="polite">
+                        Aguardando atualização
+                    </small>
+                </div>
+
             </header>
 
             <section class="admin-aviso-assinatura" role="note">
@@ -87,7 +96,7 @@
                 </article>
 
                 <article class="card resumo-card">
-                    <span>Pagantes</span>
+                    <span>Premium</span>
                     <strong id="usuariosPremium">0</strong>
                 </article>
 
@@ -101,6 +110,28 @@
                     <strong id="usuariosPremiumManual">0</strong>
                 </article>
 
+                <article class="card resumo-card">
+                    <span>Inativos há 40 dias</span>
+                    <strong id="usuariosInativos">0</strong>
+                </article>
+
+            </section>
+
+            <section class="card admin-grafico-usuarios-card" aria-labelledby="graficoUsuariosTitulo">
+                <div class="section-header">
+                    <div>
+                        <span class="card-label">Usuários</span>
+                        <h2 id="graficoUsuariosTitulo">Distribuição por acesso</h2>
+                        <p>Inativos são usuários que não usam o app há 40 dias ou mais.</p>
+                    </div>
+                </div>
+
+                <div
+                    id="graficoUsuariosAcesso"
+                    class="admin-grafico-usuarios"
+                    role="list"
+                    aria-live="polite">
+                </div>
             </section>
 
             <section class="card">
@@ -125,6 +156,7 @@
                             <option value="FREE">Free</option>
                             <option value="CORTESIA">Cortesia</option>
                             <option value="PREMIUM_MANUAL">Premium manual</option>
+                            <option value="INATIVO">Inativo há 40 dias</option>
                         </select>
                     </div>
 
@@ -285,6 +317,7 @@
                                 <th>Classificação</th>
                                 <th>Ciclo</th>
                                 <th>Validade</th>
+                                <th>Último uso</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
@@ -292,7 +325,7 @@
 
                         <tbody id="tabelaAdminUsuarios">
                             <tr>
-                                <td colspan="11" class="estado-vazio">
+                                <td colspan="12" class="estado-vazio">
                                     Nenhum usuário encontrado.
                                 </td>
                             </tr>
@@ -316,7 +349,7 @@
 
     <script src="../js/tema.js?v=11"></script>
     <script src="../js/admin-nav.js"></script>
-    <script type="module" src="../js/admin.js?v=57"></script>
+    <script type="module" src="../js/admin.js?v=58"></script>
 
 </body>
 

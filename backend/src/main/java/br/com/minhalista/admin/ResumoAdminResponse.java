@@ -6,6 +6,7 @@ public record ResumoAdminResponse(
     long usuariosPremium,
     long usuariosCortesia,
     long usuariosPremiumManual,
+    long usuariosInativos,
     long assinaturasMensais,
     long assinaturasTrimestrais,
     long assinaturasAnuais,
