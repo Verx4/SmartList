@@ -75,3 +75,19 @@ test("perfil mostra se o Premium é pagante ou cortesia", async () => {
     assert.match(perfil, /Plano Premium — Cortesia/);
     assert.match(perfil, /api\.get\("\/assinaturas\/atual"\)/);
 });
+
+test("administrador pode limpar a auditoria após confirmação", async () => {
+    const [admin, usuarios, controller, service] = await Promise.all([
+        ler("js/admin.js"),
+        ler("admin/usuarios.html"),
+        ler("backend/src/main/java/br/com/minhalista/admin/AdminController.java"),
+        ler("backend/src/main/java/br/com/minhalista/admin/AdminService.java")
+    ]);
+
+    assert.match(usuarios, /id="btnLimparAuditoria"/);
+    assert.match(admin, /window\.confirm\([\s\S]*não pode ser desfeita/);
+    assert.match(admin, /api\.delete\("\/admin\/usuarios\/auditoria"\)/);
+    assert.match(admin, /renderizarAuditoriaAcessos\(\[\]\)/);
+    assert.match(controller, /@DeleteMapping\("\/usuarios\/auditoria"\)/);
+    assert.match(service, /historicoRepository\.deleteAllInBatch\(\)/);
+});

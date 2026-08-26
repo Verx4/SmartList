@@ -693,6 +693,11 @@ async function concederCortesia(evento) {
 
 function renderizarAuditoriaAcessos(registros = []) {
     const corpo = document.getElementById("tabelaAuditoriaAcesso");
+    const botaoLimpar = document.getElementById("btnLimparAuditoria");
+
+    if (botaoLimpar) {
+        botaoLimpar.disabled = registros.length === 0;
+    }
 
     if (!corpo) {
         return;
@@ -730,6 +735,47 @@ async function carregarAuditoriaAcessos() {
             erro instanceof ApiError ? erro.message : "Não foi possível carregar a auditoria.",
             "erro"
         );
+    }
+}
+
+
+async function limparAuditoriaAcessos() {
+    const botao = document.getElementById("btnLimparAuditoria");
+
+    if (!botao || botao.disabled) {
+        return;
+    }
+
+    const confirmar = window.confirm(
+        "Excluir definitivamente todo o histórico de auditoria? Esta ação não pode ser desfeita."
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    const textoOriginal = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = "Limpando...";
+    botao.setAttribute("aria-busy", "true");
+
+    try {
+        const resposta = await api.delete("/admin/usuarios/auditoria");
+        renderizarAuditoriaAcessos([]);
+        mensagem(
+            resposta?.mensagem || "Histórico de auditoria removido com sucesso."
+        );
+    } catch (erro) {
+        botao.disabled = false;
+        mensagem(
+            erro instanceof ApiError
+                ? erro.message
+                : "Não foi possível limpar a auditoria.",
+            "erro"
+        );
+    } finally {
+        botao.textContent = textoOriginal;
+        botao.removeAttribute("aria-busy");
     }
 }
 
@@ -987,6 +1033,13 @@ function iniciar() {
         ?.addEventListener(
             "click",
             executarScraper
+        );
+
+    document
+        .getElementById("btnLimparAuditoria")
+        ?.addEventListener(
+            "click",
+            limparAuditoriaAcessos
         );
 
     document

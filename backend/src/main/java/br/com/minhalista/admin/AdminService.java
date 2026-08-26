@@ -145,6 +145,18 @@ public class AdminService {
             .toList();
     }
 
+    @Transactional
+    public LimparAuditoriaResponse limparAuditoriaAcessos() {
+        long registrosRemovidos = historicoRepository.count();
+        historicoRepository.deleteAllInBatch();
+
+        String mensagem = registrosRemovidos == 1
+            ? "1 registro de auditoria removido."
+            : registrosRemovidos + " registros de auditoria removidos.";
+
+        return new LimparAuditoriaResponse(registrosRemovidos, mensagem);
+    }
+
     private AlterarAcessoResponse alterarAcesso(
         Usuario usuario,
         AlterarAcessoRequest request,
