@@ -82,7 +82,7 @@
         }
     }
 
-    function bloquearLinksPremium() {
+    function bloquearLinksPagos() {
         if (possuiPremium()) {
             return;
         }
@@ -94,53 +94,62 @@
                 return;
             }
 
+            const nomeRecurso = link.textContent.trim() || "Recurso pago";
             link.href = urlPlanos(recurso);
-            link.classList.add("premium-link-bloqueado");
-            link.dataset.recursoPremium = recurso;
-
-            if (!link.querySelector(".premium-selo")) {
-                const selo = document.createElement("small");
-                selo.className = "premium-selo";
-                selo.textContent = "Premium";
-                link.appendChild(selo);
-            }
+            link.classList.add("recurso-pago-bloqueado");
+            link.dataset.recursoPago = recurso;
+            link.title = "Ver planos para liberar este recurso";
+            link.setAttribute(
+                "aria-label",
+                `${nomeRecurso}. Ver planos para liberar este recurso.`
+            );
+            link.querySelector(".premium-selo")?.remove();
         });
     }
 
-    function aplicarInicioFree() {
+    function abrirPlanos(recurso) {
+        window.location.assign(urlPlanos(recurso));
+    }
+
+    function bloquearConteudoPagoInicio() {
         if (paginaAtual() !== "inicio.html" || possuiPremium()) {
             return;
         }
 
         document.querySelectorAll("[data-premium-content]")
             .forEach(elemento => {
-                elemento.hidden = true;
+                elemento.hidden = false;
+                elemento.classList.add("conteudo-pago-bloqueado");
+                elemento.tabIndex = 0;
+                elemento.setAttribute("role", "link");
+                elemento.setAttribute(
+                    "aria-label",
+                    "Recurso pago. Ver planos para liberar o acesso."
+                );
+
+                if (elemento.dataset.bloqueioPlanos === "true") {
+                    return;
+                }
+
+                elemento.dataset.bloqueioPlanos = "true";
+                elemento.addEventListener(
+                    "click",
+                    () => abrirPlanos("recursos")
+                );
+                elemento.addEventListener("keydown", evento => {
+                    if (evento.key === "Enter" || evento.key === " ") {
+                        evento.preventDefault();
+                        abrirPlanos("recursos");
+                    }
+                });
             });
 
-        if (document.querySelector(".premium-free-callout")) {
-            return;
-        }
-
-        const referencia = document.querySelector(".inicio-saudacao");
-
-        if (!referencia) {
-            return;
-        }
-
-        const aviso = document.createElement("section");
-        aviso.className = "premium-free-callout";
-        aviso.innerHTML = `
-            <span>Recursos Premium</span>
-            <h2>Histórico, Comparação e Minha Economia</h2>
-            <p>No plano Free, você cria e organiza sua lista. Assine o Premium para acessar análises e comparações.</p>
-            <a href="./assinatura.html?acesso=premium&recurso=recursos">Conhecer o Premium</a>
-        `;
-        referencia.insertAdjacentElement("afterend", aviso);
+        document.querySelector(".premium-free-callout")?.remove();
     }
 
     function aplicar() {
-        bloquearLinksPremium();
-        aplicarInicioFree();
+        bloquearLinksPagos();
+        bloquearConteudoPagoInicio();
     }
 
     window.SmartListPremium = {
