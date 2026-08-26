@@ -13,7 +13,7 @@ test("pagamento aprovado promove o usuário para Premium", async () => {
         "backend/src/main/java/br/com/minhalista/assinatura/AssinaturaService.java"
     );
 
-    assert.match(service, /case "approved" -> ativar/);
+    assert.match(service, /case "approved" -> \{[\s\S]*ativar\(assinatura, pagamento\.id\(\)\)/);
     assert.match(service, /usuario\.setTipoAcesso\(TipoAcesso\.PREMIUM\)/);
 });
 

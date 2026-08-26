@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0b1220">
     <title>Minha Economia | Smart List</title>
-    <script src="./js/acesso-premium.js?v=2"></script>
+    <script src="./js/acesso-premium.js?v=3"></script>
     <link rel="manifest" href="./manifest.webmanifest">
-    <link rel="stylesheet" href="./css/global.css?v=49">
+    <link rel="stylesheet" href="./css/global.css?v=50">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/minha-economia.css?v=2">
+    <link rel="stylesheet" href="./css/minha-economia.css?v=3">
 </head>
 <body class="sem-controle-tema">
     <main class="economia-shell">
@@ -55,6 +55,59 @@
             </article>
         </section>
 
+        <section class="economia-comparador" aria-labelledby="compararComprasTitulo">
+            <header class="economia-comparador-topo">
+                <div>
+                    <small>Análise por compra</small>
+                    <h2 id="compararComprasTitulo">Comparar compras</h2>
+                    <p>Escolha duas compras finalizadas, mesmo que sejam de meses diferentes.</p>
+                </div>
+            </header>
+
+            <div class="economia-comparador-seletores">
+                <label for="compraComparacao1"><span>Compra 1</span><select id="compraComparacao1" aria-describedby="comparacaoComprasEstado"></select></label>
+                <span class="economia-comparador-versus" aria-hidden="true">×</span>
+                <label for="compraComparacao2"><span>Compra 2</span><select id="compraComparacao2" aria-describedby="comparacaoComprasEstado"></select></label>
+            </div>
+
+            <p id="comparacaoComprasEstado" class="economia-comparador-estado" aria-live="polite"></p>
+
+            <div id="resultadoComparacaoCompras" class="economia-comparador-resultado" hidden>
+                <div class="economia-comparador-totais" aria-label="Totais das compras">
+                    <article><small id="comparacaoMercado1">Compra 1</small><strong id="comparacaoTotal1">R$ 0,00</strong><span id="comparacaoData1">—</span></article>
+                    <article><small id="comparacaoMercado2">Compra 2</small><strong id="comparacaoTotal2">R$ 0,00</strong><span id="comparacaoData2">—</span></article>
+                    <article class="diferenca"><small>Diferença entre as compras</small><strong id="comparacaoDiferencaTotal">R$ 0,00</strong><span id="comparacaoDiferencaTexto">Sem diferença no total</span></article>
+                </div>
+
+                <div class="economia-comparador-real">
+                    <div><small>Itens comparáveis na Compra 1</small><strong id="comparacaoValorComum1">R$ 0,00</strong></div>
+                    <div><small>Itens comparáveis na Compra 2</small><strong id="comparacaoValorComum2">R$ 0,00</strong></div>
+                    <div id="comparacaoSaldoCard" class="saldo"><small>Resultado real</small><strong id="comparacaoSaldoReal">R$ 0,00</strong><span id="comparacaoSaldoTexto">Selecione duas compras.</span></div>
+                </div>
+
+                <div class="economia-comparador-contagens" aria-label="Resumo dos itens comparados">
+                    <span><strong id="comparacaoQuantidadeItens">0</strong> comparados</span>
+                    <span><strong id="comparacaoMelhores1">0</strong> melhores na Compra 1</span>
+                    <span><strong id="comparacaoMelhores2">0</strong> melhores na Compra 2</span>
+                    <span><strong id="comparacaoEmpates">0</strong> empates</span>
+                </div>
+
+                <div class="economia-comparador-tabela-wrap">
+                    <table class="economia-comparador-tabela">
+                        <thead><tr><th>Produto</th><th>Compra 1</th><th>Compra 2</th><th>Diferença</th><th>Melhor</th></tr></thead>
+                        <tbody id="comparacaoItensComuns"></tbody>
+                    </table>
+                </div>
+
+                <div class="economia-comparador-separados">
+                    <article><h3>Só na Compra 1</h3><ul id="comparacaoExclusivos1"></ul></article>
+                    <article><h3>Só na Compra 2</h3><ul id="comparacaoExclusivos2"></ul></article>
+                    <article id="comparacaoIncompativeisCard" hidden><h3>Não comparáveis</h3><ul id="comparacaoIncompativeis"></ul></article>
+                </div>
+                <p class="economia-comparador-nota">A diferença total descreve os carrinhos completos. Economia real usa somente os mesmos produtos, normalizados por kg, litro ou unidade quando a embalagem permite.</p>
+            </div>
+        </section>
+
         <section class="economia-grafico-card">
             <header>
                 <div><small>Histórico</small><h2>Evolução dos gastos</h2></div>
@@ -70,7 +123,7 @@
     </main>
 
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/minha-economia.js?v=2"></script>
-    <script src="./js/mobile-nav.js?v=3"></script>
+    <script type="module" src="./js/minha-economia.js?v=3"></script>
+    <script src="./js/mobile-nav.js?v=4"></script>
 </body>
 </html>

@@ -1,1 +1,274 @@
 .economia-shell{width:min(100%,920px);margin:auto;padding:18px 16px 112px}.economia-topo{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.economia-marca{display:flex;align-items:center;gap:9px;color:var(--cor-texto);font-size:24px;font-weight:900;text-decoration:none}.economia-marca img{width:40px;height:40px;object-fit:cover;background:#03060b;border:1px solid var(--cor-borda);border-radius:11px}.economia-marca b{color:var(--cor-destaque)}.economia-voltar{padding:9px 11px;color:var(--cor-texto);background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:11px;text-decoration:none;font-size:12px;font-weight:800}.economia-cabecalho>small,.economia-destaque small,.economia-grafico-card header small{color:var(--cor-destaque);font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.economia-cabecalho h1{margin:4px 0;font-size:clamp(30px,8vw,43px)}.economia-cabecalho p{max-width:660px;margin:0;color:var(--cor-texto-secundario)}.economia-destaque{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin:18px 0 10px;padding:20px;background:linear-gradient(135deg,rgba(var(--cor-primaria-rgb),.24),var(--cor-superficie) 62%);border:1px solid var(--cor-borda);border-radius:20px}.economia-destaque h2{margin:4px 0 2px;font-size:18px}.economia-destaque strong{display:block;color:var(--cor-texto);font-size:clamp(30px,8vw,44px);line-height:1.05}.economia-destaque p{margin:7px 0 0;color:var(--cor-texto-secundario);font-size:12px}.economia-destaque.confirmada{border-color:var(--cor-destaque);box-shadow:0 14px 35px rgba(var(--cor-primaria-rgb),.15)}.economia-destaque.confirmada strong{color:var(--cor-destaque)}.economia-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.economia-cards article{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:10px;min-width:0;padding:14px;background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:15px}.economia-cards article small,.economia-cards article strong,.economia-cards article p{display:block;min-width:0}.economia-cards article small{color:var(--cor-texto-secundario);font-size:9px}.economia-cards article strong{margin-top:4px;overflow:hidden;font-size:18px;text-overflow:ellipsis;white-space:nowrap}.economia-cards article p{margin:5px 0 0;color:var(--cor-texto-secundario);font-size:9px}.economia-cards article.positiva{border-color:var(--cor-destaque)}.economia-cards article.positiva strong{color:var(--cor-destaque)}.economia-cards article.alerta{border-color:#f59e0b}.economia-cards article.alerta strong{color:#f59e0b}.economia-grafico-card{margin-top:10px;padding:16px;background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:18px}.economia-grafico-card>header{display:flex;align-items:center;justify-content:space-between;gap:12px}.economia-grafico-card h2{margin:3px 0 0;font-size:20px}.economia-grafico-card label span{display:block;margin-bottom:4px;color:var(--cor-texto-secundario);font-size:9px}.economia-grafico-card select{min-height:39px;padding:0 34px 0 10px;color:var(--cor-texto);background:var(--cor-superficie-secundaria);border:1px solid var(--cor-borda);border-radius:9px}.economia-grafico{display:grid;grid-template-columns:repeat(var(--colunas),minmax(58px,1fr));gap:8px;min-height:240px;margin-top:18px;overflow-x:auto}.economia-grafico article{display:grid;grid-template-rows:30px 150px auto auto;align-items:end;min-width:58px;text-align:center}.economia-grafico article>strong{overflow:hidden;color:var(--cor-texto-secundario);font-size:8px;text-overflow:ellipsis;white-space:nowrap}.economia-grafico article>div{position:relative;height:140px;overflow:hidden;background:var(--cor-superficie-secundaria);border-radius:8px 8px 3px 3px}.economia-grafico article i{position:absolute;right:0;bottom:0;left:0;height:var(--altura);background:linear-gradient(180deg,var(--cor-destaque),var(--cor-primaria));border-radius:8px 8px 3px 3px}.economia-grafico article>span{margin-top:6px;font-size:10px;font-weight:800;text-transform:capitalize}.economia-grafico article>small{color:var(--cor-texto-secundario);font-size:8px}.economia-criterio{margin-top:10px;padding:14px 16px;background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:15px}.economia-criterio strong{font-size:12px}.economia-criterio p{margin:5px 0 0;color:var(--cor-texto-secundario);font-size:10px;line-height:1.55}@media(max-width:720px){.economia-cards{grid-template-columns:1fr 1fr}}@media(max-width:520px){.economia-marca{font-size:20px}.economia-marca img{width:36px;height:36px}.economia-voltar{font-size:10px}.economia-destaque{padding:16px}.economia-cards{grid-template-columns:1fr}.economia-grafico-card>header{align-items:stretch;flex-direction:column}.economia-grafico-card select{width:100%}}
+
+.economia-comparador {
+    margin-top: 10px;
+    padding: 18px;
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: 18px;
+}
+
+.economia-comparador-topo small {
+    color: var(--cor-destaque);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.economia-comparador-topo h2 {
+    margin: 4px 0;
+    font-size: 22px;
+}
+
+.economia-comparador-topo p,
+.economia-comparador-estado,
+.economia-comparador-nota {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+    font-size: 11px;
+}
+
+.economia-comparador-seletores {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.economia-comparador-seletores label span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--cor-texto-secundario);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.economia-comparador-seletores select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 34px 0 11px;
+    color: var(--cor-texto);
+    background: var(--cor-superficie-secundaria);
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+}
+
+.economia-comparador-versus {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 5px;
+    place-items: center;
+    color: var(--cor-destaque);
+    background: rgba(var(--cor-primaria-rgb), .18);
+    border-radius: 50%;
+    font-weight: 900;
+}
+
+.economia-comparador-estado {
+    min-height: 18px;
+    margin-top: 9px;
+}
+
+.economia-comparador-totais,
+.economia-comparador-real {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 14px;
+}
+
+.economia-comparador-totais article,
+.economia-comparador-real > div {
+    min-width: 0;
+    padding: 13px;
+    background: var(--cor-superficie-secundaria);
+    border: 1px solid var(--cor-borda);
+    border-radius: 13px;
+}
+
+.economia-comparador-totais small,
+.economia-comparador-real small,
+.economia-comparador-totais span,
+.economia-comparador-real span {
+    display: block;
+    overflow: hidden;
+    color: var(--cor-texto-secundario);
+    font-size: 9px;
+    text-overflow: ellipsis;
+}
+
+.economia-comparador-totais strong,
+.economia-comparador-real strong {
+    display: block;
+    margin: 4px 0;
+    font-size: 18px;
+}
+
+.economia-comparador-real .saldo.positiva {
+    border-color: var(--cor-destaque);
+}
+
+.economia-comparador-real .saldo.positiva strong {
+    color: var(--cor-destaque);
+}
+
+.economia-comparador-real .saldo.alerta {
+    border-color: #f59e0b;
+}
+
+.economia-comparador-real .saldo.alerta strong {
+    color: #f59e0b;
+}
+
+.economia-comparador-contagens {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.economia-comparador-contagens span {
+    padding: 7px 9px;
+    color: var(--cor-texto-secundario);
+    background: var(--cor-superficie-secundaria);
+    border-radius: 999px;
+    font-size: 9px;
+}
+
+.economia-comparador-contagens strong {
+    color: var(--cor-texto);
+}
+
+.economia-comparador-tabela-wrap {
+    margin-top: 12px;
+    overflow-x: auto;
+    border: 1px solid var(--cor-borda);
+    border-radius: 13px;
+}
+
+.economia-comparador-tabela {
+    width: 100%;
+    min-width: 680px;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.economia-comparador-tabela th,
+.economia-comparador-tabela td {
+    padding: 11px;
+    border-bottom: 1px solid var(--cor-borda);
+    text-align: left;
+    vertical-align: top;
+}
+
+.economia-comparador-tabela tbody tr:last-child > * {
+    border-bottom: 0;
+}
+
+.economia-comparador-tabela thead th {
+    color: var(--cor-texto-secundario);
+    background: var(--cor-superficie-secundaria);
+    font-size: 9px;
+    text-transform: uppercase;
+}
+
+.economia-comparador-tabela td strong,
+.economia-comparador-tabela td small {
+    display: block;
+    white-space: nowrap;
+}
+
+.economia-comparador-tabela td small {
+    margin-top: 3px;
+    color: var(--cor-texto-secundario);
+}
+
+.economia-comparador-tabela .melhor {
+    display: inline-flex;
+    padding: 5px 7px;
+    background: rgba(var(--cor-primaria-rgb), .18);
+    border-radius: 999px;
+    white-space: nowrap;
+    font-weight: 800;
+}
+
+.economia-comparador-tabela .sem-comparaveis {
+    padding: 22px;
+    color: var(--cor-texto-secundario);
+    text-align: center;
+}
+
+.economia-comparador-separados {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.economia-comparador-separados article {
+    padding: 12px;
+    background: var(--cor-superficie-secundaria);
+    border-radius: 12px;
+}
+
+.economia-comparador-separados h3 {
+    margin: 0 0 7px;
+    font-size: 11px;
+}
+
+.economia-comparador-separados ul {
+    margin: 0;
+    padding-left: 17px;
+    color: var(--cor-texto-secundario);
+    font-size: 9px;
+}
+
+.economia-comparador-separados .vazio {
+    list-style: none;
+    margin-left: -17px;
+}
+
+.economia-comparador-nota {
+    margin-top: 12px;
+    line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+    .economia-comparador-totais,
+    .economia-comparador-real {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .economia-comparador-totais .diferenca,
+    .economia-comparador-real .saldo {
+        grid-column: 1 / -1;
+    }
+
+    .economia-comparador-separados {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .economia-comparador {
+        padding: 15px;
+    }
+
+    .economia-comparador-seletores,
+    .economia-comparador-totais,
+    .economia-comparador-real {
+        grid-template-columns: 1fr;
+    }
+
+    .economia-comparador-versus {
+        margin: -1px auto;
+    }
+
+    .economia-comparador-totais .diferenca,
+    .economia-comparador-real .saldo {
+        grid-column: auto;
+    }
+}

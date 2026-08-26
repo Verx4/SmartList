@@ -4,6 +4,8 @@ import {
     analisarMinhaEconomia,
     serieDeGastos
 } from "./minha-economia-calculos.js";
+import { compararCompras } from "./comparacao-compras-calculos.js";
+import { dataDaCompra, totalDaCompra } from "./historico-calculos.js";
 
 const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", {
     style: "currency",
@@ -30,6 +32,12 @@ const nomeMes = deslocamento => new Date(
     1
 ).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 const rotuloCompras = quantidade => `${quantidade} ${quantidade === 1 ? "compra finalizada" : "compras finalizadas"}`;
+const escapar = valor => String(valor ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 document.getElementById("rotuloMesAtual").textContent = `Você gastou em ${nomeMes(0)}`;
 document.getElementById("gastoMesAtual").textContent = moeda(analise.atual.totalGasto);
@@ -111,3 +119,146 @@ document.getElementById("periodoGraficoEconomia").addEventListener("change", eve
 });
 
 renderizarGrafico(6);
+
+const comprasDisponiveis = compras
+    .map((compra, indice) => ({ compra, indice, data: dataDaCompra(compra) }))
+    .sort((a, b) => b.data - a.data);
+const seletorCompra1 = document.getElementById("compraComparacao1");
+const seletorCompra2 = document.getElementById("compraComparacao2");
+const estadoComparacao = document.getElementById("comparacaoComprasEstado");
+const resultadoComparacao = document.getElementById("resultadoComparacaoCompras");
+
+function dataFormatada(data) {
+    return data instanceof Date && !Number.isNaN(data.getTime())
+        ? data.toLocaleDateString("pt-BR")
+        : "Data não informada";
+}
+
+function mercadoDaCompra(compra) {
+    return compra?.supermercado
+        || compra?.mercado
+        || compra?.estabelecimento
+        || "Mercado não informado";
+}
+
+function rotuloDaCompra(registro) {
+    return `${dataFormatada(registro.data)} · ${mercadoDaCompra(registro.compra)} · ${moeda(totalDaCompra(registro.compra))}`;
+}
+
+function preencherSeletores() {
+    const vazio = '<option value="">Selecione uma compra</option>';
+    const opcoes = comprasDisponiveis.map(registro => (
+        `<option value="${registro.indice}">${escapar(rotuloDaCompra(registro))}</option>`
+    )).join("");
+
+    seletorCompra1.innerHTML = vazio + opcoes;
+    seletorCompra2.innerHTML = vazio + opcoes;
+
+    if (comprasDisponiveis.length >= 2) {
+        seletorCompra1.value = String(comprasDisponiveis[1].indice);
+        seletorCompra2.value = String(comprasDisponiveis[0].indice);
+    } else if (comprasDisponiveis.length === 1) {
+        seletorCompra1.value = String(comprasDisponiveis[0].indice);
+    }
+}
+
+function preencherLista(id, itens, vazio) {
+    const lista = document.getElementById(id);
+    lista.innerHTML = itens.length
+        ? itens.map(item => `<li>${escapar(item.nome)}</li>`).join("")
+        : `<li class="vazio">${escapar(vazio)}</li>`;
+}
+
+function renderizarItensComparaveis(analise) {
+    const corpo = document.getElementById("comparacaoItensComuns");
+
+    corpo.innerHTML = analise.comparaveis.length
+        ? analise.comparaveis.map(item => {
+            const melhor = item.melhor === "compra-1"
+                ? "Compra 1"
+                : item.melhor === "compra-2"
+                    ? "Compra 2"
+                    : "Empate";
+            return `
+                <tr>
+                    <th scope="row">${escapar(item.nome)}</th>
+                    <td><strong>${moeda(item.precoCompra1)} / ${escapar(item.unidadeBase)}</strong><small>${escapar(item.apresentacaoCompra1)}</small></td>
+                    <td><strong>${moeda(item.precoCompra2)} / ${escapar(item.unidadeBase)}</strong><small>${escapar(item.apresentacaoCompra2)}</small></td>
+                    <td>${moeda(item.diferenca)} / ${escapar(item.unidadeBase)}</td>
+                    <td><span class="melhor ${item.melhor}">${melhor}</span></td>
+                </tr>
+            `;
+        }).join("")
+        : '<tr><td colspan="5" class="sem-comparaveis">Nenhum produto com medida compatível foi encontrado nas duas compras.</td></tr>';
+}
+
+function renderizarComparacao() {
+    const indice1 = Number(seletorCompra1.value);
+    const indice2 = Number(seletorCompra2.value);
+    const selecionou1 = seletorCompra1.value !== "" && Number.isInteger(indice1);
+    const selecionou2 = seletorCompra2.value !== "" && Number.isInteger(indice2);
+
+    if (!selecionou1 || !selecionou2) {
+        resultadoComparacao.hidden = true;
+        estadoComparacao.textContent = compras.length < 2
+            ? "Finalize pelo menos duas compras para comparar."
+            : "Selecione duas compras finalizadas.";
+        return;
+    }
+
+    if (indice1 === indice2) {
+        resultadoComparacao.hidden = true;
+        estadoComparacao.textContent = "Escolha duas compras diferentes.";
+        return;
+    }
+
+    const analise = compararCompras(compras[indice1], compras[indice2]);
+    const diferencaTotal = analise.diferencaTotal;
+    const saldoCard = document.getElementById("comparacaoSaldoCard");
+
+    estadoComparacao.textContent = "Comparação atualizada com os dados reais das compras selecionadas.";
+    resultadoComparacao.hidden = false;
+    document.getElementById("comparacaoMercado1").textContent = analise.compra1.mercado;
+    document.getElementById("comparacaoMercado2").textContent = analise.compra2.mercado;
+    document.getElementById("comparacaoTotal1").textContent = moeda(analise.compra1.total);
+    document.getElementById("comparacaoTotal2").textContent = moeda(analise.compra2.total);
+    document.getElementById("comparacaoData1").textContent = dataFormatada(analise.compra1.data);
+    document.getElementById("comparacaoData2").textContent = dataFormatada(analise.compra2.data);
+    document.getElementById("comparacaoDiferencaTotal").textContent = moeda(Math.abs(diferencaTotal));
+    document.getElementById("comparacaoDiferencaTexto").textContent = diferencaTotal > 0
+        ? "A Compra 2 custou mais no total."
+        : diferencaTotal < 0
+            ? "A Compra 2 custou menos no total."
+            : "Os carrinhos tiveram o mesmo total.";
+    document.getElementById("comparacaoValorComum1").textContent = moeda(analise.valorComparavel1);
+    document.getElementById("comparacaoValorComum2").textContent = moeda(analise.valorComparavel2);
+    document.getElementById("comparacaoSaldoReal").textContent = moeda(Math.abs(analise.saldoReal));
+    document.getElementById("comparacaoQuantidadeItens").textContent = analise.quantidadeComparada;
+    document.getElementById("comparacaoMelhores1").textContent = analise.maisBaratosCompra1;
+    document.getElementById("comparacaoMelhores2").textContent = analise.maisBaratosCompra2;
+    document.getElementById("comparacaoEmpates").textContent = analise.empates;
+
+    saldoCard.className = "saldo";
+    if (!analise.quantidadeComparada) {
+        document.getElementById("comparacaoSaldoTexto").textContent = "Sem itens compatíveis, não há economia real calculada.";
+    } else if (analise.economiaReal > 0) {
+        saldoCard.classList.add("positiva");
+        document.getElementById("comparacaoSaldoTexto").textContent = "Você economizou esse valor na Compra 2 para a mesma cesta comparável.";
+    } else if (analise.gastoExtraReal > 0) {
+        saldoCard.classList.add("alerta");
+        document.getElementById("comparacaoSaldoTexto").textContent = "Você gastou esse valor a mais na Compra 2 para a mesma cesta comparável.";
+    } else {
+        document.getElementById("comparacaoSaldoTexto").textContent = "A mesma cesta comparável teve o mesmo custo.";
+    }
+
+    renderizarItensComparaveis(analise);
+    preencherLista("comparacaoExclusivos1", analise.exclusivosCompra1, "Nenhum item exclusivo.");
+    preencherLista("comparacaoExclusivos2", analise.exclusivosCompra2, "Nenhum item exclusivo.");
+    preencherLista("comparacaoIncompativeis", analise.naoComparaveis, "Nenhum item incompatível.");
+    document.getElementById("comparacaoIncompativeisCard").hidden = !analise.naoComparaveis.length;
+}
+
+preencherSeletores();
+seletorCompra1.addEventListener("change", renderizarComparacao);
+seletorCompra2.addEventListener("change", renderizarComparacao);
+renderizarComparacao();
