@@ -77,6 +77,65 @@ function mensagem(
 }
 
 
+function exibirResultadoCortesia(texto, tipo = "sucesso") {
+    const resultado = document.getElementById("mensagemCortesia");
+
+    if (!resultado) {
+        mensagem(texto, tipo);
+        return;
+    }
+
+    resultado.textContent = texto;
+    resultado.className = `mensagem mensagem-${tipo}`;
+    resultado.hidden = false;
+    resultado.setAttribute("role", tipo === "erro" ? "alert" : "status");
+
+    window.requestAnimationFrame(() => {
+        resultado.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+        });
+    });
+}
+
+
+function descreverErroCortesia(erro) {
+    if (!(erro instanceof ApiError)) {
+        return "Não foi possível conceder a cortesia.";
+    }
+
+    const detalhes = erro.dados?.detalhes;
+
+    if (!detalhes || typeof detalhes !== "object") {
+        return erro.message;
+    }
+
+    const mensagens = [...new Set(Object.values(detalhes).filter(Boolean))];
+
+    return mensagens.length
+        ? `${erro.message} ${mensagens.join(" ")}`
+        : erro.message;
+}
+
+
+function renderizarOpcoesCortesia(usuarios = []) {
+    const lista = document.getElementById("usuariosCortesiaDisponiveis");
+
+    if (!lista) {
+        return;
+    }
+
+    lista.innerHTML = usuarios
+        .filter(usuario => usuario?.email)
+        .map(usuario => `
+            <option value="${escaparHtml(usuario.email)}">
+                ${escaparHtml(usuario.nome || usuario.email)} — ${escaparHtml(usuario.tipoAcesso || "FREE")}
+            </option>
+        `)
+        .join("");
+}
+
+
 function mostrarBackendOffline() {
 
     const status =
@@ -313,6 +372,7 @@ async function carregarUsuarios() {
         const resposta = await api.get("/admin/usuarios");
         const usuarios = resposta?.content || resposta?.usuarios || resposta || [];
         usuariosAdmin = Array.isArray(usuarios) ? usuarios : [];
+        renderizarOpcoesCortesia(usuariosAdmin);
         renderizarUltimosUsuarios(usuariosAdmin);
 
         if (possuiTabela) {
@@ -477,12 +537,33 @@ async function alterarAcessoUsuario(id) {
 async function concederCortesia(evento) {
     evento.preventDefault();
 
-    const email = document.getElementById("cortesiaUsuarioEmail")?.value.trim();
-    const dias = Number(document.getElementById("cortesiaDias")?.value || 30);
-    const motivo = document.getElementById("cortesiaMotivo")?.value.trim();
+    const formulario = evento.currentTarget;
+    const campoEmail = document.getElementById("cortesiaUsuarioEmail");
+    const campoDias = document.getElementById("cortesiaDias");
+    const campoMotivo = document.getElementById("cortesiaMotivo");
+    const botao = formulario.querySelector('button[type="submit"]');
+    const email = campoEmail?.value.trim().toLowerCase();
+    const dias = Number(campoDias?.value || 30);
+    const motivo = campoMotivo?.value.trim();
 
     if (!email || !motivo || !Number.isInteger(dias) || dias < 1 || dias > 3650) {
-        mensagem("Informe e-mail, duração válida e motivo da cortesia.", "erro");
+        exibirResultadoCortesia(
+            "Informe um usuário cadastrado, uma duração entre 1 e 3650 dias e o motivo da cortesia.",
+            "erro"
+        );
+        return;
+    }
+
+    const usuarioCadastrado = usuariosAdmin.find(
+        usuario => String(usuario.email || "").trim().toLowerCase() === email
+    );
+
+    if (usuariosAdmin.length > 0 && !usuarioCadastrado) {
+        exibirResultadoCortesia(
+            `Nenhum usuário foi encontrado com o e-mail ${email}. Selecione um e-mail da lista de usuários cadastrados.`,
+            "erro"
+        );
+        campoEmail?.focus();
         return;
     }
 
@@ -492,6 +573,13 @@ async function concederCortesia(evento) {
         motivo,
         confirmarAssinaturaAtiva: false
     };
+    const textoOriginalBotao = botao?.textContent;
+
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Concedendo...";
+        botao.setAttribute("aria-busy", "true");
+    }
 
     try {
         let resposta;
@@ -504,6 +592,7 @@ async function concederCortesia(evento) {
             }
 
             if (!window.confirm(`${erro.message}\n\nDeseja realmente continuar?`)) {
+                exibirResultadoCortesia("Concessão de cortesia cancelada.", "aviso");
                 return;
             }
 
@@ -513,17 +602,25 @@ async function concederCortesia(evento) {
             });
         }
 
-        mensagem(resposta.mensagem || "Cortesia concedida.");
-        evento.currentTarget.reset();
-        document.getElementById("cortesiaDias").value = "30";
-        await Promise.all([carregarUsuarios(), carregarResumo(), carregarAuditoriaAcessos()]);
-    } catch (erro) {
-        mensagem(
-            erro instanceof ApiError
-                ? erro.message
-                : "Não foi possível conceder a cortesia.",
-            "erro"
+        exibirResultadoCortesia(
+            resposta.mensagem || `Cortesia de ${dias} dias concedida para ${email}.`
         );
+        formulario.reset();
+        campoDias.value = "30";
+
+        await Promise.allSettled([
+            carregarUsuarios(),
+            carregarResumo(),
+            carregarAuditoriaAcessos()
+        ]);
+    } catch (erro) {
+        exibirResultadoCortesia(descreverErroCortesia(erro), "erro");
+    } finally {
+        if (botao) {
+            botao.disabled = false;
+            botao.textContent = textoOriginalBotao || "Conceder cortesia";
+            botao.removeAttribute("aria-busy");
+        }
     }
 }
 
