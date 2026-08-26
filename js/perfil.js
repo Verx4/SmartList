@@ -1,6 +1,8 @@
 import { api } from "./api.js";
 import { exigirAutenticacao, sair, usuarioAtual } from "./auth.js";
 
+let assinaturaAtual;
+
 function exibirMensagem(texto, tipo = "sucesso") {
     const area = document.getElementById("mensagemPerfil");
 
@@ -20,19 +22,25 @@ function exibirMensagem(texto, tipo = "sucesso") {
     area.hidden = false;
 }
 
-function nomeDoPlano(usuario) {
-    if (usuario?.tipoAcesso === "PREMIUM") {
-        return "Plano Premium";
+function nomeDoPlano(usuario, assinatura) {
+    if (assinatura) {
+        return "Plano Premium — Pagante";
     }
 
     if (usuario?.tipoAcesso === "CORTESIA") {
-        return "Plano Cortesia";
+        return "Plano Premium — Cortesia";
+    }
+
+    if (usuario?.tipoAcesso === "PREMIUM") {
+        return assinatura === null
+            ? "Plano Premium — Acesso manual"
+            : "Plano Premium";
     }
 
     return "Plano Free";
 }
 
-function preencherPerfil(usuario) {
+function preencherPerfil(usuario, assinatura = assinaturaAtual) {
     const formulario = document.getElementById("formPerfil");
 
     if (!formulario || !usuario) {
@@ -65,7 +73,7 @@ function preencherPerfil(usuario) {
     }
 
     if (plano) {
-        plano.textContent = nomeDoPlano(usuario);
+        plano.textContent = nomeDoPlano(usuario, assinatura);
     }
 }
 
@@ -75,13 +83,17 @@ const formulario = document.getElementById("formPerfil");
 preencherPerfil(usuarioAtual());
 
 if (formulario) {
-    api.get("/usuarios/me")
-        .then(usuario => {
+    Promise.all([
+        api.get("/usuarios/me"),
+        api.get("/assinaturas/atual")
+    ])
+        .then(([usuario, assinatura]) => {
+            assinaturaAtual = assinatura;
             localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
             window.dispatchEvent(new CustomEvent("usuarioatualizado", {
                 detail: { usuario }
             }));
-            preencherPerfil(usuario);
+            preencherPerfil(usuario, assinatura);
         })
         .catch(erro => exibirMensagem(erro.message, "erro"));
 
@@ -110,7 +122,7 @@ if (formulario) {
             window.dispatchEvent(new CustomEvent("usuarioatualizado", {
                 detail: { usuario }
             }));
-            preencherPerfil(usuario);
+            preencherPerfil(usuario, assinaturaAtual);
             exibirMensagem("Dados atualizados com sucesso.");
         } catch (erro) {
             exibirMensagem(erro.message, "erro");
