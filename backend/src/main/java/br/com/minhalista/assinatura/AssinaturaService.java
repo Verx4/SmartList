@@ -171,6 +171,13 @@ public class AssinaturaService {
             repository.findByMercadoPagoPagamentoId(pagamentoId);
 
         if (pagamentoExistente.isPresent()) {
+            Assinatura existente = pagamentoExistente.get();
+
+            if (existente.getId().equals(assinatura.getId())
+                && existente.getStatus() == StatusAssinatura.ATIVA) {
+                existente.getUsuario().setTipoAcesso(TipoAcesso.PREMIUM);
+            }
+
             return;
         }
 
