@@ -727,7 +727,7 @@ async function carregarAuditoriaAcessos() {
     }
 
     try {
-        const resposta = await api.get("/admin/usuarios/auditoria");
+        const resposta = await api.get(`/admin/usuarios/auditoria?atualizacao=${Date.now()}`);
         renderizarAuditoriaAcessos(Array.isArray(resposta) ? resposta : []);
     } catch (erro) {
         renderizarAuditoriaAcessos([]);
@@ -760,8 +760,11 @@ async function limparAuditoriaAcessos() {
     botao.setAttribute("aria-busy", "true");
 
     try {
-        const resposta = await api.delete("/admin/usuarios/auditoria");
-        renderizarAuditoriaAcessos([]);
+        const resposta = await api.post(
+            "/admin/usuarios/auditoria/limpar",
+            {}
+        );
+        await carregarAuditoriaAcessos();
         mensagem(
             resposta?.mensagem || "Histórico de auditoria removido com sucesso."
         );
