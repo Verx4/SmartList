@@ -234,31 +234,69 @@ async function preencherPlanoAtual() {
     }
 }
 
-function mostrarRetornoPagamento() {
-    const status = new URLSearchParams(window.location.search).get("pagamento");
+async function mostrarRetornoPagamento() {
+    const parametros = new URLSearchParams(window.location.search);
+    const retorno = parametros.get("pagamento");
 
-    const mensagens = {
-        sucesso:
-            "Pagamento enviado. O Premium será liberado após a confirmação automática do Mercado Pago.",
-        pendente:
-            "Pagamento pendente. Assim que o Mercado Pago confirmar, o Premium será liberado.",
-        falha:
-            "O pagamento não foi concluído. Nenhuma assinatura foi ativada."
-    };
+    if (!retorno) {
+        return;
+    }
 
-    if (mensagens[status]) {
+    if (retorno === "falha") {
         mostrarMensagem(
-            mensagens[status],
-            status === "falha" ? "erro" : "sucesso"
+            "O pagamento não foi concluído. Nenhuma assinatura foi ativada.",
+            "erro"
+        );
+        return;
+    }
+
+    const pagamentoId =
+        parametros.get("payment_id")
+        || parametros.get("collection_id");
+
+    if (!pagamentoId) {
+        mostrarMensagem(
+            retorno === "pendente"
+                ? "Pagamento pendente. Assim que o Mercado Pago confirmar, o Premium será liberado automaticamente."
+                : "Pagamento recebido. O Premium será liberado após a confirmação automática do Mercado Pago.",
+            "aviso"
+        );
+        return;
+    }
+
+    try {
+        const confirmacao = await api.post(
+            "/assinaturas/confirmar-pagamento",
+            { pagamentoId }
+        );
+
+        mostrarMensagem(
+            confirmacao.mensagem,
+            confirmacao.premiumAtivo ? "sucesso" : "aviso"
+        );
+
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+        );
+    } catch (erro) {
+        const mensagem = erro instanceof ApiError
+            ? erro.message
+            : "Não foi possível confirmar o pagamento agora.";
+
+        mostrarMensagem(
+            `${mensagem} O webhook continuará tentando liberar o Premium automaticamente.`,
+            "erro"
         );
     }
 }
 
 async function iniciar() {
+    await mostrarRetornoPagamento();
     await preencherPlanoAtual();
     atualizarCardPremium();
     preencherCheckout();
-    mostrarRetornoPagamento();
 
     document
         .querySelectorAll('input[name="cicloPremium"]')
