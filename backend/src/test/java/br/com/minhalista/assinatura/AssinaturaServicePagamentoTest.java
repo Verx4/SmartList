@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -82,6 +83,27 @@ class AssinaturaServicePagamentoTest {
         assertTrue(confirmado);
         assertEquals(StatusAssinatura.ATIVA, assinatura.getStatus());
         assertEquals("123456", assinatura.getMercadoPagoPagamentoId());
+        assertEquals(TipoAcesso.PREMIUM, usuario.getTipoAcesso());
+    }
+
+    @Test
+    void confirmacaoRepetidaRestauraAcessoPremium() {
+        PagamentoConsultado pagamento =
+            pagamento(new BigDecimal("9.97"), "BRL");
+        assinatura.setStatus(StatusAssinatura.ATIVA);
+        assinatura.setMercadoPagoPagamentoId("123456");
+        assinatura.setVenceEm(Instant.now().plusSeconds(3600));
+        usuario.setTipoAcesso(TipoAcesso.FREE);
+
+        when(repository.findByMercadoPagoPagamentoId("123456"))
+            .thenReturn(Optional.of(assinatura));
+
+        boolean confirmado = service.confirmarPagamentoDoUsuario(
+            pagamento,
+            usuario.getId()
+        );
+
+        assertTrue(confirmado);
         assertEquals(TipoAcesso.PREMIUM, usuario.getTipoAcesso());
     }
 
