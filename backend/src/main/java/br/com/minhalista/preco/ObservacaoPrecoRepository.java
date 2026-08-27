@@ -26,6 +26,8 @@ public interface ObservacaoPrecoRepository
 
     Page<ObservacaoPreco> findByProdutoIdOrderByRealizadaEmDesc(UUID produtoId, Pageable pageable);
 
+    List<ObservacaoPreco> findByOrigemAndCompraChaveOrderByCriadoEmAsc(OrigemPreco origem, String compraChave);
+
     @Query("""
         select o.produto.id as produtoId,
                count(o) as totalObservacoes,
@@ -49,6 +51,87 @@ public interface ObservacaoPrecoRepository
           from ObservacaoPreco o
         """)
     ResumoGeral resumir();
+
+    @Query("""
+        select count(distinct o.compraChave) as totalCompras,
+               count(o) as totalItens,
+               count(distinct o.usuario.id) as totalUsuarios,
+               count(distinct o.mercado) as totalMercados,
+               coalesce(sum(o.subtotal), 0) as valorTotal
+          from ObservacaoPreco o
+         where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
+        """)
+    ResumoCompras resumirCompras();
+
+    @Query("""
+        select o.compraChave as compraId,
+               o.usuario.id as usuarioId,
+               o.usuario.nome as usuarioNome,
+               o.mercado as mercado,
+               o.cidade as cidade,
+               o.estado as estado,
+               max(o.realizadaEm) as realizadaEm,
+               count(o) as totalItens,
+               sum(o.subtotal) as valorTotal
+          from ObservacaoPreco o
+         where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
+           and (:mercado = '' or o.mercado = :mercado)
+           and (:usuario = '' or lower(o.usuario.nome) = lower(:usuario))
+           and (:inicio is null or o.realizadaEm >= :inicio)
+           and (:fim is null or o.realizadaEm <= :fim)
+           and (
+                :busca = ''
+                or lower(o.compraChave) like lower(concat('%', :busca, '%'))
+                or lower(coalesce(o.mercado, '')) like lower(concat('%', :busca, '%'))
+                or lower(coalesce(o.usuario.nome, '')) like lower(concat('%', :busca, '%'))
+                or exists (
+                    select x.id from ObservacaoPreco x
+                     where x.compraChave = o.compraChave
+                       and lower(x.nomeOriginal) like lower(concat('%', :busca, '%'))
+                )
+           )
+         group by o.compraChave, o.usuario.id, o.usuario.nome, o.mercado, o.cidade, o.estado
+         order by max(o.realizadaEm) desc
+        """)
+    List<CompraAgregada> listarCompras(
+        @Param("busca") String busca,
+        @Param("mercado") String mercado,
+        @Param("usuario") String usuario,
+        @Param("inicio") Instant inicio,
+        @Param("fim") Instant fim,
+        Pageable pageable
+    );
+
+    @Query("""
+        select count(distinct o.compraChave)
+          from ObservacaoPreco o
+         where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
+           and (:mercado = '' or o.mercado = :mercado)
+           and (:usuario = '' or lower(o.usuario.nome) = lower(:usuario))
+           and (:inicio is null or o.realizadaEm >= :inicio)
+           and (:fim is null or o.realizadaEm <= :fim)
+           and (
+                :busca = ''
+                or lower(o.compraChave) like lower(concat('%', :busca, '%'))
+                or lower(coalesce(o.mercado, '')) like lower(concat('%', :busca, '%'))
+                or lower(coalesce(o.usuario.nome, '')) like lower(concat('%', :busca, '%'))
+                or exists (
+                    select x.id from ObservacaoPreco x
+                     where x.compraChave = o.compraChave
+                       and lower(x.nomeOriginal) like lower(concat('%', :busca, '%'))
+                )
+           )
+        """)
+    long contarCompras(
+        @Param("busca") String busca,
+        @Param("mercado") String mercado,
+        @Param("usuario") String usuario,
+        @Param("inicio") Instant inicio,
+        @Param("fim") Instant fim
+    );
+
+    @Query("select distinct o.usuario.nome from ObservacaoPreco o where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO and o.usuario is not null order by o.usuario.nome")
+    List<String> listarUsuariosCompras();
 
     @Query("""
         select coalesce(o.estado, 'Não informado') as nome,
@@ -95,6 +178,26 @@ public interface ObservacaoPrecoRepository
         long getTotalEstados();
         Instant getPrimeiraCompraEm();
         Instant getUltimaCompraEm();
+    }
+
+    interface ResumoCompras {
+        long getTotalCompras();
+        long getTotalItens();
+        long getTotalUsuarios();
+        long getTotalMercados();
+        BigDecimal getValorTotal();
+    }
+
+    interface CompraAgregada {
+        String getCompraId();
+        UUID getUsuarioId();
+        String getUsuarioNome();
+        String getMercado();
+        String getCidade();
+        String getEstado();
+        Instant getRealizadaEm();
+        long getTotalItens();
+        BigDecimal getValorTotal();
     }
 
     interface AnaliseAgrupada {
