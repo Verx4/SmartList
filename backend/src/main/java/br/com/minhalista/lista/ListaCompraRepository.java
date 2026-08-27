@@ -18,5 +18,7 @@ public interface ListaCompraRepository extends JpaRepository<ListaCompra, UUID> 
         StatusLista status
     );
 
+    Optional<ListaCompra> findByIdAndUsuarioId(UUID id, UUID usuarioId);
+
     long countByStatus(StatusLista status);
 }

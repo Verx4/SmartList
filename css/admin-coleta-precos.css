@@ -1,0 +1,21 @@
+.coleta-filtros,
+.coleta-detalhe,
+.coleta-analises .card { padding: 22px; margin-bottom: 22px; }
+.coleta-filtros-grid { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 14px; align-items: end; }
+.coleta-filtros-grid label,
+.coleta-categoria-manual { display: grid; gap: 7px; color: var(--cor-texto-secundario, #94a3b8); font-size: .85rem; font-weight: 700; }
+.coleta-filtros-grid input,
+.coleta-filtros-grid select,
+.coleta-categoria-manual select { min-height: 44px; padding: 0 12px; border: 1px solid var(--cor-borda, #26334b); border-radius: 10px; color: var(--cor-texto, #fff); background: var(--cor-superficie-secundaria, #1f2937); }
+.coleta-filtros-acoes { display: flex; gap: 8px; }
+.coleta-paginacao { display: flex; align-items: center; justify-content: center; gap: 14px; padding-top: 18px; }
+.coleta-paginacao span { color: var(--cor-texto-secundario, #94a3b8); }
+.coleta-analises { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.coleta-categoria-manual { max-width: 380px; margin-bottom: 18px; }
+.coleta-grafico { display: flex; align-items: end; gap: 6px; min-height: 210px; padding: 18px 10px 8px; margin-bottom: 20px; overflow-x: auto; border: 1px solid var(--cor-borda, #26334b); border-radius: 12px; }
+.coleta-grafico-barra { position: relative; flex: 1 0 28px; min-width: 28px; max-width: 52px; height: var(--altura); min-height: 4px; border-radius: 7px 7px 2px 2px; background: linear-gradient(180deg, #60a5fa, #2563eb); }
+.coleta-grafico-barra span { position: absolute; bottom: calc(100% + 5px); left: 50%; color: var(--cor-texto-secundario, #94a3b8); font-size: .68rem; white-space: nowrap; transform: translateX(-50%) rotate(-35deg); transform-origin: center; }
+.coleta-origem { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: #1d4ed8; color: #fff; font-size: .72rem; font-weight: 800; }
+.coleta-vazio { padding: 26px; color: var(--cor-texto-secundario, #94a3b8); text-align: center; }
+@media (max-width: 1080px) { .coleta-filtros-grid { grid-template-columns: repeat(2, minmax(150px, 1fr)); } }
+@media (max-width: 720px) { .coleta-filtros-grid, .coleta-analises { grid-template-columns: 1fr; } .coleta-filtros-acoes .btn { flex: 1; } }

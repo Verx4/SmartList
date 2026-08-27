@@ -64,6 +64,10 @@ import {
     obterRegraMedida
 } from "./medidas-produtos.js";
 import { resolverCategoriaSelecionada } from "./categorias.js";
+import {
+    enfileirarColetaPreco,
+    sincronizarColetasPendentes
+} from "./coleta-precos.js";
 
 import {
     animarAberturaModal,
@@ -736,6 +740,9 @@ function concluirCompra() {
         const resultado =
             registrarCompra(produtos);
 
+        enfileirarColetaPreco(resultado.compra);
+        void sincronizarColetasPendentes();
+
         const produtosParaProximaCompra =
             resultado.produtosAtualizados.map(produto => ({
                 ...produto,
@@ -1029,6 +1036,7 @@ function iniciarAplicacao() {
     preencherUsuarioDashboard();
     configurarEventos();
     atualizarTela();
+    void sincronizarColetasPendentes();
 
 }
 

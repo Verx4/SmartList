@@ -20,6 +20,13 @@
     gap: 12px;
 }
 
+.lista-atual-metadados {
+    max-width: 260px;
+    color: var(--text-muted, #9aa8be);
+    font-size: .8rem;
+    line-height: 1.35;
+}
+
 .listas-salvas-titulo > span { font-size: 1.6rem; }
 .listas-salvas-titulo div { display: grid; gap: 2px; }
 .listas-salvas-titulo strong { font-size: 1rem; }
@@ -68,6 +75,7 @@
 
     .listas-salvas-card { padding: 14px; border-radius: 18px; }
     .listas-salvas-controles { gap: 10px; }
+    .lista-atual-metadados { max-width: none; }
     .listas-salvas-controles select { width: 100%; max-width: none; min-width: 0; }
     .listas-salvas-controles .btn { width: 100%; }
     .listas-salvas-botoes .btn-excluir-lista { width: auto; }

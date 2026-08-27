@@ -16,6 +16,7 @@ public record ListaCompraResponse(
     UUID mercadoId,
     String mercado,
     List<ItemListaResponse> itens,
+    String criador,
     Instant criadoEm,
     Instant finalizadoEm
 ) {
