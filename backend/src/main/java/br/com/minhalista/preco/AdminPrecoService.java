@@ -37,8 +37,60 @@ public class AdminPrecoService {
         ObservacaoPrecoRepository.ResumoGeral r = observacaoRepository.resumir();
         return new ResumoResponse(r == null ? 0 : r.getTotalObservacoes(), r == null ? 0 : r.getTotalProdutos(), r == null ? 0 : r.getTotalMercados(), r == null ? 0 : r.getTotalEstados(), r == null ? null : r.getPrimeiraCompraEm(), r == null ? null : r.getUltimaCompraEm());
     }
+
+    @Transactional(readOnly = true)
+    public ResumoComprasResponse resumoCompras() {
+        ObservacaoPrecoRepository.ResumoCompras r = observacaoRepository.resumirCompras();
+        return new ResumoComprasResponse(
+            r == null ? 0 : r.getTotalCompras(),
+            r == null ? 0 : r.getTotalUsuarios(),
+            r == null ? 0 : r.getTotalMercados(),
+            r == null || r.getValorTotal() == null ? BigDecimal.ZERO : r.getValorTotal(),
+            r == null ? 0 : r.getTotalItens()
+        );
+    }
+
     @Transactional(readOnly = true)
     public FiltrosResponse filtros() { return new FiltrosResponse(ColetaPrecoService.CATEGORIAS, observacaoRepository.listarEstados(), observacaoRepository.listarCidades(), observacaoRepository.listarMercados(), List.of(OrigemPreco.values()).stream().map(Enum::name).toList()); }
+
+    @Transactional(readOnly = true)
+    public ComprasFiltrosResponse filtrosCompras() {
+        return new ComprasFiltrosResponse(observacaoRepository.listarMercados(), observacaoRepository.listarUsuariosCompras());
+    }
+
+    @Transactional(readOnly = true)
+    public PaginaResponse<CompraResumoResponse> compras(String busca, String mercado, String usuario, Instant inicio, Instant fim, int pagina, int tamanho) {
+        int paginaSegura = Math.max(0, pagina);
+        int tamanhoSeguro = limitarTamanho(tamanho);
+        String buscaSegura = busca == null ? "" : busca.trim();
+        String mercadoSeguro = mercado == null ? "" : mercado.trim();
+        String usuarioSeguro = usuario == null ? "" : usuario.trim();
+        Pageable pageable = PageRequest.of(paginaSegura, tamanhoSeguro);
+        List<CompraResumoResponse> conteudo = observacaoRepository
+            .listarCompras(buscaSegura, mercadoSeguro, usuarioSeguro, inicio, fim, pageable)
+            .stream()
+            .map(this::compraResumo)
+            .toList();
+        long total = observacaoRepository.contarCompras(buscaSegura, mercadoSeguro, usuarioSeguro, inicio, fim);
+        int totalPaginas = total == 0 ? 0 : (int) Math.ceil((double) total / tamanhoSeguro);
+        return new PaginaResponse<>(conteudo, paginaSegura, tamanhoSeguro, total, totalPaginas, paginaSegura + 1 < totalPaginas, paginaSegura > 0);
+    }
+
+    @Transactional(readOnly = true)
+    public CompraDetalheResponse compra(String compraId) {
+        List<ObservacaoPreco> itens = observacaoRepository.findByOrigemAndCompraChaveOrderByCriadoEmAsc(OrigemPreco.COMPRA_USUARIO, compraId);
+        if (itens.isEmpty()) throw new RegraNegocioException(HttpStatus.NOT_FOUND, "Compra não encontrada.");
+        ObservacaoPreco primeiro = itens.get(0);
+        BigDecimal total = itens.stream().map(ObservacaoPreco::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Instant realizadaEm = itens.stream().map(ObservacaoPreco::getRealizadaEm).max(Instant::compareTo).orElse(primeiro.getRealizadaEm());
+        return new CompraDetalheResponse(
+            compraId,
+            primeiro.getUsuario() == null ? null : primeiro.getUsuario().getId(),
+            primeiro.getUsuario() == null ? "Usuário não identificado" : primeiro.getUsuario().getNome(),
+            primeiro.getMercado(), primeiro.getCidade(), primeiro.getEstado(), realizadaEm,
+            itens.size(), total, itens.stream().map(this::observacao).toList()
+        );
+    }
 
     @Transactional(readOnly = true)
     public PaginaResponse<ProdutoResumoResponse> produtos(Filtro filtro, int pagina, int tamanho) {
@@ -81,6 +133,10 @@ public class AdminPrecoService {
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseEstados() { return observacaoRepository.analisarPorEstado().stream().map(this::analise).toList(); }
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseMercados() { return observacaoRepository.analisarPorMercado().stream().map(this::analise).toList(); }
 
+    private CompraResumoResponse compraResumo(ObservacaoPrecoRepository.CompraAgregada c) {
+        return new CompraResumoResponse(c.getCompraId(), c.getUsuarioId(), c.getUsuarioNome(), c.getMercado(), c.getCidade(), c.getEstado(), c.getRealizadaEm(), c.getTotalItens(), c.getValorTotal());
+    }
+
     private Specification<ProdutoPreco> especificacaoProdutos(Filtro filtro) {
         return (root, query, cb) -> {
             List<Predicate> p = new ArrayList<>();
@@ -111,7 +167,11 @@ public class AdminPrecoService {
 
     public record Filtro(String busca, String categoria, String estado, String cidade, String mercado, OrigemPreco origem, Instant inicio, Instant fim) {}
     public record ResumoResponse(long totalObservacoes, long totalProdutos, long totalMercados, long totalEstados, Instant primeiraCompraEm, Instant ultimaCompraEm) {}
+    public record ResumoComprasResponse(long totalCompras, long totalUsuarios, long totalMercados, BigDecimal valorTotal, long totalItens) {}
     public record FiltrosResponse(List<String> categorias, List<String> estados, List<String> cidades, List<String> mercados, List<String> origens) {}
+    public record ComprasFiltrosResponse(List<String> mercados, List<String> usuarios) {}
+    public record CompraResumoResponse(String compraId, UUID usuarioId, String usuarioNome, String mercado, String cidade, String estado, Instant realizadaEm, long totalItens, BigDecimal valorTotal) {}
+    public record CompraDetalheResponse(String compraId, UUID usuarioId, String usuarioNome, String mercado, String cidade, String estado, Instant realizadaEm, int totalItens, BigDecimal valorTotal, List<ObservacaoResponse> itens) {}
     public record ProdutoResumoResponse(UUID id, String nome, String nomeNormalizado, String categoria, long totalObservacoes, BigDecimal precoMinimo, BigDecimal precoMedio, BigDecimal precoMaximo, Instant ultimaCompraEm, Instant criadoEm, Instant atualizadoEm) {}
     public record ObservacaoResponse(UUID id, UUID produtoId, String produto, String categoria, String nomeOriginal, BigDecimal quantidade, String unidade, BigDecimal precoUnitario, BigDecimal subtotal, String mercado, String cidade, String estado, Instant realizadaEm, String origem, UUID usuarioId, String usuarioNome, String compraId, String itemId, Instant criadoEm) {}
     public record ProdutoDetalheResponse(ProdutoResumoResponse produto, List<ObservacaoResponse> observacoesRecentes) {}
