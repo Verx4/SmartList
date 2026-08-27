@@ -95,8 +95,11 @@ public class ListaCompraService {
         ItemLista item = itemRepository.findByIdAndListaId(itemId, lista.getId())
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Item não encontrado."));
 
+        String nomeRemovido = item.getNome();
         lista.removerItem(item);
-        return montarResposta(listaRepository.save(lista));
+        ListaCompra salva = listaRepository.save(lista);
+        coletaPrecoService.removerProdutoSemObservacoesPorNome(nomeRemovido);
+        return montarResposta(salva);
     }
 
     @Transactional
