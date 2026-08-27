@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+import br.com.minhalista.usuario.Usuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,7 +31,8 @@ import jakarta.persistence.UniqueConstraint;
         @Index(name = "idx_observacoes_precos_produto_data", columnList = "produto_id, realizada_em"),
         @Index(name = "idx_observacoes_precos_mercado_data", columnList = "mercado, realizada_em"),
         @Index(name = "idx_observacoes_precos_estado_cidade", columnList = "estado, cidade"),
-        @Index(name = "idx_observacoes_precos_origem", columnList = "origem")
+        @Index(name = "idx_observacoes_precos_origem", columnList = "origem"),
+        @Index(name = "idx_observacoes_precos_usuario", columnList = "usuario_id")
     }
 )
 public class ObservacaoPreco {
@@ -42,6 +44,10 @@ public class ObservacaoPreco {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "produto_id", nullable = false)
     private ProdutoPreco produto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 
     @Column(name = "nome_original", nullable = false, length = 180)
     private String nomeOriginal;
@@ -91,6 +97,8 @@ public class ObservacaoPreco {
     public UUID getId() { return id; }
     public ProdutoPreco getProduto() { return produto; }
     public void setProduto(ProdutoPreco produto) { this.produto = produto; }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
     public String getNomeOriginal() { return nomeOriginal; }
     public void setNomeOriginal(String nomeOriginal) { this.nomeOriginal = nomeOriginal; }
     public BigDecimal getQuantidade() { return quantidade; }
