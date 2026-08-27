@@ -4,6 +4,11 @@ import {
     listarListasSalvas,
     selecionarListaSalva
 } from "./produtos.js";
+import {
+    adicionarMercadoFrequente,
+    listarMercadosFrequentes,
+    obterMercadoAtual
+} from "./mercado-atual.js";
 
 ativarGerenciadorDeListas();
 
@@ -16,12 +21,13 @@ function ativarGerenciadorDeListas() {
     if (!document.querySelector('link[data-listas-salvas="true"]')) {
         const estilo = document.createElement("link");
         estilo.rel = "stylesheet";
-        estilo.href = "./css/listas-salvas.css?v=2";
+        estilo.href = "./css/listas-salvas.css?v=3";
         estilo.dataset.listasSalvas = "true";
         document.head.appendChild(estilo);
     }
 
     const listas = listarListasSalvas();
+    const mercados = listarMercadosFrequentes();
     const gerenciador = document.createElement("section");
     gerenciador.id = "gerenciadorListasSalvas";
     gerenciador.className = "listas-salvas-card";
@@ -43,8 +49,25 @@ function ativarGerenciadorDeListas() {
         </div>
         <div class="listas-salvas-nova" role="dialog" aria-modal="true" aria-labelledby="tituloNovaLista" hidden>
             <strong id="tituloNovaLista">Criar nova lista</strong>
+
             <label for="nomeNovaLista">Nome da nova lista</label>
-            <div><input id="nomeNovaLista" type="text" maxlength="80" placeholder="Ex.: Compra do mês"><button type="button" class="btn btn-primary" id="salvarNovaLista">Criar</button><button type="button" class="btn btn-secondary" id="cancelarNovaLista">Cancelar</button></div>
+            <div class="listas-salvas-campo">
+                <input id="nomeNovaLista" type="text" maxlength="80" placeholder="Ex.: Compra do mês" required>
+            </div>
+
+            <label for="mercadoNovaLista">Nome do mercado</label>
+            <div class="listas-salvas-campo">
+                <input id="mercadoNovaLista" type="text" maxlength="80" list="mercadosNovaLista"
+                    placeholder="Ex.: Assaí, Atacadão..." autocomplete="organization" required>
+                <datalist id="mercadosNovaLista">
+                    ${mercados.map(mercado => `<option value="${escapar(mercado)}"></option>`).join("")}
+                </datalist>
+            </div>
+
+            <div class="listas-salvas-acoes">
+                <button type="button" class="btn btn-primary" id="salvarNovaLista">Criar</button>
+                <button type="button" class="btn btn-secondary" id="cancelarNovaLista">Cancelar</button>
+            </div>
         </div>`;
 
     referencia.before(gerenciador);
@@ -67,11 +90,13 @@ function ativarGerenciadorDeListas() {
         gerenciador.classList.add("criando-lista");
         document.body.classList.add("criando-lista-aberta");
         formulario.hidden = false;
-        const campo = formulario.querySelector("input");
-        campo.value = `Lista ${listas.length + 1}`;
+        const campoNome = formulario.querySelector("#nomeNovaLista");
+        const campoMercado = formulario.querySelector("#mercadoNovaLista");
+        campoNome.value = `Lista ${listas.length + 1}`;
+        campoMercado.value = obterMercadoAtual();
         requestAnimationFrame(() => {
-            campo.focus();
-            campo.select();
+            campoNome.focus();
+            campoNome.select();
         });
     });
 
@@ -85,23 +110,39 @@ function ativarGerenciadorDeListas() {
     gerenciador.querySelector("#cancelarNovaLista").addEventListener("click", fecharFormulario);
 
     gerenciador.querySelector("#salvarNovaLista").addEventListener("click", () => {
-        const campo = gerenciador.querySelector("#nomeNovaLista");
-        const nome = campo.value.trim();
+        const campoNome = gerenciador.querySelector("#nomeNovaLista");
+        const campoMercado = gerenciador.querySelector("#mercadoNovaLista");
+        const nome = campoNome.value.trim();
+        const mercado = campoMercado.value.trim();
+
         if (!nome) {
-            campo.setCustomValidity("Digite um nome para a nova lista.");
-            campo.reportValidity();
+            campoNome.setCustomValidity("Digite um nome para a nova lista.");
+            campoNome.reportValidity();
             return;
         }
-        campo.setCustomValidity("");
-        criarListaSalva(nome, { ativar: true });
+
+        campoNome.setCustomValidity("");
+
+        if (!mercado) {
+            campoMercado.setCustomValidity("Digite ou selecione o nome do mercado.");
+            campoMercado.reportValidity();
+            return;
+        }
+
+        campoMercado.setCustomValidity("");
+        adicionarMercadoFrequente(mercado);
+        criarListaSalva(nome, { ativar: true, mercado });
         window.location.reload();
     });
 
-    gerenciador.querySelector("#nomeNovaLista").addEventListener("keydown", evento => {
-        if (evento.key === "Enter") {
-            evento.preventDefault();
-            gerenciador.querySelector("#salvarNovaLista").click();
-        }
+    gerenciador.querySelectorAll("#nomeNovaLista, #mercadoNovaLista").forEach(campo => {
+        campo.addEventListener("input", () => campo.setCustomValidity(""));
+        campo.addEventListener("keydown", evento => {
+            if (evento.key === "Enter") {
+                evento.preventDefault();
+                gerenciador.querySelector("#salvarNovaLista").click();
+            }
+        });
     });
 
     document.addEventListener("keydown", evento => {
