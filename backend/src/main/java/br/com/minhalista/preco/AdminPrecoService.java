@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -65,14 +66,25 @@ public class AdminPrecoService {
         String buscaSegura = busca == null ? "" : busca.trim();
         String mercadoSeguro = mercado == null ? "" : mercado.trim();
         String usuarioSeguro = usuario == null ? "" : usuario.trim();
-        Pageable pageable = PageRequest.of(paginaSegura, tamanhoSeguro);
-        List<CompraResumoResponse> conteudo = observacaoRepository
-            .listarCompras(buscaSegura, mercadoSeguro, usuarioSeguro, inicio, fim, pageable)
-            .stream()
-            .map(this::compraResumo)
-            .toList();
-        long total = observacaoRepository.contarCompras(buscaSegura, mercadoSeguro, usuarioSeguro, inicio, fim);
+
+        List<ObservacaoPreco> itens = observacaoRepository.findAll(
+            especificacaoItensCompra(buscaSegura, mercadoSeguro, usuarioSeguro, inicio, fim),
+            Sort.by(Sort.Direction.DESC, "realizadaEm")
+        );
+
+        Map<String, List<ObservacaoPreco>> grupos = new LinkedHashMap<>();
+        for (ObservacaoPreco item : itens) {
+            if (item.getCompraChave() == null || item.getCompraChave().isBlank()) continue;
+            grupos.computeIfAbsent(item.getCompraChave(), chave -> new ArrayList<>()).add(item);
+        }
+
+        List<CompraResumoResponse> todas = grupos.values().stream().map(this::compraResumo).toList();
+        long total = todas.size();
         int totalPaginas = total == 0 ? 0 : (int) Math.ceil((double) total / tamanhoSeguro);
+        int inicioPagina = Math.min(paginaSegura * tamanhoSeguro, todas.size());
+        int fimPagina = Math.min(inicioPagina + tamanhoSeguro, todas.size());
+        List<CompraResumoResponse> conteudo = todas.subList(inicioPagina, fimPagina);
+
         return new PaginaResponse<>(conteudo, paginaSegura, tamanhoSeguro, total, totalPaginas, paginaSegura + 1 < totalPaginas, paginaSegura > 0);
     }
 
@@ -133,8 +145,39 @@ public class AdminPrecoService {
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseEstados() { return observacaoRepository.analisarPorEstado().stream().map(this::analise).toList(); }
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseMercados() { return observacaoRepository.analisarPorMercado().stream().map(this::analise).toList(); }
 
-    private CompraResumoResponse compraResumo(ObservacaoPrecoRepository.CompraAgregada c) {
-        return new CompraResumoResponse(c.getCompraId(), c.getUsuarioId(), c.getUsuarioNome(), c.getMercado(), c.getCidade(), c.getEstado(), c.getRealizadaEm(), c.getTotalItens(), c.getValorTotal());
+    private CompraResumoResponse compraResumo(List<ObservacaoPreco> itens) {
+        ObservacaoPreco primeiro = itens.get(0);
+        Instant realizadaEm = itens.stream().map(ObservacaoPreco::getRealizadaEm).max(Instant::compareTo).orElse(primeiro.getRealizadaEm());
+        BigDecimal valorTotal = itens.stream().map(ObservacaoPreco::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return new CompraResumoResponse(
+            primeiro.getCompraChave(),
+            primeiro.getUsuario() == null ? null : primeiro.getUsuario().getId(),
+            primeiro.getUsuario() == null ? "Usuário não identificado" : primeiro.getUsuario().getNome(),
+            primeiro.getMercado(), primeiro.getCidade(), primeiro.getEstado(), realizadaEm,
+            itens.size(), valorTotal
+        );
+    }
+
+    private Specification<ObservacaoPreco> especificacaoItensCompra(String busca, String mercado, String usuario, Instant inicio, Instant fim) {
+        return (root, query, cb) -> {
+            List<Predicate> p = new ArrayList<>();
+            var usuarioJoin = root.join("usuario", JoinType.LEFT);
+            p.add(cb.equal(root.get("origem"), OrigemPreco.COMPRA_USUARIO));
+            if (preenchido(mercado)) p.add(cb.equal(root.get("mercado"), mercado));
+            if (preenchido(usuario)) p.add(cb.equal(cb.lower(usuarioJoin.get("nome")), usuario.toLowerCase(Locale.ROOT)));
+            if (inicio != null) p.add(cb.greaterThanOrEqualTo(root.<Instant>get("realizadaEm"), inicio));
+            if (fim != null) p.add(cb.lessThanOrEqualTo(root.<Instant>get("realizadaEm"), fim));
+            if (preenchido(busca)) {
+                String termo = "%" + busca.toLowerCase(Locale.ROOT) + "%";
+                p.add(cb.or(
+                    cb.like(cb.lower(root.get("compraChave")), termo),
+                    cb.like(cb.lower(root.get("nomeOriginal")), termo),
+                    cb.like(cb.lower(root.get("mercado")), termo),
+                    cb.like(cb.lower(usuarioJoin.get("nome")), termo)
+                ));
+            }
+            return cb.and(p.toArray(Predicate[]::new));
+        };
     }
 
     private Specification<ProdutoPreco> especificacaoProdutos(Filtro filtro) {
