@@ -1,6 +1,7 @@
 package br.com.minhalista.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,6 +57,7 @@ class DataInitializerTest {
         assertThat(usuario.getCortesiaAte()).isNotNull();
         assertThat(usuario.isAtivo()).isTrue();
         assertThat(usuario.getSenhaHash()).isEqualTo("novo-hash");
+        verify(repository).inicializarUltimosAcessosAusentes(any());
         verify(repository).save(usuario);
     }
 

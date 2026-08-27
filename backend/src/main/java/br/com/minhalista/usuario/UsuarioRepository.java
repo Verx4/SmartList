@@ -26,6 +26,15 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
     @Query("""
         update Usuario usuario
            set usuario.ultimoAcessoEm = :agora
+         where usuario.ultimoAcessoEm is null
+        """)
+    int inicializarUltimosAcessosAusentes(@Param("agora") Instant agora);
+
+    @Modifying
+    @Transactional
+    @Query("""
+        update Usuario usuario
+           set usuario.ultimoAcessoEm = :agora
          where usuario.id = :usuarioId
            and (usuario.ultimoAcessoEm is null or usuario.ultimoAcessoEm <= :limite)
         """)

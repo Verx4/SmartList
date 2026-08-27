@@ -74,7 +74,7 @@ public class Usuario implements UserDetails {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private Instant criadoEm;
 
-    @Column(name = "ultimo_acesso_em", nullable = false)
+    @Column(name = "ultimo_acesso_em")
     private Instant ultimoAcessoEm;
 
     @PrePersist
