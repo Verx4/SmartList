@@ -1,18 +1,18 @@
 package br.com.minhalista.preco;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,9 +32,10 @@ class ColetaPrecoServiceTest {
     private ObservacaoPrecoRepository observacaoRepository;
 
     @Test
-    void deveColetarCompraUmaUnicaVezSemIdentidadeDoUsuario() {
+    void deveColetarCompraUmaUnicaVezComUsuarioResponsavel() {
         ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
         Usuario usuario = new Usuario();
+        usuario.setNome("Matheus");
         usuario.setCidade("Recife");
         usuario.setEstado("pe");
         var request = new ColetaPrecoService.CompraRequest(
@@ -49,7 +50,7 @@ class ColetaPrecoServiceTest {
             ))
         );
 
-        when(produtoRepository.findByNomeNormalizado(any())).thenReturn(Optional.empty());
+        when(produtoRepository.findByNomeNormalizado(anyString())).thenReturn(Optional.empty());
         when(produtoRepository.save(any())).thenAnswer(invocacao -> invocacao.getArgument(0));
         when(observacaoRepository.existsByOrigemAndCompraChaveAndItemChave(any(), any(), any()))
             .thenReturn(false, true);
@@ -62,16 +63,44 @@ class ColetaPrecoServiceTest {
         verify(observacaoRepository).save(captor.capture());
         ObservacaoPreco observacao = captor.getValue();
         assertEquals(OrigemPreco.COMPRA_USUARIO, observacao.getOrigem());
+        assertEquals(usuario, observacao.getUsuario());
         assertEquals("Recife", observacao.getCidade());
         assertEquals("PE", observacao.getEstado());
         assertEquals("🌾 Grãos", observacao.getProduto().getCategoria());
+    }
 
-        List<String> campos = Arrays.stream(ObservacaoPreco.class.getDeclaredFields())
-            .map(Field::getName)
-            .toList();
-        assertFalse(campos.contains("usuario"));
-        assertFalse(campos.contains("email"));
-        assertFalse(campos.contains("nomeUsuario"));
+    @Test
+    void deveRemoverProdutoDoCatalogoQuandoNaoHaColetas() {
+        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
+        ProdutoPreco produto = new ProdutoPreco();
+        UUID id = UUID.randomUUID();
+        definirId(produto, id);
+        produto.setNomeExibicao("Arroz");
+        produto.setNomeNormalizado("arroz");
+
+        when(produtoRepository.findByNomeNormalizado(anyString())).thenReturn(Optional.of(produto));
+        when(observacaoRepository.existsByProdutoId(id)).thenReturn(false);
+
+        service.removerProdutoSemObservacoesPorNome("Arroz");
+
+        verify(produtoRepository).deleteById(id);
+    }
+
+    @Test
+    void naoDeveRemoverProdutoDoCatalogoQuandoExisteHistorico() {
+        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
+        ProdutoPreco produto = new ProdutoPreco();
+        UUID id = UUID.randomUUID();
+        definirId(produto, id);
+        produto.setNomeExibicao("Feijão");
+        produto.setNomeNormalizado("feijao");
+
+        when(produtoRepository.findByNomeNormalizado(anyString())).thenReturn(Optional.of(produto));
+        when(observacaoRepository.existsByProdutoId(id)).thenReturn(true);
+
+        service.removerProdutoSemObservacoesPorNome("Feijão");
+
+        verify(produtoRepository, never()).deleteById(id);
     }
 
     @Test
@@ -80,5 +109,15 @@ class ColetaPrecoServiceTest {
         assertEquals("🧼 Limpeza", service.resolverCategoria("Detergente neutro", null));
         assertEquals("📦 Outros", service.resolverCategoria("Item desconhecido", null));
         assertEquals("🥛 Laticínios", service.resolverCategoria("Qualquer nome", "🥛 Laticínios"));
+    }
+
+    private void definirId(ProdutoPreco produto, UUID id) {
+        try {
+            var campo = ProdutoPreco.class.getDeclaredField("id");
+            campo.setAccessible(true);
+            campo.set(produto, id);
+        } catch (ReflectiveOperationException erro) {
+            throw new AssertionError(erro);
+        }
     }
 }
