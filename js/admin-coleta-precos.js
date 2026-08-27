@@ -1,28 +1,183 @@
 import { api, ApiError } from "./api.js";
 import { estaAutenticado, usuarioAtual } from "./auth.js";
+
 const porId = id => document.getElementById(id);
-const estado = { paginaProdutos: 0, paginaObservacoes: 0, categorias: [], produtoAberto: null, observacaoExcluir: null };
+const estado = { pagina: 0, tamanho: 20, compraAberta: null };
 const escapar = valor => String(valor ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-const moeda = valor => valor == null ? "—" : Number(valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const data = valor => valor ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(valor)) : "—";
-const origem = valor => ({ COMPRA_USUARIO: "Compra de usuário", SCRAPING: "Scraping", API: "API", IMPORTACAO: "Importação" }[valor] || valor || "—");
-const usuarioRegistro = item => item.usuarioNome || "Usuário não identificado";
-function garantirAdmin() { if (!estaAutenticado()) { location.replace("../login.html"); return false; } const usuario = usuarioAtual(); if (usuario && String(usuario.perfil || usuario.role || "").toUpperCase() !== "ADMIN") { location.replace("../inicio.html"); return false; } return true; }
-function montarConsulta(pagina) { const params = new URLSearchParams({ pagina: String(pagina), tamanho: "20" }); const campos = { busca: porId("filtroBusca").value.trim(), categoria: porId("filtroCategoria").value, estado: porId("filtroEstado").value, cidade: porId("filtroCidade").value, mercado: porId("filtroMercado").value, origem: porId("filtroOrigem").value }; Object.entries(campos).forEach(([k,v]) => { if (v) params.set(k,v); }); const inicio=porId("filtroInicio").value, fim=porId("filtroFim").value; if(inicio)params.set("inicio",new Date(`${inicio}T00:00:00`).toISOString()); if(fim)params.set("fim",new Date(`${fim}T23:59:59.999`).toISOString()); return params.toString(); }
-function preencherSelect(id,valores,rotulos={}) { const s=porId(id), primeira=s.options[0]?.outerHTML||'<option value="">Todos</option>'; s.innerHTML=primeira+valores.map(v=>`<option value="${escapar(v)}">${escapar(rotulos[v]||v)}</option>`).join(""); }
-async function carregarFiltros(){const f=await api.get("/admin/coleta-precos/filtros");estado.categorias=f.categorias||[];preencherSelect("filtroCategoria",estado.categorias);preencherSelect("filtroEstado",f.estados||[]);preencherSelect("filtroCidade",f.cidades||[]);preencherSelect("filtroMercado",f.mercados||[]);preencherSelect("filtroOrigem",f.origens||[],{COMPRA_USUARIO:"Compra de usuário",SCRAPING:"Scraping",API:"API",IMPORTACAO:"Importação"});preencherSelect("detalheCategoria",estado.categorias);}
-async function carregarResumo(){const r=await api.get("/admin/coleta-precos/resumo");porId("totalProdutos").textContent=r.totalProdutos||0;porId("totalObservacoes").textContent=r.totalObservacoes||0;porId("totalMercados").textContent=r.totalMercados||0;porId("totalEstados").textContent=r.totalEstados||0;}
-const td=(rotulo,conteudo,classe="")=>`<td data-label="${escapar(rotulo)}"${classe?` class="${classe}"`:""}>${conteudo}</td>`;
-async function carregarProdutos(){const r=await api.get(`/admin/coleta-precos/produtos?${montarConsulta(estado.paginaProdutos)}`);porId("resumoProdutos").textContent=`${r.totalElementos||0} produto(s) encontrado(s)`;porId("paginaProdutos").textContent=`Página ${(r.pagina||0)+1} de ${Math.max(1,r.totalPaginas||0)}`;porId("produtosAnterior").disabled=!r.temAnterior;porId("produtosProxima").disabled=!r.temProxima;porId("tabelaProdutos").innerHTML=(r.conteudo||[]).map(item=>`<tr>${td("Produto",`<strong>${escapar(item.nome)}</strong>`)}${td("Categoria",escapar(item.categoria))}${td("Coletas",item.totalObservacoes)}${td("Preço médio",moeda(item.precoMedio))}${td("Faixa",`${moeda(item.precoMinimo)} – ${moeda(item.precoMaximo)}`)}${td("Última compra",data(item.ultimaCompraEm))}${td("Ações",`<button class="btn btn-secondary" type="button" data-detalhar-produto="${escapar(item.id)}">Detalhes</button>`,"coleta-acoes")}</tr>`).join("")||'<tr><td colspan="7" class="coleta-vazio">Nenhum produto para os filtros selecionados.</td></tr>';}
-async function carregarObservacoes(){const r=await api.get(`/admin/coleta-precos/observacoes?${montarConsulta(estado.paginaObservacoes)}`);if((r.totalPaginas||0)>0&&estado.paginaObservacoes>=r.totalPaginas){estado.paginaObservacoes=Math.max(0,r.totalPaginas-1);return carregarObservacoes();}porId("resumoObservacoes").textContent=`${r.totalElementos||0} registro(s) histórico(s)`;porId("paginaObservacoes").textContent=`Página ${(r.pagina||0)+1} de ${Math.max(1,r.totalPaginas||0)}`;porId("observacoesAnterior").disabled=!r.temAnterior;porId("observacoesProxima").disabled=!r.temProxima;porId("tabelaObservacoes").innerHTML=(r.conteudo||[]).map(item=>`<tr>${td("Data",data(item.realizadaEm))}${td("Produto",`<strong>${escapar(item.produto)}</strong><small>${escapar(item.categoria)}</small>`)}${td("Quantidade",`${Number(item.quantidade).toLocaleString("pt-BR")} ${escapar(item.unidade)}`)}${td("Preço unitário",moeda(item.precoUnitario))}${td("Subtotal",moeda(item.subtotal))}${td("Mercado",escapar(item.mercado||"Não informado"))}${td("Localidade",escapar([item.cidade,item.estado].filter(Boolean).join("/ ")||"Não informada"))}${td("Origem",`<span class="coleta-origem">${escapar(origem(item.origem))}</span>`)}${td("Usuário",escapar(usuarioRegistro(item)))}${td("Ações",`<button class="btn coleta-btn-excluir" type="button" data-excluir-observacao="${escapar(item.id)}" aria-label="Excluir observação de preço">🗑 Excluir</button>`,"coleta-acoes")}</tr>`).join("")||'<tr><td colspan="10" class="coleta-vazio">Nenhuma observação de preço registrada.</td></tr>';}
-function renderizarAnalise(id,dados){porId(id).innerHTML=dados.slice(0,20).map(i=>`<tr><td>${escapar(i.nome)}</td><td>${i.totalObservacoes}</td><td>${moeda(i.precoMedio)}</td></tr>`).join("")||'<tr><td colspan="3" class="coleta-vazio">Sem dados.</td></tr>';}
-async function carregarAnalises(){const[e,m]=await Promise.all([api.get("/admin/coleta-precos/analises/estados"),api.get("/admin/coleta-precos/analises/mercados")]);renderizarAnalise("analiseEstados",e||[]);renderizarAnalise("analiseMercados",m||[]);}
-function renderizarGrafico(observacoes){const dados=[...observacoes].reverse().slice(-30),max=Math.max(...dados.map(i=>Number(i.precoUnitario)||0),1);porId("graficoEvolucao").innerHTML=dados.map(i=>{const altura=Math.max(3,Math.round((Number(i.precoUnitario)/max)*85));return `<div class="coleta-grafico-barra" style="--altura:${altura}%" title="${escapar(data(i.realizadaEm))}: ${escapar(moeda(i.precoUnitario))}"><span>${escapar(moeda(i.precoUnitario))}</span></div>`;}).join("")||'<p class="coleta-vazio">Ainda não há evolução suficiente.</p>';}
-async function abrirDetalhe(id){const r=await api.get(`/admin/coleta-precos/produtos/${id}`);estado.produtoAberto=r.produto;porId("detalheNome").textContent=r.produto.nome;porId("detalheResumo").textContent=`${r.produto.totalObservacoes} coleta(s) · média ${r.produto.precoMedio==null?"sem média":moeda(r.produto.precoMedio)}`;porId("detalheCategoria").value=r.produto.categoria;renderizarGrafico(r.observacoesRecentes||[]);porId("detalheObservacoes").innerHTML=(r.observacoesRecentes||[]).slice(0,30).map(item=>`<tr>${td("Data",data(item.realizadaEm))}${td("Preço",moeda(item.precoUnitario))}${td("Mercado",escapar(item.mercado||"Não informado"))}${td("Localidade",escapar([item.cidade,item.estado].filter(Boolean).join("/ ")||"Não informada"))}${td("Origem",escapar(origem(item.origem)))}${td("Usuário",escapar(usuarioRegistro(item)))}${td("Ações",`<button class="btn coleta-btn-excluir" type="button" data-excluir-observacao="${escapar(item.id)}">🗑 Excluir</button>`,"coleta-acoes")}</tr>`).join("")||'<tr><td colspan="7" class="coleta-vazio">Nenhuma observação de preço registrada.</td></tr>';porId("detalheProduto").hidden=false;porId("detalheProduto").scrollIntoView({behavior:"smooth",block:"start"});}
-async function corrigirCategoria(){if(!estado.produtoAberto)return;estado.produtoAberto=await api.patch(`/admin/coleta-precos/produtos/${estado.produtoAberto.id}/categoria`,{categoria:porId("detalheCategoria").value});await carregarProdutos();}
-function pedirExclusao(id){estado.observacaoExcluir=id;const dialog=porId("confirmarExclusao");if(typeof dialog.showModal==="function")dialog.showModal();else if(confirm("Excluir registro?\nEsta observação de preço será removida do histórico."))excluirObservacao();}
-async function excluirObservacao(){if(!estado.observacaoExcluir)return;const id=estado.observacaoExcluir;estado.observacaoExcluir=null;await api.delete(`/admin/coleta-precos/observacoes/${id}`);await carregarResumo();await carregarProdutos();await carregarObservacoes();await carregarAnalises();if(estado.produtoAberto)await abrirDetalhe(estado.produtoAberto.id);}
-function exibirErro(erro){const msg=erro instanceof ApiError?erro.message:"Não foi possível carregar a coleta de preços.";porId("tabelaProdutos").innerHTML=`<tr><td colspan="7" class="coleta-vazio">${escapar(msg)}</td></tr>`;porId("tabelaObservacoes").innerHTML=`<tr><td colspan="10" class="coleta-vazio">${escapar(msg)}</td></tr>`;}
-async function carregarTudo(){const b=porId("atualizarPrecos");b.disabled=true;try{await Promise.all([carregarResumo(),carregarProdutos(),carregarObservacoes(),carregarAnalises()]);}catch(e){exibirErro(e);}finally{b.disabled=false;}}
-porId("formFiltros").addEventListener("submit",e=>{e.preventDefault();estado.paginaProdutos=0;estado.paginaObservacoes=0;carregarTudo();});porId("limparFiltros").addEventListener("click",()=>{porId("formFiltros").reset();estado.paginaProdutos=0;estado.paginaObservacoes=0;carregarTudo();});porId("atualizarPrecos").addEventListener("click",carregarTudo);porId("produtosAnterior").addEventListener("click",()=>{estado.paginaProdutos-=1;carregarProdutos();});porId("produtosProxima").addEventListener("click",()=>{estado.paginaProdutos+=1;carregarProdutos();});porId("observacoesAnterior").addEventListener("click",()=>{estado.paginaObservacoes-=1;carregarObservacoes();});porId("observacoesProxima").addEventListener("click",()=>{estado.paginaObservacoes+=1;carregarObservacoes();});document.addEventListener("click",e=>{const detalhe=e.target.closest("[data-detalhar-produto]");if(detalhe)abrirDetalhe(detalhe.dataset.detalharProduto);const excluir=e.target.closest("[data-excluir-observacao]");if(excluir)pedirExclusao(excluir.dataset.excluirObservacao);});porId("fecharDetalhe").addEventListener("click",()=>{porId("detalheProduto").hidden=true;estado.produtoAberto=null;});porId("detalheCategoria").addEventListener("change",corrigirCategoria);porId("confirmarExclusao").addEventListener("close",()=>{if(porId("confirmarExclusao").returnValue==="confirm")excluirObservacao().catch(exibirErro);else estado.observacaoExcluir=null;});
-if(garantirAdmin())carregarFiltros().then(carregarTudo).catch(exibirErro);
+const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const numero = valor => Number(valor || 0).toLocaleString("pt-BR");
+
+function dataPartes(valor) {
+    if (!valor) return { data: "—", hora: "—" };
+    const d = new Date(valor);
+    return {
+        data: new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(d),
+        hora: new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(d)
+    };
+}
+
+function idCurto(id) {
+    if (!id) return "—";
+    const limpo = String(id).replaceAll("-", "").toUpperCase();
+    return `#CMP${limpo.slice(0, 8)}`;
+}
+
+function garantirAdmin() {
+    if (!estaAutenticado()) {
+        location.replace("../login.html");
+        return false;
+    }
+    const usuario = usuarioAtual();
+    if (usuario && String(usuario.perfil || usuario.role || "").toUpperCase() !== "ADMIN") {
+        location.replace("../inicio.html");
+        return false;
+    }
+    return true;
+}
+
+function preencherSelect(id, valores) {
+    const select = porId(id);
+    const primeiro = select.options[0]?.outerHTML || '<option value="">Todos</option>';
+    select.innerHTML = primeiro + (valores || []).map(v => `<option value="${escapar(v)}">${escapar(v)}</option>`).join("");
+}
+
+function consulta() {
+    const params = new URLSearchParams({ pagina: String(estado.pagina), tamanho: String(estado.tamanho) });
+    const busca = porId("filtroBuscaCompra").value.trim();
+    const mercado = porId("filtroMercadoCompra").value;
+    const usuario = porId("filtroUsuarioCompra").value;
+    const inicio = porId("filtroInicioCompra").value;
+    const fim = porId("filtroFimCompra").value;
+    if (busca) params.set("busca", busca);
+    if (mercado) params.set("mercado", mercado);
+    if (usuario) params.set("usuario", usuario);
+    if (inicio) params.set("inicio", new Date(`${inicio}T00:00:00`).toISOString());
+    if (fim) params.set("fim", new Date(`${fim}T23:59:59.999`).toISOString());
+    return params.toString();
+}
+
+async function carregarResumo() {
+    const r = await api.get("/admin/coleta-precos/resumo-compras");
+    porId("totalCompras").textContent = numero(r.totalCompras);
+    porId("totalUsuarios").textContent = numero(r.totalUsuarios);
+    porId("totalMercados").textContent = numero(r.totalMercados);
+    porId("valorTotalCompras").textContent = moeda(r.valorTotal);
+    porId("totalItens").textContent = numero(r.totalItens);
+}
+
+async function carregarFiltros() {
+    const f = await api.get("/admin/coleta-precos/compras/filtros");
+    preencherSelect("filtroMercadoCompra", f.mercados || []);
+    preencherSelect("filtroUsuarioCompra", f.usuarios || []);
+}
+
+const td = (rotulo, conteudo, classe = "") => `<td data-label="${escapar(rotulo)}"${classe ? ` class="${classe}"` : ""}>${conteudo}</td>`;
+
+async function carregarCompras() {
+    const r = await api.get(`/admin/coleta-precos/compras?${consulta()}`);
+    if ((r.totalPaginas || 0) > 0 && estado.pagina >= r.totalPaginas) {
+        estado.pagina = Math.max(0, r.totalPaginas - 1);
+        return carregarCompras();
+    }
+
+    porId("contadorCompras").textContent = `(${numero(r.totalElementos)})`;
+    porId("paginaCompras").textContent = `Página ${(r.pagina || 0) + 1} de ${Math.max(1, r.totalPaginas || 0)}`;
+    porId("comprasAnterior").disabled = !r.temAnterior;
+    porId("comprasProxima").disabled = !r.temProxima;
+
+    porId("tabelaCompras").innerHTML = (r.conteudo || []).map(item => {
+        const partes = dataPartes(item.realizadaEm);
+        const local = [item.cidade, item.estado].filter(Boolean).join(", ");
+        return `<tr data-compra-row="${escapar(item.compraId)}">
+            ${td("ID Compra", `<button class="coleta-id-link" type="button" data-abrir-compra="${escapar(item.compraId)}">${escapar(idCurto(item.compraId))}</button>`)}
+            ${td("Usuário", `<strong>${escapar(item.usuarioNome || "Usuário não identificado")}</strong>`)}
+            ${td("Data", escapar(partes.data))}
+            ${td("Horário", escapar(partes.hora))}
+            ${td("Mercado", `<strong>${escapar(item.mercado || "Não informado")}</strong>${local ? `<small>${escapar(local)}</small>` : ""}`)}
+            ${td("Itens", numero(item.totalItens))}
+            ${td("Total", `<strong class="coleta-total-valor">${escapar(moeda(item.valorTotal))}</strong>`)}
+            ${td("Ações", `<button class="btn btn-secondary coleta-ver" type="button" data-abrir-compra="${escapar(item.compraId)}" aria-label="Ver detalhes da compra">Ver</button>`, "coleta-acoes")}
+        </tr>`;
+    }).join("") || '<tr><td colspan="8" class="coleta-vazio">Nenhuma compra finalizada encontrada para os filtros selecionados.</td></tr>';
+}
+
+async function abrirCompra(compraId) {
+    const r = await api.get(`/admin/coleta-precos/compras/${encodeURIComponent(compraId)}`);
+    estado.compraAberta = compraId;
+    const partes = dataPartes(r.realizadaEm);
+    porId("detalheCompraVazio").hidden = true;
+    porId("detalheCompraConteudo").hidden = false;
+    porId("detalheCompraId").textContent = idCurto(r.compraId);
+    porId("detalheUsuario").textContent = r.usuarioNome || "Usuário não identificado";
+    porId("detalheMercado").textContent = r.mercado || "Não informado";
+    porId("detalheLocalidade").textContent = [r.cidade, r.estado].filter(Boolean).join(", ") || "Não informada";
+    porId("detalheData").textContent = partes.data;
+    porId("detalheHorario").textContent = partes.hora;
+    porId("detalheItens").textContent = `${numero(r.totalItens)} item(ns)`;
+    porId("detalheTotal").textContent = moeda(r.valorTotal);
+    porId("detalheProdutosQtd").textContent = `(${numero(r.totalItens)})`;
+
+    porId("tabelaItensCompra").innerHTML = (r.itens || []).map(item => `
+        <tr>
+            ${td("Produto", `<strong>${escapar(item.nomeOriginal || item.produto)}</strong>`)}
+            ${td("Qtd", numero(item.quantidade))}
+            ${td("Unid.", escapar(item.unidade || "un"))}
+            ${td("Preço Unit.", escapar(moeda(item.precoUnitario)))}
+            ${td("Subtotal", `<strong>${escapar(moeda(item.subtotal))}</strong>`)}
+        </tr>
+    `).join("") || '<tr><td colspan="5" class="coleta-vazio">Nenhum item encontrado.</td></tr>';
+
+    document.querySelectorAll("[data-compra-row]").forEach(row => row.classList.toggle("is-selected", row.dataset.compraRow === compraId));
+    if (window.matchMedia("(max-width: 980px)").matches) porId("painelDetalheCompra").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function fecharDetalhe() {
+    estado.compraAberta = null;
+    porId("detalheCompraConteudo").hidden = true;
+    porId("detalheCompraVazio").hidden = false;
+    document.querySelectorAll("[data-compra-row]").forEach(row => row.classList.remove("is-selected"));
+}
+
+function exibirErro(erro) {
+    const msg = erro instanceof ApiError ? erro.message : "Não foi possível carregar o histórico de compras.";
+    porId("tabelaCompras").innerHTML = `<tr><td colspan="8" class="coleta-vazio">${escapar(msg)}</td></tr>`;
+}
+
+async function carregarTudo() {
+    const botao = porId("atualizarCompras");
+    botao.disabled = true;
+    try {
+        await Promise.all([carregarResumo(), carregarCompras()]);
+        if (estado.compraAberta) await abrirCompra(estado.compraAberta);
+    } catch (erro) {
+        exibirErro(erro);
+    } finally {
+        botao.disabled = false;
+    }
+}
+
+porId("formFiltrosCompras").addEventListener("submit", e => {
+    e.preventDefault();
+    estado.pagina = 0;
+    carregarCompras().catch(exibirErro);
+});
+
+porId("limparFiltrosCompras").addEventListener("click", () => {
+    porId("formFiltrosCompras").reset();
+    estado.pagina = 0;
+    carregarCompras().catch(exibirErro);
+});
+
+porId("atualizarCompras").addEventListener("click", carregarTudo);
+porId("comprasAnterior").addEventListener("click", () => { if (estado.pagina > 0) estado.pagina -= 1; carregarCompras().catch(exibirErro); });
+porId("comprasProxima").addEventListener("click", () => { estado.pagina += 1; carregarCompras().catch(exibirErro); });
+porId("fecharDetalheCompra").addEventListener("click", fecharDetalhe);
+
+document.addEventListener("click", e => {
+    const botao = e.target.closest("[data-abrir-compra]");
+    if (botao) abrirCompra(botao.dataset.abrirCompra).catch(exibirErro);
+});
+
+if (garantirAdmin()) {
+    carregarFiltros().then(carregarTudo).catch(exibirErro);
+}
