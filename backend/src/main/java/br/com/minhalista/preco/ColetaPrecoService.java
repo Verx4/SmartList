@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,6 +111,20 @@ public class ColetaPrecoService {
         String mercado = lista.getMercado() == null ? null : lista.getMercado().getNome();
         List<ItemRequest> itens = lista.getItens().stream().map(this::itemDaLista).toList();
         return coletar(usuario, new CompraRequest(lista.getId().toString(), lista.getFinalizadoEm() == null ? Instant.now() : lista.getFinalizadoEm(), mercado, null, null, itens));
+    }
+
+    @Transactional
+    public void removerProdutoSemObservacoesPorNome(String nome) {
+        String normalizado = NormalizadorProduto.normalizar(nome);
+        produtoRepository.findByNomeNormalizado(normalizado)
+            .ifPresent(produto -> removerProdutoSemObservacoes(produto.getId()));
+    }
+
+    @Transactional
+    public void removerProdutoSemObservacoes(UUID produtoId) {
+        if (!observacaoRepository.existsByProdutoId(produtoId)) {
+            produtoRepository.deleteById(produtoId);
+        }
     }
 
     private ItemRequest itemDaLista(ItemLista item) {
