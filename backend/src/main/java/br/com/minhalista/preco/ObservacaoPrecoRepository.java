@@ -77,8 +77,8 @@ public interface ObservacaoPrecoRepository
          where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
            and (:mercado = '' or o.mercado = :mercado)
            and (:usuario = '' or lower(o.usuario.nome) = lower(:usuario))
-           and (:inicio is null or o.realizadaEm >= :inicio)
-           and (:fim is null or o.realizadaEm <= :fim)
+           and o.realizadaEm >= coalesce(:inicio, o.realizadaEm)
+           and o.realizadaEm <= coalesce(:fim, o.realizadaEm)
            and (
                 :busca = ''
                 or lower(o.compraChave) like lower(concat('%', :busca, '%'))
@@ -108,8 +108,8 @@ public interface ObservacaoPrecoRepository
          where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
            and (:mercado = '' or o.mercado = :mercado)
            and (:usuario = '' or lower(o.usuario.nome) = lower(:usuario))
-           and (:inicio is null or o.realizadaEm >= :inicio)
-           and (:fim is null or o.realizadaEm <= :fim)
+           and o.realizadaEm >= coalesce(:inicio, o.realizadaEm)
+           and o.realizadaEm <= coalesce(:fim, o.realizadaEm)
            and (
                 :busca = ''
                 or lower(o.compraChave) like lower(concat('%', :busca, '%'))
