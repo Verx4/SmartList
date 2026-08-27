@@ -23,6 +23,11 @@ function numeroSeguro(valor) {
 
 }
 
+function valorInputMoeda(valor) {
+    const numero = Math.max(0, numeroSeguro(valor));
+    return numero > 0 ? numero.toFixed(2) : "";
+}
+
 
 export function formatarMoeda(valor) {
 
@@ -304,7 +309,7 @@ function montarProdutoLegado(produto) {
                             type="number"
                             min="0"
                             step="0.01"
-                            value="${numeroSeguro(produto.preco)}"
+                            value="${valorInputMoeda(produto.preco)}"
                             data-campo="preco"
                             aria-label="Preço de ${escaparHTML(produto.nome)}"
                         >
@@ -416,7 +421,7 @@ function montarLinhaPreco(preco, indice, nomeProduto) {
             <label class="preco-valor-campo">
                 <span>Valor (R$)</span>
                 <input type="number" min="0" step="0.01" inputmode="decimal"
-                    value="${preco.valor.toFixed(2)}" data-campo-preco="valor"
+                    value="${valorInputMoeda(preco.valor)}" data-campo-preco="valor"
                     aria-label="Valor do preço ${indice + 1} de ${escaparHTML(nomeProduto)}">
             </label>
             <div class="preco-quantidade-campo">
@@ -543,8 +548,8 @@ function montarProduto(produto) {
                         <small>${escaparHTML(regraMedida.motivo)}</small>
                     </label>
                     <label><span data-rotulo-valor-medida>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
-                        data-editar="valor-unitario" value="${precoPrincipal.valor.toFixed(2)}"
-                        aria-label="Valor unitário de ${escaparHTML(produto.nome)}"></label>
+                        data-editar="valor-unitario" value="${valorInputMoeda(precoPrincipal.valor)}"
+                        aria-label="Valor unitário de ${escaparHTML(produto.nome)}" placeholder="Digite o valor"></label>
                     <div class="editar-produto-acoes">
                         <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alterações</button>
                         <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>
@@ -622,7 +627,7 @@ function sincronizarPrecosComResumoEditavel(elemento, produto) {
         const campoValor = linha.querySelector('[data-campo-preco="valor"]');
         const quantidadeElemento = linha.querySelector("[data-quantidade-preco]");
 
-        if (campoValor) campoValor.value = preco.valor.toFixed(2);
+        if (campoValor) campoValor.value = valorInputMoeda(preco.valor);
         if (quantidadeElemento) quantidadeElemento.textContent = String(preco.quantidade);
 
     });
@@ -703,446 +708,59 @@ function atualizarEdicaoPorMedida(elemento, produto, medida) {
             `;
     }
 
-    const rotuloValor = elemento.querySelector("[data-rotulo-valor-medida]");
-    if (rotuloValor) {
-        rotuloValor.textContent = porPeso
-            ? "Valor do kg (R$)"
-            : "Valor unitário (R$)";
-    }
-
-    const botaoAdicionarPreco = elemento.querySelector('[data-acao="abrir-precos"]');
-    if (botaoAdicionarPreco) {
-        botaoAdicionarPreco.hidden = porPeso;
-    }
-
-    if (porPeso) {
-        const painelPrecos = elemento.querySelector(".precos-produto");
-        if (painelPrecos) painelPrecos.hidden = true;
-    }
-
-    configurarQuantidadeEditavel(elemento, produto);
+    configurarQuantidadeEditavel(elemento, produto || {});
     sincronizarPrecosComResumoEditavel(elemento, produto || {});
+}
+
+
+function obterPrecosProduto(produto) {
+
+    if (Array.isArray(produto.precos) && produto.precos.length) {
+
+        return produto.precos.map((preco, indice) => ({
+            id: preco.id ?? `${produto.id}-preco-${indice}`,
+            valor: Math.max(0, numeroSeguro(preco.valor)),
+            quantidade: Math.max(0, Math.floor(numeroSeguro(preco.quantidade)))
+        }));
+
+    }
+
+    return [{
+        id: `${produto.id}-preco-principal`,
+        valor: Math.max(0, numeroSeguro(produto.preco)),
+        quantidade: Math.max(0, Math.floor(numeroSeguro(produto.quantidade)))
+    }];
 
 }
 
 
-function obterAlteracoesDaEdicao(elemento, produto) {
+function resumirProduto(produto) {
 
-    const campoNome = elemento.querySelector('[data-editar="nome"]');
-    const nome = campoNome?.value.trim();
+    const precos = obterPrecosProduto(produto);
+    const porPeso = ehHortifruti(produto);
+    const peso = Math.max(0, numeroSeguro(produto.peso));
 
-    if (!nome) {
-        campoNome?.setCustomValidity("Digite o nome do produto.");
-        campoNome?.reportValidity();
-        return null;
+    if (porPeso) {
+        const valor = precos[0]?.valor || 0;
+        return {
+            precos,
+            quantidadeTotal: peso,
+            total: valor * peso
+        };
     }
 
-    campoNome.setCustomValidity("");
-
-    const categoria = elemento.querySelector('[data-editar="categoria"]')?.value;
-    const regraMedida = obterRegraMedida(nome);
-    const medidaSelecionada = elemento.querySelector('[data-editar="medida"]')?.value;
-    const medida = regraMedida.medida || (
-        [MEDIDA_KG, "unidade"].includes(medidaSelecionada)
-            ? medidaSelecionada
-            : normalizarMedidaProduto({ ...produto, categoria })
-    );
-    const porPeso = medida === MEDIDA_KG;
-    let quantidadeTotal = Math.max(
-        0,
-        porPeso
-            ? numeroSeguro(obterPrecosProduto(produto || {})[0]?.quantidade)
-            : Math.floor(numeroSeguro(elemento.querySelector('[data-editar="quantidade-total"]')?.value))
-    );
-    const valorUnitario = Math.max(
-        0,
-        numeroSeguro(elemento.querySelector('[data-editar="valor-unitario"]')?.value)
-    );
-
     return {
-        nome,
-        categoria,
-        medida,
-        peso: porPeso
-            ? Math.max(0, numeroSeguro(elemento.querySelector('[data-editar="peso"]')?.value))
-            : 0,
-        precos: atualizarPrecoPrincipal(produto || {}, quantidadeTotal, valorUnitario)
+        precos,
+        quantidadeTotal: precos.reduce((soma, preco) => soma + preco.quantidade, 0),
+        total: precos.reduce((soma, preco) => soma + (preco.valor * preco.quantidade), 0)
     };
 
 }
 
 
-export function renderizarProdutos(
-    produtos = [],
-    acoes = {}
-) {
+export function renderizarProdutos(produtos, handlers = {}) {
 
-    const lista =
-        document.getElementById("listaProdutos");
-
-    if (!lista) {
-
-        return;
-
-    }
-
-    if (!produtos.length) {
-
-        lista.innerHTML = `
-
-            <div class="estado-vazio">
-
-                <span aria-hidden="true">🛒</span>
-
-                <h3>Nenhum produto encontrado</h3>
-
-                <p>
-                    Escolha o mercado atual e adicione o primeiro item.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-    lista.innerHTML =
-        produtos.map(montarProduto).join("");
-
-    animarProdutosNaLista(lista);
-
-
-    lista.querySelectorAll("[data-produto-id]")
-        .forEach(elemento => {
-
-            const id =
-                elemento.dataset.produtoId;
-            const produtoAtual = produtos.find(
-                produto => String(produto.id) === String(id)
-            );
-
-            elemento
-                .querySelector('[data-acao="editar"]')
-                ?.addEventListener("click", () => {
-                    if (produtosEmEdicao.has(String(id))) {
-                        produtosEmEdicao.delete(String(id));
-                    } else {
-                        produtosEmEdicao.add(String(id));
-                    }
-                    precosAbertos.delete(String(id));
-                    renderizarProdutos(produtos, acoes);
-                });
-
-            elemento
-                .querySelector('[data-acao="alternar-precos"]')
-                ?.addEventListener("click", () => {
-                    if (precosAbertos.has(String(id))) {
-                        precosAbertos.delete(String(id));
-                    } else {
-                        precosAbertos.add(String(id));
-                    }
-                    renderizarProdutos(produtos, acoes);
-                });
-
-            elemento
-                .querySelector('[data-acao="abrir-precos"]')
-                ?.addEventListener("click", () => {
-                    const alteracoes = obterAlteracoesDaEdicao(elemento, produtoAtual);
-                    if (!alteracoes) return;
-                    precosAbertos.add(String(id));
-                    if (acoes.aoAbrirNovoPreco) {
-                        acoes.aoAbrirNovoPreco(id, alteracoes);
-                        return;
-                    }
-                    sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
-                    const painelPrecos = elemento.querySelector(".precos-produto");
-                    if (painelPrecos) painelPrecos.hidden = false;
-                });
-
-            const campoValorUnitario = elemento.querySelector('[data-editar="valor-unitario"]');
-            const campoMedida = elemento.querySelector('[data-editar="medida"]');
-
-            campoValorUnitario?.addEventListener("input", () => {
-                sincronizarPrecosComResumoEditavel(elemento, produtoAtual || {});
-            });
-
-            campoMedida?.addEventListener("change", evento => {
-                atualizarEdicaoPorMedida(
-                    elemento,
-                    produtoAtual || {},
-                    evento.target.value
-                );
-            });
-
-            configurarQuantidadeEditavel(elemento, produtoAtual || {});
-
-            elemento
-                .querySelector('[data-acao="cancelar-edicao"]')
-                ?.addEventListener("click", () => {
-                    produtosEmEdicao.delete(String(id));
-                    precosAbertos.delete(String(id));
-                    renderizarProdutos(produtos, acoes);
-                });
-
-            elemento
-                .querySelector('[data-acao="salvar-edicao"]')
-                ?.addEventListener("click", () => {
-                    const alteracoes = obterAlteracoesDaEdicao(elemento, produtoAtual);
-                    if (!alteracoes) return;
-                    produtosEmEdicao.delete(String(id));
-                    precosAbertos.delete(String(id));
-                    acoes.aoSalvarEdicao?.(id, alteracoes);
-                });
-
-            elemento
-                .querySelector('[data-acao="adicionar-preco"]')
-                ?.addEventListener("click", () => {
-                    precosAbertos.add(String(id));
-                    acoes.aoAdicionarPreco?.(id);
-                });
-
-            elemento.querySelectorAll(".preco-cadastrado").forEach(linha => {
-                const precoId = linha.dataset.precoId;
-
-                linha.querySelector('[data-acao-preco="diminuir"]')
-                    ?.addEventListener("click", () =>
-                        acoes.aoAlterarQuantidadePreco?.(id, precoId, -1)
-                    );
-
-                linha.querySelector('[data-acao-preco="aumentar"]')
-                    ?.addEventListener("click", () =>
-                        acoes.aoAlterarQuantidadePreco?.(id, precoId, 1)
-                    );
-
-                linha.querySelector('[data-acao-preco="excluir"]')
-                    ?.addEventListener("click", () =>
-                        acoes.aoExcluirPreco?.(id, precoId)
-                    );
-
-                linha.querySelector('[data-campo-preco="valor"]')
-                    ?.addEventListener("input", evento => {
-                        acoes.aoAlterarValorPreco?.(id, precoId, evento.target.value);
-                        atualizarResumoVisualProduto(elemento);
-                    });
-            });
-
-            elemento
-                .querySelector('[data-acao="aumentar"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoAlterarQuantidade?.(id, 1)
-                );
-
-            elemento
-                .querySelector('[data-acao="diminuir"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoAlterarQuantidade?.(id, -1)
-                );
-
-            elemento
-                .querySelector('[data-acao="excluir"]')
-                ?.addEventListener("click", () =>
-                    acoes.aoExcluir?.(id, elemento)
-                );
-
-            elemento
-                .querySelector('[data-campo="preco"]')
-                ?.addEventListener("change", evento =>
-                    acoes.aoAlterarPreco?.(
-                        id,
-                        evento.target.value
-                    )
-                );
-
-            elemento
-                .querySelector('[data-campo="peso"]')
-                ?.addEventListener("change", evento =>
-                    acoes.aoAlterarPeso?.(
-                        id,
-                        evento.target.value
-                    )
-                );
-
-            elemento
-                .querySelector('[data-campo="categoria"]')
-                ?.addEventListener("change", evento =>
-                    acoes.aoAlterarCategoria?.(
-                        id,
-                        evento.target.value
-                    )
-                );
-
-        });
-
-}
-
-
-function montarResumoCategorias(produtos) {
-
-    const totais = {};
-
-    produtos.forEach(produto => {
-
-        const categoria =
-            produto.categoria || "📦 Outros";
-
-        totais[categoria] =
-            (totais[categoria] || 0) +
-            calcularSubtotalProduto(produto);
-
-    });
-
-    const categorias =
-        Object.entries(totais)
-            .sort((a, b) => b[1] - a[1]);
-
-    if (!categorias.length) {
-
-        return `
-            <p class="texto-secundario">
-                Adicione produtos para visualizar o resumo.
-            </p>
-        `;
-
-    }
-
-    return categorias.map(
-        ([categoria, total]) => `
-
-            <div class="categoria-resumo">
-
-                <span>
-                    ${escaparHTML(categoria)}
-                </span>
-
-                <strong>
-                    ${formatarMoeda(total)}
-                </strong>
-
-            </div>
-
-        `
-    ).join("");
-
-}
-
-
-export function renderizarTotais(
-    produtos = [],
-    historico = []
-) {
-
-    const total =
-        calcularTotalProdutos(produtos);
-
-    const ultima =
-        historico.length
-            ? numeroSeguro(historico[0].total)
-            : 0;
-
-    const totalCompra =
-        document.getElementById("totalCompra");
-
-    const ultimaCompra =
-        document.getElementById("ultimaCompra");
-
-    const comparacao =
-        document.getElementById("comparacaoCompra");
-
-    const resumo =
-        document.getElementById("resumoItens");
-
-
-    if (totalCompra) {
-
-        totalCompra.textContent =
-            formatarMoeda(total);
-
-    }
-
-    if (ultimaCompra) {
-
-        ultimaCompra.textContent =
-            formatarMoeda(ultima);
-
-    }
-
-    if (comparacao) {
-
-        if (ultima <= 0) {
-
-            comparacao.textContent =
-                "⚪ Nenhuma compra anterior";
-
-            comparacao.className =
-                "comparacao-compra";
-
-        } else {
-
-            const diferenca = total - ultima;
-
-            if (diferenca > 0) {
-
-                comparacao.textContent =
-                    `🔴 A compra atual está ${formatarMoeda(diferenca)} mais cara.`;
-
-                comparacao.className =
-                    "comparacao-compra comparacao-aumento";
-
-            } else if (diferenca < 0) {
-
-                comparacao.textContent =
-                    `🟢 Economia estimada de ${formatarMoeda(Math.abs(diferenca))}.`;
-
-                comparacao.className =
-                    "comparacao-compra comparacao-economia";
-
-            } else {
-
-                comparacao.textContent =
-                    "⚪ O total é igual ao da última compra.";
-
-                comparacao.className =
-                    "comparacao-compra";
-
-            }
-
-        }
-
-    }
-
-    if (resumo) {
-
-        resumo.innerHTML = `
-
-            <h3>📊 Resumo da Compra</h3>
-
-            <div class="resumo-total-linha">
-
-                <span>Total atual</span>
-
-                <strong>
-                    ${formatarMoeda(total)}
-                </strong>
-
-            </div>
-
-            ${montarResumoCategorias(produtos)}
-
-        `;
-
-    }
-
-}
-
-
-export function renderizarHistorico(
-    historico = []
-) {
-
-    const container =
-        document.getElementById("historicoCompras");
+    const container = document.getElementById("listaProdutos");
 
     if (!container) {
 
@@ -1150,149 +768,153 @@ export function renderizarHistorico(
 
     }
 
-    if (!historico.length) {
+    if (!produtos.length) {
 
         container.innerHTML = `
-
-            <h2>📋 Histórico de Compras</h2>
-
-            <p class="texto-secundario">
-                Nenhuma compra foi finalizada ainda.
-            </p>
-
+            <div class="lista-vazia">
+                <strong>Sua lista está vazia.</strong>
+                <span>Adicione produtos para começar.</span>
+            </div>
         `;
-
         return;
 
     }
 
-    container.innerHTML = `
+    container.innerHTML = produtos.map(produto => montarProduto(produto)).join("");
 
-        <h2>📋 Histórico de Compras</h2>
+    animarProdutosNaLista(container);
 
-        <div class="botoes-historico">
+    container.querySelectorAll(".produto").forEach(elementoProduto => {
 
-            <button
-                type="button"
-                class="btn-limpar-historico"
-                data-acao-historico="limpar"
-            >
-                Limpar histórico
-            </button>
+        const id = elementoProduto.dataset.produtoId;
+        const produto = produtos.find(item => String(item.id) === String(id));
+        if (!produto) return;
 
-            <button
-                type="button"
-                class="btn-zerar-compra"
-                data-acao-historico="zerar"
-            >
-                Zerar preços atuais
-            </button>
+        elementoProduto.querySelector('[data-acao="editar"]')?.addEventListener("click", () => {
+            const chave = String(id);
+            if (produtosEmEdicao.has(chave)) produtosEmEdicao.delete(chave);
+            else produtosEmEdicao.add(chave);
+            renderizarProdutos(produtos, handlers);
+        });
 
-        </div>
+        elementoProduto.querySelector('[data-acao="cancelar-edicao"]')?.addEventListener("click", () => {
+            produtosEmEdicao.delete(String(id));
+            precosAbertos.delete(String(id));
+            renderizarProdutos(produtos, handlers);
+        });
 
-        ${historico.map(compra => `
+        elementoProduto.querySelector('[data-editar="medida"]')?.addEventListener("change", event => {
+            atualizarEdicaoPorMedida(elementoProduto, produto, normalizarMedidaProduto(event.target.value));
+        });
 
-            <article class="compra-historico">
+        elementoProduto.querySelector('[data-editar="valor-unitario"]')?.addEventListener("input", () => {
+            sincronizarPrecosComResumoEditavel(elementoProduto, produto);
+        });
 
-                <h3>
-                    Compra de ${escaparHTML(formatarData(compra.data))}
-                </h3>
+        configurarQuantidadeEditavel(elementoProduto, produto);
 
-                <p>
-                    <strong>Mercado:</strong>
-                    ${escaparHTML(compra.supermercado || "Vários mercados")}
-                </p>
+        elementoProduto.querySelector('[data-acao="salvar-edicao"]')?.addEventListener("click", () => {
+            const nome = elementoProduto.querySelector('[data-editar="nome"]')?.value.trim();
+            const categoria = elementoProduto.querySelector('[data-editar="categoria"]')?.value;
+            const medida = normalizarMedidaProduto(elementoProduto.querySelector('[data-editar="medida"]')?.value);
+            const porPeso = medida === MEDIDA_KG;
+            const quantidade = porPeso ? 0 : Math.max(0, Math.floor(numeroSeguro(elementoProduto.querySelector('[data-editar="quantidade-total"]')?.value)));
+            const peso = porPeso ? Math.max(0, numeroSeguro(elementoProduto.querySelector('[data-editar="peso"]')?.value)) : 0;
+            const valor = Math.max(0, numeroSeguro(elementoProduto.querySelector('[data-editar="valor-unitario"]')?.value));
+            const precos = atualizarPrecoPrincipal(produto, quantidade, valor);
 
-                <p>
-                    <strong>Total:</strong>
-                    ${formatarMoeda(compra.total)}
-                </p>
+            handlers.aoSalvarEdicao?.(id, {
+                nome,
+                categoria,
+                medida,
+                quantidade,
+                peso,
+                preco: valor,
+                precos
+            });
+            produtosEmEdicao.delete(String(id));
+            precosAbertos.delete(String(id));
+        });
 
-                ${
-                    numeroSeguro(compra.economia) > 0
-                        ? `
-                            <p class="diferenca-compra-economia">
-                                Economia de ${formatarMoeda(compra.economia)}
-                            </p>
-                        `
-                        : `
-                            <p class="diferenca-compra-primeira">
-                                Compra registrada no histórico
-                            </p>
-                        `
-                }
+        elementoProduto.querySelector('[data-acao="abrir-precos"]')?.addEventListener("click", () => {
+            sincronizarPrecosComResumoEditavel(elementoProduto, produto);
+            handlers.aoAbrirNovoPreco?.(id, {
+                nome: elementoProduto.querySelector('[data-editar="nome"]')?.value.trim(),
+                categoria: elementoProduto.querySelector('[data-editar="categoria"]')?.value,
+                medida: normalizarMedidaProduto(elementoProduto.querySelector('[data-editar="medida"]')?.value),
+                quantidade: Math.max(0, Math.floor(numeroSeguro(elementoProduto.querySelector('[data-editar="quantidade-total"]')?.value))),
+                preco: Math.max(0, numeroSeguro(elementoProduto.querySelector('[data-editar="valor-unitario"]')?.value)),
+                precos: atualizarPrecoPrincipal(
+                    produto,
+                    elementoProduto.querySelector('[data-editar="quantidade-total"]')?.value,
+                    elementoProduto.querySelector('[data-editar="valor-unitario"]')?.value
+                )
+            });
+            precosAbertos.add(String(id));
+        });
 
-                <ul>
+        elementoProduto.querySelector('[data-acao="alternar-precos"]')?.addEventListener("click", () => {
+            const chave = String(id);
+            if (precosAbertos.has(chave)) precosAbertos.delete(chave);
+            else precosAbertos.add(chave);
+            renderizarProdutos(produtos, handlers);
+        });
 
-                    ${(compra.itens || []).map(item => `
+        elementoProduto.querySelectorAll(".preco-cadastrado").forEach(linha => {
+            const precoId = linha.dataset.precoId;
+            linha.querySelector('[data-campo-preco="valor"]')?.addEventListener("input", event => {
+                handlers.aoAlterarValorPreco?.(id, precoId, numeroSeguro(event.target.value));
+                atualizarResumoVisualProduto(elementoProduto);
+            });
+            linha.querySelector('[data-acao-preco="diminuir"]')?.addEventListener("click", () => handlers.aoAlterarQuantidadePreco?.(id, precoId, -1));
+            linha.querySelector('[data-acao-preco="aumentar"]')?.addEventListener("click", () => handlers.aoAlterarQuantidadePreco?.(id, precoId, 1));
+            linha.querySelector('[data-acao-preco="excluir"]')?.addEventListener("click", () => handlers.aoExcluirPreco?.(id, precoId));
+        });
 
-                        <li>
-                            ${escaparHTML(item.nome)}
-                            — ${escaparHTML(item.supermercado || "Sem mercado")}
-                            — ${formatarMoeda(item.subtotal)}
-                        </li>
-
-                    `).join("")}
-
-                </ul>
-
-            </article>
-
-        `).join("")}
-
-    `;
+        elementoProduto.querySelector('[data-acao="excluir"]')?.addEventListener("click", () => {
+            handlers.aoExcluir?.(id, elementoProduto);
+        });
+    });
 
 }
 
 
-function obterPrecosProduto(produto = {}) {
+export function renderizarTotais(produtos, historico = []) {
 
-    if (Array.isArray(produto.precos) && produto.precos.length) {
+    const total = calcularTotalProdutos(produtos);
+    const totalElemento = document.getElementById("totalCompra");
+    if (totalElemento) totalElemento.textContent = formatarMoeda(total);
 
-        return produto.precos.map((preco, indice) => ({
-            id: String(preco.id || indice),
-            valor: Math.max(0, numeroSeguro(preco.valor)),
-            quantidade: Math.max(0, numeroSeguro(preco.quantidade))
-        }));
+    const quantidadeElemento = document.getElementById("quantidadeItens");
+    if (quantidadeElemento) quantidadeElemento.textContent = formatarQuantidade(
+        produtos.reduce((soma, produto) => soma + resumirProduto(produto).quantidadeTotal, 0)
+    );
 
-    }
-
-    return [{
-        id: "preco-inicial",
-        valor: Math.max(0, numeroSeguro(produto.preco)),
-        quantidade: Math.max(0, numeroSeguro(produto.quantidade))
-    }];
+    const historicoElemento = document.getElementById("quantidadeCompras");
+    if (historicoElemento) historicoElemento.textContent = String(historico.length);
 
 }
 
 
-function resumirProduto(produto = {}) {
+export function renderizarHistorico(historico = []) {
 
-    const precos = obterPrecosProduto(produto);
-    if (ehHortifruti(produto)) {
-        const peso = Math.max(0, numeroSeguro(produto.peso));
-        const valorKg = Math.max(0, numeroSeguro(precos[0]?.valor));
-        return {
-            precos,
-            quantidadeTotal: peso,
-            total: valorKg * peso,
-            media: valorKg
-        };
+    const container = document.getElementById("historicoCompras");
+
+    if (!container) return;
+
+    if (!historico.length) {
+        container.innerHTML = '<p class="historico-vazio">Nenhuma compra finalizada ainda.</p>';
+        return;
     }
-    const quantidadeTotal = precos.reduce(
-        (soma, preco) => soma + preco.quantidade,
-        0
-    );
-    const total = precos.reduce(
-        (soma, preco) => soma + (preco.valor * preco.quantidade),
-        0
-    );
 
-    return {
-        precos,
-        quantidadeTotal,
-        total,
-        media: quantidadeTotal > 0 ? total / quantidadeTotal : 0
-    };
+    container.innerHTML = historico.map(compra => `
+        <article class="historico-item">
+            <div>
+                <strong>${escaparHTML(compra.supermercado || "Mercado não informado")}</strong>
+                <span>${escaparHTML(formatarData(compra.data))}</span>
+            </div>
+            <strong>${formatarMoeda(compra.total)}</strong>
+        </article>
+    `).join("");
 
 }
