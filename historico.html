@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/global.css?v=50">
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/temas.css">
-    <link rel="stylesheet" href="./css/historico-v2.css?v=2">
+    <link rel="stylesheet" href="./css/historico-v2.css?v=3">
     <link rel="stylesheet" href="./css/historico-itens.css?v=4">
     <link rel="stylesheet" href="./css/historico-topo.css?v=1">
 </head>
@@ -23,7 +23,7 @@
             </a>
             <a class="historico-economia-link" href="./minha-economia.html">Minha Economia</a>
         </header>
-        <section class="historico-cabecalho"><small>Suas compras</small><h1>Histórico</h1><p>Acompanhe para onde o dinheiro foi e toque em uma categoria para ver os itens.</p></section>
+        <section class="historico-cabecalho"><small>Suas compras</small><h1>Histórico</h1><p>Cada compra finalizada fica salva pela data, mercado e usuário. Toque em uma compra para abrir a lista completa.</p></section>
 
         <section class="historico-periodo" aria-labelledby="tituloPeriodoHistorico">
             <div><small>Período</small><h2 id="tituloPeriodoHistorico">Ver compras por dia</h2><p id="historicoPeriodoDescricao">Somando todas as compras finalizadas</p></div>
@@ -49,14 +49,14 @@
         </section>
 
         <section class="compras-historico-v2">
-            <header><div><small>Compras</small><h2 id="tituloListaHistorico">Todas as compras</h2></div><div><button id="btnExportarHistorico" type="button">Exportar</button><button id="btnLimparHistorico" type="button">Zerar</button></div></header>
-            <label class="busca-historico"><span>Buscar item ou mercado</span><input id="buscarHistorico" type="search" placeholder="Ex.: arroz ou Atacadão"></label>
+            <header><div><small>Compras salvas</small><h2 id="tituloListaHistorico">Compras salvas</h2></div><div><button id="btnExportarHistorico" type="button">Exportar</button><button id="btnLimparHistorico" type="button">Limpar local</button></div></header>
+            <label class="busca-historico"><span>Buscar item, mercado ou usuário</span><input id="buscarHistorico" type="search" placeholder="Ex.: arroz, Atacadão ou Matheus"></label>
             <div id="listaHistorico" class="lista-historico-v2"></div>
         </section>
     </main>
 
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/historico-page.js?v=3"></script>
+    <script type="module" src="./js/historico-page.js?v=4"></script>
     <script src="./js/mobile-nav.js?v=4"></script>
 </body>
 </html>
