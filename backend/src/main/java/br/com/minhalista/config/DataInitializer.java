@@ -42,6 +42,8 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        repository.inicializarUltimosAcessosAusentes(Instant.now());
+
         if (!StringUtils.hasText(email) || !StringUtils.hasText(senha)) {
             return;
         }
