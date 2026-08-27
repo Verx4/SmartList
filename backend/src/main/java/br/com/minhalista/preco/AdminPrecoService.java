@@ -82,9 +82,18 @@ public class AdminPrecoService {
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseMercados() { return observacaoRepository.analisarPorMercado().stream().map(this::analise).toList(); }
 
     private Specification<ProdutoPreco> especificacaoProdutos(Filtro filtro) {
-        return (root, query, cb) -> { List<Predicate> p = new ArrayList<>(); var obs = root.join("observacoes", JoinType.LEFT); query.distinct(true);
-            if (preenchido(filtro.busca())) { String termo = "%" + filtro.busca().trim().toLowerCase(Locale.ROOT) + "%"; p.add(cb.or(cb.like(cb.lower(root.get("nomeExibicao")), termo), cb.like(cb.lower(root.get("nomeNormalizado")), termo))); }
-            if (preenchido(filtro.categoria())) p.add(cb.equal(root.get("categoria"), filtro.categoria())); adicionarFiltrosObservacao(filtro, obs, cb, p); return cb.and(p.toArray(Predicate[]::new)); };
+        return (root, query, cb) -> {
+            List<Predicate> p = new ArrayList<>();
+            var obs = root.join("observacoes", JoinType.INNER);
+            query.distinct(true);
+            if (preenchido(filtro.busca())) {
+                String termo = "%" + filtro.busca().trim().toLowerCase(Locale.ROOT) + "%";
+                p.add(cb.or(cb.like(cb.lower(root.get("nomeExibicao")), termo), cb.like(cb.lower(root.get("nomeNormalizado")), termo)));
+            }
+            if (preenchido(filtro.categoria())) p.add(cb.equal(root.get("categoria"), filtro.categoria()));
+            adicionarFiltrosObservacao(filtro, obs, cb, p);
+            return cb.and(p.toArray(Predicate[]::new));
+        };
     }
     private Specification<ObservacaoPreco> especificacaoObservacoes(Filtro filtro, UUID produtoId) {
         return (root, query, cb) -> { List<Predicate> p = new ArrayList<>(); if (!Long.class.equals(query.getResultType()) && !long.class.equals(query.getResultType())) { root.fetch("produto", JoinType.INNER); root.fetch("usuario", JoinType.LEFT); query.distinct(true); }
