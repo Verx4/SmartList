@@ -14,8 +14,9 @@ export const itensDaCompra = compra => {
 
 export const dataDaCompra = compra => new Date(
     compra?.data
-    || compra?.criadoEm
+    || compra?.finalizadoEm
     || compra?.finalizadaEm
+    || compra?.criadoEm
     || 0
 );
 
@@ -32,9 +33,6 @@ export function quantidadeCompradaDoItem(item = {}) {
         : 0;
 
     if (quantidadeNosPrecos > 0) return quantidadeNosPrecos;
-
-    // Compras antigas sem quantidade representavam uma unidade por linha.
-    // Itens por peso não entram na contagem de unidades.
     return numeroNaoNegativo(item.peso) > 0 ? 0 : 1;
 }
 
