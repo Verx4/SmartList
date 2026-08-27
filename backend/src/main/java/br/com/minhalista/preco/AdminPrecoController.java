@@ -25,7 +25,27 @@ public class AdminPrecoController {
     public AdminPrecoController(AdminPrecoService service) { this.service = service; }
 
     @GetMapping("/resumo") public AdminPrecoService.ResumoResponse resumo() { return service.resumo(); }
+    @GetMapping("/resumo-compras") public AdminPrecoService.ResumoComprasResponse resumoCompras() { return service.resumoCompras(); }
     @GetMapping("/filtros") public AdminPrecoService.FiltrosResponse filtros() { return service.filtros(); }
+    @GetMapping("/compras/filtros") public AdminPrecoService.ComprasFiltrosResponse filtrosCompras() { return service.filtrosCompras(); }
+
+    @GetMapping("/compras")
+    public AdminPrecoService.PaginaResponse<AdminPrecoService.CompraResumoResponse> compras(
+        @RequestParam(defaultValue = "") String busca,
+        @RequestParam(defaultValue = "") String mercado,
+        @RequestParam(defaultValue = "") String usuario,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant inicio,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant fim,
+        @RequestParam(defaultValue = "0") int pagina,
+        @RequestParam(defaultValue = "20") int tamanho
+    ) {
+        return service.compras(busca, mercado, usuario, inicio, fim, pagina, tamanho);
+    }
+
+    @GetMapping("/compras/{compraId}")
+    public AdminPrecoService.CompraDetalheResponse compra(@PathVariable String compraId) {
+        return service.compra(compraId);
+    }
 
     @GetMapping("/produtos")
     public AdminPrecoService.PaginaResponse<AdminPrecoService.ProdutoResumoResponse> produtos(
