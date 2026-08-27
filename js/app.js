@@ -51,6 +51,7 @@ import {
 import {
 
     obterMercadoAtual,
+    limparMercadoAtual,
     configurarMercadoAtual,
     atualizarMercadoNoModal
 
@@ -490,6 +491,17 @@ function atualizarTela() {
 
 function abrirModal() {
 
+    if (!obterMercadoAtual()) {
+
+        notificar(
+            "Selecione um mercado antes de adicionar um item.",
+            "erro"
+        );
+        focarSeletorMercado();
+        return;
+
+    }
+
     const modal = elemento("modal", "modalProduto");
 
     if (!modal) {
@@ -702,13 +714,38 @@ function salvarNovoProduto(evento) {
 
 function concluirCompra() {
 
+    const mercadoAtual = obterMercadoAtual();
+
+    if (!mercadoAtual) {
+
+        notificar(
+            "Selecione um mercado antes de finalizar a compra.",
+            "erro"
+        );
+        focarSeletorMercado();
+        return;
+
+    }
+
     try {
+
+        produtos = aplicarSupermercadoAProdutos(
+            mercadoAtual
+        );
 
         const resultado =
             registrarCompra(produtos);
 
+        const produtosParaProximaCompra =
+            resultado.produtosAtualizados.map(produto => ({
+                ...produto,
+                supermercado: ""
+            }));
+
+        limparMercadoAtual();
+
         salvarProdutos(
-            resultado.produtosAtualizados
+            produtosParaProximaCompra
         );
 
         historico = resultado.historico;
