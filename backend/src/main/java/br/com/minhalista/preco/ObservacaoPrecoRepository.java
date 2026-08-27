@@ -22,6 +22,8 @@ public interface ObservacaoPrecoRepository
         String itemChave
     );
 
+    boolean existsByProdutoId(UUID produtoId);
+
     Page<ObservacaoPreco> findByProdutoIdOrderByRealizadaEmDesc(UUID produtoId, Pageable pageable);
 
     @Query("""
