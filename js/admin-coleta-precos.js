@@ -63,6 +63,7 @@ async function carregarResumo() {
     porId("totalMercados").textContent = numero(r.totalMercados);
     porId("valorTotalCompras").textContent = moeda(r.valorTotal);
     porId("totalItens").textContent = numero(r.totalItens);
+    porId("excluirTodasCompras").disabled = Number(r.totalCompras || 0) === 0;
 }
 
 async function carregarFiltros() {
@@ -96,7 +97,7 @@ async function carregarCompras() {
             ${td("Mercado", `<strong>${escapar(item.mercado || "Não informado")}</strong>${local ? `<small>${escapar(local)}</small>` : ""}`)}
             ${td("Itens", numero(item.totalItens))}
             ${td("Total", `<strong class="coleta-total-valor">${escapar(moeda(item.valorTotal))}</strong>`)}
-            ${td("Ações", `<button class="btn btn-secondary coleta-ver" type="button" data-abrir-compra="${escapar(item.compraId)}" aria-label="Ver detalhes da compra">Ver</button>`, "coleta-acoes")}
+            ${td("Ações", `<div class="coleta-acoes-grupo"><button class="btn btn-secondary coleta-ver" type="button" data-abrir-compra="${escapar(item.compraId)}" aria-label="Ver detalhes da compra">Ver</button><button class="btn btn-danger" type="button" data-excluir-compra="${escapar(item.compraId)}" aria-label="Excluir esta compra">Excluir</button></div>`, "coleta-acoes")}
         </tr>`;
     }).join("") || '<tr><td colspan="8" class="coleta-vazio">Nenhuma compra finalizada encontrada para os filtros selecionados.</td></tr>';
 }
@@ -138,6 +139,33 @@ function fecharDetalhe() {
     document.querySelectorAll("[data-compra-row]").forEach(row => row.classList.remove("is-selected"));
 }
 
+async function excluirCompra(compraId) {
+    const detalhe = await api.get(`/admin/coleta-precos/compras/${encodeURIComponent(compraId)}`);
+    const itens = detalhe.itens || [];
+    await Promise.all(itens.map(item => api.delete(`/admin/coleta-precos/observacoes/${encodeURIComponent(item.id)}`)));
+    if (estado.compraAberta === compraId) fecharDetalhe();
+}
+
+async function listarTodasCompras() {
+    const todas = [];
+    let pagina = 0;
+    let temProxima = true;
+    while (temProxima) {
+        const r = await api.get(`/admin/coleta-precos/compras?pagina=${pagina}&tamanho=100`);
+        todas.push(...(r.conteudo || []));
+        temProxima = Boolean(r.temProxima);
+        pagina += 1;
+    }
+    return todas;
+}
+
+async function excluirTodasCompras() {
+    const compras = await listarTodasCompras();
+    for (const compra of compras) {
+        await excluirCompra(compra.compraId);
+    }
+}
+
 function exibirErro(erro) {
     const msg = erro instanceof ApiError ? erro.message : "Não foi possível carregar o histórico de compras.";
     porId("tabelaCompras").innerHTML = `<tr><td colspan="8" class="coleta-vazio">${escapar(msg)}</td></tr>`;
@@ -173,7 +201,43 @@ porId("comprasAnterior").addEventListener("click", () => { if (estado.pagina > 0
 porId("comprasProxima").addEventListener("click", () => { estado.pagina += 1; carregarCompras().catch(exibirErro); });
 porId("fecharDetalheCompra").addEventListener("click", fecharDetalhe);
 
-document.addEventListener("click", e => {
+porId("excluirTodasCompras").addEventListener("click", async () => {
+    const confirmou = window.confirm("Excluir TODAS as compras finalizadas? Esta ação não pode ser desfeita.");
+    if (!confirmou) return;
+    const botao = porId("excluirTodasCompras");
+    botao.disabled = true;
+    try {
+        await excluirTodasCompras();
+        fecharDetalhe();
+        estado.pagina = 0;
+        await carregarFiltros();
+        await carregarTudo();
+        window.alert("Todas as compras finalizadas foram excluídas.");
+    } catch (erro) {
+        window.alert(erro instanceof ApiError ? erro.message : "Não foi possível excluir todas as compras.");
+    } finally {
+        botao.disabled = false;
+    }
+});
+
+document.addEventListener("click", async e => {
+    const excluir = e.target.closest("[data-excluir-compra]");
+    if (excluir) {
+        const compraId = excluir.dataset.excluirCompra;
+        const confirmou = window.confirm(`Excluir a compra ${idCurto(compraId)}? Esta ação não pode ser desfeita.`);
+        if (!confirmou) return;
+        excluir.disabled = true;
+        try {
+            await excluirCompra(compraId);
+            await carregarFiltros();
+            await carregarTudo();
+        } catch (erro) {
+            window.alert(erro instanceof ApiError ? erro.message : "Não foi possível excluir esta compra.");
+            excluir.disabled = false;
+        }
+        return;
+    }
+
     const botao = e.target.closest("[data-abrir-compra]");
     if (botao) abrirCompra(botao.dataset.abrirCompra).catch(exibirErro);
 });
