@@ -24,20 +24,14 @@ import jakarta.validation.constraints.Size;
 
 @Service
 public class ColetaPrecoService {
-
     public static final String CATEGORIA_OUTROS = "📦 Outros";
-
     public static final List<String> CATEGORIAS = List.of(
-        "🥛 Laticínios", "🥩 Carnes", "🍗 Frango", "🐟 Peixes e Frutos do Mar",
-        "🍎 Hortifruti", "🍞 Padaria", "🥤 Bebidas", "⚡ Energéticos",
-        "🍺 Bebidas Alcoólicas", "🌾 Grãos", "🍚 Mercearia", "🍪 Doces e Snacks",
-        "🧼 Limpeza", "🪥 Higiene", "🐶 Pet", "💊 Farmácia",
-        "🥫 Enlatados e Conservas", "❄️ Congelados", "🌶️ Temperos",
-        "🍽️ Descartáveis", "🔌 Utilidades", CATEGORIA_OUTROS
+        "🥛 Laticínios", "🥩 Carnes", "🍗 Frango", "🐟 Peixes e Frutos do Mar", "🍎 Hortifruti", "🍞 Padaria",
+        "🥤 Bebidas", "⚡ Energéticos", "🍺 Bebidas Alcoólicas", "🌾 Grãos", "🍚 Mercearia", "🍪 Doces e Snacks",
+        "🧼 Limpeza", "🪥 Higiene", "🐶 Pet", "💊 Farmácia", "🥫 Enlatados e Conservas", "❄️ Congelados",
+        "🌶️ Temperos", "🍽️ Descartáveis", "🔌 Utilidades", CATEGORIA_OUTROS
     );
-
     private static final Set<String> CATEGORIAS_VALIDAS = Set.copyOf(CATEGORIAS);
-
     private static final List<RegraCategoria> TERMOS_CATEGORIAS = List.of(
         new RegraCategoria("🥛 Laticínios", List.of("leite", "queijo", "iogurte", "requeijao", "manteiga")),
         new RegraCategoria("🥩 Carnes", List.of("carne", "bife", "picanha", "linguica", "bacon")),
@@ -61,14 +55,10 @@ public class ColetaPrecoService {
         new RegraCategoria("🍽️ Descartáveis", List.of("descartavel", "guardanapo", "copo plastico")),
         new RegraCategoria("🔌 Utilidades", List.of("pilha", "lampada", "fosforo", "vela"))
     );
-
     private final ProdutoPrecoRepository produtoRepository;
     private final ObservacaoPrecoRepository observacaoRepository;
 
-    public ColetaPrecoService(
-        ProdutoPrecoRepository produtoRepository,
-        ObservacaoPrecoRepository observacaoRepository
-    ) {
+    public ColetaPrecoService(ProdutoPrecoRepository produtoRepository, ObservacaoPrecoRepository observacaoRepository) {
         this.produtoRepository = produtoRepository;
         this.observacaoRepository = observacaoRepository;
     }
@@ -81,27 +71,22 @@ public class ColetaPrecoService {
         String mercado = opcional(request.mercado(), 120);
         String cidade = opcional(request.cidade(), 100);
         String estado = estado(request.estado());
-
         if (cidade == null) cidade = opcional(usuario.getCidade(), 100);
         if (estado == null) estado = estado(usuario.getEstado());
 
         for (ItemRequest item : request.itens()) {
             String itemChave = limitar(item.itemId(), 120);
-
-            if (observacaoRepository.existsByOrigemAndCompraChaveAndItemChave(
-                OrigemPreco.COMPRA_USUARIO, compraChave, itemChave
-            )) {
+            if (observacaoRepository.existsByOrigemAndCompraChaveAndItemChave(OrigemPreco.COMPRA_USUARIO, compraChave, itemChave)) {
                 ignoradas += 1;
                 continue;
             }
-
             String nome = limitar(item.nome(), 180);
             String normalizado = NormalizadorProduto.normalizar(nome);
             ProdutoPreco produto = produtoRepository.findByNomeNormalizado(normalizado)
                 .orElseGet(() -> criarProduto(nome, normalizado, item.categoria()));
-
             ObservacaoPreco observacao = new ObservacaoPreco();
             observacao.setProduto(produto);
+            observacao.setUsuario(usuario);
             observacao.setNomeOriginal(nome);
             observacao.setQuantidade(item.quantidade().setScale(3, RoundingMode.HALF_UP));
             observacao.setUnidade(normalizarUnidade(item.unidade()));
@@ -117,42 +102,20 @@ public class ColetaPrecoService {
             observacaoRepository.save(observacao);
             criadas += 1;
         }
-
         return new ResultadoColeta(criadas, ignoradas, criadas + ignoradas);
     }
 
     @Transactional
     public ResultadoColeta coletar(Usuario usuario, ListaCompra lista) {
         String mercado = lista.getMercado() == null ? null : lista.getMercado().getNome();
-        List<ItemRequest> itens = lista.getItens().stream()
-            .map(item -> itemDaLista(item))
-            .toList();
-
-        return coletar(usuario, new CompraRequest(
-            lista.getId().toString(),
-            lista.getFinalizadoEm() == null ? Instant.now() : lista.getFinalizadoEm(),
-            mercado,
-            null,
-            null,
-            itens
-        ));
+        List<ItemRequest> itens = lista.getItens().stream().map(this::itemDaLista).toList();
+        return coletar(usuario, new CompraRequest(lista.getId().toString(), lista.getFinalizadoEm() == null ? Instant.now() : lista.getFinalizadoEm(), mercado, null, null, itens));
     }
 
     private ItemRequest itemDaLista(ItemLista item) {
         boolean porPeso = item.getPeso() != null && item.getPeso().signum() > 0;
-        BigDecimal quantidade = porPeso
-            ? item.getPeso()
-            : BigDecimal.valueOf(Math.max(1, item.getQuantidade()));
-
-        return new ItemRequest(
-            item.getId().toString(),
-            item.getNome(),
-            item.getCategoria(),
-            quantidade,
-            porPeso ? "kg" : "unidade",
-            item.getPreco(),
-            item.calcularSubtotal()
-        );
+        BigDecimal quantidade = porPeso ? item.getPeso() : BigDecimal.valueOf(Math.max(1, item.getQuantidade()));
+        return new ItemRequest(item.getId().toString(), item.getNome(), item.getCategoria(), quantidade, porPeso ? "kg" : "unidade", item.getPreco(), item.calcularSubtotal());
     }
 
     private ProdutoPreco criarProduto(String nome, String normalizado, String categoriaRecebida) {
@@ -167,69 +130,23 @@ public class ColetaPrecoService {
         String recebida = categoriaRecebida == null ? "" : categoriaRecebida.trim();
         if (CATEGORIAS_VALIDAS.contains(recebida)) return recebida;
         if (recebida.equalsIgnoreCase("Outros")) return CATEGORIA_OUTROS;
-
         String busca = removerAcentos(nome);
-        return TERMOS_CATEGORIAS.stream()
-            .filter(regra -> regra.termos().stream().anyMatch(termo -> busca.contains(termo)))
-            .map(RegraCategoria::categoria)
-            .findFirst()
-            .orElse(CATEGORIA_OUTROS);
+        return TERMOS_CATEGORIAS.stream().filter(regra -> regra.termos().stream().anyMatch(busca::contains)).map(RegraCategoria::categoria).findFirst().orElse(CATEGORIA_OUTROS);
     }
 
     private String removerAcentos(String valor) {
-        return Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD)
-            .replaceAll("\\p{M}", "")
-            .toLowerCase(Locale.ROOT);
+        return Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT);
     }
-
     private String normalizarUnidade(String unidade) {
         String valor = removerAcentos(unidade).trim();
-        return switch (valor) {
-            case "kg", "quilo", "quilos" -> "kg";
-            case "l", "litro", "litros" -> "litro";
-            default -> "unidade";
-        };
+        return switch (valor) { case "kg", "quilo", "quilos" -> "kg"; case "l", "litro", "litros" -> "litro"; default -> "unidade"; };
     }
+    private String estado(String valor) { String limpo = opcional(valor, 2); return limpo == null ? null : limpo.toUpperCase(Locale.ROOT); }
+    private String opcional(String valor, int tamanho) { if (valor == null || valor.isBlank()) return null; return limitar(valor, tamanho); }
+    private String limitar(String valor, int tamanho) { String limpo = valor == null ? "" : valor.trim().replaceAll("\\s+", " "); return limpo.length() <= tamanho ? limpo : limpo.substring(0, tamanho); }
 
-    private String estado(String valor) {
-        String limpo = opcional(valor, 2);
-        return limpo == null ? null : limpo.toUpperCase(Locale.ROOT);
-    }
-
-    private String opcional(String valor, int tamanho) {
-        if (valor == null || valor.isBlank()) return null;
-        return limitar(valor, tamanho);
-    }
-
-    private String limitar(String valor, int tamanho) {
-        String limpo = valor == null ? "" : valor.trim().replaceAll("\\s+", " ");
-        return limpo.length() <= tamanho ? limpo : limpo.substring(0, tamanho);
-    }
-
-    public record CompraRequest(
-        @NotBlank @Size(max = 120) String compraId,
-        @NotNull Instant realizadaEm,
-        @Size(max = 120) String mercado,
-        @Size(max = 100) String cidade,
-        @Size(max = 2) String estado,
-        @NotEmpty @Size(max = 500) List<@Valid ItemRequest> itens
-    ) {
-    }
-
-    public record ItemRequest(
-        @NotBlank @Size(max = 120) String itemId,
-        @NotBlank @Size(max = 180) String nome,
-        @Size(max = 80) String categoria,
-        @NotNull @DecimalMin("0.001") BigDecimal quantidade,
-        @NotBlank @Size(max = 24) String unidade,
-        @NotNull @DecimalMin("0.0001") BigDecimal precoUnitario,
-        @NotNull @DecimalMin("0.01") BigDecimal subtotal
-    ) {
-    }
-
-    public record ResultadoColeta(int criadas, int ignoradas, int total) {
-    }
-
-    private record RegraCategoria(String categoria, List<String> termos) {
-    }
+    public record CompraRequest(@NotBlank @Size(max = 120) String compraId, @NotNull Instant realizadaEm, @Size(max = 120) String mercado, @Size(max = 100) String cidade, @Size(max = 2) String estado, @NotEmpty @Size(max = 500) List<@Valid ItemRequest> itens) {}
+    public record ItemRequest(@NotBlank @Size(max = 120) String itemId, @NotBlank @Size(max = 180) String nome, @Size(max = 80) String categoria, @NotNull @DecimalMin("0.001") BigDecimal quantidade, @NotBlank @Size(max = 24) String unidade, @NotNull @DecimalMin("0.0001") BigDecimal precoUnitario, @NotNull @DecimalMin("0.01") BigDecimal subtotal) {}
+    public record ResultadoColeta(int criadas, int ignoradas, int total) {}
+    private record RegraCategoria(String categoria, List<String> termos) {}
 }
