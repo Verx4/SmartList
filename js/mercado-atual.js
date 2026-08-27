@@ -408,7 +408,7 @@ export function configurarMercadoAtual(aoSalvar) {
 
         botaoAdicionar.addEventListener("click", () => {
 
-            const mercado = adicionarMercadoFrequente(campoNovo?.value);
+            const mercado = salvarMercadoAtual(campoNovo?.value);
 
             if (!mercado) {
 
@@ -419,13 +419,12 @@ export function configurarMercadoAtual(aoSalvar) {
             }
 
             campoNovo.value = "";
-            if (campoAtual) {
 
-                campoAtual.value = mercado;
-
-            }
-
-            mostrarMensagem(`${mercado} foi adicionado aos seus mercados.`);
+            mostrarMensagem(
+                `${mercado} foi adicionado e selecionado para esta lista.`
+            );
+            comunicar(mercado);
+            fecharPainelCompacto();
 
         });
 

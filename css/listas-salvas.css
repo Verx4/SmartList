@@ -104,3 +104,29 @@
         pointer-events: none;
     }
 }
+
+
+.listas-salvas-nova > .listas-salvas-campo {
+    display: block;
+}
+
+.listas-salvas-nova > .listas-salvas-campo input {
+    width: 100%;
+}
+
+.listas-salvas-nova > .listas-salvas-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@media (max-width: 720px) {
+    .listas-salvas-nova > .listas-salvas-campo {
+        display: block;
+    }
+
+    .listas-salvas-nova > .listas-salvas-acoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
