@@ -165,6 +165,10 @@ public class AdminPrecoService {
     private Specification<ObservacaoPreco> especificacaoObservacoes(Filtro filtro, UUID produtoId) {
         return (root, query, cb) -> {
             List<Predicate> predicados = new ArrayList<>();
+            if (!Long.class.equals(query.getResultType()) && !long.class.equals(query.getResultType())) {
+                root.fetch("produto", JoinType.INNER);
+                query.distinct(true);
+            }
             if (produtoId != null) predicados.add(cb.equal(root.get("produto").get("id"), produtoId));
             if (preenchido(filtro.busca())) {
                 String termo = "%" + filtro.busca().trim().toLowerCase(Locale.ROOT) + "%";
