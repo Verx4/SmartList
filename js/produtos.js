@@ -661,6 +661,27 @@ function nomeListaSeguro(valor, padrao = "Minha lista") {
 }
 
 
+function obterNomeCriador() {
+
+    for (const chave of ["usuarioAtual", "usuarioLogado"]) {
+
+        try {
+            const usuario = JSON.parse(localStorage.getItem(chave));
+            const nome = textoSeguro(usuario?.nome || usuario?.name);
+
+            if (nome) return nome.slice(0, 120);
+
+        } catch {
+            // Continua procurando uma sessão válida.
+        }
+
+    }
+
+    return "Usuário";
+
+}
+
+
 function lerJson(chave, padrao) {
 
     try {
@@ -695,6 +716,7 @@ function carregarListas() {
         const inicial = {
             id: criarId(),
             nome: "Minha lista",
+            criadorNome: obterNomeCriador(),
             mercado: textoSeguro(localStorage.getItem("mercadoAtual")),
             produtos: Array.isArray(produtosAntigos)
                 ? produtosAntigos.map(normalizarProduto)
@@ -710,6 +732,7 @@ function carregarListas() {
     listas = listas.map(lista => ({
         id: String(lista.id || criarId()),
         nome: nomeListaSeguro(lista.nome),
+        criadorNome: textoSeguro(lista.criadorNome) || obterNomeCriador(),
         mercado: textoSeguro(lista.mercado),
         produtos: Array.isArray(lista.produtos)
             ? lista.produtos.map(normalizarProduto)
@@ -755,6 +778,7 @@ export function criarListaSalva(nome, opcoes = {}) {
     const novaLista = {
         id: criarId(),
         nome: nomeListaSeguro(nome, `Lista ${listas.length + 1}`),
+        criadorNome: obterNomeCriador(),
         mercado: textoSeguro(opcoes.mercado),
         produtos: [],
         criadoEm: agora,
@@ -814,6 +838,7 @@ export function excluirListaSalva(id) {
         restantes = [{
             id: criarId(),
             nome: "Minha lista",
+            criadorNome: obterNomeCriador(),
             mercado: "",
             produtos: [],
             criadoEm: agora,

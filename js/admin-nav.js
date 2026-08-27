@@ -10,6 +10,7 @@
                 ["assinaturas", "./usuarios.html#assinaturas", "💳", "Assinaturas"],
                 ["supermercados", "./supermercados.html", "🏪", "Supermercados"],
                 ["produtos", "./produtos.html", "📦", "Produtos"],
+                ["coleta-precos", "./coleta-precos.html", "💲", "Coleta de Preços"],
                 ["localizacao", "./localizacao.html", "🗺️", "Uso por região"]
             ]
         },

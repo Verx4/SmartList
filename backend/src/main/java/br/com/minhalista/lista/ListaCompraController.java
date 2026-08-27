@@ -65,4 +65,10 @@ public class ListaCompraController {
     public List<ListaCompraResponse> historico() {
         return service.historico();
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(@PathVariable UUID id) {
+        service.excluir(id);
+    }
 }

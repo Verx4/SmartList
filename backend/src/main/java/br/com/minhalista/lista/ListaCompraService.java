@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.mercado.Mercado;
 import br.com.minhalista.mercado.MercadoService;
+import br.com.minhalista.preco.ColetaPrecoService;
 import br.com.minhalista.usuario.Usuario;
 import br.com.minhalista.usuario.UsuarioService;
 
@@ -23,17 +24,20 @@ public class ListaCompraService {
     private final ItemListaRepository itemRepository;
     private final UsuarioService usuarioService;
     private final MercadoService mercadoService;
+    private final ColetaPrecoService coletaPrecoService;
 
     public ListaCompraService(
         ListaCompraRepository listaRepository,
         ItemListaRepository itemRepository,
         UsuarioService usuarioService,
-        MercadoService mercadoService
+        MercadoService mercadoService,
+        ColetaPrecoService coletaPrecoService
     ) {
         this.listaRepository = listaRepository;
         this.itemRepository = itemRepository;
         this.usuarioService = usuarioService;
         this.mercadoService = mercadoService;
+        this.coletaPrecoService = coletaPrecoService;
     }
 
     @Transactional
@@ -107,13 +111,22 @@ public class ListaCompraService {
             );
         }
 
+        if (lista.getMercado() == null) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Selecione um mercado antes de finalizar a compra."
+            );
+        }
+
         BigDecimal total = calcularTotal(lista);
         lista.setTotalFinal(total);
         lista.setEconomia(BigDecimal.ZERO);
         lista.setStatus(StatusLista.FINALIZADA);
         lista.setFinalizadoEm(Instant.now());
 
-        return montarResposta(listaRepository.save(lista));
+        ListaCompra finalizada = listaRepository.save(lista);
+        coletaPrecoService.coletar(usuario, finalizada);
+        return montarResposta(finalizada);
     }
 
     @Transactional(readOnly = true)
@@ -126,6 +139,14 @@ public class ListaCompraService {
             .stream()
             .map(this::montarResposta)
             .toList();
+    }
+
+    @Transactional
+    public void excluir(UUID id) {
+        Usuario usuario = usuarioService.obterAutenticado();
+        ListaCompra lista = listaRepository.findByIdAndUsuarioId(id, usuario.getId())
+            .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Lista não encontrada."));
+        listaRepository.delete(lista);
     }
 
     private ListaCompra obterOuCriarAtual(Usuario usuario) {
@@ -170,6 +191,7 @@ public class ListaCompraService {
             mercado == null ? null : mercado.getId(),
             mercado == null ? null : mercado.getNome(),
             lista.getItens().stream().map(ItemListaResponse::de).toList(),
+            lista.getUsuario().getNome(),
             lista.getCriadoEm(),
             lista.getFinalizadoEm()
         );

@@ -42,9 +42,10 @@ function ativarGerenciadorDeListas() {
             <select id="selecionarListaSalva" aria-label="Selecionar lista salva">
                 ${listas.map(lista => `<option value="${escapar(lista.id)}" ${lista.atual ? "selected" : ""}>${escapar(lista.nome)} · ${lista.produtos.length} item(ns)</option>`).join("")}
             </select>
+            <small class="lista-atual-metadados" id="listaAtualMetadados"></small>
             <div class="listas-salvas-botoes">
                 <button type="button" class="btn btn-primary" id="criarNovaLista">+ Nova lista</button>
-                <button type="button" class="btn btn-excluir-lista" id="excluirListaAtual" aria-label="Excluir lista selecionada">Excluir</button>
+                <button type="button" class="btn btn-excluir-lista" id="excluirListaAtual" aria-label="Excluir lista selecionada">Excluir lista</button>
             </div>
         </div>
         <div class="listas-salvas-nova" role="dialog" aria-modal="true" aria-labelledby="tituloNovaLista" hidden>
@@ -71,6 +72,8 @@ function ativarGerenciadorDeListas() {
         </div>`;
 
     referencia.before(gerenciador);
+
+    atualizarMetadadosDaLista(gerenciador, listas);
 
     gerenciador.querySelector("select").addEventListener("change", evento => {
         if (selecionarListaSalva(evento.currentTarget.value)) window.location.reload();
@@ -150,6 +153,20 @@ function ativarGerenciadorDeListas() {
             fecharFormulario();
         }
     });
+}
+
+function atualizarMetadadosDaLista(gerenciador, listas) {
+    const atual = listas.find(lista => lista.atual) || listas[0];
+    const campo = gerenciador.querySelector("#listaAtualMetadados");
+
+    if (!atual || !campo) return;
+
+    const data = new Intl.DateTimeFormat("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short"
+    }).format(new Date(atual.criadoEm));
+
+    campo.textContent = `Criada por ${atual.criadorNome || "Usuário"} em ${data}`;
 }
 
 function escapar(valor) {

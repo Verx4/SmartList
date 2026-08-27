@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1220">
+    <title>Coleta de preços | Administração</title>
+    <link rel="stylesheet" href="../css/global.css?v=48">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin-coleta-precos.css?v=1">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+<body data-admin-page="coleta-precos">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a class="brand admin-brand" href="./index.html"><img class="brand-logo" src="../assets/logo/smart-list-app.png" alt="" width="38" height="38"><span>Smart List</span></a>
+            <nav class="admin-nav" aria-label="Administração"></nav>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-header">
+                <div><span class="page-eyebrow">ADMINISTRAÇÃO</span><h1>Coleta de preços</h1><p>Histórico real e anônimo dos preços informados ao finalizar compras.</p></div>
+                <button id="atualizarPrecos" class="btn btn-primary" type="button">Atualizar</button>
+            </header>
+            <aside class="admin-aviso-assinatura"><strong>Privacidade por padrão</strong><p>Esta área não exibe nome, e-mail ou qualquer identidade do comprador.</p></aside>
+            <section class="grid-resumo" aria-label="Resumo da coleta">
+                <article class="card resumo-card"><span>Produtos</span><strong id="totalProdutos">0</strong></article>
+                <article class="card resumo-card"><span>Observações</span><strong id="totalObservacoes">0</strong></article>
+                <article class="card resumo-card"><span>Mercados</span><strong id="totalMercados">0</strong></article>
+                <article class="card resumo-card"><span>Estados</span><strong id="totalEstados">0</strong></article>
+            </section>
+            <section class="card coleta-filtros" aria-labelledby="tituloFiltros">
+                <div class="section-header"><div><span class="card-label">Consulta no servidor</span><h2 id="tituloFiltros">Filtros</h2></div></div>
+                <form id="formFiltros" class="coleta-filtros-grid">
+                    <label>Produto<input id="filtroBusca" type="search" placeholder="Nome do produto"></label>
+                    <label>Categoria<select id="filtroCategoria"><option value="">Todas</option></select></label>
+                    <label>Estado<select id="filtroEstado"><option value="">Todos</option></select></label>
+                    <label>Cidade<select id="filtroCidade"><option value="">Todas</option></select></label>
+                    <label>Mercado<select id="filtroMercado"><option value="">Todos</option></select></label>
+                    <label>Origem<select id="filtroOrigem"><option value="">Todas</option></select></label>
+                    <label>De<input id="filtroInicio" type="date"></label>
+                    <label>Até<input id="filtroFim" type="date"></label>
+                    <div class="coleta-filtros-acoes"><button class="btn btn-primary" type="submit">Aplicar</button><button class="btn btn-secondary" id="limparFiltros" type="button">Limpar</button></div>
+                </form>
+            </section>
+            <section class="card tabela-card">
+                <div class="section-header"><div><span class="card-label">Catálogo central</span><h2>Produtos por categoria</h2><p id="resumoProdutos">Carregando...</p></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Coletas</th><th>Preço médio</th><th>Faixa</th><th>Última compra</th><th></th></tr></thead><tbody id="tabelaProdutos"><tr><td colspan="7">Carregando...</td></tr></tbody></table></div>
+                <div class="coleta-paginacao"><button id="produtosAnterior" class="btn btn-secondary" type="button">Anterior</button><span id="paginaProdutos">Página 1</span><button id="produtosProxima" class="btn btn-secondary" type="button">Próxima</button></div>
+            </section>
+            <section id="detalheProduto" class="card coleta-detalhe" hidden>
+                <div class="section-header"><div><span class="card-label">Histórico do produto</span><h2 id="detalheNome">Produto</h2><p id="detalheResumo"></p></div><button id="fecharDetalhe" class="btn btn-secondary" type="button">Fechar</button></div>
+                <label class="coleta-categoria-manual">Corrigir categoria<select id="detalheCategoria"></select></label>
+                <div id="graficoEvolucao" class="coleta-grafico" role="img" aria-label="Evolução recente dos preços"></div>
+                <div class="table-wrapper"><table><thead><tr><th>Data</th><th>Preço</th><th>Mercado</th><th>Localidade</th><th>Origem</th></tr></thead><tbody id="detalheObservacoes"></tbody></table></div>
+            </section>
+            <section class="coleta-analises">
+                <article class="card tabela-card"><div class="section-header"><div><span class="card-label">Distribuição</span><h2>Por estado</h2></div></div><div class="table-wrapper"><table><thead><tr><th>Estado</th><th>Coletas</th><th>Preço médio</th></tr></thead><tbody id="analiseEstados"></tbody></table></div></article>
+                <article class="card tabela-card"><div class="section-header"><div><span class="card-label">Distribuição</span><h2>Por mercado</h2></div></div><div class="table-wrapper"><table><thead><tr><th>Mercado</th><th>Coletas</th><th>Preço médio</th></tr></thead><tbody id="analiseMercados"></tbody></table></div></article>
+            </section>
+            <section class="card tabela-card">
+                <div class="section-header"><div><span class="card-label">Registros históricos</span><h2>Observações de preço</h2><p id="resumoObservacoes">Carregando...</p></div></div>
+                <div class="table-wrapper"><table><thead><tr><th>Data</th><th>Produto</th><th>Quantidade</th><th>Preço unitário</th><th>Subtotal</th><th>Mercado</th><th>Localidade</th><th>Origem</th></tr></thead><tbody id="tabelaObservacoes"><tr><td colspan="8">Carregando...</td></tr></tbody></table></div>
+                <div class="coleta-paginacao"><button id="observacoesAnterior" class="btn btn-secondary" type="button">Anterior</button><span id="paginaObservacoes">Página 1</span><button id="observacoesProxima" class="btn btn-secondary" type="button">Próxima</button></div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/tema.js?v=11"></script>
+    <script src="../js/admin-nav.js?v=2"></script>
+    <script type="module" src="../js/admin-coleta-precos.js?v=1"></script>
+</body>
+</html>
