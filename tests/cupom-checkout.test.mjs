@@ -22,30 +22,36 @@ test("tela de planos exibe, aplica e remove cupom antes do checkout", async () =
     assert.match(script, /cupomAplicado\.codigo/);
 });
 
-test("ADM explica as regras automáticas sem exigir cadastro de cupom", async () => {
+test("ADM permite escolher, autorizar, desativar e excluir nomes de cupons", async () => {
     const [pagina, script] = await Promise.all([
         ler("admin/planos.html"),
         ler("js/admin-planos.js")
     ]);
 
-    assert.match(pagina, /Cupons automáticos/);
-    assert.match(pagina, /FINAL 5/);
-    assert.match(pagina, /FINAL 10/);
-    assert.doesNotMatch(pagina, /id="formCupom"/);
-    assert.doesNotMatch(script, /\/admin\/cupons/);
+    assert.match(pagina, /Criar e autorizar cupons/);
+    assert.match(pagina, /id="formCupom"/);
+    assert.match(pagina, /id="codigoCupomAdmin"/);
+    assert.match(pagina, /id="cicloCupomAdmin"/);
+    assert.doesNotMatch(pagina, /class="admin-cupom-codigo">FINAL 5/);
+    assert.match(script, /api\.get\("\/admin\/cupons"\)/);
+    assert.match(script, /api\.post\("\/admin\/cupons"/);
+    assert.match(script, /api\.delete\(`\/admin\/cupons\/\$\{/);
 });
 
-test("servidor mantém autoridade, regra de sufixo e auditoria", async () => {
-    const [checkout, service, assinaturaService, mercadoPago, migration] = await Promise.all([
+test("servidor exige cupom cadastrado e mantém autoridade e auditoria", async () => {
+    const [checkout, service, assinaturaService, mercadoPago, migration, autorizacao] = await Promise.all([
         ler("backend/src/main/java/br/com/minhalista/assinatura/CheckoutRequest.java"),
         ler("backend/src/main/java/br/com/minhalista/assinatura/CupomService.java"),
         ler("backend/src/main/java/br/com/minhalista/assinatura/AssinaturaService.java"),
         ler("backend/src/main/java/br/com/minhalista/pagamento/MercadoPagoService.java"),
-        ler("backend/src/main/resources/db/migration/postgresql/V10__auditoria_cupons_assinaturas.sql")
+        ler("backend/src/main/resources/db/migration/postgresql/V10__auditoria_cupons_assinaturas.sql"),
+        ler("backend/src/main/resources/db/migration/postgresql/V11__autorizar_cupons_cadastrados.sql")
     ]);
 
     assert.match(checkout, /String cupom/);
     assert.match(service, /planoService\.valorVigente\(ciclo\)/);
+    assert.match(service, /repository\.findByCodigoIgnoreCase\(codigo\)/);
+    assert.match(service, /filter\(Cupom::isAtivo\)/);
     assert.ok(service.indexOf('endsWith("10")') < service.indexOf('endsWith("5")'));
     assert.match(service, /divide\(CEM, 2, RoundingMode\.HALF_UP\)/);
     assert.match(assinaturaService, /setCupomValorOriginal/);
@@ -54,4 +60,6 @@ test("servidor mantém autoridade, regra de sufixo e auditoria", async () => {
     assert.match(mercadoPago, /"cupom_valor_original"/);
     assert.match(migration, /cupom_percentual_desconto/);
     assert.match(migration, /cupom_primeiro_pagamento_aplicado/);
+    assert.match(autorizacao, /ADD COLUMN IF NOT EXISTS ciclo/);
+    assert.match(autorizacao, /SET ativo = FALSE/);
 });
