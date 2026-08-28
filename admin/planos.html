@@ -62,51 +62,36 @@
         <section class="card admin-cupons-card">
             <div class="section-header">
                 <div>
-                    <span class="card-label">CUPONS DE DESCONTO</span>
-                    <h2>Criar e gerenciar cupons</h2>
-                    <p>O desconto será validado pelo servidor antes de abrir o Mercado Pago.</p>
+                    <span class="card-label">REGRAS DE CUPOM</span>
+                    <h2>Cupons automáticos</h2>
+                    <p>
+                        Não é necessário cadastrar códigos. O servidor reconhece qualquer
+                        código válido conforme o final informado abaixo.
+                    </p>
                 </div>
             </div>
-
-            <form id="formCupom" class="admin-cupom-form">
-                <div class="form-group">
-                    <label for="codigoCupomAdmin">Código do cupom</label>
-                    <input
-                        id="codigoCupomAdmin"
-                        name="codigo"
-                        type="text"
-                        maxlength="30"
-                        autocomplete="off"
-                        placeholder="Ex.: SMART10"
-                        required>
-                </div>
-                <div class="form-group">
-                    <label for="descontoCupomAdmin">Desconto (%)</label>
-                    <input
-                        id="descontoCupomAdmin"
-                        name="percentualDesconto"
-                        type="text"
-                        inputmode="decimal"
-                        placeholder="10,00"
-                        required>
-                </div>
-                <label class="admin-cupom-ativo" for="cupomAtivoAdmin">
-                    <input id="cupomAtivoAdmin" name="ativo" type="checkbox" checked>
-                    <span>Cupom ativo</span>
-                </label>
-                <button class="btn btn-primary" type="submit">Salvar cupom</button>
-            </form>
-
-            <div id="mensagemCupons" class="mensagem" aria-live="polite" hidden></div>
-
-            <div id="listaCupons" class="admin-cupons-lista" aria-live="polite">
-                <p class="estado-vazio">Nenhum cupom cadastrado.</p>
+            <div class="admin-cupons-lista">
+                <article class="admin-cupom-item">
+                    <strong class="admin-cupom-codigo">FINAL 5</strong>
+                    <span>5% de desconto</span>
+                    <span>Somente Plano Mensal</span>
+                    <span class="status status-ok">Primeira cobrança</span>
+                </article>
+                <article class="admin-cupom-item">
+                    <strong class="admin-cupom-codigo">FINAL 10</strong>
+                    <span>10% de desconto</span>
+                    <span>Somente Plano Trimestral</span>
+                    <span class="status status-ok">Primeira cobrança</span>
+                </article>
+                <p class="estado-vazio">
+                    O Plano Anual não aceita cupom. O desconto não altera a duração do acesso.
+                </p>
             </div>
         </section>
     </main>
 </div>
 <script src="../js/tema.js?v=12"></script>
 <script src="../js/admin-nav.js?v=5"></script>
-<script type="module" src="../js/admin-planos.js?v=2"></script>
+<script type="module" src="../js/admin-planos.js?v=3"></script>
 </body>
 </html>

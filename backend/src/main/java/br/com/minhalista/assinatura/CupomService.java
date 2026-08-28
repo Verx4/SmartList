@@ -16,6 +16,8 @@ import br.com.minhalista.common.RegraNegocioException;
 public class CupomService {
 
     private static final BigDecimal CEM = new BigDecimal("100");
+    private static final BigDecimal CINCO = new BigDecimal("5.00");
+    private static final BigDecimal DEZ = new BigDecimal("10.00");
 
     private final CupomRepository repository;
     private final PlanoService planoService;
@@ -36,12 +38,19 @@ public class CupomService {
     @Transactional
     public CupomResponse salvar(CupomAdminRequest request) {
         String codigo = normalizar(request.codigo());
+        BigDecimal percentualPermitido = percentualDoCodigo(codigo);
+
+        if (request.percentualDesconto().compareTo(percentualPermitido) != 0) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "O percentual deve corresponder ao final do cupom: 5% para códigos terminados em 5 e 10% para códigos terminados em 10."
+            );
+        }
+
         Cupom cupom = repository.findByCodigoIgnoreCase(codigo)
             .orElseGet(Cupom::new);
         cupom.setCodigo(codigo);
-        cupom.setPercentualDesconto(
-            request.percentualDesconto().setScale(2, RoundingMode.HALF_UP)
-        );
+        cupom.setPercentualDesconto(percentualPermitido);
         cupom.setAtivo(request.ativo());
         return CupomResponse.de(repository.save(cupom));
     }
@@ -59,23 +68,54 @@ public class CupomService {
         BigDecimal valorOriginal = planoService.valorVigente(ciclo)
             .setScale(2, RoundingMode.HALF_UP);
         String codigo = normalizar(codigoInformado);
-        Cupom cupom = repository.findByCodigoIgnoreCase(codigo)
-            .filter(Cupom::isAtivo)
-            .orElseThrow(() -> new RegraNegocioException(
+        BigDecimal percentual = percentualDoCodigo(codigo);
+        CicloAssinatura cicloPermitido = codigo.endsWith("10")
+            ? CicloAssinatura.TRIMESTRAL
+            : CicloAssinatura.MENSAL;
+
+        if (ciclo != cicloPermitido) {
+            throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "Cupom inválido ou inativo."
-            ));
+                "Este cupom não é válido para o plano selecionado."
+            );
+        }
+
         BigDecimal desconto = valorOriginal
-            .multiply(cupom.getPercentualDesconto())
+            .multiply(percentual)
             .divide(CEM, 2, RoundingMode.HALF_UP);
         BigDecimal total = valorOriginal.subtract(desconto).setScale(2, RoundingMode.HALF_UP);
 
         return new CupomAplicacaoResponse(
-            cupom.getCodigo(),
-            cupom.getPercentualDesconto(),
+            codigo,
+            percentual,
             valorOriginal,
             desconto,
-            total
+            total,
+            cicloPermitido,
+            true
+        );
+    }
+
+    private BigDecimal percentualDoCodigo(String codigo) {
+        if (!codigo.matches("[A-Z0-9_-]{1,30}")) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Cupom inválido. Use letras, números, hífen ou sublinhado."
+            );
+        }
+
+        // Mantém a precedência explícita da regra de 10% antes da regra de 5%.
+        if (codigo.endsWith("10")) {
+            return DEZ;
+        }
+
+        if (codigo.endsWith("5")) {
+            return CINCO;
+        }
+
+        throw new RegraNegocioException(
+            HttpStatus.BAD_REQUEST,
+            "Cupom inválido. O código deve terminar em 5 ou 10."
         );
     }
 

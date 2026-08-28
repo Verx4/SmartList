@@ -64,6 +64,21 @@ public class MercadoPagoService {
 
         String assinaturaId = assinatura.getId().toString();
         String retornoBase = frontendUrl + "/assinatura.html";
+        Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("assinatura_id", assinaturaId);
+        metadata.put("usuario_id", usuario.getId().toString());
+        metadata.put("ciclo", assinatura.getCiclo().name());
+
+        if (StringUtils.hasText(assinatura.getCupomCodigo())) {
+            metadata.put("cupom_codigo", assinatura.getCupomCodigo());
+            metadata.put(
+                "cupom_percentual_desconto",
+                assinatura.getCupomPercentualDesconto()
+            );
+            metadata.put("cupom_valor_original", assinatura.getCupomValorOriginal());
+            metadata.put("cupom_valor_desconto", assinatura.getCupomValorDesconto());
+            metadata.put("cupom_primeira_cobranca_somente", true);
+        }
 
         Map<String, Object> corpo = new LinkedHashMap<>();
         corpo.put("items", List.of(Map.of(
@@ -76,11 +91,7 @@ public class MercadoPagoService {
         )));
         corpo.put("payer", Map.of("email", usuario.getEmail()));
         corpo.put("external_reference", assinaturaId);
-        corpo.put("metadata", Map.of(
-            "assinatura_id", assinaturaId,
-            "usuario_id", usuario.getId().toString(),
-            "ciclo", assinatura.getCiclo().name()
-        ));
+        corpo.put("metadata", metadata);
         corpo.put("back_urls", Map.of(
             "success", retornoBase + "?pagamento=sucesso",
             "pending", retornoBase + "?pagamento=pendente",

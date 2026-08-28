@@ -75,6 +75,14 @@ public class AssinaturaService {
             CupomAplicacaoResponse cupom = cupomService.aplicar(codigoCupom, ciclo);
             assinatura.setValor(cupom.total());
             assinatura.setCupomCodigo(cupom.codigo());
+            assinatura.setCupomPercentualDesconto(cupom.percentualDesconto());
+            assinatura.setCupomValorDesconto(cupom.desconto());
+            assinatura.setCupomValorOriginal(cupom.valorOriginal());
+            assinatura.setCupomAplicadoEm(Instant.now());
+            assinatura.setCupomPrimeiraCobrancaSomente(
+                cupom.primeiraCobrancaSomente()
+            );
+            assinatura.setCupomPrimeiroPagamentoAplicado(false);
         }
         return repository.save(assinatura);
     }
@@ -233,6 +241,11 @@ public class AssinaturaService {
         assinatura.setMercadoPagoPagamentoId(pagamentoId);
         assinatura.setInicioEm(agora);
         assinatura.setVenceEm(vencimento);
+
+        if (assinatura.getCupomCodigo() != null
+            && !assinatura.getCupomCodigo().isBlank()) {
+            assinatura.setCupomPrimeiroPagamentoAplicado(true);
+        }
 
         usuario.setTipoAcesso(TipoAcesso.PREMIUM);
     }

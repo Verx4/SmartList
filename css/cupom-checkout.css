@@ -29,18 +29,88 @@
     white-space: nowrap;
 }
 
-#mensagemCupom {
+#mensagemCupom,
+#mensagemCupomPlano {
     color: var(--cor-texto-secundario, #94a3b8);
 }
 
-#mensagemCupom.cupom-sucesso {
+#mensagemCupom.cupom-sucesso,
+#mensagemCupomPlano.cupom-sucesso {
     color: var(--cor-sucesso, #22c55e);
     font-weight: 700;
 }
 
-#mensagemCupom.cupom-erro {
+#mensagemCupom.cupom-erro,
+#mensagemCupomPlano.cupom-erro {
     color: var(--cor-perigo, #ef4444);
     font-weight: 700;
+}
+
+.plano-cupom {
+    margin: 14px 0 18px;
+}
+
+.btn-cupom-remover {
+    justify-self: start;
+    padding: 0;
+    color: var(--cor-perigo, #ef4444);
+    background: transparent;
+    border: 0;
+    font: inherit;
+    font-weight: 800;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-cupom-remover:hover {
+    text-decoration-thickness: 2px;
+}
+
+.plano-promocao {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 12px;
+    padding: 14px;
+    color: var(--cor-texto-secundario, #94a3b8);
+    background: color-mix(in srgb, var(--cor-sucesso, #22c55e) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--cor-sucesso, #22c55e) 45%, transparent);
+    border-radius: 12px;
+}
+
+.plano-promocao[hidden] {
+    display: none;
+}
+
+.plano-promocao > strong {
+    color: var(--cor-sucesso, #22c55e);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.plano-promocao > small {
+    grid-column: 1 / -1;
+    line-height: 1.45;
+}
+
+.cupom-badge {
+    justify-self: start;
+    padding: 5px 9px;
+    color: #052e16;
+    background: var(--cor-sucesso, #22c55e);
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.preco-premium-linha.com-cupom #precoPremium {
+    color: var(--cor-sucesso, #22c55e);
+}
+
+.checkout-resumo #checkoutCupom.cupom-aplicado,
+.checkout-resumo #checkoutPercentual.cupom-aplicado,
+.checkout-resumo #checkoutTotal.cupom-aplicado {
+    color: var(--cor-sucesso, #22c55e);
 }
 
 @media (max-width: 560px) {
@@ -50,5 +120,13 @@
 
     .checkout-cupom-acoes .btn {
         width: 100%;
+    }
+
+    .plano-promocao {
+        grid-template-columns: 1fr auto;
+    }
+
+    .plano-promocao > strong {
+        grid-column: 1 / -1;
     }
 }

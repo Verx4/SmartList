@@ -99,6 +99,25 @@ class AssinaturaServicePagamentoTest {
     }
 
     @Test
+    void registraQueDescontoFoiUsadoQuandoPrimeiroPagamentoEConfirmado() {
+        assinatura.setValor(new BigDecimal("9.47"));
+        assinatura.setCupomCodigo("CLUBE5");
+        assinatura.setCupomPrimeiraCobrancaSomente(true);
+        PagamentoConsultado pagamento = pagamento(new BigDecimal("9.47"), "BRL");
+
+        when(repository.findByMercadoPagoPagamentoId("123456"))
+            .thenReturn(Optional.empty());
+        when(repository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            eq(usuario.getId()),
+            eq(StatusAssinatura.ATIVA),
+            any()
+        )).thenReturn(Optional.empty());
+
+        assertTrue(service.confirmarPagamentoDoUsuario(pagamento, usuario.getId()));
+        assertTrue(assinatura.isCupomPrimeiroPagamentoAplicado());
+    }
+
+    @Test
     void confirmacaoRepetidaRestauraAcessoPremium() {
         PagamentoConsultado pagamento =
             pagamento(new BigDecimal("9.97"), "BRL");

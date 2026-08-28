@@ -44,6 +44,24 @@ public class Assinatura {
     @Column(name = "cupom_codigo", length = 30)
     private String cupomCodigo;
 
+    @Column(name = "cupom_percentual_desconto", precision = 5, scale = 2)
+    private BigDecimal cupomPercentualDesconto;
+
+    @Column(name = "cupom_valor_desconto", precision = 10, scale = 2)
+    private BigDecimal cupomValorDesconto;
+
+    @Column(name = "cupom_valor_original", precision = 10, scale = 2)
+    private BigDecimal cupomValorOriginal;
+
+    @Column(name = "cupom_aplicado_em")
+    private Instant cupomAplicadoEm;
+
+    @Column(name = "cupom_primeira_cobranca_somente", nullable = false)
+    private boolean cupomPrimeiraCobrancaSomente;
+
+    @Column(name = "cupom_primeiro_pagamento_aplicado", nullable = false)
+    private boolean cupomPrimeiroPagamentoAplicado;
+
     @Column(name = "mercado_pago_preferencia_id", unique = true, length = 120)
     private String mercadoPagoPreferenciaId;
 
@@ -108,6 +126,54 @@ public class Assinatura {
 
     public void setCupomCodigo(String cupomCodigo) {
         this.cupomCodigo = cupomCodigo;
+    }
+
+    public BigDecimal getCupomPercentualDesconto() {
+        return cupomPercentualDesconto;
+    }
+
+    public void setCupomPercentualDesconto(BigDecimal cupomPercentualDesconto) {
+        this.cupomPercentualDesconto = cupomPercentualDesconto;
+    }
+
+    public BigDecimal getCupomValorDesconto() {
+        return cupomValorDesconto;
+    }
+
+    public void setCupomValorDesconto(BigDecimal cupomValorDesconto) {
+        this.cupomValorDesconto = cupomValorDesconto;
+    }
+
+    public BigDecimal getCupomValorOriginal() {
+        return cupomValorOriginal;
+    }
+
+    public void setCupomValorOriginal(BigDecimal cupomValorOriginal) {
+        this.cupomValorOriginal = cupomValorOriginal;
+    }
+
+    public Instant getCupomAplicadoEm() {
+        return cupomAplicadoEm;
+    }
+
+    public void setCupomAplicadoEm(Instant cupomAplicadoEm) {
+        this.cupomAplicadoEm = cupomAplicadoEm;
+    }
+
+    public boolean isCupomPrimeiraCobrancaSomente() {
+        return cupomPrimeiraCobrancaSomente;
+    }
+
+    public void setCupomPrimeiraCobrancaSomente(boolean cupomPrimeiraCobrancaSomente) {
+        this.cupomPrimeiraCobrancaSomente = cupomPrimeiraCobrancaSomente;
+    }
+
+    public boolean isCupomPrimeiroPagamentoAplicado() {
+        return cupomPrimeiroPagamentoAplicado;
+    }
+
+    public void setCupomPrimeiroPagamentoAplicado(boolean cupomPrimeiroPagamentoAplicado) {
+        this.cupomPrimeiroPagamentoAplicado = cupomPrimeiroPagamentoAplicado;
     }
 
     public String getMercadoPagoPreferenciaId() {

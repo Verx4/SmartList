@@ -7,7 +7,7 @@ public record CheckoutRequest(
     CicloAssinatura ciclo,
 
     @jakarta.validation.constraints.Pattern(
-        regexp = "[A-Za-z0-9_-]{3,30}",
+        regexp = "[A-Za-z0-9_-]{1,30}",
         message = "O código do cupom é inválido."
     )
     String cupom
