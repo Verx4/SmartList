@@ -1,5 +1,5 @@
 import { api, ApiError } from "./api.js";
-import { estaAutenticado, usuarioAtual } from "./auth.js";
+import { estaAutenticado } from "./auth.js";
 
 
 const MARGEM_SCRAPER = 5;
@@ -1099,15 +1099,25 @@ function configurarFormulariosComEndpoint() {
 }
 
 
-function iniciar() {
+async function iniciar() {
 
     if (!estaAutenticado()) {
         window.location.replace("../login.html");
         return;
     }
 
-    if (String(usuarioAtual()?.perfil || "").toUpperCase() !== "ADMIN") {
-        window.location.replace("../dashboard.html");
+    let usuario;
+
+    try {
+        usuario = await api.get("/usuarios/me");
+        localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+    } catch {
+        window.location.replace("../login.html");
+        return;
+    }
+
+    if (String(usuario?.perfil || "").toUpperCase() !== "ADMIN") {
+        window.location.replace("../inicio.html");
         return;
     }
 

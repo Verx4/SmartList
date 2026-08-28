@@ -1,5 +1,6 @@
 import { api, ApiError } from "./api.js";
 import { escaparHTML } from "./utils.js";
+import { definirQuantidadeSugestoes } from "./sugestoes-badge.js";
 
 const CHAVE_LOCAL = "sugestoesLocais";
 const textosStatus = {
@@ -70,12 +71,28 @@ function renderizarMinhasSugestoes() {
             return `
                 <article class="sugestao-item">
                     <div class="minha-sugestao-meta">
-                        <span>${escaparHTML(item.categoria || "Outros")} · ${escaparHTML(status)}</span>
+                        <span>
+                            ${escaparHTML(item.categoria || "Outros")} · ${escaparHTML(status)}
+                            ${item.temNovaResposta
+                                ? '<b class="sugestao-nova-resposta">Nova resposta</b>'
+                                : ""}
+                        </span>
                         <time>${escaparHTML(formatarData(item.criadoEm))}</time>
                     </div>
                     <h3>${escaparHTML(item.titulo)}</h3>
                     <p>${escaparHTML(item.descricao)}</p>
-                    <div class="resposta-admin-usuario ${respondida ? "respondida" : "aguardando"}">
+                    ${respondida
+                        ? `<button
+                            type="button"
+                            class="btn btn-secondary sugestao-abrir-resposta"
+                            data-visualizar-sugestao="${escaparHTML(item.id)}"
+                            aria-expanded="false">
+                            Ver resposta do ADM
+                        </button>`
+                        : ""}
+                    <div
+                        class="resposta-admin-usuario ${respondida ? "respondida" : "aguardando"}"
+                        ${respondida ? "hidden" : ""}>
                         <strong>Resposta do ADM</strong>
                         <p>${respondida
                             ? escaparHTML(item.respostaAdmin)
@@ -90,6 +107,54 @@ function renderizarMinhasSugestoes() {
         : '<p class="estado-vazio">Você ainda não enviou sugestões ou dúvidas.</p>';
 }
 
+function quantidadeNaoLida() {
+    return minhasSugestoes.filter(item => item.temNovaResposta).length;
+}
+
+document.getElementById("listaMinhasSugestoes")?.addEventListener("click", async evento => {
+    const botao = evento.target.closest("[data-visualizar-sugestao]");
+
+    if (!botao) {
+        return;
+    }
+
+    const item = minhasSugestoes.find(
+        sugestao => String(sugestao.id) === botao.dataset.visualizarSugestao
+    );
+    const resposta = botao.nextElementSibling;
+    const abrir = resposta?.hidden !== false;
+
+    if (resposta) {
+        resposta.hidden = !abrir;
+    }
+    botao.setAttribute("aria-expanded", String(abrir));
+    botao.textContent = abrir ? "Ocultar resposta" : "Ver resposta do ADM";
+
+    if (!abrir || !item?.temNovaResposta) {
+        return;
+    }
+
+    item.temNovaResposta = false;
+    botao.closest(".sugestao-item")
+        ?.querySelector(".sugestao-nova-resposta")
+        ?.remove();
+    definirQuantidadeSugestoes(quantidadeNaoLida());
+
+    try {
+        await api.patch(`/sugestoes/${item.id}/visualizar`, {});
+    } catch (erro) {
+        item.temNovaResposta = true;
+        renderizarMinhasSugestoes();
+        definirQuantidadeSugestoes(quantidadeNaoLida());
+        mostrarMensagem(
+            erro instanceof ApiError
+                ? erro.message
+                : "Não foi possível marcar a resposta como visualizada.",
+            "erro"
+        );
+    }
+});
+
 async function carregarMinhasSugestoes() {
     const container = document.getElementById("listaMinhasSugestoes");
     if (!container) {
@@ -99,6 +164,7 @@ async function carregarMinhasSugestoes() {
     try {
         const resposta = await api.get("/sugestoes/minhas");
         minhasSugestoes = Array.isArray(resposta) ? resposta : [];
+        definirQuantidadeSugestoes(quantidadeNaoLida());
         renderizarMinhasSugestoes();
     } catch (erro) {
         minhasSugestoes = [];

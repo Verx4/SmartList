@@ -27,6 +27,9 @@ import jakarta.persistence.criteria.Predicate;
 
 @Service
 public class AdminPrecoService {
+    private static final Instant INICIO_HISTORICO = Instant.parse("1970-01-01T00:00:00Z");
+    private static final Instant FIM_HISTORICO = Instant.parse("9999-12-31T23:59:59Z");
+
     private final ProdutoPrecoRepository produtoRepository;
     private final ObservacaoPrecoRepository observacaoRepository;
     public AdminPrecoService(ProdutoPrecoRepository produtoRepository, ObservacaoPrecoRepository observacaoRepository) {
@@ -66,24 +69,26 @@ public class AdminPrecoService {
         String buscaSegura = busca == null ? "" : busca.trim();
         String mercadoSeguro = mercado == null ? "" : mercado.trim();
         String usuarioSeguro = usuario == null ? "" : usuario.trim();
+        Instant inicioSeguro = inicio == null ? INICIO_HISTORICO : inicio;
+        Instant fimSeguro = fim == null ? FIM_HISTORICO : fim;
+        Pageable paginaConsulta = PageRequest.of(paginaSegura, tamanhoSeguro);
 
-        List<ObservacaoPreco> itens = observacaoRepository.findAll(
-            especificacaoItensCompra(buscaSegura, mercadoSeguro, usuarioSeguro, inicio, fim),
-            Sort.by(Sort.Direction.DESC, "realizadaEm")
+        long total = observacaoRepository.contarCompras(
+            buscaSegura,
+            mercadoSeguro,
+            usuarioSeguro,
+            inicioSeguro,
+            fimSeguro
         );
-
-        Map<String, List<ObservacaoPreco>> grupos = new LinkedHashMap<>();
-        for (ObservacaoPreco item : itens) {
-            if (item.getCompraChave() == null || item.getCompraChave().isBlank()) continue;
-            grupos.computeIfAbsent(item.getCompraChave(), chave -> new ArrayList<>()).add(item);
-        }
-
-        List<CompraResumoResponse> todas = grupos.values().stream().map(this::compraResumo).toList();
-        long total = todas.size();
+        List<CompraResumoResponse> conteudo = observacaoRepository.listarCompras(
+            buscaSegura,
+            mercadoSeguro,
+            usuarioSeguro,
+            inicioSeguro,
+            fimSeguro,
+            paginaConsulta
+        ).stream().map(this::compraResumo).toList();
         int totalPaginas = total == 0 ? 0 : (int) Math.ceil((double) total / tamanhoSeguro);
-        int inicioPagina = Math.min(paginaSegura * tamanhoSeguro, todas.size());
-        int fimPagina = Math.min(inicioPagina + tamanhoSeguro, todas.size());
-        List<CompraResumoResponse> conteudo = todas.subList(inicioPagina, fimPagina);
 
         return new PaginaResponse<>(conteudo, paginaSegura, tamanhoSeguro, total, totalPaginas, paginaSegura + 1 < totalPaginas, paginaSegura > 0);
     }
@@ -145,39 +150,18 @@ public class AdminPrecoService {
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseEstados() { return observacaoRepository.analisarPorEstado().stream().map(this::analise).toList(); }
     @Transactional(readOnly = true) public List<AnaliseResponse> analiseMercados() { return observacaoRepository.analisarPorMercado().stream().map(this::analise).toList(); }
 
-    private CompraResumoResponse compraResumo(List<ObservacaoPreco> itens) {
-        ObservacaoPreco primeiro = itens.get(0);
-        Instant realizadaEm = itens.stream().map(ObservacaoPreco::getRealizadaEm).max(Instant::compareTo).orElse(primeiro.getRealizadaEm());
-        BigDecimal valorTotal = itens.stream().map(ObservacaoPreco::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+    private CompraResumoResponse compraResumo(ObservacaoPrecoRepository.CompraAgregada compra) {
         return new CompraResumoResponse(
-            primeiro.getCompraChave(),
-            primeiro.getUsuario() == null ? null : primeiro.getUsuario().getId(),
-            primeiro.getUsuario() == null ? "Usuário não identificado" : primeiro.getUsuario().getNome(),
-            primeiro.getMercado(), primeiro.getCidade(), primeiro.getEstado(), realizadaEm,
-            itens.size(), valorTotal
+            compra.getCompraId(),
+            compra.getUsuarioId(),
+            compra.getUsuarioNome() == null ? "Usuário não identificado" : compra.getUsuarioNome(),
+            compra.getMercado(),
+            compra.getCidade(),
+            compra.getEstado(),
+            compra.getRealizadaEm(),
+            compra.getTotalItens(),
+            compra.getValorTotal()
         );
-    }
-
-    private Specification<ObservacaoPreco> especificacaoItensCompra(String busca, String mercado, String usuario, Instant inicio, Instant fim) {
-        return (root, query, cb) -> {
-            List<Predicate> p = new ArrayList<>();
-            var usuarioJoin = root.join("usuario", JoinType.LEFT);
-            p.add(cb.equal(root.get("origem"), OrigemPreco.COMPRA_USUARIO));
-            if (preenchido(mercado)) p.add(cb.equal(root.get("mercado"), mercado));
-            if (preenchido(usuario)) p.add(cb.equal(cb.lower(usuarioJoin.get("nome")), usuario.toLowerCase(Locale.ROOT)));
-            if (inicio != null) p.add(cb.greaterThanOrEqualTo(root.<Instant>get("realizadaEm"), inicio));
-            if (fim != null) p.add(cb.lessThanOrEqualTo(root.<Instant>get("realizadaEm"), fim));
-            if (preenchido(busca)) {
-                String termo = "%" + busca.toLowerCase(Locale.ROOT) + "%";
-                p.add(cb.or(
-                    cb.like(cb.lower(root.get("compraChave")), termo),
-                    cb.like(cb.lower(root.get("nomeOriginal")), termo),
-                    cb.like(cb.lower(root.get("mercado")), termo),
-                    cb.like(cb.lower(usuarioJoin.get("nome")), termo)
-                ));
-            }
-            return cb.and(p.toArray(Predicate[]::new));
-        };
     }
 
     private Specification<ProdutoPreco> especificacaoProdutos(Filtro filtro) {

@@ -1,5 +1,5 @@
 import { api, ApiError } from "./api.js";
-import { estaAutenticado, usuarioAtual } from "./auth.js";
+import { estaAutenticado } from "./auth.js";
 
 const porId = id => document.getElementById(id);
 const estado = { pagina: 0, tamanho: 20, compraAberta: null };
@@ -22,13 +22,20 @@ function idCurto(id) {
     return `#CMP${limpo.slice(0, 8)}`;
 }
 
-function garantirAdmin() {
+async function garantirAdmin() {
     if (!estaAutenticado()) {
         location.replace("../login.html");
         return false;
     }
-    const usuario = usuarioAtual();
-    if (usuario && String(usuario.perfil || usuario.role || "").toUpperCase() !== "ADMIN") {
+    let usuario;
+    try {
+        usuario = await api.get("/usuarios/me");
+        localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+    } catch {
+        location.replace("../login.html");
+        return false;
+    }
+    if (String(usuario?.perfil || usuario?.role || "").toUpperCase() !== "ADMIN") {
         location.replace("../inicio.html");
         return false;
     }
@@ -242,6 +249,6 @@ document.addEventListener("click", async e => {
     if (botao) abrirCompra(botao.dataset.abrirCompra).catch(exibirErro);
 });
 
-if (garantirAdmin()) {
+if (await garantirAdmin()) {
     carregarFiltros().then(carregarTudo).catch(exibirErro);
 }

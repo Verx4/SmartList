@@ -9,4 +9,6 @@ public interface SugestaoRepository extends JpaRepository<Sugestao, UUID> {
     List<Sugestao> findAllByOrderByCriadoEmDesc();
 
     List<Sugestao> findAllByUsuarioEmailIgnoreCaseOrderByCriadoEmDesc(String usuarioEmail);
+
+    long countByUsuarioEmailIgnoreCaseAndTemNovaRespostaTrue(String usuarioEmail);
 }

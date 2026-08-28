@@ -14,7 +14,8 @@ public record SugestaoResponse(
     SugestaoStatus status,
     Instant criadoEm,
     String respostaAdmin,
-    Instant respondidoEm
+    Instant respondidoEm,
+    boolean temNovaResposta
 ) {
     static SugestaoResponse de(Sugestao sugestao) {
         return new SugestaoResponse(
@@ -28,7 +29,8 @@ public record SugestaoResponse(
             sugestao.getStatus(),
             sugestao.getCriadoEm(),
             sugestao.getRespostaAdmin(),
-            sugestao.getRespondidoEm()
+            sugestao.getRespondidoEm(),
+            sugestao.isTemNovaResposta()
         );
     }
 }

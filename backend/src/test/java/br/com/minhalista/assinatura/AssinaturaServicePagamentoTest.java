@@ -38,6 +38,9 @@ class AssinaturaServicePagamentoTest {
     @Mock
     private AssinaturaValidadeService validadeService;
 
+    @Mock
+    private PlanoService planoService;
+
     private AssinaturaService service;
     private Assinatura assinatura;
     private Usuario usuario;
@@ -45,7 +48,12 @@ class AssinaturaServicePagamentoTest {
 
     @BeforeEach
     void preparar() {
-        service = new AssinaturaService(repository, usuarioService, validadeService);
+        service = new AssinaturaService(
+            repository,
+            usuarioService,
+            validadeService,
+            planoService
+        );
         assinaturaId = UUID.randomUUID();
 
         usuario = new Usuario();

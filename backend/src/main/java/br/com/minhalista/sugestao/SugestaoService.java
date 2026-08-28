@@ -43,6 +43,13 @@ public class SugestaoService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
+    public NotificacaoSugestoesResponse naoLidas(String email) {
+        return new NotificacaoSugestoesResponse(
+            repository.countByUsuarioEmailIgnoreCaseAndTemNovaRespostaTrue(email)
+        );
+    }
+
     @Transactional
     public SugestaoResponse criar(String email, SugestaoRequest request) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
@@ -78,6 +85,19 @@ public class SugestaoService {
         sugestao.setRespostaAdmin(resposta.trim());
         sugestao.setRespondidoEm(Instant.now());
         sugestao.setRespondidoPor(administradorEmail);
+        sugestao.setTemNovaResposta(true);
+        return SugestaoResponse.de(repository.save(sugestao));
+    }
+
+    @Transactional
+    public SugestaoResponse visualizar(UUID id, String usuarioEmail) {
+        Sugestao sugestao = buscar(id);
+
+        if (!sugestao.getUsuarioEmail().equalsIgnoreCase(usuarioEmail)) {
+            throw new ResponseStatusException(NOT_FOUND, "Sugestão não encontrada.");
+        }
+
+        sugestao.setTemNovaResposta(false);
         return SugestaoResponse.de(repository.save(sugestao));
     }
 

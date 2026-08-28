@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1220">
+    <title>Administradores | Smart List</title>
+    <link rel="stylesheet" href="../css/global.css?v=50">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css?v=3">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+<body data-admin-page="administradores">
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <a class="brand admin-brand" href="./index.html">
+            <img class="brand-logo" src="../assets/logo/smart-list-app.png" alt="" width="38" height="38">
+            <span>Smart List</span>
+        </a>
+        <nav class="admin-nav" aria-label="Administração"></nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <span class="page-eyebrow">OPERAÇÃO</span>
+                <h1>Administradores</h1>
+                <p>Conceda ou revogue o acesso completo ao painel administrativo.</p>
+            </div>
+            <button class="btn btn-secondary" id="atualizarAdministradores" type="button">Atualizar</button>
+        </header>
+
+        <section class="card admin-gerenciamento-form">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">NOVO ACESSO</span>
+                    <h2>Conceder acesso ADM</h2>
+                    <p>O e-mail deve pertencer a uma conta já cadastrada no Smart List.</p>
+                </div>
+            </div>
+            <form id="formAdministrador" class="admin-gerenciamento-acoes">
+                <div class="form-group">
+                    <label for="emailAdministrador">E-mail do novo administrador</label>
+                    <input id="emailAdministrador" name="email" type="email" autocomplete="email" placeholder="nome@exemplo.com" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Conceder Acesso ADM</button>
+            </form>
+            <div id="mensagemAdministradores" class="mensagem" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="card tabela-card">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">ACESSOS ATIVOS</span>
+                    <h2>Administradores e fundadores</h2>
+                </div>
+            </div>
+            <div class="admin-tabela-container">
+                <table class="admin-tabela">
+                    <thead><tr><th>Nome</th><th>E-mail</th><th>Conta criada em</th><th>Ação</th></tr></thead>
+                    <tbody id="listaAdministradores">
+                        <tr><td colspan="4" class="estado-vazio">Carregando administradores...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="../js/tema.js?v=12"></script>
+<script src="../js/admin-nav.js?v=4"></script>
+<script type="module" src="../js/admin-administradores.js?v=1"></script>
+</body>
+</html>

@@ -7,6 +7,7 @@
             itens: [
                 ["dashboard", "./index.html", "🏠", "Dashboard"],
                 ["usuarios", "./usuarios.html", "👥", "Usuários"],
+                ["planos", "./planos.html", "💳", "Gestão de Planos"],
                 ["coleta-precos", "./coleta-precos.html", "💲", "Coleta de Preços"],
                 ["localizacao", "./localizacao.html", "🗺️", "Uso por região"]
             ]
@@ -22,7 +23,7 @@
             itens: [
                 ["sugestoes", "./sugestoes.html", "💬", "Sugestões"],
                 ["logs", "./logs.html", "📄", "Logs"],
-                ["administradores", "./usuarios.html#administradores", "👨‍💼", "Administradores"]
+                ["administradores", "./administradores.html", "👨‍💼", "Administradores"]
             ]
         }
     ];
@@ -78,11 +79,38 @@
                 `).join("")}
             </section>
         `).join("") + `
+            <button class="admin-theme-toggle" type="button" data-admin-theme-toggle>
+                <span aria-hidden="true">☀️</span>
+                <span>Usar tema claro</span>
+            </button>
             <a class="admin-abrir-app" href="../inicio.html">
                 <span aria-hidden="true">🛒</span>
                 <span>Abrir Smart List</span>
             </a>
         `;
+
+        const botaoTema = nav.querySelector("[data-admin-theme-toggle]");
+
+        function atualizarBotaoTema() {
+            const claro = document.documentElement.dataset.theme === "claro";
+            botaoTema.innerHTML = claro
+                ? '<span aria-hidden="true">🌙</span><span>Usar tema escuro</span>'
+                : '<span aria-hidden="true">☀️</span><span>Usar tema claro</span>';
+            botaoTema.setAttribute(
+                "aria-label",
+                claro ? "Ativar tema escuro" : "Ativar tema claro"
+            );
+        }
+
+        botaoTema.addEventListener("click", () => {
+            const proximo = document.documentElement.dataset.theme === "claro"
+                ? "escuro"
+                : "claro";
+            window.TemaMinhaLista?.aplicar(proximo);
+            atualizarBotaoTema();
+        });
+        window.addEventListener("temaalterado", atualizarBotaoTema);
+        atualizarBotaoTema();
 
         botaoMenu.addEventListener("click", () => {
             const aberto = sidebar.classList.toggle("admin-menu-aberto");
