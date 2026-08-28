@@ -66,8 +66,8 @@
                         </p>
                     </div>
 
-                    <div class="checkout-cupom">
-                        <label for="codigoCupom">Tem um cupom de desconto?</label>
+                        <div class="checkout-cupom">
+                        <label for="codigoCupom">Possui um cupom?</label>
                         <div class="checkout-cupom-acoes">
                             <input
                                 id="codigoCupom"
@@ -79,9 +79,16 @@
                                 id="btnAplicarCupom"
                                 class="btn btn-secondary"
                                 type="button">
-                                Aplicar cupom
+                                Aplicar
                             </button>
                         </div>
+                        <button
+                            id="btnRemoverCupom"
+                            class="btn-cupom-remover"
+                            type="button"
+                            hidden>
+                            Remover cupom
+                        </button>
                         <small id="mensagemCupom" aria-live="polite">
                             O desconto será exibido no resumo antes do pagamento.
                         </small>
@@ -125,18 +132,33 @@
                 </div>
 
                 <div class="resumo-linha">
-                    <span>Valor</span>
+                    <span>Valor original</span>
                     <strong id="checkoutValorNormal">R$ 9,97</strong>
                 </div>
 
                 <div class="resumo-linha">
+                    <span>Cupom</span>
+                    <strong id="checkoutCupom">Não aplicado</strong>
+                </div>
+
+                <div class="resumo-linha">
                     <span>Desconto</span>
+                    <strong id="checkoutPercentual">0%</strong>
+                </div>
+
+                <div class="resumo-linha">
+                    <span>Valor economizado</span>
                     <strong id="checkoutDesconto">R$ 0,00</strong>
                 </div>
 
                 <div class="resumo-linha resumo-total">
-                    <span>Total</span>
+                    <span>Você paga agora</span>
                     <strong id="checkoutTotal">R$ 9,97</strong>
+                </div>
+
+                <div class="resumo-linha">
+                    <span>Próxima compra</span>
+                    <strong id="checkoutProximaCobranca">R$ 9,97</strong>
                 </div>
 
                 <p id="textoRenovacao" class="texto-seguranca">
@@ -163,8 +185,7 @@
     </footer>
 
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/assinatura.js?v=7"></script>
+    <script type="module" src="./js/assinatura.js?v=8"></script>
 </body>
 
 </html>
-

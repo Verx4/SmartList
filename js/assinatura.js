@@ -110,6 +110,20 @@ function atualizarCardPremium() {
     const preco = document.getElementById("precoPremium");
     const periodo = document.getElementById("periodoPremium");
     const botao = document.getElementById("btnAssinarPremium");
+    const linhaPreco = document.querySelector(".preco-premium-linha");
+    const promocao = document.getElementById("promocaoCupomPlano");
+    const temCupom = cupomAplicado?.ciclo === ciclo;
+
+    document.querySelectorAll("[data-preco-ciclo]").forEach(elemento => {
+        const chave = elemento.dataset.precoCiclo;
+        const valor = temCupom && chave === ciclo
+            ? dados.total
+            : CICLOS[chave]?.valorNormal;
+
+        if (Number.isFinite(valor)) {
+            elemento.textContent = formatarMoeda(valor);
+        }
+    });
 
     if (preco) {
         preco.textContent = formatarMoeda(dados.total);
@@ -123,16 +137,44 @@ function atualizarCardPremium() {
         botao.textContent = `Assinar Premium ${dados.nome}`;
 
         if (botao.tagName === "A") {
-            botao.href = `checkout.html?plano=premium&ciclo=${ciclo}`;
+            const cupom = temCupom
+                ? `&cupom=${encodeURIComponent(cupomAplicado.codigo)}`
+                : "";
+            botao.href = `checkout.html?plano=premium&ciclo=${ciclo}${cupom}`;
         }
 
         botao.dataset.ciclo = ciclo;
+    }
+
+    linhaPreco?.classList.toggle("com-cupom", temCupom);
+
+    if (promocao) {
+        promocao.hidden = !temCupom;
+    }
+
+    if (temCupom) {
+        const original = document.getElementById("precoOriginalCupomPlano");
+        const promocional = document.getElementById("precoPromocionalCupomPlano");
+        const badge = document.getElementById("badgeCupomPlano");
+
+        if (original) {
+            original.textContent = formatarMoeda(dados.valorNormal);
+        }
+        if (promocional) {
+            promocional.textContent = formatarMoeda(dados.total);
+        }
+        if (badge) {
+            badge.textContent = `${formatarPercentual(cupomAplicado.percentualDesconto)} OFF`;
+        }
     }
 }
 
 function abrirCheckout() {
     const ciclo = obterCicloSelecionado();
-    window.location.href = `checkout.html?plano=premium&ciclo=${ciclo}`;
+    const cupom = cupomAplicado?.ciclo === ciclo
+        ? `&cupom=${encodeURIComponent(cupomAplicado.codigo)}`
+        : "";
+    window.location.href = `checkout.html?plano=premium&ciclo=${ciclo}${cupom}`;
 }
 
 function preencherCheckout() {
@@ -146,6 +188,10 @@ function preencherCheckout() {
     const cicloParametro = parametros.get("ciclo") || "mensal";
     const ciclo = CICLOS[cicloParametro] ? cicloParametro : "mensal";
     const dados = CICLOS[ciclo];
+    const temCupom = cupomAplicado?.ciclo === ciclo;
+    const percentual = temCupom
+        ? Number(cupomAplicado.percentualDesconto)
+        : 0;
 
     formulario.dataset.ciclo = ciclo;
 
@@ -153,11 +199,14 @@ function preencherCheckout() {
         checkoutPlano: "Plano Premium",
         checkoutCiclo: dados.nome,
         checkoutValorNormal: formatarMoeda(dados.valorNormal),
+        checkoutCupom: temCupom ? cupomAplicado.codigo : "Não aplicado",
+        checkoutPercentual: formatarPercentual(percentual),
         checkoutDesconto:
             dados.desconto > 0
                 ? `-${formatarMoeda(dados.desconto)}`
                 : formatarMoeda(0),
         checkoutTotal: formatarMoeda(dados.total),
+        checkoutProximaCobranca: formatarMoeda(dados.valorNormal),
         textoRenovacao: dados.renovacao
     };
 
@@ -168,10 +217,22 @@ function preencherCheckout() {
             elemento.textContent = valor;
         }
     });
+
+    ["checkoutCupom", "checkoutPercentual", "checkoutTotal"].forEach(id => {
+        document
+            .getElementById(id)
+            ?.classList.toggle("cupom-aplicado", temCupom);
+    });
 }
 
-function atualizarMensagemCupom(texto, tipo = "") {
-    const mensagem = document.getElementById("mensagemCupom");
+function formatarPercentual(valor) {
+    return `${Number(valor || 0).toLocaleString("pt-BR", {
+        maximumFractionDigits: 2
+    })}%`;
+}
+
+function atualizarMensagemCupom(id, texto, tipo = "") {
+    const mensagem = document.getElementById(id);
 
     if (!mensagem) {
         return;
@@ -181,34 +242,60 @@ function atualizarMensagemCupom(texto, tipo = "") {
     mensagem.className = tipo ? `cupom-${tipo}` : "";
 }
 
-function limparCupomAplicado() {
-    const formulario = document.getElementById("formCheckout");
-    const ciclo = formulario?.dataset.ciclo;
-
+function limparCupomAplicado({ limparCampos = false } = {}) {
     cupomAplicado = null;
-    if (ciclo && CICLOS[ciclo]) {
-        CICLOS[ciclo].desconto = 0;
-        CICLOS[ciclo].total = CICLOS[ciclo].valorNormal;
-        preencherCheckout();
+
+    Object.values(CICLOS).forEach(dados => {
+        dados.desconto = 0;
+        dados.total = dados.valorNormal;
+    });
+
+    if (limparCampos) {
+        ["codigoCupom", "codigoCupomPlano"].forEach(id => {
+            const campo = document.getElementById(id);
+            if (campo) {
+                campo.value = "";
+            }
+        });
     }
+
+    document.getElementById("btnRemoverCupom")?.setAttribute("hidden", "");
+    document.getElementById("btnRemoverCupomPlano")?.setAttribute("hidden", "");
+    atualizarCardPremium();
+    preencherCheckout();
 }
 
-async function aplicarCupom() {
+async function aplicarCupom(origem = "checkout") {
+    const naTelaDePlanos = origem === "planos";
     const formulario = document.getElementById("formCheckout");
-    const campo = document.getElementById("codigoCupom");
-    const botao = document.getElementById("btnAplicarCupom");
-    const ciclo = formulario?.dataset.ciclo || "mensal";
+    const campo = document.getElementById(
+        naTelaDePlanos ? "codigoCupomPlano" : "codigoCupom"
+    );
+    const botao = document.getElementById(
+        naTelaDePlanos ? "btnAplicarCupomPlano" : "btnAplicarCupom"
+    );
+    const mensagemId = naTelaDePlanos ? "mensagemCupomPlano" : "mensagemCupom";
+    const removerId = naTelaDePlanos ? "btnRemoverCupomPlano" : "btnRemoverCupom";
+    const ciclo = naTelaDePlanos
+        ? obterCicloSelecionado()
+        : formulario?.dataset.ciclo || "mensal";
     const codigo = String(campo?.value || "").trim().toUpperCase();
 
     if (!codigo) {
         limparCupomAplicado();
-        atualizarMensagemCupom("Digite o código do cupom para aplicar o desconto.", "erro");
+        atualizarMensagemCupom(
+            mensagemId,
+            "Digite o código do cupom para aplicar o desconto.",
+            "erro"
+        );
         campo?.focus();
         return;
     }
 
-    botao.disabled = true;
-    botao.textContent = "Validando...";
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Validando...";
+    }
 
     try {
         const resposta = await api.post("/assinaturas/cupom/validar", {
@@ -218,22 +305,33 @@ async function aplicarCupom() {
         CICLOS[ciclo].valorNormal = Number(resposta.valorOriginal);
         CICLOS[ciclo].desconto = Number(resposta.desconto);
         CICLOS[ciclo].total = Number(resposta.total);
-        cupomAplicado = resposta.codigo;
-        campo.value = resposta.codigo;
+        cupomAplicado = {
+            ...resposta,
+            ciclo
+        };
+        if (campo) {
+            campo.value = resposta.codigo;
+        }
+        document.getElementById(removerId)?.removeAttribute("hidden");
+        atualizarCardPremium();
         preencherCheckout();
         atualizarMensagemCupom(
-            `Cupom aplicado: ${Number(resposta.percentualDesconto).toLocaleString("pt-BR")}% de desconto.`,
+            mensagemId,
+            `Cupom ${resposta.codigo} aplicado: ${formatarPercentual(resposta.percentualDesconto)} de desconto somente nesta primeira cobrança.`,
             "sucesso"
         );
     } catch (erro) {
         limparCupomAplicado();
         atualizarMensagemCupom(
+            mensagemId,
             erro instanceof ApiError ? erro.message : "Não foi possível validar o cupom.",
             "erro"
         );
     } finally {
-        botao.disabled = false;
-        botao.textContent = "Aplicar cupom";
+        if (botao) {
+            botao.disabled = false;
+            botao.textContent = "Aplicar";
+        }
     }
 }
 
@@ -270,7 +368,9 @@ async function enviarCheckout(evento) {
     try {
         const resposta = await api.post("/assinaturas/checkout", {
             ciclo: ciclo.toUpperCase(),
-            cupom: cupomAplicado
+            cupom: cupomAplicado?.ciclo === ciclo
+                ? cupomAplicado.codigo
+                : null
         });
         const urlPagamento =
             resposta?.checkoutUrl
@@ -413,7 +513,17 @@ async function iniciar() {
     document
         .querySelectorAll('input[name="cicloPremium"]')
         .forEach(opcao => {
-            opcao.addEventListener("change", atualizarCardPremium);
+            opcao.addEventListener("change", () => {
+                const tinhaCupom = Boolean(cupomAplicado);
+                limparCupomAplicado();
+
+                if (tinhaCupom) {
+                    atualizarMensagemCupom(
+                        "mensagemCupomPlano",
+                        "Cupom removido ao alterar o plano. Digite-o novamente para validar a nova opção."
+                    );
+                }
+            });
         });
 
     const botaoAssinar = document.getElementById("btnAssinarPremium");
@@ -428,18 +538,65 @@ async function iniciar() {
 
     document
         .getElementById("btnAplicarCupom")
-        ?.addEventListener("click", aplicarCupom);
+        ?.addEventListener("click", () => void aplicarCupom("checkout"));
 
     document
-        .getElementById("codigoCupom")
-        ?.addEventListener("input", () => {
+        .getElementById("btnAplicarCupomPlano")
+        ?.addEventListener("click", () => void aplicarCupom("planos"));
+
+    document
+        .getElementById("btnRemoverCupom")
+        ?.addEventListener("click", () => {
+            limparCupomAplicado({ limparCampos: true });
+            atualizarMensagemCupom(
+                "mensagemCupom",
+                "Cupom removido. O valor normal foi restaurado."
+            );
+        });
+
+    document
+        .getElementById("btnRemoverCupomPlano")
+        ?.addEventListener("click", () => {
+            limparCupomAplicado({ limparCampos: true });
+            atualizarMensagemCupom(
+                "mensagemCupomPlano",
+                "Cupom removido. O valor normal foi restaurado."
+            );
+        });
+
+    [
+        ["codigoCupom", "mensagemCupom"],
+        ["codigoCupomPlano", "mensagemCupomPlano"]
+    ].forEach(([campoId, mensagemId]) => {
+        const campo = document.getElementById(campoId);
+
+        campo?.addEventListener("input", () => {
             if (cupomAplicado) {
                 limparCupomAplicado();
                 atualizarMensagemCupom(
+                    mensagemId,
                     "Código alterado. Clique em Aplicar cupom para validar novamente."
                 );
             }
         });
+
+        campo?.addEventListener("keydown", evento => {
+            if (evento.key !== "Enter") {
+                return;
+            }
+
+            evento.preventDefault();
+            void aplicarCupom(campoId === "codigoCupomPlano" ? "planos" : "checkout");
+        });
+    });
+
+    const cupomUrl = new URLSearchParams(window.location.search).get("cupom");
+    const campoCupomCheckout = document.getElementById("codigoCupom");
+
+    if (campoCupomCheckout && cupomUrl) {
+        campoCupomCheckout.value = cupomUrl;
+        await aplicarCupom("checkout");
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

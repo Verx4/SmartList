@@ -7,6 +7,8 @@ public record CupomAplicacaoResponse(
     BigDecimal percentualDesconto,
     BigDecimal valorOriginal,
     BigDecimal desconto,
-    BigDecimal total
+    BigDecimal total,
+    CicloAssinatura cicloPermitido,
+    boolean primeiraCobrancaSomente
 ) {
 }
