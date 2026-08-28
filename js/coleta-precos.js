@@ -29,6 +29,7 @@ function montarPayload(compra) {
         compraId: String(compra.id),
         realizadaEm: compra.data,
         mercado: compra.supermercado,
+        economia: Number(compra.economia || 0),
         itens: (compra.itens || []).map(item => {
             const porPeso = String(item.medida || "").toLowerCase() === "kg";
             return {

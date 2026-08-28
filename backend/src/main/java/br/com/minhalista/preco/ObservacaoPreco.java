@@ -64,6 +64,9 @@ public class ObservacaoPreco {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal subtotal;
 
+    @Column(name = "economia_compra", nullable = false, precision = 12, scale = 2)
+    private BigDecimal economiaCompra = BigDecimal.ZERO;
+
     @Column(length = 120)
     private String mercado;
 
@@ -109,6 +112,8 @@ public class ObservacaoPreco {
     public void setPrecoUnitario(BigDecimal precoUnitario) { this.precoUnitario = precoUnitario; }
     public BigDecimal getSubtotal() { return subtotal; }
     public void setSubtotal(BigDecimal subtotal) { this.subtotal = subtotal; }
+    public BigDecimal getEconomiaCompra() { return economiaCompra; }
+    public void setEconomiaCompra(BigDecimal economiaCompra) { this.economiaCompra = economiaCompra; }
     public String getMercado() { return mercado; }
     public void setMercado(String mercado) { this.mercado = mercado; }
     public String getCidade() { return cidade; }

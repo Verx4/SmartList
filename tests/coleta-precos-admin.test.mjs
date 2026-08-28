@@ -33,6 +33,9 @@ test("a página administrativa mostra compras finalizadas e detalhes por compra"
     assert.match(css, /var\(--cor-primaria\)/);
     assert.match(css, /var\(--cor-verde\)/);
     assert.match(css, /content:attr\(data-label\)/);
+    assert.match(css, /coleta-acoes-grupo/);
+    assert.match(css, /overflow-x:hidden/);
+    assert.match(pagina, /id="excluirTodasCompras"/);
 });
 
 test("backend agrupa por compraId sem sobrescrever compras legítimas", async () => {

@@ -7,9 +7,6 @@
             itens: [
                 ["dashboard", "./index.html", "🏠", "Dashboard"],
                 ["usuarios", "./usuarios.html", "👥", "Usuários"],
-                ["assinaturas", "./usuarios.html#assinaturas", "💳", "Assinaturas"],
-                ["supermercados", "./supermercados.html", "🏪", "Supermercados"],
-                ["produtos", "./produtos.html", "📦", "Produtos"],
                 ["coleta-precos", "./coleta-precos.html", "💲", "Coleta de Preços"],
                 ["localizacao", "./localizacao.html", "🗺️", "Uso por região"]
             ]
@@ -17,11 +14,7 @@
         {
             titulo: "Dados e integrações",
             itens: [
-                ["scrapers", "./scrapers.html", "🤖", "Scrapers"],
-                ["ofertas", "./ofertas.html", "🏷️", "Ofertas e encartes"],
-                ["apis", "./apis.html", "🔗", "APIs"],
-                ["banco-de-dados", "./monitoramento.html#banco-de-dados", "🗄️", "Banco de Dados"],
-                ["relatorios", "./index.html#relatorios", "📈", "Relatórios"]
+                ["banco-de-dados", "./monitoramento.html#banco-de-dados", "🗄️", "Banco de Dados"]
             ]
         },
         {
@@ -29,7 +22,6 @@
             itens: [
                 ["sugestoes", "./sugestoes.html", "💬", "Sugestões"],
                 ["logs", "./logs.html", "📄", "Logs"],
-                ["configuracoes", "./apis.html#configuracoes", "⚙️", "Configurações"],
                 ["administradores", "./usuarios.html#administradores", "👨‍💼", "Administradores"]
             ]
         }
@@ -45,10 +37,7 @@
 
         const hash = location.hash.replace(/^#/, "");
         const paginasComSecao = new Set([
-            "assinaturas",
             "banco-de-dados",
-            "relatorios",
-            "configuracoes",
             "administradores"
         ]);
         const paginaAtual = paginasComSecao.has(hash)

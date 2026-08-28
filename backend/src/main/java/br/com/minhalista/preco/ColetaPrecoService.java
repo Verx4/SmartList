@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.Normalizer;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -93,6 +96,7 @@ public class ColetaPrecoService {
             observacao.setUnidade(normalizarUnidade(item.unidade()));
             observacao.setPrecoUnitario(item.precoUnitario().setScale(4, RoundingMode.HALF_UP));
             observacao.setSubtotal(item.subtotal().setScale(2, RoundingMode.HALF_UP));
+            observacao.setEconomiaCompra(economia(request.economia()));
             observacao.setMercado(mercado);
             observacao.setCidade(cidade);
             observacao.setEstado(estado);
@@ -104,6 +108,26 @@ public class ColetaPrecoService {
             criadas += 1;
         }
         return new ResultadoColeta(criadas, ignoradas, criadas + ignoradas);
+    }
+
+    @Transactional(readOnly = true)
+    public List<HistoricoCompraResponse> historico(Usuario usuario) {
+        List<ObservacaoPreco> observacoes = observacaoRepository
+            .findByUsuario_IdAndOrigemOrderByRealizadaEmDescCriadoEmAsc(
+                usuario.getId(),
+                OrigemPreco.COMPRA_USUARIO
+            );
+        Map<String, List<ObservacaoPreco>> porCompra = new LinkedHashMap<>();
+
+        for (ObservacaoPreco observacao : observacoes) {
+            String compraId = observacao.getCompraChave();
+            if (compraId == null || compraId.isBlank()) continue;
+            porCompra.computeIfAbsent(compraId, chave -> new ArrayList<>()).add(observacao);
+        }
+
+        return porCompra.entrySet().stream()
+            .map(entrada -> historicoCompra(entrada.getKey(), entrada.getValue(), usuario))
+            .toList();
     }
 
     @Transactional
@@ -156,12 +180,91 @@ public class ColetaPrecoService {
         String valor = removerAcentos(unidade).trim();
         return switch (valor) { case "kg", "quilo", "quilos" -> "kg"; case "l", "litro", "litros" -> "litro"; default -> "unidade"; };
     }
+    private BigDecimal economia(BigDecimal valor) {
+        if (valor == null || valor.signum() < 0) return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+        return valor.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private HistoricoCompraResponse historicoCompra(
+        String compraId,
+        List<ObservacaoPreco> observacoes,
+        Usuario usuario
+    ) {
+        ObservacaoPreco primeira = observacoes.get(0);
+        BigDecimal total = observacoes.stream()
+            .map(ObservacaoPreco::getSubtotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add)
+            .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal economia = observacoes.stream()
+            .map(ObservacaoPreco::getEconomiaCompra)
+            .filter(valor -> valor != null)
+            .max(BigDecimal::compareTo)
+            .orElse(BigDecimal.ZERO)
+            .setScale(2, RoundingMode.HALF_UP);
+        Instant realizadaEm = observacoes.stream()
+            .map(ObservacaoPreco::getRealizadaEm)
+            .max(Instant::compareTo)
+            .orElse(primeira.getRealizadaEm());
+        List<HistoricoItemResponse> itens = observacoes.stream()
+            .map(this::historicoItem)
+            .toList();
+
+        return new HistoricoCompraResponse(
+            compraId,
+            realizadaEm,
+            primeira.getMercado(),
+            itens,
+            itens.size(),
+            total,
+            economia,
+            usuario.getId(),
+            usuario.getNome()
+        );
+    }
+
+    private HistoricoItemResponse historicoItem(ObservacaoPreco observacao) {
+        boolean porPeso = "kg".equalsIgnoreCase(observacao.getUnidade());
+        BigDecimal zero = BigDecimal.ZERO.setScale(3, RoundingMode.HALF_UP);
+
+        return new HistoricoItemResponse(
+            observacao.getItemChave(),
+            observacao.getNomeOriginal(),
+            observacao.getProduto().getCategoria(),
+            porPeso ? "kg" : "unidade",
+            porPeso ? zero : observacao.getQuantidade(),
+            porPeso ? observacao.getQuantidade() : zero,
+            observacao.getPrecoUnitario(),
+            observacao.getPrecoUnitario(),
+            observacao.getSubtotal()
+        );
+    }
     private String estado(String valor) { String limpo = opcional(valor, 2); return limpo == null ? null : limpo.toUpperCase(Locale.ROOT); }
     private String opcional(String valor, int tamanho) { if (valor == null || valor.isBlank()) return null; return limitar(valor, tamanho); }
     private String limitar(String valor, int tamanho) { String limpo = valor == null ? "" : valor.trim().replaceAll("\\s+", " "); return limpo.length() <= tamanho ? limpo : limpo.substring(0, tamanho); }
 
-    public record CompraRequest(@NotBlank @Size(max = 120) String compraId, @NotNull Instant realizadaEm, @Size(max = 120) String mercado, @Size(max = 100) String cidade, @Size(max = 2) String estado, @NotEmpty @Size(max = 500) List<@Valid ItemRequest> itens) {}
+    public record CompraRequest(
+        @NotBlank @Size(max = 120) String compraId,
+        @NotNull Instant realizadaEm,
+        @Size(max = 120) String mercado,
+        @Size(max = 100) String cidade,
+        @Size(max = 2) String estado,
+        @DecimalMin("0.00") BigDecimal economia,
+        @NotEmpty @Size(max = 500) List<@Valid ItemRequest> itens
+    ) {
+        public CompraRequest(
+            String compraId,
+            Instant realizadaEm,
+            String mercado,
+            String cidade,
+            String estado,
+            List<ItemRequest> itens
+        ) {
+            this(compraId, realizadaEm, mercado, cidade, estado, BigDecimal.ZERO, itens);
+        }
+    }
     public record ItemRequest(@NotBlank @Size(max = 120) String itemId, @NotBlank @Size(max = 180) String nome, @Size(max = 80) String categoria, @NotNull @DecimalMin("0.001") BigDecimal quantidade, @NotBlank @Size(max = 24) String unidade, @NotNull @DecimalMin("0.0001") BigDecimal precoUnitario, @NotNull @DecimalMin("0.01") BigDecimal subtotal) {}
+    public record HistoricoCompraResponse(String id, Instant data, String supermercado, List<HistoricoItemResponse> itens, int totalItens, BigDecimal total, BigDecimal economia, UUID usuarioId, String usuarioNome) {}
+    public record HistoricoItemResponse(String id, String nome, String categoria, String medida, BigDecimal quantidade, BigDecimal peso, BigDecimal preco, BigDecimal precoUnitario, BigDecimal subtotal) {}
     public record ResultadoColeta(int criadas, int ignoradas, int total) {}
     private record RegraCategoria(String categoria, List<String> termos) {}
 }

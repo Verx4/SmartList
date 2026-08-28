@@ -1,5 +1,6 @@
 import "./animations.js";
 import { api } from "./api.js";
+import { combinarHistoricos } from "./historico-sync.js";
 
 import {
     agruparComprasPorCategoria,
@@ -28,14 +29,6 @@ const lerHistoricoLocal = () => {
         return [];
     }
 };
-
-const normalizarCompraApi = compra => ({
-    ...compra,
-    data: compra.finalizadoEm || compra.finalizadaEm || compra.criadoEm,
-    mercado: compra.mercadoNome || compra.mercado || compra.supermercado,
-    supermercado: compra.mercadoNome || compra.supermercado || compra.mercado,
-    usuarioNome: compra.usuarioNome || compra.usuario || "Usuário não identificado"
-});
 
 let compras = [];
 const seletorPeriodo = document.getElementById("periodoHistorico");
@@ -176,12 +169,22 @@ function aplicarPeriodo() {
 
 async function carregarCompras() {
     listaHistorico.innerHTML = '<p class="historico-vazio">Carregando compras salvas...</p>';
+    const locais = lerHistoricoLocal();
+    let remotas = [];
+
     try {
-        const dados = await api.get("/listas/historico");
-        compras = Array.isArray(dados) ? dados.map(normalizarCompraApi) : [];
-    } catch (_erro) {
-        compras = lerHistoricoLocal();
+        const dados = await api.get("/coleta-precos/compras/historico");
+        remotas = Array.isArray(dados) ? dados : [];
+    } catch (_erroColeta) {
+        try {
+            const dadosLegados = await api.get("/listas/historico");
+            remotas = Array.isArray(dadosLegados) ? dadosLegados : [];
+        } catch (_erroLista) {
+            remotas = [];
+        }
     }
+
+    compras = combinarHistoricos(remotas, locais);
     preencherSeletorDeDias();
     aplicarPeriodo();
 }
