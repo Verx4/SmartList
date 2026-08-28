@@ -8,6 +8,7 @@ public record CupomResponse(
     UUID id,
     String codigo,
     BigDecimal percentualDesconto,
+    CicloAssinatura ciclo,
     boolean ativo,
     Instant criadoEm
 ) {
@@ -16,6 +17,7 @@ public record CupomResponse(
             cupom.getId(),
             cupom.getCodigo(),
             cupom.getPercentualDesconto(),
+            cupom.getCiclo(),
             cupom.isAtivo(),
             cupom.getCriadoEm()
         );

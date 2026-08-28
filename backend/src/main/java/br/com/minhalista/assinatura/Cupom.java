@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +27,10 @@ public class Cupom {
 
     @Column(name = "percentual_desconto", nullable = false, precision = 5, scale = 2)
     private BigDecimal percentualDesconto;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private CicloAssinatura ciclo;
 
     @Column(nullable = false)
     private boolean ativo = true;
@@ -57,6 +63,14 @@ public class Cupom {
 
     public void setPercentualDesconto(BigDecimal percentualDesconto) {
         this.percentualDesconto = percentualDesconto;
+    }
+
+    public CicloAssinatura getCiclo() {
+        return ciclo;
+    }
+
+    public void setCiclo(CicloAssinatura ciclo) {
+        this.ciclo = ciclo;
     }
 
     public boolean isAtivo() {

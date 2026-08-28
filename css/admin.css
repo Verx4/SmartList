@@ -189,7 +189,7 @@
 
 .admin-cupom-item {
     display: grid;
-    grid-template-columns: minmax(150px, 1fr) minmax(120px, 0.5fr) auto auto;
+    grid-template-columns: minmax(150px, 1fr) minmax(150px, 0.7fr) minmax(130px, 0.6fr) auto auto;
     gap: 14px;
     align-items: center;
     padding: 13px 14px;
@@ -205,6 +205,13 @@
 
 .admin-cupom-item .btn {
     width: auto;
+}
+
+.admin-cupom-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 @media (max-width: 720px) {
@@ -223,6 +230,11 @@
     .admin-cupom-form .btn,
     .admin-cupom-item .btn {
         width: 100%;
+    }
+
+    .admin-cupom-acoes {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 

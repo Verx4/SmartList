@@ -39,11 +39,21 @@ public class CupomService {
     public CupomResponse salvar(CupomAdminRequest request) {
         String codigo = normalizar(request.codigo());
         BigDecimal percentualPermitido = percentualDoCodigo(codigo);
+        CicloAssinatura cicloPermitido = cicloDoCodigo(codigo);
 
-        if (request.percentualDesconto().compareTo(percentualPermitido) != 0) {
+        if (request.ciclo() == CicloAssinatura.ANUAL) {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "O percentual deve corresponder ao final do cupom: 5% para códigos terminados em 5 e 10% para códigos terminados em 10."
+                "O Plano Anual não aceita cupom."
+            );
+        }
+
+        if (request.ciclo() != cicloPermitido) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                cicloPermitido == CicloAssinatura.MENSAL
+                    ? "Códigos terminados em 5 só podem ser cadastrados para o Plano Mensal."
+                    : "Códigos terminados em 10 só podem ser cadastrados para o Plano Trimestral."
             );
         }
 
@@ -51,6 +61,7 @@ public class CupomService {
             .orElseGet(Cupom::new);
         cupom.setCodigo(codigo);
         cupom.setPercentualDesconto(percentualPermitido);
+        cupom.setCiclo(cicloPermitido);
         cupom.setAtivo(request.ativo());
         return CupomResponse.de(repository.save(cupom));
     }
@@ -65,20 +76,25 @@ public class CupomService {
 
     @Transactional
     public CupomAplicacaoResponse aplicar(String codigoInformado, CicloAssinatura ciclo) {
-        BigDecimal valorOriginal = planoService.valorVigente(ciclo)
-            .setScale(2, RoundingMode.HALF_UP);
         String codigo = normalizar(codigoInformado);
         BigDecimal percentual = percentualDoCodigo(codigo);
-        CicloAssinatura cicloPermitido = codigo.endsWith("10")
-            ? CicloAssinatura.TRIMESTRAL
-            : CicloAssinatura.MENSAL;
+        CicloAssinatura cicloPermitido = cicloDoCodigo(codigo);
+        Cupom cupom = repository.findByCodigoIgnoreCase(codigo)
+            .filter(Cupom::isAtivo)
+            .orElseThrow(() -> new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Cupom inválido ou não autorizado. Cadastre e ative o código no painel ADM."
+            ));
 
-        if (ciclo != cicloPermitido) {
+        if (ciclo != cicloPermitido || cupom.getCiclo() != cicloPermitido) {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
                 "Este cupom não é válido para o plano selecionado."
             );
         }
+
+        BigDecimal valorOriginal = planoService.valorVigente(ciclo)
+            .setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal desconto = valorOriginal
             .multiply(percentual)
@@ -117,6 +133,12 @@ public class CupomService {
             HttpStatus.BAD_REQUEST,
             "Cupom inválido. O código deve terminar em 5 ou 10."
         );
+    }
+
+    private CicloAssinatura cicloDoCodigo(String codigo) {
+        return codigo.endsWith("10")
+            ? CicloAssinatura.TRIMESTRAL
+            : CicloAssinatura.MENSAL;
     }
 
     private String normalizar(String codigo) {
