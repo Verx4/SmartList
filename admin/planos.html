@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/cards.css">
     <link rel="stylesheet" href="../css/buttons.css">
     <link rel="stylesheet" href="../css/forms.css">
-    <link rel="stylesheet" href="../css/admin.css?v=3">
+    <link rel="stylesheet" href="../css/admin.css?v=4">
     <link rel="stylesheet" href="../css/responsive.css">
     <link rel="stylesheet" href="../css/temas.css">
 </head>
@@ -58,10 +58,55 @@
             </form>
             <div id="mensagemPlanos" class="mensagem" aria-live="polite" hidden></div>
         </section>
+
+        <section class="card admin-cupons-card">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">CUPONS DE DESCONTO</span>
+                    <h2>Criar e gerenciar cupons</h2>
+                    <p>O desconto será validado pelo servidor antes de abrir o Mercado Pago.</p>
+                </div>
+            </div>
+
+            <form id="formCupom" class="admin-cupom-form">
+                <div class="form-group">
+                    <label for="codigoCupomAdmin">Código do cupom</label>
+                    <input
+                        id="codigoCupomAdmin"
+                        name="codigo"
+                        type="text"
+                        maxlength="30"
+                        autocomplete="off"
+                        placeholder="Ex.: SMART10"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="descontoCupomAdmin">Desconto (%)</label>
+                    <input
+                        id="descontoCupomAdmin"
+                        name="percentualDesconto"
+                        type="text"
+                        inputmode="decimal"
+                        placeholder="10,00"
+                        required>
+                </div>
+                <label class="admin-cupom-ativo" for="cupomAtivoAdmin">
+                    <input id="cupomAtivoAdmin" name="ativo" type="checkbox" checked>
+                    <span>Cupom ativo</span>
+                </label>
+                <button class="btn btn-primary" type="submit">Salvar cupom</button>
+            </form>
+
+            <div id="mensagemCupons" class="mensagem" aria-live="polite" hidden></div>
+
+            <div id="listaCupons" class="admin-cupons-lista" aria-live="polite">
+                <p class="estado-vazio">Nenhum cupom cadastrado.</p>
+            </div>
+        </section>
     </main>
 </div>
 <script src="../js/tema.js?v=12"></script>
-<script src="../js/admin-nav.js?v=4"></script>
-<script type="module" src="../js/admin-planos.js?v=1"></script>
+<script src="../js/admin-nav.js?v=5"></script>
+<script type="module" src="../js/admin-planos.js?v=2"></script>
 </body>
 </html>

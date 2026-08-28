@@ -1,0 +1,54 @@
+.checkout-cupom {
+    display: grid;
+    gap: 8px;
+    padding: 16px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #334155);
+    border-radius: 12px;
+}
+
+.checkout-cupom label {
+    color: var(--cor-texto, #ffffff);
+    font-weight: 800;
+}
+
+.checkout-cupom-acoes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+}
+
+.checkout-cupom-acoes input {
+    width: 100%;
+    min-width: 0;
+    text-transform: uppercase;
+}
+
+.checkout-cupom-acoes .btn {
+    width: auto;
+    white-space: nowrap;
+}
+
+#mensagemCupom {
+    color: var(--cor-texto-secundario, #94a3b8);
+}
+
+#mensagemCupom.cupom-sucesso {
+    color: var(--cor-sucesso, #22c55e);
+    font-weight: 700;
+}
+
+#mensagemCupom.cupom-erro {
+    color: var(--cor-perigo, #ef4444);
+    font-weight: 700;
+}
+
+@media (max-width: 560px) {
+    .checkout-cupom-acoes {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-cupom-acoes .btn {
+        width: 100%;
+    }
+}

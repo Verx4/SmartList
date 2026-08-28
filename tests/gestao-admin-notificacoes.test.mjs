@@ -5,14 +5,17 @@ import test from "node:test";
 const raiz = new URL("../", import.meta.url);
 const ler = caminho => readFile(new URL(caminho, raiz), "utf8");
 
-test("painel ADM oferece tema claro e escuro", async () => {
+test("painel ADM oferece os modos padrão, escuro e claro", async () => {
     const [navegacao, tema] = await Promise.all([
         ler("js/admin-nav.js"),
         ler("js/tema.js")
     ]);
 
-    assert.match(navegacao, /data-admin-theme-toggle/);
-    assert.match(navegacao, /TemaMinhaLista\?\.aplicar\(proximo\)/);
+    assert.match(navegacao, /data-admin-theme-select/);
+    assert.match(navegacao, /value="padrao">Modo padrão/);
+    assert.match(navegacao, /value="escuro">Modo escuro/);
+    assert.match(navegacao, /value="claro">Modo claro/);
+    assert.match(navegacao, /TemaMinhaLista\?\.aplicar\(seletorTema\.value\)/);
     assert.match(tema, /function aplicarAparencia/);
 });
 

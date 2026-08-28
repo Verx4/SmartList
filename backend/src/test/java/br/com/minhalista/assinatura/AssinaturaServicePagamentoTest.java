@@ -41,6 +41,9 @@ class AssinaturaServicePagamentoTest {
     @Mock
     private PlanoService planoService;
 
+    @Mock
+    private CupomService cupomService;
+
     private AssinaturaService service;
     private Assinatura assinatura;
     private Usuario usuario;
@@ -52,7 +55,8 @@ class AssinaturaServicePagamentoTest {
             repository,
             usuarioService,
             validadeService,
-            planoService
+            planoService,
+            cupomService
         );
         assinaturaId = UUID.randomUUID();
 

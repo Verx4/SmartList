@@ -79,38 +79,38 @@
                 `).join("")}
             </section>
         `).join("") + `
-            <button class="admin-theme-toggle" type="button" data-admin-theme-toggle>
-                <span aria-hidden="true">☀️</span>
-                <span>Usar tema claro</span>
-            </button>
+            <div class="admin-theme-selector">
+                <label for="adminThemeSelect">
+                    <span aria-hidden="true">🎨</span>
+                    <span>Aparência</span>
+                </label>
+                <select id="adminThemeSelect" data-admin-theme-select>
+                    <option value="padrao">Modo padrão</option>
+                    <option value="escuro">Modo escuro</option>
+                    <option value="claro">Modo claro</option>
+                </select>
+            </div>
             <a class="admin-abrir-app" href="../inicio.html">
                 <span aria-hidden="true">🛒</span>
                 <span>Abrir Smart List</span>
             </a>
         `;
 
-        const botaoTema = nav.querySelector("[data-admin-theme-toggle]");
+        const seletorTema = nav.querySelector("[data-admin-theme-select]");
 
-        function atualizarBotaoTema() {
-            const claro = document.documentElement.dataset.theme === "claro";
-            botaoTema.innerHTML = claro
-                ? '<span aria-hidden="true">🌙</span><span>Usar tema escuro</span>'
-                : '<span aria-hidden="true">☀️</span><span>Usar tema claro</span>';
-            botaoTema.setAttribute(
-                "aria-label",
-                claro ? "Ativar tema escuro" : "Ativar tema claro"
-            );
+        function atualizarSeletorTema() {
+            const aparencia = document.documentElement.dataset.aparencia || "padrao";
+            seletorTema.value = ["padrao", "escuro", "claro"].includes(aparencia)
+                ? aparencia
+                : "padrao";
         }
 
-        botaoTema.addEventListener("click", () => {
-            const proximo = document.documentElement.dataset.theme === "claro"
-                ? "escuro"
-                : "claro";
-            window.TemaMinhaLista?.aplicar(proximo);
-            atualizarBotaoTema();
+        seletorTema.addEventListener("change", () => {
+            window.TemaMinhaLista?.aplicar(seletorTema.value);
+            atualizarSeletorTema();
         });
-        window.addEventListener("temaalterado", atualizarBotaoTema);
-        atualizarBotaoTema();
+        window.addEventListener("temaalterado", atualizarSeletorTema);
+        atualizarSeletorTema();
 
         botaoMenu.addEventListener("click", () => {
             const aberto = sidebar.classList.toggle("admin-menu-aberto");

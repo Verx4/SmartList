@@ -41,6 +41,9 @@ public class Assinatura {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valor;
 
+    @Column(name = "cupom_codigo", length = 30)
+    private String cupomCodigo;
+
     @Column(name = "mercado_pago_preferencia_id", unique = true, length = 120)
     private String mercadoPagoPreferenciaId;
 
@@ -97,6 +100,14 @@ public class Assinatura {
 
     public void setValor(BigDecimal valor) {
         this.valor = valor;
+    }
+
+    public String getCupomCodigo() {
+        return cupomCodigo;
+    }
+
+    public void setCupomCodigo(String cupomCodigo) {
+        this.cupomCodigo = cupomCodigo;
     }
 
     public String getMercadoPagoPreferenciaId() {
