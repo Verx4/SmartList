@@ -80,7 +80,7 @@
 .admin-menu a.ativo,
 .admin-nav a:hover,
 .admin-nav a.active {
-    color: #ffffff;
+    color: var(--cor-texto-botao, #ffffff);
     background: var(--cor-primaria, #2563eb);
 }
 
@@ -96,24 +96,34 @@
     background: #15803d;
 }
 
-.admin-theme-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.admin-theme-selector {
+    display: grid;
+    gap: 8px;
     width: 100%;
     padding: 11px 13px;
     color: var(--cor-texto, #fff);
     background: var(--cor-superficie-secundaria, #1f2937);
     border: 1px solid var(--cor-borda, #26334b);
     border-radius: 10px;
-    font: inherit;
     font-weight: 700;
-    text-align: left;
-    cursor: pointer;
 }
 
-.admin-theme-toggle:hover {
-    border-color: var(--cor-primaria, #2563eb);
+.admin-theme-selector label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-theme-selector select {
+    width: 100%;
+    min-width: 0;
+    padding: 9px 10px;
+    color: var(--cor-texto, #fff);
+    background: var(--cor-superficie, #131c2f);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 8px;
+    font: inherit;
+    cursor: pointer;
 }
 
 .admin-gerenciamento-form {
@@ -142,14 +152,76 @@
     justify-self: start;
 }
 
+.admin-cupons-card {
+    margin-top: 22px;
+}
+
+.admin-cupom-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) minmax(160px, 0.7fr) auto auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.admin-cupom-form .form-group {
+    margin: 0;
+}
+
+.admin-cupom-ativo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 4px;
+    white-space: nowrap;
+}
+
+.admin-cupom-ativo input {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-cupons-lista {
+    display: grid;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.admin-cupom-item {
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) minmax(120px, 0.5fr) auto auto;
+    gap: 14px;
+    align-items: center;
+    padding: 13px 14px;
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 11px;
+}
+
+.admin-cupom-codigo {
+    color: var(--cor-texto, #fff);
+    font-size: 16px;
+}
+
+.admin-cupom-item .btn {
+    width: auto;
+}
+
 @media (max-width: 720px) {
     .admin-gerenciamento-acoes,
-    .admin-planos-form {
+    .admin-planos-form,
+    .admin-cupom-form,
+    .admin-cupom-item {
         display: grid;
         grid-template-columns: 1fr;
     }
 
     .admin-planos-form .admin-planos-salvar {
+        width: 100%;
+    }
+
+    .admin-cupom-form .btn,
+    .admin-cupom-item .btn {
         width: 100%;
     }
 }
@@ -213,6 +285,84 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 18px;
     margin-bottom: 24px;
+}
+
+body[data-admin-page="dashboard"] .grid-resumo {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+body[data-admin-page="dashboard"] .admin-main > .grid-resumo + .admin-grid {
+    grid-template-columns: minmax(320px, 2fr) minmax(520px, 3fr);
+}
+
+body[data-admin-page="dashboard"] .admin-main > .admin-grid + .admin-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body[data-admin-page="dashboard"] .admin-grid > .card {
+    min-width: 0;
+}
+
+#adminUltimosUsuarios {
+    display: grid;
+    gap: 10px;
+}
+
+.admin-usuario-recente {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.7fr) minmax(230px, 1.3fr) auto;
+    gap: 16px;
+    padding: 13px 14px;
+}
+
+.admin-usuario-recente-nome,
+.admin-usuario-recente-email {
+    min-width: 0;
+}
+
+.admin-usuario-recente-nome {
+    color: var(--cor-texto, #ffffff);
+    font-size: 16px;
+    overflow-wrap: anywhere;
+}
+
+.admin-usuario-recente-email {
+    color: var(--cor-texto-secundario, #94a3b8);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.admin-usuario-recente .status {
+    min-width: 92px;
+    justify-content: center;
+    justify-self: end;
+    white-space: nowrap;
+}
+
+@media (max-width: 1180px) {
+    body[data-admin-page="dashboard"] .admin-main > .grid-resumo + .admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    body[data-admin-page="dashboard"] .admin-main > .admin-grid + .admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-usuario-recente {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 5px 12px;
+    }
+
+    .admin-usuario-recente-email {
+        grid-column: 1;
+    }
+
+    .admin-usuario-recente .status {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
 }
 
 .admin-card,

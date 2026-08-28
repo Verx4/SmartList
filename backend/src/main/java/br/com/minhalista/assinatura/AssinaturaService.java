@@ -26,17 +26,20 @@ public class AssinaturaService {
     private final UsuarioService usuarioService;
     private final AssinaturaValidadeService validadeService;
     private final PlanoService planoService;
+    private final CupomService cupomService;
 
     public AssinaturaService(
         AssinaturaRepository repository,
         UsuarioService usuarioService,
         AssinaturaValidadeService validadeService,
-        PlanoService planoService
+        PlanoService planoService,
+        CupomService cupomService
     ) {
         this.repository = repository;
         this.usuarioService = usuarioService;
         this.validadeService = validadeService;
         this.planoService = planoService;
+        this.cupomService = cupomService;
     }
 
     public List<PlanoResponse> catalogo() {
@@ -57,13 +60,27 @@ public class AssinaturaService {
     }
 
     @Transactional
-    public Assinatura iniciarCheckout(Usuario usuario, CicloAssinatura ciclo) {
+    public Assinatura iniciarCheckout(
+        Usuario usuario,
+        CicloAssinatura ciclo,
+        String codigoCupom
+    ) {
         Assinatura assinatura = new Assinatura();
         assinatura.setUsuario(usuario);
         assinatura.setCiclo(ciclo);
         assinatura.setStatus(StatusAssinatura.PENDENTE);
-        assinatura.setValor(planoService.valorVigente(ciclo));
+        if (codigoCupom == null || codigoCupom.isBlank()) {
+            assinatura.setValor(planoService.valorVigente(ciclo));
+        } else {
+            CupomAplicacaoResponse cupom = cupomService.aplicar(codigoCupom, ciclo);
+            assinatura.setValor(cupom.total());
+            assinatura.setCupomCodigo(cupom.codigo());
+        }
         return repository.save(assinatura);
+    }
+
+    public CupomAplicacaoResponse validarCupom(String codigo, CicloAssinatura ciclo) {
+        return cupomService.aplicar(codigo, ciclo);
     }
 
     @Transactional

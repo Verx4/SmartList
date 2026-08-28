@@ -27,6 +27,8 @@ const CICLOS = {
     }
 };
 
+let cupomAplicado = null;
+
 async function carregarPlanosVigentes() {
     try {
         const planos = await api.get("/assinaturas/planos");
@@ -168,6 +170,73 @@ function preencherCheckout() {
     });
 }
 
+function atualizarMensagemCupom(texto, tipo = "") {
+    const mensagem = document.getElementById("mensagemCupom");
+
+    if (!mensagem) {
+        return;
+    }
+
+    mensagem.textContent = texto;
+    mensagem.className = tipo ? `cupom-${tipo}` : "";
+}
+
+function limparCupomAplicado() {
+    const formulario = document.getElementById("formCheckout");
+    const ciclo = formulario?.dataset.ciclo;
+
+    cupomAplicado = null;
+    if (ciclo && CICLOS[ciclo]) {
+        CICLOS[ciclo].desconto = 0;
+        CICLOS[ciclo].total = CICLOS[ciclo].valorNormal;
+        preencherCheckout();
+    }
+}
+
+async function aplicarCupom() {
+    const formulario = document.getElementById("formCheckout");
+    const campo = document.getElementById("codigoCupom");
+    const botao = document.getElementById("btnAplicarCupom");
+    const ciclo = formulario?.dataset.ciclo || "mensal";
+    const codigo = String(campo?.value || "").trim().toUpperCase();
+
+    if (!codigo) {
+        limparCupomAplicado();
+        atualizarMensagemCupom("Digite o código do cupom para aplicar o desconto.", "erro");
+        campo?.focus();
+        return;
+    }
+
+    botao.disabled = true;
+    botao.textContent = "Validando...";
+
+    try {
+        const resposta = await api.post("/assinaturas/cupom/validar", {
+            codigo,
+            ciclo: ciclo.toUpperCase()
+        });
+        CICLOS[ciclo].valorNormal = Number(resposta.valorOriginal);
+        CICLOS[ciclo].desconto = Number(resposta.desconto);
+        CICLOS[ciclo].total = Number(resposta.total);
+        cupomAplicado = resposta.codigo;
+        campo.value = resposta.codigo;
+        preencherCheckout();
+        atualizarMensagemCupom(
+            `Cupom aplicado: ${Number(resposta.percentualDesconto).toLocaleString("pt-BR")}% de desconto.`,
+            "sucesso"
+        );
+    } catch (erro) {
+        limparCupomAplicado();
+        atualizarMensagemCupom(
+            erro instanceof ApiError ? erro.message : "Não foi possível validar o cupom.",
+            "erro"
+        );
+    } finally {
+        botao.disabled = false;
+        botao.textContent = "Aplicar cupom";
+    }
+}
+
 function urlMercadoPagoValida(valor) {
     try {
         const url = new URL(valor);
@@ -200,7 +269,8 @@ async function enviarCheckout(evento) {
 
     try {
         const resposta = await api.post("/assinaturas/checkout", {
-            ciclo: ciclo.toUpperCase()
+            ciclo: ciclo.toUpperCase(),
+            cupom: cupomAplicado
         });
         const urlPagamento =
             resposta?.checkoutUrl
@@ -355,6 +425,21 @@ async function iniciar() {
     document
         .getElementById("formCheckout")
         ?.addEventListener("submit", enviarCheckout);
+
+    document
+        .getElementById("btnAplicarCupom")
+        ?.addEventListener("click", aplicarCupom);
+
+    document
+        .getElementById("codigoCupom")
+        ?.addEventListener("input", () => {
+            if (cupomAplicado) {
+                limparCupomAplicado();
+                atualizarMensagemCupom(
+                    "Código alterado. Clique em Aplicar cupom para validar novamente."
+                );
+            }
+        });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -442,11 +442,13 @@ function renderizarUltimosUsuarios(usuarios = []) {
         const classificacao = apresentarClassificacao(usuario);
 
         return `
-        <div class="status-item">
-            <span>
-                <strong>${escaparHtml(usuario.nome || "-")}</strong><br>
-                <small>${escaparHtml(usuario.email || "-")}</small>
-            </span>
+        <div class="status-item admin-usuario-recente">
+            <strong class="admin-usuario-recente-nome">
+                ${escaparHtml(usuario.nome || "-")}
+            </strong>
+            <small class="admin-usuario-recente-email">
+                ${escaparHtml(usuario.email || "-")}
+            </small>
             <span class="status ${classificacao.classe}">
                 ${escaparHtml(classificacao.rotulo)}
             </span>

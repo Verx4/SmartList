@@ -103,7 +103,7 @@ public class AssinaturaController {
     public CheckoutResponse checkout(@Valid @RequestBody CheckoutRequest request) {
         Usuario usuario = usuarioService.obterAutenticado();
         Assinatura assinatura =
-            assinaturaService.iniciarCheckout(usuario, request.ciclo());
+            assinaturaService.iniciarCheckout(usuario, request.ciclo(), request.cupom());
         CheckoutResponse checkout;
 
         try {
@@ -119,5 +119,12 @@ public class AssinaturaController {
         );
 
         return checkout;
+    }
+
+    @PostMapping("/cupom/validar")
+    public CupomAplicacaoResponse validarCupom(
+        @Valid @RequestBody CupomValidacaoRequest request
+    ) {
+        return assinaturaService.validarCupom(request.codigo(), request.ciclo());
     }
 }
