@@ -96,6 +96,64 @@
     background: #15803d;
 }
 
+.admin-theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 13px;
+    color: var(--cor-texto, #fff);
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #26334b);
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+.admin-theme-toggle:hover {
+    border-color: var(--cor-primaria, #2563eb);
+}
+
+.admin-gerenciamento-form {
+    max-width: 760px;
+}
+
+.admin-gerenciamento-acoes {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.admin-gerenciamento-acoes .form-group {
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+.admin-planos-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.admin-planos-form .admin-planos-salvar {
+    grid-column: 1 / -1;
+    justify-self: start;
+}
+
+@media (max-width: 720px) {
+    .admin-gerenciamento-acoes,
+    .admin-planos-form {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .admin-planos-form .admin-planos-salvar {
+        width: 100%;
+    }
+}
+
 .lista-status {
     display: grid;
     gap: 8px;

@@ -35,6 +35,26 @@ public class AdminController {
         return service.usuarios();
     }
 
+    @GetMapping("/administradores")
+    public List<AdministradorResponse> administradores() {
+        return service.administradores();
+    }
+
+    @PostMapping("/administradores")
+    public AdministradorResponse concederAcessoAdministrador(
+        @Valid @RequestBody AdministradorRequest request
+    ) {
+        return service.concederAcessoAdministrador(request.email());
+    }
+
+    @DeleteMapping("/administradores/{id}")
+    public void revogarAcessoAdministrador(
+        @PathVariable UUID id,
+        Principal principal
+    ) {
+        service.revogarAcessoAdministrador(id, principal.getName());
+    }
+
     @GetMapping("/usuarios/auditoria")
     public List<HistoricoAcessoResponse> auditoriaAcessos() {
         return service.auditoriaAcessos();

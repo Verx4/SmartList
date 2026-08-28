@@ -58,6 +58,7 @@ public class SecurityConfig {
                     "/h2-console/**",
                     "/error"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/assinaturas/planos").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()

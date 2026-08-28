@@ -55,6 +55,9 @@ public class Sugestao {
     @Column(name = "respondido_por", length = 180)
     private String respondidoPor;
 
+    @Column(name = "tem_nova_resposta", nullable = false, columnDefinition = "boolean default false")
+    private boolean temNovaResposta;
+
     @PrePersist
     void antesDeSalvar() {
         if (criadoEm == null) {
@@ -151,5 +154,13 @@ public class Sugestao {
 
     public void setRespondidoPor(String respondidoPor) {
         this.respondidoPor = respondidoPor;
+    }
+
+    public boolean isTemNovaResposta() {
+        return temNovaResposta;
+    }
+
+    public void setTemNovaResposta(boolean temNovaResposta) {
+        this.temNovaResposta = temNovaResposta;
     }
 }

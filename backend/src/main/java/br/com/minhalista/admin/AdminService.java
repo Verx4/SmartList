@@ -22,6 +22,7 @@ import br.com.minhalista.lista.ListaCompraRepository;
 import br.com.minhalista.mercado.MercadoRepository;
 import br.com.minhalista.scraper.ExecucaoScraperRepository;
 import br.com.minhalista.usuario.TipoAcesso;
+import br.com.minhalista.usuario.Perfil;
 import br.com.minhalista.usuario.Usuario;
 import br.com.minhalista.usuario.UsuarioRepository;
 
@@ -105,6 +106,60 @@ public class AdminService {
         return usuarioRepository.findAllByOrderByCriadoEmDesc().stream()
             .map(this::respostaUsuario)
             .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdministradorResponse> administradores() {
+        return usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN)
+            .stream()
+            .map(AdministradorResponse::de)
+            .toList();
+    }
+
+    @Transactional
+    public AdministradorResponse concederAcessoAdministrador(String email) {
+        Usuario usuario = usuarioRepository
+            .findByEmailIgnoreCase(email.trim().toLowerCase(Locale.ROOT))
+            .orElseThrow(() -> new RegraNegocioException(
+                HttpStatus.NOT_FOUND,
+                "Nenhuma conta foi encontrada com este e-mail."
+            ));
+
+        usuario.setPerfil(Perfil.ADMIN);
+        return AdministradorResponse.de(usuarioRepository.save(usuario));
+    }
+
+    @Transactional
+    public void revogarAcessoAdministrador(UUID usuarioId, String administradorEmail) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new RegraNegocioException(
+                HttpStatus.NOT_FOUND,
+                "Administrador não encontrado."
+            ));
+
+        if (usuario.getPerfil() != Perfil.ADMIN) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Este usuário não possui acesso administrativo."
+            );
+        }
+
+        if (usuario.getEmail().equalsIgnoreCase(administradorEmail)) {
+            throw new RegraNegocioException(
+                HttpStatus.CONFLICT,
+                "Você não pode revogar o próprio acesso administrativo."
+            );
+        }
+
+        if (usuarioRepository.countByPerfil(Perfil.ADMIN) <= 1) {
+            throw new RegraNegocioException(
+                HttpStatus.CONFLICT,
+                "O painel precisa manter pelo menos um administrador."
+            );
+        }
+
+        usuario.setPerfil(Perfil.USUARIO);
+        usuarioRepository.save(usuario);
     }
 
     @Transactional

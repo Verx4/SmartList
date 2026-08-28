@@ -72,8 +72,8 @@ public interface ObservacaoPrecoRepository
 
     @Query("""
         select o.compraChave as compraId,
-               o.usuario.id as usuarioId,
-               o.usuario.nome as usuarioNome,
+               u.id as usuarioId,
+               u.nome as usuarioNome,
                o.mercado as mercado,
                o.cidade as cidade,
                o.estado as estado,
@@ -81,23 +81,24 @@ public interface ObservacaoPrecoRepository
                count(o) as totalItens,
                sum(o.subtotal) as valorTotal
           from ObservacaoPreco o
+          left join o.usuario u
          where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
            and (:mercado = '' or o.mercado = :mercado)
-           and (:usuario = '' or lower(o.usuario.nome) = lower(:usuario))
-           and o.realizadaEm >= coalesce(:inicio, o.realizadaEm)
-           and o.realizadaEm <= coalesce(:fim, o.realizadaEm)
+           and (:usuario = '' or lower(u.nome) = lower(:usuario))
+           and o.realizadaEm >= :inicio
+           and o.realizadaEm <= :fim
            and (
                 :busca = ''
                 or lower(o.compraChave) like lower(concat('%', :busca, '%'))
                 or lower(coalesce(o.mercado, '')) like lower(concat('%', :busca, '%'))
-                or lower(coalesce(o.usuario.nome, '')) like lower(concat('%', :busca, '%'))
+                or lower(coalesce(u.nome, '')) like lower(concat('%', :busca, '%'))
                 or exists (
                     select x.id from ObservacaoPreco x
                      where x.compraChave = o.compraChave
                        and lower(x.nomeOriginal) like lower(concat('%', :busca, '%'))
                 )
            )
-         group by o.compraChave, o.usuario.id, o.usuario.nome, o.mercado, o.cidade, o.estado
+         group by o.compraChave, u.id, u.nome, o.mercado, o.cidade, o.estado
          order by max(o.realizadaEm) desc
         """)
     List<CompraAgregada> listarCompras(
@@ -112,16 +113,17 @@ public interface ObservacaoPrecoRepository
     @Query("""
         select count(distinct o.compraChave)
           from ObservacaoPreco o
+          left join o.usuario u
          where o.origem = br.com.minhalista.preco.OrigemPreco.COMPRA_USUARIO
            and (:mercado = '' or o.mercado = :mercado)
-           and (:usuario = '' or lower(o.usuario.nome) = lower(:usuario))
-           and o.realizadaEm >= coalesce(:inicio, o.realizadaEm)
-           and o.realizadaEm <= coalesce(:fim, o.realizadaEm)
+           and (:usuario = '' or lower(u.nome) = lower(:usuario))
+           and o.realizadaEm >= :inicio
+           and o.realizadaEm <= :fim
            and (
                 :busca = ''
                 or lower(o.compraChave) like lower(concat('%', :busca, '%'))
                 or lower(coalesce(o.mercado, '')) like lower(concat('%', :busca, '%'))
-                or lower(coalesce(o.usuario.nome, '')) like lower(concat('%', :busca, '%'))
+                or lower(coalesce(u.nome, '')) like lower(concat('%', :busca, '%'))
                 or exists (
                     select x.id from ObservacaoPreco x
                      where x.compraChave = o.compraChave

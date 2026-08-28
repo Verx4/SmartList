@@ -19,6 +19,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     long countByTipoAcesso(TipoAcesso tipoAcesso);
 
+    long countByPerfil(Perfil perfil);
+
+    List<Usuario> findAllByPerfilOrderByNomeAsc(Perfil perfil);
+
     List<Usuario> findAllByOrderByCriadoEmDesc();
 
     @Modifying

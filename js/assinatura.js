@@ -11,21 +11,62 @@ const CICLOS = {
     },
     trimestral: {
         nome: "Trimestral",
-        valorNormal: 29.91,
-        desconto: 3.00,
+        valorNormal: 26.91,
+        desconto: 0,
         total: 26.91,
         periodo: "/trimestre",
         renovacao: "Acesso Premium por três meses, sem renovação automática."
     },
     anual: {
         nome: "Anual",
-        valorNormal: 119.64,
-        desconto: 24.00,
+        valorNormal: 95.64,
+        desconto: 0,
         total: 95.64,
         periodo: "/ano",
         renovacao: "Acesso Premium por doze meses, sem renovação automática."
     }
 };
+
+async function carregarPlanosVigentes() {
+    try {
+        const planos = await api.get("/assinaturas/planos");
+
+        (Array.isArray(planos) ? planos : []).forEach(plano => {
+            const chave = String(plano.ciclo || "").toLowerCase();
+
+            if (!CICLOS[chave]) {
+                return;
+            }
+
+            const valor = Number(plano.valor);
+
+            if (!Number.isFinite(valor) || valor <= 0) {
+                return;
+            }
+
+            CICLOS[chave].nome = plano.nome || CICLOS[chave].nome;
+            CICLOS[chave].valorNormal = valor;
+            CICLOS[chave].desconto = 0;
+            CICLOS[chave].total = valor;
+        });
+
+        document.querySelectorAll("[data-preco-ciclo]").forEach(elemento => {
+            const dados = CICLOS[elemento.dataset.precoCiclo];
+            if (dados) {
+                elemento.textContent = formatarMoeda(dados.total);
+            }
+        });
+
+        document.querySelectorAll("[data-descricao-ciclo]").forEach(elemento => {
+            const ciclo = elemento.dataset.descricaoCiclo;
+            elemento.textContent = ciclo === "mensal"
+                ? "por mês"
+                : "pagamento único";
+        });
+    } catch {
+        // Mantém os valores padrão enquanto o servidor estiver indisponível.
+    }
+}
 
 function formatarMoeda(valor) {
     return Number(valor || 0).toLocaleString("pt-BR", {
@@ -293,6 +334,7 @@ async function mostrarRetornoPagamento() {
 }
 
 async function iniciar() {
+    await carregarPlanosVigentes();
     await mostrarRetornoPagamento();
     await preencherPlanoAtual();
     atualizarCardPremium();

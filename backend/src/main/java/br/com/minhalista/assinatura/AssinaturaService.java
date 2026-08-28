@@ -2,7 +2,6 @@ package br.com.minhalista.assinatura;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -26,19 +25,22 @@ public class AssinaturaService {
     private final AssinaturaRepository repository;
     private final UsuarioService usuarioService;
     private final AssinaturaValidadeService validadeService;
+    private final PlanoService planoService;
 
     public AssinaturaService(
         AssinaturaRepository repository,
         UsuarioService usuarioService,
-        AssinaturaValidadeService validadeService
+        AssinaturaValidadeService validadeService,
+        PlanoService planoService
     ) {
         this.repository = repository;
         this.usuarioService = usuarioService;
         this.validadeService = validadeService;
+        this.planoService = planoService;
     }
 
     public List<PlanoResponse> catalogo() {
-        return Arrays.stream(CicloAssinatura.values()).map(PlanoResponse::de).toList();
+        return planoService.catalogo();
     }
 
     @Transactional
@@ -60,7 +62,7 @@ public class AssinaturaService {
         assinatura.setUsuario(usuario);
         assinatura.setCiclo(ciclo);
         assinatura.setStatus(StatusAssinatura.PENDENTE);
-        assinatura.setValor(ciclo.getValor());
+        assinatura.setValor(planoService.valorVigente(ciclo));
         return repository.save(assinatura);
     }
 

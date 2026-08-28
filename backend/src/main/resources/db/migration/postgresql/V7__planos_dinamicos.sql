@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS planos (
+    ciclo VARCHAR(20) PRIMARY KEY,
+    valor NUMERIC(10, 2) NOT NULL CHECK (valor > 0),
+    atualizado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO planos (ciclo, valor)
+VALUES
+    ('MENSAL', 9.97),
+    ('TRIMESTRAL', 26.91),
+    ('ANUAL', 95.64)
+ON CONFLICT (ciclo) DO NOTHING;

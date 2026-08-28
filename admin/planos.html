@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0b1220">
+    <title>Gestão de Planos | Smart List</title>
+    <link rel="stylesheet" href="../css/global.css?v=50">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/buttons.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/admin.css?v=3">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/temas.css">
+</head>
+<body data-admin-page="planos">
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <a class="brand admin-brand" href="./index.html">
+            <img class="brand-logo" src="../assets/logo/smart-list-app.png" alt="" width="38" height="38">
+            <span>Smart List</span>
+        </a>
+        <nav class="admin-nav" aria-label="Administração"></nav>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <span class="page-eyebrow">GESTÃO</span>
+                <h1>Gestão de Planos</h1>
+                <p>Defina os preços que serão usados na página de assinatura e no checkout.</p>
+            </div>
+        </header>
+
+        <section class="card">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">PREÇOS VIGENTES</span>
+                    <h2>Planos Premium</h2>
+                    <p>Os novos valores entram em vigor para checkouts iniciados após o salvamento.</p>
+                </div>
+            </div>
+            <form id="formPlanos" class="admin-planos-form">
+                <div class="form-group">
+                    <label for="valorMensal">Valor do Plano 1 (Mensal) - R$</label>
+                    <input id="valorMensal" name="mensal" type="text" inputmode="decimal" placeholder="9,97" required>
+                </div>
+                <div class="form-group">
+                    <label for="valorTrimestral">Valor do Plano 2 (Trimestral) - R$</label>
+                    <input id="valorTrimestral" name="trimestral" type="text" inputmode="decimal" placeholder="26,91" required>
+                </div>
+                <div class="form-group">
+                    <label for="valorAnual">Valor do Plano 3 (Anual) - R$</label>
+                    <input id="valorAnual" name="anual" type="text" inputmode="decimal" placeholder="95,64" required>
+                </div>
+                <button class="btn btn-primary admin-planos-salvar" type="submit">Salvar Alterações de Preços</button>
+            </form>
+            <div id="mensagemPlanos" class="mensagem" aria-live="polite" hidden></div>
+        </section>
+    </main>
+</div>
+<script src="../js/tema.js?v=12"></script>
+<script src="../js/admin-nav.js?v=4"></script>
+<script type="module" src="../js/admin-planos.js?v=1"></script>
+</body>
+</html>

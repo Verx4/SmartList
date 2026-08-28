@@ -45,6 +45,7 @@ class SugestaoServiceTest {
 
         assertEquals("Sua solicitação foi atendida.", resposta.respostaAdmin());
         assertEquals("admin@smartlist.com", sugestao.getRespondidoPor());
+        assertEquals(true, resposta.temNovaResposta());
         assertNotNull(resposta.respondidoEm());
         verify(repository).save(sugestao);
     }
@@ -71,6 +72,20 @@ class SugestaoServiceTest {
         service.excluir(id);
 
         verify(repository).delete(sugestao);
+    }
+
+    @Test
+    void deveRemoverNotificacaoQuandoUsuarioVisualizaResposta() {
+        UUID id = UUID.randomUUID();
+        Sugestao sugestao = sugestaoDe("cliente@teste.com");
+        sugestao.setTemNovaResposta(true);
+        when(repository.findById(id)).thenReturn(Optional.of(sugestao));
+        when(repository.save(any(Sugestao.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
+
+        SugestaoResponse resposta = service.visualizar(id, "cliente@teste.com");
+
+        assertEquals(false, resposta.temNovaResposta());
+        verify(repository).save(sugestao);
     }
 
     private Sugestao sugestaoDe(String email) {

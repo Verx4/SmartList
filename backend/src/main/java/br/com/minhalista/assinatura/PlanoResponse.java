@@ -10,11 +10,15 @@ public record PlanoResponse(
     int meses
 ) {
     public static PlanoResponse de(CicloAssinatura ciclo) {
+        return de(ciclo, ciclo.getValor());
+    }
+
+    public static PlanoResponse de(CicloAssinatura ciclo, BigDecimal valor) {
         return new PlanoResponse(
             "PREMIUM",
             ciclo.name(),
             ciclo.getNome(),
-            ciclo.getValor(),
+            valor,
             ciclo.getMeses()
         );
     }
