@@ -44,6 +44,7 @@ class ColetaPrecoServiceTest {
             "Mercado Central",
             null,
             null,
+            new BigDecimal("3.25"),
             List.of(new ColetaPrecoService.ItemRequest(
                 "item-1", "Arroz Branco", "🌾 Grãos", new BigDecimal("2"),
                 "unidade", new BigDecimal("5.50"), new BigDecimal("11.00")
@@ -66,6 +67,7 @@ class ColetaPrecoServiceTest {
         assertEquals(usuario, observacao.getUsuario());
         assertEquals("Recife", observacao.getCidade());
         assertEquals("PE", observacao.getEstado());
+        assertEquals(new BigDecimal("3.25"), observacao.getEconomiaCompra());
         assertEquals("🌾 Grãos", observacao.getProduto().getCategoria());
     }
 

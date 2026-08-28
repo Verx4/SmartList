@@ -549,7 +549,7 @@ function montarProduto(produto) {
                     </label>
                     <label><span data-rotulo-valor-medida>${porPeso ? "Valor do kg (R$)" : "Valor unitário (R$)"}</span><input class="editar-valor-unitario" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
                         data-editar="valor-unitario" value="${valorInputMoeda(precoPrincipal.valor)}"
-                        aria-label="Valor unitário de ${escaparHTML(produto.nome)}" placeholder="Digite o valor"></label>
+                        aria-label="Valor unitário de ${escaparHTML(produto.nome)}" placeholder="0,00"></label>
                     <div class="editar-produto-acoes">
                         <button type="button" class="btn btn-primary" data-acao="salvar-edicao">Salvar alterações</button>
                         <button type="button" class="btn btn-secondary" data-acao="cancelar-edicao">Cancelar</button>

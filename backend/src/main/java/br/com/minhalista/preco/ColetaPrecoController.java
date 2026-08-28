@@ -1,5 +1,8 @@
 package br.com.minhalista.preco;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +30,12 @@ public class ColetaPrecoController {
     ) {
         Usuario usuario = usuarioService.obterAutenticado();
         return service.coletar(usuario, request);
+    }
+
+    @GetMapping("/compras/historico")
+    public List<ColetaPrecoService.HistoricoCompraResponse> historico() {
+        Usuario usuario = usuarioService.obterAutenticado();
+        usuarioService.exigirPremium(usuario);
+        return service.historico(usuario);
     }
 }

@@ -224,7 +224,9 @@ export function obterRegraMedida(nome) {
 
 export function normalizarMedidaProduto(produto = {}) {
     const medidaInformada = String(
-        produto.medida || produto.tipoMedida || ""
+        typeof produto === "string"
+            ? produto
+            : produto.medida || produto.unitType || produto.unit || produto.tipoMedida || ""
     ).toLocaleLowerCase("pt-BR");
 
     if (medidaInformada === MEDIDA_KG) {

@@ -19,6 +19,33 @@ function numeroSeguro(valor) {
 }
 
 
+function usuarioAtual() {
+
+    for (const chave of ["usuarioAtual", "usuarioLogado"]) {
+
+        try {
+
+            const usuario = JSON.parse(localStorage.getItem(chave));
+
+            if (usuario) {
+
+                return usuario;
+
+            }
+
+        } catch {
+
+            // Continua procurando uma sessão válida.
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
 function ehHortifruti(produto) {
 
     return produtoEhPorPeso(produto);
@@ -231,6 +258,8 @@ export function finalizarCompra(produtos = []) {
             ? compraAnterior - total
             : 0;
 
+    const usuario = usuarioAtual();
+
     const compra = {
 
         id:
@@ -238,6 +267,13 @@ export function finalizarCompra(produtos = []) {
             `${Date.now()}`,
 
         data: new Date().toISOString(),
+
+        usuarioId: usuario?.id || usuario?.usuarioId || null,
+
+        usuarioNome:
+            usuario?.nome ||
+            usuario?.name ||
+            "Usuário não identificado",
 
         supermercado:
             descobrirMercadoPrincipal(itensValidos),
