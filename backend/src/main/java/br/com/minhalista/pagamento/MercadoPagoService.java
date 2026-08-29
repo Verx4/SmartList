@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -321,20 +323,7 @@ public class MercadoPagoService {
                 );
             }
 
-            Map<String, Object> metadata = resposta.get("metadata") instanceof Map<?, ?> mapa
-                ? (Map<String, Object>) mapa
-                : Map.of();
-
-            return new PagamentoConsultado(
-                texto(resposta.get("id")),
-                texto(resposta.get("status")),
-                texto(resposta.get("external_reference")),
-                texto(metadata.get("assinatura_id")),
-                texto(metadata.get("ciclo")),
-                decimal(resposta.get("transaction_amount")),
-                texto(resposta.get("currency_id")),
-                Boolean.TRUE.equals(resposta.get("live_mode"))
-            );
+            return mapearPagamento(resposta);
         } catch (RestClientResponseException erro) {
             LOG.warn(
                 "Não foi possível consultar pagamento no Mercado Pago: HTTP {}.",
@@ -351,6 +340,82 @@ public class MercadoPagoService {
                 "Não foi possível conectar ao Mercado Pago para confirmar o pagamento."
             );
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<PagamentoConsultado> buscarPagamentoAprovadoPorReferencia(
+        UUID assinaturaId
+    ) {
+        exigirConfiguracaoConsulta();
+
+        if (assinaturaId == null) {
+            return Optional.empty();
+        }
+
+        String referencia = assinaturaId.toString();
+
+        try {
+            Map<String, Object> resposta = restClient.get()
+                .uri(uri -> uri
+                    .path("/v1/payments/search")
+                    .queryParam("external_reference", referencia)
+                    .queryParam("status", "approved")
+                    .queryParam("limit", 10)
+                    .build())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .retrieve()
+                .body(Map.class);
+
+            Object resultados = resposta == null ? null : resposta.get("results");
+
+            if (!(resultados instanceof List<?> lista)) {
+                return Optional.empty();
+            }
+
+            return lista.stream()
+                .filter(Map.class::isInstance)
+                .map(item -> mapearPagamento((Map<String, Object>) item))
+                .filter(pagamento -> referencia.equals(pagamento.referenciaExterna()))
+                .filter(pagamento -> "approved".equalsIgnoreCase(pagamento.status()))
+                .findFirst();
+        } catch (RestClientResponseException erro) {
+            LOG.warn(
+                "Mercado Pago recusou a reconciliação do checkout {}: HTTP {}.",
+                assinaturaId,
+                erro.getStatusCode().value()
+            );
+            throw new RegraNegocioException(
+                HttpStatus.BAD_GATEWAY,
+                "Não foi possível consultar o pagamento aprovado no Mercado Pago."
+            );
+        } catch (RestClientException erro) {
+            LOG.warn(
+                "Falha de comunicação ao reconciliar o checkout {} no Mercado Pago.",
+                assinaturaId
+            );
+            throw new RegraNegocioException(
+                HttpStatus.BAD_GATEWAY,
+                "Não foi possível conectar ao Mercado Pago para atualizar a assinatura."
+            );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private PagamentoConsultado mapearPagamento(Map<String, Object> resposta) {
+        Map<String, Object> metadata = resposta.get("metadata") instanceof Map<?, ?> mapa
+            ? (Map<String, Object>) mapa
+            : Map.of();
+
+        return new PagamentoConsultado(
+            texto(resposta.get("id")),
+            texto(resposta.get("status")),
+            texto(resposta.get("external_reference")),
+            texto(metadata.get("assinatura_id")),
+            texto(metadata.get("ciclo")),
+            decimal(resposta.get("transaction_amount")),
+            texto(resposta.get("currency_id")),
+            Boolean.TRUE.equals(resposta.get("live_mode"))
+        );
     }
 
     public boolean ambienteCompativel(PagamentoConsultado pagamento) {

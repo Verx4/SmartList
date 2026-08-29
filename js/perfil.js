@@ -108,12 +108,12 @@ if (formulario) {
         campoCpf.setCustomValidity("");
     });
 
-    Promise.all([
-        api.get("/usuarios/me"),
-        api.get("/assinaturas/atual"),
-        api.get("/usuarios/me/cpf")
-    ])
-        .then(([usuario, assinatura, cpf]) => {
+    api.get("/assinaturas/atual")
+        .then(async assinatura => {
+            const [usuario, cpf] = await Promise.all([
+                api.get("/usuarios/me"),
+                api.get("/usuarios/me/cpf")
+            ]);
             assinaturaAtual = assinatura;
             localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
             window.dispatchEvent(new CustomEvent("usuarioatualizado", {

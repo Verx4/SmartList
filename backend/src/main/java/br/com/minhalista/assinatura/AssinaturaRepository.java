@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -32,6 +33,18 @@ public interface AssinaturaRepository extends JpaRepository<Assinatura, UUID> {
     );
 
     Optional<Assinatura> findByMercadoPagoPagamentoId(String pagamentoId);
+
+    @EntityGraph(attributePaths = "usuario")
+    List<Assinatura> findTop5ByUsuarioIdAndStatusAndMercadoPagoPreferenciaIdIsNotNullOrderByCriadoEmDesc(
+        UUID usuarioId,
+        StatusAssinatura status
+    );
+
+    @EntityGraph(attributePaths = "usuario")
+    List<Assinatura> findTop20ByStatusAndMercadoPagoPreferenciaIdIsNotNullAndCriadoEmAfterOrderByCriadoEmAsc(
+        StatusAssinatura status,
+        Instant limite
+    );
 
     boolean existsByUsuarioIdAndStatusAndVenceEmAfter(
         UUID usuarioId,
