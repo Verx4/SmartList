@@ -103,8 +103,10 @@ public class AssinaturaController {
             : switch (status) {
                 case "pending", "in_process", "in_mediation" ->
                     "Pagamento ainda pendente. O Premium será liberado automaticamente após a aprovação.";
-                case "rejected", "cancelled" ->
-                    "O pagamento não foi aprovado. Nenhuma assinatura foi ativada.";
+                case "rejected" ->
+                    mensagemPagamentoRejeitado(pagamento.statusDetalhe());
+                case "cancelled" ->
+                    "O pagamento foi cancelado. Nenhuma assinatura foi ativada.";
                 case "refunded", "charged_back" ->
                     "O pagamento foi devolvido ou contestado. A assinatura não está ativa.";
                 default ->
@@ -184,6 +186,38 @@ public class AssinaturaController {
                 codigoDiagnostico
             );
         }
+    }
+
+    String mensagemPagamentoRejeitado(String statusDetalhe) {
+        String detalhe = statusDetalhe == null
+            ? ""
+            : statusDetalhe.toLowerCase(Locale.ROOT);
+
+        return switch (detalhe) {
+            case "cc_rejected_bad_filled_card_number",
+                 "cc_rejected_bad_filled_date",
+                 "cc_rejected_bad_filled_security_code",
+                 "cc_rejected_bad_filled_other" ->
+                "O Mercado Pago recusou os dados do cartão. Confira número, validade, nome e código de segurança.";
+            case "cc_rejected_insufficient_amount" ->
+                "O banco informou limite insuficiente para concluir a compra.";
+            case "cc_rejected_call_for_authorize" ->
+                "O banco precisa autorizar esta compra. Entre em contato com o emissor do cartão.";
+            case "cc_rejected_card_disabled" ->
+                "O cartão foi recusado pelo banco. Confirme se ele está liberado para compras on-line.";
+            case "cc_rejected_invalid_installments" ->
+                "A quantidade de parcelas não foi aceita. Escolha outra opção de parcelamento.";
+            case "cc_rejected_duplicated_payment" ->
+                "O pagamento foi identificado como repetido. Aguarde alguns minutos antes de tentar novamente.";
+            case "cc_rejected_max_attempts" ->
+                "O limite de tentativas foi atingido. Aguarde antes de tentar novamente ou fale com o banco.";
+            case "cc_rejected_blacklist", "cc_rejected_high_risk" ->
+                "O Mercado Pago recusou a compra por segurança. Use uma conta compradora diferente da conta vendedora e evite novas tentativas imediatas.";
+            case "cc_rejected_other_reason" ->
+                "O banco ou o Mercado Pago recusou a compra por segurança. Tente pelo dispositivo habitual ou fale com o banco emissor.";
+            default ->
+                "O pagamento não foi aprovado. Nenhuma assinatura foi ativada.";
+        };
     }
 
     private void cancelarCheckoutPendente(
