@@ -31,8 +31,16 @@ async function garantirAdmin() {
     try {
         usuario = await api.get("/usuarios/me");
         localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
-    } catch {
-        location.replace("../login.html");
+    } catch (erro) {
+        if (Number(erro?.status) === 401) {
+            location.replace("../login.html");
+        } else {
+            porId("tabelaCompras").innerHTML = `
+                <tr><td colspan="8" class="coleta-vazio">${escapar(
+                    erro?.message || "Não foi possível confirmar a sessão administrativa agora."
+                )}</td></tr>
+            `;
+        }
         return false;
     }
     if (String(usuario?.perfil || usuario?.role || "").toUpperCase() !== "ADMIN") {

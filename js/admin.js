@@ -1113,8 +1113,15 @@ async function iniciar() {
     try {
         usuario = await api.get("/usuarios/me");
         localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
-    } catch {
-        window.location.replace("../login.html");
+    } catch (erro) {
+        if (Number(erro?.status) === 401) {
+            window.location.replace("../login.html");
+        } else {
+            mensagem(
+                erro?.message || "Não foi possível confirmar a sessão administrativa agora.",
+                "erro"
+            );
+        }
         return;
     }
 

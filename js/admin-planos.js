@@ -48,8 +48,17 @@ async function validarAdministrador() {
             return false;
         }
         return true;
-    } catch {
-        location.replace("../login.html");
+    } catch (erro) {
+        if (Number(erro?.status) === 401) {
+            location.replace("../login.html");
+        } else {
+            mostrarMensagem(
+                erro instanceof ApiError
+                    ? erro.message
+                    : "Não foi possível confirmar a sessão administrativa agora.",
+                "erro"
+            );
+        }
         return false;
     }
 }

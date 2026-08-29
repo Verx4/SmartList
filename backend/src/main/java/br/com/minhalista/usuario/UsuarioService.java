@@ -2,6 +2,8 @@ package br.com.minhalista.usuario;
 
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import br.com.minhalista.common.RegraNegocioException;
 
 @Service
 public class UsuarioService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
 
     private final UsuarioRepository repository;
     private final AssinaturaValidadeService assinaturaValidadeService;
@@ -34,11 +38,22 @@ public class UsuarioService {
             ));
     }
 
-    @Transactional
     public Usuario consultarPerfil() {
         Usuario usuario = obterAutenticado();
-        assinaturaValidadeService.sincronizarUsuario(usuario);
+        sincronizarAssinaturaSemBloquearPerfil(usuario);
         return usuario;
+    }
+
+    private void sincronizarAssinaturaSemBloquearPerfil(Usuario usuario) {
+        try {
+            assinaturaValidadeService.sincronizarUsuario(usuario);
+        } catch (RuntimeException erro) {
+            LOGGER.error(
+                "Falha ao sincronizar a assinatura durante a consulta do perfil do usuário {}.",
+                usuario.getId(),
+                erro
+            );
+        }
     }
 
     @Transactional

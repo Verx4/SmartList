@@ -24,8 +24,17 @@ async function validarAdministrador() {
     try {
         usuarioLogado = await api.get("/usuarios/me");
         localStorage.setItem("usuarioAtual", JSON.stringify(usuarioLogado));
-    } catch {
-        location.replace("../login.html");
+    } catch (erro) {
+        if (Number(erro?.status) === 401) {
+            location.replace("../login.html");
+        } else {
+            mostrarMensagem(
+                erro instanceof ApiError
+                    ? erro.message
+                    : "Não foi possível confirmar a sessão administrativa agora.",
+                "erro"
+            );
+        }
         return false;
     }
 
