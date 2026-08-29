@@ -40,6 +40,7 @@ class MercadoPagoServiceCheckoutTest {
             "TEST-token",
             "https://api.exemplo.com/webhook",
             "segredo",
+            "sandbox",
             "https://smart-list.exemplo.com"
         );
         lenient().when(usuario.getId()).thenReturn(UUID.randomUUID());
@@ -110,6 +111,7 @@ class MercadoPagoServiceCheckoutTest {
             "TEST-token",
             "https://api.exemplo.com/webhook",
             "",
+            "sandbox",
             "http://127.0.0.1:5500"
         );
 
@@ -122,6 +124,7 @@ class MercadoPagoServiceCheckoutTest {
             "",
             "https://api.exemplo.com/webhook",
             "segredo",
+            "production",
             "https://smart-list.exemplo.com"
         );
 
@@ -140,6 +143,7 @@ class MercadoPagoServiceCheckoutTest {
             "APP_USR-token",
             "https://api.exemplo.com/webhook",
             "segredo",
+            "production",
             "http://127.0.0.1:5500"
         );
 
@@ -149,6 +153,35 @@ class MercadoPagoServiceCheckoutTest {
         );
 
         assertTrue(erro.getMessage().contains("URL de retorno"));
+    }
+
+    @Test
+    void rejeitaAmbienteMercadoPagoInvalido() {
+        IllegalStateException erro = assertThrows(
+            IllegalStateException.class,
+            () -> new MercadoPagoService(
+                "APP_USR-token",
+                "https://api.exemplo.com/webhook",
+                "segredo",
+                "qualquer-coisa",
+                "https://smart-list.exemplo.com"
+            )
+        );
+
+        assertTrue(erro.getMessage().contains("production ou sandbox"));
+    }
+
+    @Test
+    void aceitaAliasesDeAmbienteSemInferirPeloPrefixoDoToken() {
+        MercadoPagoService producao = new MercadoPagoService(
+            "APP_USR-token",
+            "https://api.exemplo.com/webhook",
+            "segredo",
+            "prod",
+            "https://smart-list.exemplo.com"
+        );
+
+        producao.exigirConfiguracaoCheckout();
     }
 
     private void prepararPlano(CicloAssinatura ciclo, String valor) {
