@@ -6,6 +6,8 @@ public record BrickCheckoutResponse(
     String statusDetail,
     String paymentMethodId,
     boolean premiumAtivo,
-    String mensagem
+    String mensagem,
+    String externalResourceUrl,
+    String creq
 ) {
 }
