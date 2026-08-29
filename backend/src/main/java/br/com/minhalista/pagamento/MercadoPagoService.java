@@ -30,18 +30,23 @@ public class MercadoPagoService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MercadoPagoService.class);
     private static final String API_BASE_URL = "https://api.mercadopago.com";
+    private static final String IDENTITY_API_BASE_URL = "https://api.mercadolibre.com";
 
     private final RestClient restClient;
+    private final RestClient identityRestClient;
     private final String accessToken;
     private final String webhookUrl;
     private final String webhookSecret;
     private final String frontendUrl;
+    private final String ambienteConfigurado;
     private final boolean modoTeste;
+    private volatile Boolean credencialTesteDetectada;
 
     public MercadoPagoService(
         @Value("${app.mercado-pago.access-token:}") String accessToken,
         @Value("${app.mercado-pago.webhook-url:}") String webhookUrl,
         @Value("${app.mercado-pago.webhook-secret:}") String webhookSecret,
+        @Value("${app.mercado-pago.environment:production}") String environment,
         @Value("${app.frontend-url}") String frontendUrl
     ) {
         SimpleClientHttpRequestFactory requestFactory =
@@ -49,20 +54,30 @@ public class MercadoPagoService {
         requestFactory.setConnectTimeout(Duration.ofSeconds(5));
         requestFactory.setReadTimeout(Duration.ofSeconds(10));
 
+        SimpleClientHttpRequestFactory identityRequestFactory =
+            new SimpleClientHttpRequestFactory();
+        identityRequestFactory.setConnectTimeout(Duration.ofSeconds(5));
+        identityRequestFactory.setReadTimeout(Duration.ofSeconds(10));
+
         this.restClient = RestClient.builder()
             .baseUrl(API_BASE_URL)
             .requestFactory(requestFactory)
+            .build();
+        this.identityRestClient = RestClient.builder()
+            .baseUrl(IDENTITY_API_BASE_URL)
+            .requestFactory(identityRequestFactory)
             .build();
         this.accessToken = accessToken == null ? "" : accessToken.trim();
         this.webhookUrl = webhookUrl == null ? "" : webhookUrl.trim();
         this.webhookSecret = webhookSecret == null ? "" : webhookSecret.trim();
         this.frontendUrl = normalizarFrontendUrl(frontendUrl);
-        this.modoTeste = this.accessToken.startsWith("TEST-");
+        this.ambienteConfigurado = normalizarAmbiente(environment);
+        this.modoTeste = "sandbox".equals(this.ambienteConfigurado);
 
         LOG.info(
             "Configuração Mercado Pago carregada: tokenConfigurado={}, ambiente={}, frontend={}, webhook={}, webhookSecretConfigurado={}.",
             StringUtils.hasText(this.accessToken),
-            this.modoTeste ? "TESTE" : "PRODUCAO",
+            this.modoTeste ? "SANDBOX" : "PRODUCAO",
             descreverUrl(this.frontendUrl),
             descreverUrl(this.webhookUrl),
             StringUtils.hasText(this.webhookSecret)
@@ -92,6 +107,7 @@ public class MercadoPagoService {
 
         try {
             exigirConfiguracaoCheckout();
+            validarAmbienteCredencial();
             Map<String, Object> corpo = montarCorpoPreferencia(usuario, assinatura);
 
             LOG.info(
@@ -123,6 +139,14 @@ public class MercadoPagoService {
                     "O Mercado Pago não retornou um checkout válido."
                 );
             }
+
+            LOG.info(
+                "Preferência Mercado Pago criada: checkout={}, preferencia={}, ambiente={}, host={}.",
+                assinaturaId,
+                preferenciaId,
+                modoTeste ? "SANDBOX" : "PRODUCAO",
+                descreverUrl(checkoutUrl)
+            );
 
             return new CheckoutResponse(
                 preferenciaId,
@@ -361,6 +385,86 @@ public class MercadoPagoService {
         }
     }
 
+    private void validarAmbienteCredencial() {
+        Boolean credencialTeste = credencialDeTeste();
+
+        if (credencialTeste == null) {
+            return;
+        }
+
+        if (!modoTeste && credencialTeste) {
+            throw new RegraNegocioException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "O site está em produção, mas o Access Token configurado pertence a uma conta de teste do Mercado Pago. Configure o Access Token de produção em MERCADO_PAGO_ACCESS_TOKEN."
+            );
+        }
+
+        if (modoTeste && !credencialTeste) {
+            throw new RegraNegocioException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "O checkout está configurado como sandbox, mas o Access Token pertence a uma conta real do Mercado Pago. Ajuste MERCADO_PAGO_ENVIRONMENT ou use credenciais de teste."
+            );
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Boolean credencialDeTeste() {
+        Boolean cache = credencialTesteDetectada;
+
+        if (cache != null) {
+            return cache;
+        }
+
+        if (!StringUtils.hasText(accessToken)) {
+            return null;
+        }
+
+        synchronized (this) {
+            if (credencialTesteDetectada != null) {
+                return credencialTesteDetectada;
+            }
+
+            try {
+                Map<String, Object> usuario = identityRestClient.get()
+                    .uri("/users/me")
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .retrieve()
+                    .body(Map.class);
+
+                Object tagsValor = usuario == null ? null : usuario.get("tags");
+                boolean teste = false;
+
+                if (tagsValor instanceof Iterable<?> tags) {
+                    for (Object tag : tags) {
+                        if ("test_user".equalsIgnoreCase(String.valueOf(tag))) {
+                            teste = true;
+                            break;
+                        }
+                    }
+                }
+
+                credencialTesteDetectada = teste;
+                LOG.info(
+                    "Ambiente da credencial Mercado Pago validado pela conta vinculada: {}.",
+                    teste ? "TESTE" : "PRODUCAO"
+                );
+                return teste;
+            } catch (RestClientResponseException erro) {
+                LOG.warn(
+                    "Não foi possível validar o ambiente da credencial Mercado Pago: HTTP {}.",
+                    erro.getStatusCode().value()
+                );
+                return null;
+            } catch (RestClientException erro) {
+                LOG.warn(
+                    "Não foi possível consultar a conta vinculada ao Access Token para validar o ambiente: {}.",
+                    erro.getClass().getSimpleName()
+                );
+                return null;
+            }
+        }
+    }
+
     private String montarWebhookUrl() {
         String separador = webhookUrl.contains("?") ? "&" : "?";
         return webhookUrl + separador + "source_news=webhooks";
@@ -551,6 +655,24 @@ public class MercadoPagoService {
         } catch (IllegalArgumentException erro) {
             throw new IllegalStateException("app.frontend-url precisa ser uma URL HTTP(S) válida.");
         }
+    }
+
+    private String normalizarAmbiente(String valor) {
+        String ambiente = valor == null
+            ? "production"
+            : valor.trim().toLowerCase(java.util.Locale.ROOT);
+
+        if (List.of("production", "producao", "prod").contains(ambiente)) {
+            return "production";
+        }
+
+        if (List.of("sandbox", "test", "teste").contains(ambiente)) {
+            return "sandbox";
+        }
+
+        throw new IllegalStateException(
+            "app.mercado-pago.environment deve ser production ou sandbox."
+        );
     }
 
     private String texto(Object valor) {

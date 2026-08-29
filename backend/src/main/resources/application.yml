@@ -53,6 +53,7 @@ app:
     email: ${ADMIN_EMAIL:}
     senha: ${ADMIN_PASSWORD:}
   mercado-pago:
+    environment: ${MERCADO_PAGO_ENVIRONMENT:production}
     access-token: ${MERCADO_PAGO_ACCESS_TOKEN:${MERCADO_PAGO_TOKEN:}}
     webhook-url: ${MERCADO_PAGO_WEBHOOK_URL:}
     webhook-secret: ${MERCADO_PAGO_WEBHOOK_SECRET:}
