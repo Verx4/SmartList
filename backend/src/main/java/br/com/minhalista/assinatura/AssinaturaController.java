@@ -40,15 +40,18 @@ public class AssinaturaController {
     private final AssinaturaService assinaturaService;
     private final MercadoPagoService mercadoPagoService;
     private final UsuarioService usuarioService;
+    private final AssinaturaReconciliacaoService reconciliacaoService;
 
     public AssinaturaController(
         AssinaturaService assinaturaService,
         MercadoPagoService mercadoPagoService,
-        UsuarioService usuarioService
+        UsuarioService usuarioService,
+        AssinaturaReconciliacaoService reconciliacaoService
     ) {
         this.assinaturaService = assinaturaService;
         this.mercadoPagoService = mercadoPagoService;
         this.usuarioService = usuarioService;
+        this.reconciliacaoService = reconciliacaoService;
     }
 
     @GetMapping("/planos")
@@ -58,6 +61,8 @@ public class AssinaturaController {
 
     @GetMapping("/atual")
     public ResponseEntity<AssinaturaResponse> atual() {
+        Usuario usuario = usuarioService.obterAutenticado();
+        reconciliacaoService.reconciliarUsuario(usuario);
         return assinaturaService.atual()
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.noContent().build());
