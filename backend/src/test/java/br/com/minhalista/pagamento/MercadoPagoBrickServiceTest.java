@@ -39,14 +39,6 @@ class MercadoPagoBrickServiceTest {
             "https://smart-list-backend.exemplo.com/api/webhooks/mercado-pago",
             "production"
         );
-
-        when(usuario.getId()).thenReturn(UUID.randomUUID());
-        when(usuario.getEmail()).thenReturn("cliente@example.com");
-        when(usuario.getCpf()).thenReturn("52998224725");
-        when(usuario.getNome()).thenReturn("Cliente Teste");
-        when(assinatura.getId()).thenReturn(UUID.randomUUID());
-        when(assinatura.getCiclo()).thenReturn(CicloAssinatura.MENSAL);
-        when(assinatura.getValor()).thenReturn(new BigDecimal("9.97"));
     }
 
     @Test
@@ -59,6 +51,8 @@ class MercadoPagoBrickServiceTest {
 
     @Test
     void bloqueiaValorDoBrickDiferenteDoValorCalculadoNoServidor() {
+        prepararDadosPagamento();
+
         RegraNegocioException erro = assertThrows(
             RegraNegocioException.class,
             () -> service.criarPagamento(
@@ -79,6 +73,8 @@ class MercadoPagoBrickServiceTest {
 
     @Test
     void cartaoSemTokenSeguroNaoChegaAApiDoMercadoPago() {
+        prepararDadosPagamento();
+
         RegraNegocioException erro = assertThrows(
             RegraNegocioException.class,
             () -> service.criarPagamento(
@@ -111,5 +107,15 @@ class MercadoPagoBrickServiceTest {
         );
 
         assertTrue(erro.getMessage().contains("Public Key"));
+    }
+
+    private void prepararDadosPagamento() {
+        when(usuario.getId()).thenReturn(UUID.randomUUID());
+        when(usuario.getEmail()).thenReturn("cliente@example.com");
+        when(usuario.getCpf()).thenReturn("52998224725");
+        when(usuario.getNome()).thenReturn("Cliente Teste");
+        when(assinatura.getId()).thenReturn(UUID.randomUUID());
+        when(assinatura.getCiclo()).thenReturn(CicloAssinatura.MENSAL);
+        when(assinatura.getValor()).thenReturn(new BigDecimal("9.97"));
     }
 }
