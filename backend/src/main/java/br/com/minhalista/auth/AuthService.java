@@ -3,6 +3,8 @@ package br.com.minhalista.auth;
 import java.time.Instant;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ import br.com.minhalista.usuario.UsuarioRepository;
 
 @Service
 public class AuthService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -62,7 +66,6 @@ public class AuthService {
         return UsuarioResponse.de(usuarioRepository.save(usuario));
     }
 
-    @Transactional
     public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(normalizarEmail(request.email()))
             .orElseThrow(this::credenciaisInvalidas);
@@ -71,8 +74,9 @@ public class AuthService {
             throw credenciaisInvalidas();
         }
 
-        assinaturaValidadeService.sincronizarUsuario(usuario);
+        sincronizarAssinaturaSemBloquearLogin(usuario);
         usuario.setUltimoAcessoEm(Instant.now());
+        usuarioRepository.save(usuario);
 
         return new AuthResponse(
             jwtService.gerarToken(usuario),
@@ -80,6 +84,18 @@ public class AuthService {
             jwtService.getExpiracaoSegundos(),
             UsuarioResponse.de(usuario)
         );
+    }
+
+    private void sincronizarAssinaturaSemBloquearLogin(Usuario usuario) {
+        try {
+            assinaturaValidadeService.sincronizarUsuario(usuario);
+        } catch (RuntimeException erro) {
+            LOGGER.error(
+                "Falha ao sincronizar a assinatura durante o login do usuário {}.",
+                usuario.getId(),
+                erro
+            );
+        }
     }
 
     private RegraNegocioException credenciaisInvalidas() {
