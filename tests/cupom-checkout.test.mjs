@@ -62,8 +62,9 @@ test("servidor exige cupom cadastrado e mantém autoridade e auditoria", async (
     assert.match(assinaturaService, /setCupomValorOriginal/);
     assert.match(assinaturaService, /setCupomPrimeiroPagamentoAplicado\(true\)/);
     assert.match(mercadoPago, /"unit_price", valorCobranca/);
-    assert.match(mercadoPago, /respostaSegura\(erro\.getResponseBodyAsString\(\)\)/);
-    assert.doesNotMatch(mercadoPago, /metadata\.put\("cupom_valor_original"/);
+    assert.match(mercadoPago, /respostaSegura\(resposta\)/);
+    assert.match(mercadoPago, /metadata\.put\("cupom_codigo"/);
+    assert.match(mercadoPago, /"cupom_valor_original"/);
     assert.match(migration, /cupom_percentual_desconto/);
     assert.match(migration, /cupom_primeiro_pagamento_aplicado/);
     assert.match(autorizacao, /ADD COLUMN IF NOT EXISTS ciclo/);

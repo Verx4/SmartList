@@ -33,6 +33,9 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true, length = 180)
     private String email;
 
+    @Column(length = 11)
+    private String cpf;
+
     @Column(length = 30)
     private String telefone;
 
@@ -140,6 +143,14 @@ public class Usuario implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getTelefone() {

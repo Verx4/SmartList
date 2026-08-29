@@ -1,6 +1,7 @@
 package br.com.minhalista.usuario;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,5 +55,26 @@ class UsuarioServicePerfilTest {
 
         assertSame(usuario, resposta);
         verify(assinaturaValidadeService).sincronizarUsuario(usuario);
+    }
+
+    @Test
+    void deveSalvarCpfHigienizadoEExibirSomenteMascara() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("cliente@example.com");
+
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken("cliente@example.com", null)
+        );
+        when(repository.findByEmailIgnoreCase("cliente@example.com"))
+            .thenReturn(Optional.of(usuario));
+        when(repository.existsByCpf("52998224725")).thenReturn(false);
+
+        CpfPerfilResponse resposta = service.atualizarCpf(
+            new AtualizarCpfRequest("529.982.247-25")
+        );
+
+        assertEquals("52998224725", usuario.getCpf());
+        assertEquals("***.***.***-25", resposta.cpfMascarado());
+        verify(repository).saveAndFlush(usuario);
     }
 }

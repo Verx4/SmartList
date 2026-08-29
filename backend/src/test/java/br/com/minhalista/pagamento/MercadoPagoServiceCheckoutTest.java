@@ -2,6 +2,9 @@ package br.com.minhalista.pagamento;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -17,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.com.minhalista.assinatura.Assinatura;
 import br.com.minhalista.assinatura.CicloAssinatura;
+import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.usuario.Usuario;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,9 +42,10 @@ class MercadoPagoServiceCheckoutTest {
             "segredo",
             "https://smart-list.exemplo.com"
         );
-        when(usuario.getId()).thenReturn(UUID.randomUUID());
-        when(usuario.getEmail()).thenReturn("cliente@example.com");
-        when(assinatura.getId()).thenReturn(UUID.randomUUID());
+        lenient().when(usuario.getId()).thenReturn(UUID.randomUUID());
+        lenient().when(usuario.getEmail()).thenReturn("cliente@example.com");
+        lenient().when(usuario.getCpf()).thenReturn("52998224725");
+        lenient().when(assinatura.getId()).thenReturn(UUID.randomUUID());
     }
 
     @Test
@@ -50,18 +55,29 @@ class MercadoPagoServiceCheckoutTest {
         Map<String, Object> corpo = service.montarCorpoPreferencia(usuario, assinatura);
 
         assertEquals(new BigDecimal("9.97"), valorUnitario(corpo));
+        assertEquals("CPF", identificacao(corpo).get("type"));
+        assertEquals("52998224725", identificacao(corpo).get("number"));
+        assertFalse(metadata(corpo).containsKey("cupom_codigo"));
+        assertFalse(contemNuloOuTextoVazio(corpo));
     }
 
     @Test
     void enviaSmart5ComoNumeroMonetarioDeNoveEQuarentaESete() {
         prepararPlano(CicloAssinatura.MENSAL, "9.47");
+        when(assinatura.getCupomCodigo()).thenReturn("SMART5");
+        when(assinatura.getCupomPercentualDesconto()).thenReturn(new BigDecimal("5.00"));
+        when(assinatura.getCupomValorOriginal()).thenReturn(new BigDecimal("9.97"));
+        when(assinatura.getCupomValorDesconto()).thenReturn(new BigDecimal("0.50"));
 
         Map<String, Object> corpo = service.montarCorpoPreferencia(usuario, assinatura);
 
         assertEquals(new BigDecimal("9.47"), valorUnitario(corpo));
         assertEquals("BRL", item(corpo).get("currency_id"));
-        assertFalse(metadata(corpo).containsKey("cupom_valor_original"));
-        assertFalse(metadata(corpo).containsKey("cupom_valor_desconto"));
+        assertEquals("SMART5", metadata(corpo).get("cupom_codigo"));
+        assertEquals(new BigDecimal("5.00"), metadata(corpo).get("cupom_percentual_desconto"));
+        assertEquals(new BigDecimal("9.97"), metadata(corpo).get("cupom_valor_original"));
+        assertEquals(new BigDecimal("0.50"), metadata(corpo).get("cupom_valor_desconto"));
+        assertFalse(contemNuloOuTextoVazio(corpo));
     }
 
     @Test
@@ -71,6 +87,18 @@ class MercadoPagoServiceCheckoutTest {
         Map<String, Object> corpo = service.montarCorpoPreferencia(usuario, assinatura);
 
         assertEquals(new BigDecimal("24.22"), valorUnitario(corpo));
+    }
+
+    @Test
+    void impedeCheckoutQuandoPerfilAindaNaoTemCpfValido() {
+        when(usuario.getCpf()).thenReturn(null);
+
+        RegraNegocioException erro = assertThrows(
+            RegraNegocioException.class,
+            () -> service.montarCorpoPreferencia(usuario, assinatura)
+        );
+
+        assertTrue(erro.getMessage().contains("CPF válido no seu perfil"));
     }
 
     private void prepararPlano(CicloAssinatura ciclo, String valor) {
@@ -90,5 +118,35 @@ class MercadoPagoServiceCheckoutTest {
     @SuppressWarnings("unchecked")
     private Map<String, Object> metadata(Map<String, Object> corpo) {
         return (Map<String, Object>) corpo.get("metadata");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> identificacao(Map<String, Object> corpo) {
+        Map<String, Object> pagador = (Map<String, Object>) corpo.get("payer");
+        return (Map<String, Object>) pagador.get("identification");
+    }
+
+    private boolean contemNuloOuTextoVazio(Object valor) {
+        if (valor == null) {
+            return true;
+        }
+
+        if (valor instanceof String texto) {
+            return texto.isBlank();
+        }
+
+        if (valor instanceof Map<?, ?> mapa) {
+            return mapa.values().stream().anyMatch(this::contemNuloOuTextoVazio);
+        }
+
+        if (valor instanceof Iterable<?> itens) {
+            for (Object item : itens) {
+                if (contemNuloOuTextoVazio(item)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

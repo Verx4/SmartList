@@ -30,4 +30,16 @@ public class UsuarioController {
     ) {
         return UsuarioResponse.de(service.atualizarPerfil(request));
     }
+
+    @GetMapping("/me/cpf")
+    public CpfPerfilResponse consultarCpf() {
+        return service.consultarCpf();
+    }
+
+    @PutMapping("/me/cpf")
+    public CpfPerfilResponse atualizarCpf(
+        @Valid @RequestBody AtualizarCpfRequest request
+    ) {
+        return service.atualizarCpf(request);
+    }
 }

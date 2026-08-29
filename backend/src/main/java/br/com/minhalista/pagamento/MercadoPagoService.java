@@ -22,6 +22,7 @@ import org.springframework.web.client.RestClientResponseException;
 
 import br.com.minhalista.assinatura.Assinatura;
 import br.com.minhalista.common.RegraNegocioException;
+import br.com.minhalista.usuario.Cpf;
 import br.com.minhalista.usuario.Usuario;
 
 @Service
@@ -118,15 +119,18 @@ public class MercadoPagoService {
         } catch (RegraNegocioException erro) {
             throw erro;
         } catch (RestClientResponseException erro) {
+            String resposta = erro.getResponseBodyAsString();
             LOG.warn(
                 "Mercado Pago recusou a preferência do checkout {}: HTTP {}, resposta={}.",
                 assinaturaId,
                 erro.getStatusCode().value(),
-                respostaSegura(erro.getResponseBodyAsString())
+                respostaSegura(resposta)
             );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "O Mercado Pago recusou a criação do pagamento. Tente novamente em instantes."
+                erroDeIdentificacao(resposta)
+                    ? "Falha na validação dos dados do comprador. Confira o CPF salvo no seu perfil."
+                    : "O Mercado Pago recusou a criação do pagamento. Tente novamente em instantes."
             );
         } catch (RestClientException erro) {
             LOG.warn(
@@ -163,6 +167,15 @@ public class MercadoPagoService {
             );
         }
 
+        String cpf = Cpf.somenteDigitos(usuario.getCpf());
+
+        if (!Cpf.valido(cpf)) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Cadastre um CPF válido no seu perfil antes de iniciar o pagamento."
+            );
+        }
+
         if (assinatura == null || assinatura.getId() == null
             || assinatura.getCiclo() == null) {
             throw new RegraNegocioException(
@@ -179,9 +192,25 @@ public class MercadoPagoService {
         metadata.put("usuario_id", usuario.getId().toString());
         metadata.put("ciclo", assinatura.getCiclo().name());
 
-        // A auditoria do cupom permanece no banco do Smart List. Para o Mercado
-        // Pago seguem apenas os identificadores necessários à confirmação; assim
-        // o request com cupom difere do normal somente pelo unit_price oficial.
+        if (StringUtils.hasText(assinatura.getCupomCodigo())) {
+            metadata.put("cupom_codigo", assinatura.getCupomCodigo().trim());
+            adicionarSePresente(
+                metadata,
+                "cupom_percentual_desconto",
+                assinatura.getCupomPercentualDesconto()
+            );
+            adicionarSePresente(
+                metadata,
+                "cupom_valor_original",
+                assinatura.getCupomValorOriginal()
+            );
+            adicionarSePresente(
+                metadata,
+                "cupom_valor_desconto",
+                assinatura.getCupomValorDesconto()
+            );
+        }
+
         Map<String, Object> item = new LinkedHashMap<>();
         item.put("id", "premium-" + assinatura.getCiclo().name().toLowerCase());
         item.put("title", "Smart List Premium " + assinatura.getCiclo().getNome());
@@ -190,9 +219,17 @@ public class MercadoPagoService {
         item.put("currency_id", "BRL");
         item.put("unit_price", valorCobranca);
 
+        Map<String, Object> identificacao = new LinkedHashMap<>();
+        identificacao.put("type", "CPF");
+        identificacao.put("number", cpf);
+
+        Map<String, Object> pagador = new LinkedHashMap<>();
+        pagador.put("email", usuario.getEmail().trim());
+        pagador.put("identification", identificacao);
+
         Map<String, Object> corpo = new LinkedHashMap<>();
         corpo.put("items", List.of(item));
-        corpo.put("payer", Map.of("email", usuario.getEmail()));
+        corpo.put("payer", pagador);
         corpo.put("external_reference", assinaturaId);
         corpo.put("metadata", metadata);
         corpo.put("back_urls", Map.of(
@@ -203,6 +240,16 @@ public class MercadoPagoService {
         corpo.put("auto_return", "approved");
         corpo.put("notification_url", montarWebhookUrl());
         return corpo;
+    }
+
+    private void adicionarSePresente(
+        Map<String, Object> destino,
+        String chave,
+        Object valor
+    ) {
+        if (valor != null && (!(valor instanceof String texto) || StringUtils.hasText(texto))) {
+            destino.put(chave, valor);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -297,6 +344,17 @@ public class MercadoPagoService {
         return normalizado.length() <= 1200
             ? normalizado
             : normalizado.substring(0, 1200) + "...";
+    }
+
+    private boolean erroDeIdentificacao(String corpo) {
+        if (!StringUtils.hasText(corpo)) {
+            return false;
+        }
+
+        String resposta = corpo.toLowerCase(java.util.Locale.ROOT);
+        return resposta.contains("identification")
+            || resposta.contains("payer")
+            || resposta.contains("cpf");
     }
 
     private boolean webhookUrlValida(String valor) {

@@ -44,6 +44,29 @@ public class UsuarioService {
         return usuario;
     }
 
+    @Transactional(readOnly = true)
+    public CpfPerfilResponse consultarCpf() {
+        return CpfPerfilResponse.de(obterAutenticado());
+    }
+
+    @Transactional
+    public CpfPerfilResponse atualizarCpf(AtualizarCpfRequest request) {
+        Usuario usuario = obterAutenticado();
+        if (!Cpf.valido(request.cpf())) {
+            throw new RegraNegocioException(HttpStatus.BAD_REQUEST, "Informe um CPF válido.");
+        }
+
+        String cpf = Cpf.somenteDigitos(request.cpf());
+
+        if (!cpf.equals(usuario.getCpf()) && repository.existsByCpf(cpf)) {
+            throw new RegraNegocioException(HttpStatus.CONFLICT, "Este CPF já está cadastrado.");
+        }
+
+        usuario.setCpf(cpf);
+        repository.saveAndFlush(usuario);
+        return CpfPerfilResponse.de(usuario);
+    }
+
     private void sincronizarAssinaturaSemBloquearPerfil(Usuario usuario) {
         try {
             assinaturaValidadeService.sincronizarUsuario(usuario);
