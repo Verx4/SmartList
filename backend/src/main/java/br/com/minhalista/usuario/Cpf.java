@@ -10,6 +10,12 @@ public final class Cpf {
     }
 
     public static boolean valido(String valor) {
+        String informado = valor == null ? "" : valor.trim();
+
+        if (!informado.matches("^(?:\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})$")) {
+            return false;
+        }
+
         String cpf = somenteDigitos(valor);
 
         if (cpf.length() != 11 || cpf.chars().distinct().count() == 1) {

@@ -48,11 +48,11 @@ public class AuthService {
     @Transactional
     public UsuarioResponse cadastrar(CadastroRequest request) {
         String email = normalizarEmail(request.email());
-        String cpf = Cpf.somenteDigitos(request.cpf());
-
-        if (!Cpf.valido(cpf)) {
+        if (!Cpf.valido(request.cpf())) {
             throw new RegraNegocioException(HttpStatus.BAD_REQUEST, "Informe um CPF válido.");
         }
+
+        String cpf = Cpf.somenteDigitos(request.cpf());
 
         if (usuarioRepository.existsByEmailIgnoreCase(email)) {
             throw new RegraNegocioException(HttpStatus.CONFLICT, "Este e-mail já está cadastrado.");

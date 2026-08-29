@@ -3,7 +3,6 @@ package br.com.minhalista.auth.dto;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record CadastroRequest(
@@ -25,10 +24,6 @@ public record CadastroRequest(
     String email,
 
     @NotBlank(message = "Informe seu CPF.")
-    @Pattern(
-        regexp = "^(?:\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})$",
-        message = "Informe um CPF válido."
-    )
     String cpf,
 
     @NotBlank(message = "Informe uma senha.")

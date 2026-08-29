@@ -52,11 +52,11 @@ public class UsuarioService {
     @Transactional
     public CpfPerfilResponse atualizarCpf(AtualizarCpfRequest request) {
         Usuario usuario = obterAutenticado();
-        String cpf = Cpf.somenteDigitos(request.cpf());
-
-        if (!Cpf.valido(cpf)) {
+        if (!Cpf.valido(request.cpf())) {
             throw new RegraNegocioException(HttpStatus.BAD_REQUEST, "Informe um CPF válido.");
         }
+
+        String cpf = Cpf.somenteDigitos(request.cpf());
 
         if (!cpf.equals(usuario.getCpf()) && repository.existsByCpf(cpf)) {
             throw new RegraNegocioException(HttpStatus.CONFLICT, "Este CPF já está cadastrado.");
