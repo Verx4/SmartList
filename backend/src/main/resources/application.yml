@@ -41,6 +41,7 @@ management:
       show-details: when_authorized
 
 app:
+  expor-erros: ${EXPOSE_ERROR_DETAILS:false}
   jwt:
     secret: ${JWT_SECRET}
     expiracao-minutos: ${JWT_EXPIRATION_MINUTES:120}
@@ -52,7 +53,7 @@ app:
     email: ${ADMIN_EMAIL:}
     senha: ${ADMIN_PASSWORD:}
   mercado-pago:
-    access-token: ${MERCADO_PAGO_ACCESS_TOKEN:}
+    access-token: ${MERCADO_PAGO_ACCESS_TOKEN:${MERCADO_PAGO_TOKEN:}}
     webhook-url: ${MERCADO_PAGO_WEBHOOK_URL:}
     webhook-secret: ${MERCADO_PAGO_WEBHOOK_SECRET:}
     webhook-tolerancia-minutos: ${MERCADO_PAGO_WEBHOOK_TOLERANCE_MINUTES:5}

@@ -55,6 +55,9 @@ class MercadoPagoServiceCheckoutTest {
         Map<String, Object> corpo = service.montarCorpoPreferencia(usuario, assinatura);
 
         assertEquals(new BigDecimal("9.97"), valorUnitario(corpo));
+        assertTrue(item(corpo).get("title") instanceof String);
+        assertEquals(1, item(corpo).get("quantity"));
+        assertTrue(valorUnitario(corpo).signum() > 0);
         assertEquals("CPF", identificacao(corpo).get("type"));
         assertEquals("52998224725", identificacao(corpo).get("number"));
         assertFalse(metadata(corpo).containsKey("cupom_codigo"));
@@ -99,6 +102,53 @@ class MercadoPagoServiceCheckoutTest {
         );
 
         assertTrue(erro.getMessage().contains("CPF válido no seu perfil"));
+    }
+
+    @Test
+    void segredoDoWebhookNaoBloqueiaCriacaoDaPreferencia() {
+        MercadoPagoService semSegredo = new MercadoPagoService(
+            "TEST-token",
+            "https://api.exemplo.com/webhook",
+            "",
+            "http://127.0.0.1:5500"
+        );
+
+        semSegredo.exigirConfiguracaoCheckout();
+    }
+
+    @Test
+    void informaAsDuasVariaveisAceitasQuandoTokenEstaAusente() {
+        MercadoPagoService semToken = new MercadoPagoService(
+            "",
+            "https://api.exemplo.com/webhook",
+            "segredo",
+            "https://smart-list.exemplo.com"
+        );
+
+        RegraNegocioException erro = assertThrows(
+            RegraNegocioException.class,
+            semToken::exigirConfiguracaoCheckout
+        );
+
+        assertTrue(erro.getMessage().contains("MERCADO_PAGO_ACCESS_TOKEN"));
+        assertTrue(erro.getMessage().contains("MERCADO_PAGO_TOKEN"));
+    }
+
+    @Test
+    void bloqueiaUrlLocalEmCheckoutDeProducao() {
+        MercadoPagoService producaoLocal = new MercadoPagoService(
+            "APP_USR-token",
+            "https://api.exemplo.com/webhook",
+            "segredo",
+            "http://127.0.0.1:5500"
+        );
+
+        RegraNegocioException erro = assertThrows(
+            RegraNegocioException.class,
+            producaoLocal::exigirConfiguracaoCheckout
+        );
+
+        assertTrue(erro.getMessage().contains("URL de retorno"));
     }
 
     private void prepararPlano(CicloAssinatura ciclo, String valor) {

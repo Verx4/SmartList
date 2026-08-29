@@ -1,7 +1,10 @@
 package br.com.minhalista.assinatura;
 
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,32 +109,107 @@ public class AssinaturaController {
 
     @PostMapping("/checkout")
     public CheckoutResponse checkout(@Valid @RequestBody CheckoutRequest request) {
-        Usuario usuario = usuarioService.obterAutenticado();
-        Assinatura assinatura =
-            assinaturaService.iniciarCheckout(usuario, request.ciclo(), request.cupom());
-        CheckoutResponse checkout;
+        String codigoDiagnostico = novoCodigoDiagnostico();
+        Assinatura assinatura = null;
 
         try {
-            checkout = mercadoPagoService.criarPreferencia(usuario, assinatura);
+            Usuario usuario = usuarioService.obterAutenticado();
+            LOG.info(
+                "Checkout recebido: diagnostico={}, usuario={}, ciclo={}, cupom={}.",
+                codigoDiagnostico,
+                usuario.getId(),
+                request.ciclo(),
+                request.cupom() == null || request.cupom().isBlank()
+                    ? "SEM_CUPOM"
+                    : request.cupom().trim()
+            );
+
+            assinatura = assinaturaService.iniciarCheckout(
+                usuario,
+                request.ciclo(),
+                request.cupom()
+            );
+            CheckoutResponse checkout =
+                mercadoPagoService.criarPreferencia(usuario, assinatura);
+
+            assinaturaService.vincularPreferencia(
+                assinatura.getId(),
+                checkout.preferenceId()
+            );
+
+            LOG.info(
+                "Checkout preparado: diagnostico={}, checkout={}, preferencia={}.",
+                codigoDiagnostico,
+                assinatura.getId(),
+                checkout.preferenceId()
+            );
+            return checkout;
+        } catch (RegraNegocioException erro) {
+            cancelarCheckoutPendente(assinatura, codigoDiagnostico);
+            LOG.warn(
+                "Checkout recusado: diagnostico={}, status={}, mensagem={}.",
+                codigoDiagnostico,
+                erro.getStatus().value(),
+                erro.getMessage()
+            );
+            throw new RegraNegocioException(
+                erro.getStatus(),
+                erro.getMessage(),
+                erro.getDetalhes(),
+                codigoDiagnostico
+            );
         } catch (RuntimeException erro) {
-            try {
-                assinaturaService.registrarFalhaCheckout(assinatura.getId());
-            } catch (RuntimeException falhaRegistro) {
-                LOG.error(
-                    "Não foi possível cancelar o checkout {} após uma falha no Mercado Pago.",
-                    assinatura.getId(),
-                    falhaRegistro
-                );
-            }
-            throw erro;
+            cancelarCheckoutPendente(assinatura, codigoDiagnostico);
+            LOG.error(
+                "Falha inesperada no checkout. diagnostico={}, etapa={}.",
+                codigoDiagnostico,
+                assinatura == null ? "CRIAR_ASSINATURA" : "CRIAR_PREFERENCIA",
+                erro
+            );
+            throw new RegraNegocioException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Não foi possível preparar o pagamento.",
+                detalhesExcecao(erro),
+                codigoDiagnostico
+            );
+        }
+    }
+
+    private void cancelarCheckoutPendente(
+        Assinatura assinatura,
+        String codigoDiagnostico
+    ) {
+        if (assinatura == null || assinatura.getId() == null) {
+            return;
         }
 
-        assinaturaService.vincularPreferencia(
-            assinatura.getId(),
-            checkout.preferenceId()
-        );
+        try {
+            assinaturaService.registrarFalhaCheckout(assinatura.getId());
+        } catch (RuntimeException falhaRegistro) {
+            LOG.error(
+                "Não foi possível cancelar o checkout {} após a falha {}.",
+                assinatura.getId(),
+                codigoDiagnostico,
+                falhaRegistro
+            );
+        }
+    }
 
-        return checkout;
+    private Map<String, Object> detalhesExcecao(RuntimeException erro) {
+        Map<String, Object> detalhes = new LinkedHashMap<>();
+        detalhes.put("exception", erro.getClass().getName());
+        detalhes.put("message", String.valueOf(erro.getMessage()));
+
+        if (erro.getCause() != null) {
+            detalhes.put("cause", erro.getCause().getClass().getName());
+            detalhes.put("causeMessage", String.valueOf(erro.getCause().getMessage()));
+        }
+
+        return detalhes;
+    }
+
+    private String novoCodigoDiagnostico() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     @PostMapping("/cupom/validar")

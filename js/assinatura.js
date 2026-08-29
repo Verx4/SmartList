@@ -352,6 +352,22 @@ function urlMercadoPagoValida(valor) {
     }
 }
 
+function mensagemErroCheckout(erro) {
+    const dados = erro instanceof ApiError ? erro.dados : null;
+    const mensagem =
+        dados?.message
+        || dados?.mensagem
+        || (erro instanceof Error ? erro.message : null)
+        || "Não foi possível iniciar o pagamento.";
+    const codigoDiagnostico = dados?.diagnosticId || dados?.diagnosticoId;
+
+    if (!codigoDiagnostico || mensagem.includes(codigoDiagnostico)) {
+        return mensagem;
+    }
+
+    return `${mensagem} Código de diagnóstico: ${codigoDiagnostico}.`;
+}
+
 async function enviarCheckout(evento) {
     evento.preventDefault();
 
@@ -390,12 +406,7 @@ async function enviarCheckout(evento) {
         redirecionando = true;
         window.location.assign(urlPagamento);
     } catch (erro) {
-        const mensagem =
-            erro instanceof ApiError || erro instanceof Error
-                ? erro.message
-                : "Não foi possível iniciar o pagamento.";
-
-        mostrarMensagem(mensagem, "erro");
+        mostrarMensagem(mensagemErroCheckout(erro), "erro");
     } finally {
         if (botao && !redirecionando) {
             botao.disabled = false;
