@@ -29,6 +29,23 @@ class AssinaturaControllerDiagnosticoTest {
     }
 
     @Test
+    void traduzRecusaDeAltoRiscoEmOrientacaoAcionavel() {
+        assertEquals(
+            "O Mercado Pago recusou a compra por segurança. Use uma conta compradora "
+                + "diferente da conta vendedora e evite novas tentativas imediatas.",
+            controller.mensagemPagamentoRejeitado("cc_rejected_high_risk")
+        );
+    }
+
+    @Test
+    void traduzRecusaDoBancoPorLimiteInsuficiente() {
+        assertEquals(
+            "O banco informou limite insuficiente para concluir a compra.",
+            controller.mensagemPagamentoRejeitado("cc_rejected_insufficient_amount")
+        );
+    }
+
+    @Test
     void mantemMensagemSeguraParaExcecaoNaoReconhecida() {
         assertEquals(
             "Não foi possível preparar o pagamento.",
