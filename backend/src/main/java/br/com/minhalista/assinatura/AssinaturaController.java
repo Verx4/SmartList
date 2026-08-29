@@ -20,12 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.minhalista.common.RegraNegocioException;
-import br.com.minhalista.pagamento.BrickCheckoutResponse;
-import br.com.minhalista.pagamento.BrickConfigResponse;
 import br.com.minhalista.pagamento.CheckoutResponse;
-import br.com.minhalista.pagamento.MercadoPagoBrickService;
 import br.com.minhalista.pagamento.MercadoPagoService;
-import br.com.minhalista.pagamento.PagamentoBrickResultado;
 import br.com.minhalista.pagamento.PagamentoConsultado;
 import br.com.minhalista.usuario.Usuario;
 import br.com.minhalista.usuario.UsuarioService;
@@ -43,18 +39,15 @@ public class AssinaturaController {
 
     private final AssinaturaService assinaturaService;
     private final MercadoPagoService mercadoPagoService;
-    private final MercadoPagoBrickService mercadoPagoBrickService;
     private final UsuarioService usuarioService;
 
     public AssinaturaController(
         AssinaturaService assinaturaService,
         MercadoPagoService mercadoPagoService,
-        MercadoPagoBrickService mercadoPagoBrickService,
         UsuarioService usuarioService
     ) {
         this.assinaturaService = assinaturaService;
         this.mercadoPagoService = mercadoPagoService;
-        this.mercadoPagoBrickService = mercadoPagoBrickService;
         this.usuarioService = usuarioService;
     }
 
@@ -68,12 +61,6 @@ public class AssinaturaController {
         return assinaturaService.atual()
             .map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.noContent().build());
-    }
-
-    @GetMapping("/checkout/brick/config")
-    public BrickConfigResponse configuracaoCheckoutBrick() {
-        usuarioService.obterAutenticado();
-        return mercadoPagoBrickService.configuracaoPublica();
     }
 
     @PostMapping("/confirmar-pagamento")
@@ -124,139 +111,6 @@ public class AssinaturaController {
             status,
             mensagem
         );
-    }
-
-    @PostMapping("/checkout/brick")
-    public BrickCheckoutResponse checkoutBrick(
-        @Valid @RequestBody BrickCheckoutRequest request
-    ) {
-        String codigoDiagnostico = novoCodigoDiagnostico();
-        Assinatura assinatura = null;
-        boolean pagamentoCriado = false;
-
-        try {
-            Usuario usuario = usuarioService.obterAutenticado();
-            LOG.info(
-                "Checkout Bricks recebido: diagnostico={}, usuario={}, ciclo={}, cupom={}, meio={}.",
-                codigoDiagnostico,
-                usuario.getId(),
-                request.ciclo(),
-                request.cupom() == null || request.cupom().isBlank()
-                    ? "SEM_CUPOM"
-                    : request.cupom().trim(),
-                request.selectedPaymentMethod()
-            );
-
-            assinatura = assinaturaService.iniciarCheckout(
-                usuario,
-                request.ciclo(),
-                request.cupom()
-            );
-
-            PagamentoBrickResultado resultado = mercadoPagoBrickService.criarPagamento(
-                usuario,
-                assinatura,
-                request.selectedPaymentMethod(),
-                request.formData()
-            );
-            pagamentoCriado = true;
-            PagamentoConsultado pagamento = resultado.pagamento();
-
-            if (!mercadoPagoService.ambienteCompativel(pagamento)) {
-                throw new RegraNegocioException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    "As credenciais do Mercado Pago não correspondem ao ambiente configurado no Smart List."
-                );
-            }
-
-            boolean premiumAtivo = assinaturaService.confirmarPagamentoDoUsuario(
-                pagamento,
-                usuario.getId()
-            );
-            String status = pagamento.status() == null
-                ? ""
-                : pagamento.status().toLowerCase(Locale.ROOT);
-
-            if ("approved".equals(status) && !premiumAtivo) {
-                throw new RegraNegocioException(
-                    HttpStatus.BAD_GATEWAY,
-                    "O pagamento foi aprovado, mas não foi possível vincular a assinatura. Informe o código de diagnóstico ao suporte."
-                );
-            }
-
-            if ("rejected".equals(status) || "cancelled".equals(status)) {
-                cancelarCheckoutPendente(assinatura, codigoDiagnostico);
-            }
-
-            String mensagem = mensagemPagamentoBrick(status, premiumAtivo);
-
-            LOG.info(
-                "Checkout Bricks processado: diagnostico={}, checkout={}, pagamento={}, status={}, premium={}.",
-                codigoDiagnostico,
-                assinatura.getId(),
-                pagamento.id(),
-                status,
-                premiumAtivo
-            );
-
-            return new BrickCheckoutResponse(
-                pagamento.id(),
-                status,
-                resultado.statusDetail(),
-                resultado.paymentMethodId(),
-                premiumAtivo,
-                mensagem,
-                resultado.externalResourceUrl(),
-                resultado.creq()
-            );
-        } catch (RegraNegocioException erro) {
-            if (!pagamentoCriado) {
-                cancelarCheckoutPendente(assinatura, codigoDiagnostico);
-            }
-            LOG.warn(
-                "Checkout Bricks recusado: diagnostico={}, status={}, mensagem={}.",
-                codigoDiagnostico,
-                erro.getStatus().value(),
-                erro.getMessage()
-            );
-            throw new RegraNegocioException(
-                erro.getStatus(),
-                erro.getMessage(),
-                erro.getDetalhes(),
-                codigoDiagnostico
-            );
-        } catch (RuntimeException erro) {
-            if (!pagamentoCriado) {
-                cancelarCheckoutPendente(assinatura, codigoDiagnostico);
-            }
-            LOG.error(
-                "Falha inesperada no Checkout Bricks. diagnostico={}, etapa={}.",
-                codigoDiagnostico,
-                assinatura == null ? "CRIAR_ASSINATURA" : "PROCESSAR_PAGAMENTO",
-                erro
-            );
-            throw new RegraNegocioException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Não foi possível processar o pagamento.",
-                detalhesExcecao(erro),
-                codigoDiagnostico
-            );
-        }
-    }
-
-    private String mensagemPagamentoBrick(String status, boolean premiumAtivo) {
-        if (premiumAtivo) {
-            return "Pagamento aprovado. Seu Premium já está ativo.";
-        }
-
-        return switch (status) {
-            case "pending", "in_process", "in_mediation" ->
-                "Pagamento criado. Conclua as instruções exibidas abaixo; o Premium será liberado automaticamente após a aprovação.";
-            case "rejected", "cancelled" ->
-                "O pagamento não foi aprovado. Confira os dados ou escolha outro meio de pagamento.";
-            default ->
-                "O pagamento foi recebido pelo Mercado Pago e está sendo processado.";
-        };
     }
 
     @PostMapping("/checkout")

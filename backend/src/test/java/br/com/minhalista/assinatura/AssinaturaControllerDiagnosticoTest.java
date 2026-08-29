@@ -9,7 +9,6 @@ class AssinaturaControllerDiagnosticoTest {
     private final AssinaturaController controller = new AssinaturaController(
         null,
         null,
-        null,
         null
     );
 
