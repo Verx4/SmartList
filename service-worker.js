@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v59`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v59`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v60`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v60`;
 
 const PRECACHE_URLS = [
     "./",
