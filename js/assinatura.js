@@ -451,10 +451,8 @@ async function preencherPlanoAtual() {
     exibirPlano(usuario, null);
 
     try {
-        const [assinatura, usuarioAtualizado] = await Promise.all([
-            api.get("/assinaturas/atual"),
-            api.get("/usuarios/me")
-        ]);
+        const assinatura = await api.get("/assinaturas/atual");
+        const usuarioAtualizado = await api.get("/usuarios/me");
         localStorage.setItem("usuarioAtual", JSON.stringify(usuarioAtualizado));
         exibirPlano(usuarioAtualizado, assinatura);
     } catch {
