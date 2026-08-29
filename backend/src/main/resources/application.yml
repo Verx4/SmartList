@@ -55,6 +55,7 @@ app:
   mercado-pago:
     environment: ${MERCADO_PAGO_ENVIRONMENT:production}
     access-token: ${MERCADO_PAGO_ACCESS_TOKEN:${MERCADO_PAGO_TOKEN:}}
+    public-key: ${MERCADO_PAGO_PUBLIC_KEY:}
     webhook-url: ${MERCADO_PAGO_WEBHOOK_URL:}
     webhook-secret: ${MERCADO_PAGO_WEBHOOK_SECRET:}
     webhook-tolerancia-minutos: ${MERCADO_PAGO_WEBHOOK_TOLERANCE_MINUTES:5}
