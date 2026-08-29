@@ -109,6 +109,10 @@ public class MercadoPagoService {
             exigirConfiguracaoCheckout();
             validarAmbienteCredencial();
             Map<String, Object> corpo = montarCorpoPreferencia(usuario, assinatura);
+            // Deixe o Mercado Pago coletar os dados do comprador no próprio Checkout Pro.
+            // Isso preserva o pagamento como convidado e evita vincular o checkout
+            // à sessão/identidade usada no cadastro do Smart List.
+            corpo.remove("payer");
 
             LOG.info(
                 "Payload Mercado Pago preparado: checkout={}, body={}.",
