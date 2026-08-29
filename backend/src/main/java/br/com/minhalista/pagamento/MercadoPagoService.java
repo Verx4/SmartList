@@ -86,6 +86,13 @@ public class MercadoPagoService {
         try {
             Map<String, Object> corpo = montarCorpoPreferencia(usuario, assinatura);
 
+            LOG.info(
+                "Pagador Mercado Pago preparado: checkout={}, payer={{email={}, identification={{type=CPF, number={}}}}}.",
+                assinaturaId,
+                mascararEmail(usuario.getEmail()),
+                Cpf.mascarar(usuario.getCpf())
+            );
+
             Map<String, Object> resposta = restClient.post()
                 .uri("/checkout/preferences")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -170,6 +177,10 @@ public class MercadoPagoService {
         String cpf = Cpf.somenteDigitos(usuario.getCpf());
 
         if (!Cpf.valido(cpf)) {
+            LOG.warn(
+                "Checkout bloqueado antes do Mercado Pago: usuário {} sem CPF válido no banco.",
+                usuario.getId()
+            );
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
                 "Cadastre um CPF válido no seu perfil antes de iniciar o pagamento."
@@ -355,6 +366,18 @@ public class MercadoPagoService {
         return resposta.contains("identification")
             || resposta.contains("payer")
             || resposta.contains("cpf");
+    }
+
+    private String mascararEmail(String email) {
+        if (!StringUtils.hasText(email) || !email.contains("@")) {
+            return "[ausente]";
+        }
+
+        int separador = email.indexOf('@');
+        String usuario = email.substring(0, separador);
+        String dominio = email.substring(separador);
+        String inicio = usuario.isEmpty() ? "*" : usuario.substring(0, 1);
+        return inicio + "***" + dominio;
     }
 
     private boolean webhookUrlValida(String valor) {

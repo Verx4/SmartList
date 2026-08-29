@@ -27,7 +27,7 @@ test("cadastro exige, mascara, valida e envia o CPF higienizado", async () => {
     assert.equal(modulo.cpfValido("111.111.111-11"), false);
 });
 
-test("perfil permite cadastrar CPF para contas antigas sem expor o número completo", async () => {
+test("perfil carrega e permite editar o CPF salvo em endpoint autenticado", async () => {
     const [pagina, script] = await Promise.all([
         ler("perfil.html"),
         ler("js/perfil.js")
@@ -36,7 +36,8 @@ test("perfil permite cadastrar CPF para contas antigas sem expor o número compl
     assert.match(pagina, /id="perfilCpf"/);
     assert.match(script, /api\.get\("\/usuarios\/me\/cpf"\)/);
     assert.match(script, /api\.put\("\/usuarios\/me\/cpf"/);
-    assert.match(script, /cpfMascarado/);
+    assert.match(script, /campo\.value = resposta\.cpf \|\| ""/);
+    assert.match(script, /cpfInformado/);
 });
 
 test("checkout não pede CPF e omite cupom quando nenhum código está aplicado", async () => {
@@ -52,4 +53,6 @@ test("checkout não pede CPF e omite cupom quando nenhum código está aplicado"
     assert.doesNotMatch(script, /cupom:\s*cupomAplicado[\s\S]*?:\s*null/);
     assert.match(mercadoPago, /identificacao\.put\("type", "CPF"\)/);
     assert.match(mercadoPago, /identificacao\.put\("number", cpf\)/);
+    assert.match(mercadoPago, /Checkout bloqueado antes do Mercado Pago/);
+    assert.match(mercadoPago, /Pagador Mercado Pago preparado/);
 });

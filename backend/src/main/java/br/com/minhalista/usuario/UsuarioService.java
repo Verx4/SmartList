@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,16 @@ public class UsuarioService {
         }
 
         usuario.setCpf(cpf);
-        repository.saveAndFlush(usuario);
+
+        try {
+            repository.saveAndFlush(usuario);
+        } catch (DataIntegrityViolationException erro) {
+            throw new RegraNegocioException(
+                HttpStatus.CONFLICT,
+                "Este CPF já está cadastrado."
+            );
+        }
+
         return CpfPerfilResponse.de(usuario);
     }
 

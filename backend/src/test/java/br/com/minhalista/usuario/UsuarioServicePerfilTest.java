@@ -74,6 +74,7 @@ class UsuarioServicePerfilTest {
         );
 
         assertEquals("52998224725", usuario.getCpf());
+        assertEquals("529.982.247-25", resposta.cpf());
         assertEquals("***.***.***-25", resposta.cpfMascarado());
         verify(repository).saveAndFlush(usuario);
     }

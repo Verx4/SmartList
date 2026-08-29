@@ -36,6 +36,19 @@ public final class Cpf {
         return "***.***.***-" + cpf.substring(9);
     }
 
+    public static String formatar(String valor) {
+        String cpf = somenteDigitos(valor);
+
+        if (cpf.length() != 11) {
+            return null;
+        }
+
+        return cpf.substring(0, 3)
+            + "." + cpf.substring(3, 6)
+            + "." + cpf.substring(6, 9)
+            + "-" + cpf.substring(9);
+    }
+
     private static int calcularDigito(String cpf, int quantidade) {
         int soma = 0;
 

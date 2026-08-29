@@ -13,6 +13,7 @@ class CpfTest {
         assertTrue(Cpf.valido("529.982.247-25"));
         assertTrue(Cpf.valido("52998224725"));
         assertEquals("52998224725", Cpf.somenteDigitos("529.982.247-25"));
+        assertEquals("529.982.247-25", Cpf.formatar("52998224725"));
     }
 
     @Test
