@@ -54,5 +54,5 @@ test("checkout não pede CPF e omite cupom quando nenhum código está aplicado"
     assert.match(mercadoPago, /identificacao\.put\("type", "CPF"\)/);
     assert.match(mercadoPago, /identificacao\.put\("number", cpf\)/);
     assert.match(mercadoPago, /Checkout bloqueado antes do Mercado Pago/);
-    assert.match(mercadoPago, /Pagador Mercado Pago preparado/);
+    assert.match(mercadoPago, /Payload Mercado Pago preparado/);
 });

@@ -3,6 +3,7 @@ package br.com.minhalista.common;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,12 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(RegraNegocioException.class)
     public ResponseEntity<Map<String, Object>> tratarRegra(RegraNegocioException erro) {
-        return resposta(erro.getStatus(), erro.getMessage(), null);
+        return resposta(
+            erro.getStatus(),
+            erro.getMessage(),
+            exporErros ? erro.getDetalhes() : null,
+            erro.getCodigoDiagnostico()
+        );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,7 +45,7 @@ public class ApiExceptionHandler {
             campos.putIfAbsent(campo.getField(), campo.getDefaultMessage());
         }
 
-        return resposta(HttpStatus.BAD_REQUEST, "Confira os campos informados.", campos);
+        return resposta(HttpStatus.BAD_REQUEST, "Confira os campos informados.", campos, null);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -47,36 +53,68 @@ public class ApiExceptionHandler {
         return resposta(
             HttpStatus.BAD_REQUEST,
             "O conteúdo enviado não está no formato esperado.",
+            null,
             null
         );
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> tratarInesperado(Exception erro) {
-        LOG.error("Erro inesperado ao processar a requisição", erro);
+        String codigoDiagnostico = novoCodigoDiagnostico();
+        LOG.error(
+            "Erro inesperado ao processar a requisição. diagnostico={}.",
+            codigoDiagnostico,
+            erro
+        );
         return resposta(
             HttpStatus.INTERNAL_SERVER_ERROR,
             exporErros
                 ? erro.getClass().getSimpleName() + ": " + erro.getMessage()
                 : "Não foi possível concluir a operação.",
-            null
+            exporErros ? detalhesInesperados(erro) : null,
+            codigoDiagnostico
         );
     }
 
     private ResponseEntity<Map<String, Object>> resposta(
         HttpStatus status,
         String mensagem,
-        Object detalhes
+        Object detalhes,
+        String codigoDiagnostico
     ) {
         Map<String, Object> corpo = new LinkedHashMap<>();
         corpo.put("timestamp", Instant.now());
         corpo.put("status", status.value());
+        corpo.put("error", true);
+        corpo.put("message", mensagem);
         corpo.put("mensagem", mensagem);
 
         if (detalhes != null) {
+            corpo.put("details", detalhes);
             corpo.put("detalhes", detalhes);
         }
 
+        if (codigoDiagnostico != null && !codigoDiagnostico.isBlank()) {
+            corpo.put("diagnosticId", codigoDiagnostico);
+        }
+
         return ResponseEntity.status(status).body(corpo);
+    }
+
+    private Map<String, Object> detalhesInesperados(Exception erro) {
+        Map<String, Object> detalhes = new LinkedHashMap<>();
+        detalhes.put("exception", erro.getClass().getName());
+        detalhes.put("message", String.valueOf(erro.getMessage()));
+
+        if (erro.getCause() != null) {
+            detalhes.put("cause", erro.getCause().getClass().getName());
+            detalhes.put("causeMessage", String.valueOf(erro.getCause().getMessage()));
+        }
+
+        return detalhes;
+    }
+
+    private String novoCodigoDiagnostico() {
+        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

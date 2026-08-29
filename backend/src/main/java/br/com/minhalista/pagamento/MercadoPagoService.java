@@ -58,12 +58,19 @@ public class MercadoPagoService {
         this.webhookSecret = webhookSecret == null ? "" : webhookSecret.trim();
         this.frontendUrl = normalizarFrontendUrl(frontendUrl);
         this.modoTeste = this.accessToken.startsWith("TEST-");
+
+        LOG.info(
+            "Configuração Mercado Pago carregada: tokenConfigurado={}, ambiente={}, frontend={}, webhook={}, webhookSecretConfigurado={}.",
+            StringUtils.hasText(this.accessToken),
+            this.modoTeste ? "TESTE" : "PRODUCAO",
+            descreverUrl(this.frontendUrl),
+            descreverUrl(this.webhookUrl),
+            StringUtils.hasText(this.webhookSecret)
+        );
     }
 
     @SuppressWarnings("unchecked")
     public CheckoutResponse criarPreferencia(Usuario usuario, Assinatura assinatura) {
-        exigirConfiguracao();
-
         String assinaturaId = assinatura.getId().toString();
 
         LOG.info(
@@ -84,13 +91,13 @@ public class MercadoPagoService {
         );
 
         try {
+            exigirConfiguracaoCheckout();
             Map<String, Object> corpo = montarCorpoPreferencia(usuario, assinatura);
 
             LOG.info(
-                "Pagador Mercado Pago preparado: checkout={}, payer={{email={}, identification={{type=CPF, number={}}}}}.",
+                "Payload Mercado Pago preparado: checkout={}, body={}.",
                 assinaturaId,
-                mascararEmail(usuario.getEmail()),
-                Cpf.mascarar(usuario.getCpf())
+                payloadSeguro(corpo)
             );
 
             Map<String, Object> resposta = restClient.post()
@@ -135,9 +142,8 @@ public class MercadoPagoService {
             );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                erroDeIdentificacao(resposta)
-                    ? "Falha na validação dos dados do comprador. Confira o CPF salvo no seu perfil."
-                    : "O Mercado Pago recusou a criação do pagamento. Tente novamente em instantes."
+                mensagemRejeicao(erro.getStatusCode().value(), resposta),
+                detalhesGateway(erro.getStatusCode().value(), resposta)
             );
         } catch (RestClientException erro) {
             LOG.warn(
@@ -147,7 +153,12 @@ public class MercadoPagoService {
             );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "Não foi possível conectar ao Mercado Pago. Tente novamente em instantes."
+                "Não foi possível conectar ao Mercado Pago. Tente novamente em instantes.",
+                Map.of(
+                    "gateway", "Mercado Pago",
+                    "exception", erro.getClass().getName(),
+                    "message", String.valueOf(erro.getMessage())
+                )
             );
         } catch (RuntimeException erro) {
             LOG.error(
@@ -157,7 +168,8 @@ public class MercadoPagoService {
             );
             throw new RegraNegocioException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Não foi possível preparar o pagamento. Tente novamente."
+                "Não foi possível preparar o pagamento. Tente novamente.",
+                detalhesExcecao(erro)
             );
         }
     }
@@ -265,7 +277,7 @@ public class MercadoPagoService {
 
     @SuppressWarnings("unchecked")
     public PagamentoConsultado consultarPagamento(String pagamentoId) {
-        exigirConfiguracao();
+        exigirConfiguracaoConsulta();
 
         try {
             Map<String, Object> resposta = restClient.get()
@@ -317,13 +329,34 @@ public class MercadoPagoService {
         return pagamento.ambienteProducao() != modoTeste;
     }
 
-    public void exigirConfiguracao() {
-        if (!StringUtils.hasText(accessToken)
-            || !StringUtils.hasText(webhookSecret)
-            || !webhookUrlValida(webhookUrl)) {
+    void exigirConfiguracaoCheckout() {
+        if (!StringUtils.hasText(accessToken)) {
             throw new RegraNegocioException(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "Mercado Pago ainda não foi configurado com token, webhook HTTPS e assinatura secreta."
+                "O token do Mercado Pago não foi configurado. Defina MERCADO_PAGO_ACCESS_TOKEN ou MERCADO_PAGO_TOKEN no servidor."
+            );
+        }
+
+        if (!webhookUrlValida(webhookUrl)) {
+            throw new RegraNegocioException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "A URL do webhook do Mercado Pago precisa ser uma URL HTTPS pública."
+            );
+        }
+
+        if (!modoTeste && !urlHttpsPublica(frontendUrl)) {
+            throw new RegraNegocioException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "A URL de retorno do checkout precisa ser uma URL HTTPS pública."
+            );
+        }
+    }
+
+    void exigirConfiguracaoConsulta() {
+        if (!StringUtils.hasText(accessToken)) {
+            throw new RegraNegocioException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "O token do Mercado Pago não foi configurado. Defina MERCADO_PAGO_ACCESS_TOKEN ou MERCADO_PAGO_TOKEN no servidor."
             );
         }
     }
@@ -344,6 +377,26 @@ public class MercadoPagoService {
         return valor.setScale(2, RoundingMode.HALF_UP);
     }
 
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> payloadSeguro(Map<String, Object> corpo) {
+        Map<String, Object> seguro = new LinkedHashMap<>(corpo);
+        Map<String, Object> pagadorOriginal = corpo.get("payer") instanceof Map<?, ?> mapa
+            ? (Map<String, Object>) mapa
+            : Map.of();
+        Map<String, Object> pagador = new LinkedHashMap<>(pagadorOriginal);
+        Map<String, Object> identificacaoOriginal =
+            pagadorOriginal.get("identification") instanceof Map<?, ?> mapa
+                ? (Map<String, Object>) mapa
+                : Map.of();
+        Map<String, Object> identificacao = new LinkedHashMap<>(identificacaoOriginal);
+
+        pagador.put("email", mascararEmail(texto(pagadorOriginal.get("email"))));
+        identificacao.put("number", Cpf.mascarar(texto(identificacaoOriginal.get("number"))));
+        pagador.put("identification", identificacao);
+        seguro.put("payer", pagador);
+        return seguro;
+    }
+
     private String respostaSegura(String corpo) {
         if (!StringUtils.hasText(corpo)) {
             return "sem corpo";
@@ -351,7 +404,9 @@ public class MercadoPagoService {
 
         String normalizado = corpo
             .replaceAll("[\\r\\n\\t]+", " ")
-            .replaceAll("(?i)bearer\\s+[a-z0-9._-]+", "Bearer [oculto]");
+            .replaceAll("(?i)bearer\\s+[a-z0-9._-]+", "Bearer [oculto]")
+            .replaceAll("(?i)(\\\"number\\\"\\s*:\\s*\\\")[^\\\"]+", "$1[oculto]")
+            .replaceAll("(?i)(\\\"email\\\"\\s*:\\s*\\\")[^\\\"]+", "$1[oculto]");
         return normalizado.length() <= 1200
             ? normalizado
             : normalizado.substring(0, 1200) + "...";
@@ -368,6 +423,55 @@ public class MercadoPagoService {
             || resposta.contains("cpf");
     }
 
+    private String mensagemRejeicao(int status, String corpo) {
+        String resposta = StringUtils.hasText(corpo)
+            ? corpo.toLowerCase(java.util.Locale.ROOT)
+            : "";
+
+        if (status == 401 || status == 403) {
+            return "A credencial do Mercado Pago foi recusada. Verifique o token configurado no servidor.";
+        }
+
+        if (erroDeIdentificacao(corpo)) {
+            return "Falha na validação dos dados do comprador. Confira o CPF salvo no seu perfil.";
+        }
+
+        if (resposta.contains("notification_url")) {
+            return "O Mercado Pago recusou a URL de notificação configurada no servidor.";
+        }
+
+        if (resposta.contains("back_url") || resposta.contains("back_urls")) {
+            return "O Mercado Pago recusou a URL de retorno configurada no servidor.";
+        }
+
+        if (resposta.contains("unit_price") || resposta.contains("items")) {
+            return "O Mercado Pago recusou o valor ou os itens do plano selecionado.";
+        }
+
+        return "O Mercado Pago recusou a criação do pagamento. Tente novamente em instantes.";
+    }
+
+    private Map<String, Object> detalhesGateway(int status, String resposta) {
+        Map<String, Object> detalhes = new LinkedHashMap<>();
+        detalhes.put("gateway", "Mercado Pago");
+        detalhes.put("httpStatus", status);
+        detalhes.put("response", respostaSegura(resposta));
+        return detalhes;
+    }
+
+    private Map<String, Object> detalhesExcecao(RuntimeException erro) {
+        Map<String, Object> detalhes = new LinkedHashMap<>();
+        detalhes.put("exception", erro.getClass().getName());
+        detalhes.put("message", String.valueOf(erro.getMessage()));
+
+        if (erro.getCause() != null) {
+            detalhes.put("cause", erro.getCause().getClass().getName());
+            detalhes.put("causeMessage", String.valueOf(erro.getCause().getMessage()));
+        }
+
+        return detalhes;
+    }
+
     private String mascararEmail(String email) {
         if (!StringUtils.hasText(email) || !email.contains("@")) {
             return "[ausente]";
@@ -381,13 +485,35 @@ public class MercadoPagoService {
     }
 
     private boolean webhookUrlValida(String valor) {
+        return urlHttpsPublica(valor);
+    }
+
+    private boolean urlHttpsPublica(String valor) {
         try {
             URI uri = URI.create(valor);
+            String host = uri.getHost();
             return "https".equalsIgnoreCase(uri.getScheme())
-                && StringUtils.hasText(uri.getHost())
-                && uri.getUserInfo() == null;
+                && StringUtils.hasText(host)
+                && uri.getUserInfo() == null
+                && !host.equalsIgnoreCase("localhost")
+                && !host.equals("127.0.0.1")
+                && !host.equals("0.0.0.0");
         } catch (IllegalArgumentException erro) {
             return false;
+        }
+    }
+
+    private String descreverUrl(String valor) {
+        if (!StringUtils.hasText(valor)) {
+            return "[ausente]";
+        }
+
+        try {
+            URI uri = URI.create(valor);
+            String porta = uri.getPort() < 0 ? "" : ":" + uri.getPort();
+            return uri.getScheme() + "://" + uri.getHost() + porta + uri.getPath();
+        } catch (IllegalArgumentException erro) {
+            return "[invalida]";
         }
     }
 
