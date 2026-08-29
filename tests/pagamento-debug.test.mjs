@@ -51,3 +51,18 @@ test("frontend prioriza message do backend e mostra o código de diagnóstico", 
     assert.match(checkout, /assinatura\.js\?v=9/);
     assert.match(planos, /assinatura\.js\?v=9/);
 });
+
+test("produção repara automaticamente as colunas que bloquearam o checkout", async () => {
+    const [migration, repair, controller] = await Promise.all([
+        ler("backend/src/main/resources/db/migration/postgresql/V15__reparar_colunas_checkout_assinaturas.sql"),
+        ler("backend/src/main/java/br/com/minhalista/config/CheckoutSchemaRepair.java"),
+        ler("backend/src/main/java/br/com/minhalista/assinatura/AssinaturaController.java")
+    ]);
+
+    assert.match(migration, /ADD COLUMN IF NOT EXISTS cupom_primeira_cobranca_somente/);
+    assert.match(migration, /ADD COLUMN IF NOT EXISTS cupom_primeiro_pagamento_aplicado/);
+    assert.match(repair, /Esquema do checkout verificado e reparado com sucesso/);
+    assert.match(repair, /@Order\(Ordered\.HIGHEST_PRECEDENCE\)/);
+    assert.match(controller, /O banco de dados do checkout está desatualizado/);
+    assert.match(controller, /COLUNA_AUSENTE/);
+});
