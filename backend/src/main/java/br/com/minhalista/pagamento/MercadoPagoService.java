@@ -280,9 +280,18 @@ public class MercadoPagoService {
         pagador.put("email", usuario.getEmail().trim());
         pagador.put("identification", identificacao);
 
+        Map<String, Object> metodosPagamento = new LinkedHashMap<>();
+        // O Checkout Pro disponibiliza todos os meios quando nada é excluído.
+        // Manter as listas vazias torna explícito que cartão e PIX devem aparecer,
+        // enquanto installments habilita o parcelamento dos cartões.
+        metodosPagamento.put("excluded_payment_methods", List.of());
+        metodosPagamento.put("excluded_payment_types", List.of());
+        metodosPagamento.put("installments", 12);
+
         Map<String, Object> corpo = new LinkedHashMap<>();
         corpo.put("items", List.of(item));
         corpo.put("payer", pagador);
+        corpo.put("payment_methods", metodosPagamento);
         corpo.put("external_reference", assinaturaId);
         corpo.put("metadata", metadata);
         corpo.put("back_urls", Map.of(

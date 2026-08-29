@@ -66,6 +66,18 @@ class MercadoPagoServiceCheckoutTest {
     }
 
     @Test
+    void liberaCartaoCreditoEPixSemExcluirMeiosDePagamento() {
+        prepararPlano(CicloAssinatura.MENSAL, "9.97");
+
+        Map<String, Object> corpo = service.montarCorpoPreferencia(usuario, assinatura);
+        Map<String, Object> metodos = metodosPagamento(corpo);
+
+        assertEquals(List.of(), metodos.get("excluded_payment_methods"));
+        assertEquals(List.of(), metodos.get("excluded_payment_types"));
+        assertEquals(12, metodos.get("installments"));
+    }
+
+    @Test
     void enviaSmart5ComoNumeroMonetarioDeNoveEQuarentaESete() {
         prepararPlano(CicloAssinatura.MENSAL, "9.47");
         when(assinatura.getCupomCodigo()).thenReturn("SMART5");
@@ -196,6 +208,11 @@ class MercadoPagoServiceCheckoutTest {
 
     private BigDecimal valorUnitario(Map<String, Object> corpo) {
         return (BigDecimal) item(corpo).get("unit_price");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> metodosPagamento(Map<String, Object> corpo) {
+        return (Map<String, Object>) corpo.get("payment_methods");
     }
 
     @SuppressWarnings("unchecked")
