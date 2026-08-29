@@ -9,13 +9,14 @@ function atualizarEstadoCpf(resposta = {}) {
     const status = document.getElementById("perfilCpfStatus");
 
     if (campo) {
-        campo.value = "";
-        campo.placeholder = resposta.cpfMascarado || "000.000.000-00";
+        campo.value = resposta.cpf || "";
+        campo.placeholder = "000.000.000-00";
+        campo.dataset.cadastrado = String(Boolean(resposta.cadastrado));
     }
 
     if (status) {
         status.textContent = resposta.cadastrado
-            ? `CPF cadastrado: ${resposta.cpfMascarado}. Digite novamente somente para corrigir.`
+            ? "CPF salvo e disponível para identificar seus pagamentos."
             : "Cadastre seu CPF para iniciar pagamentos no Mercado Pago.";
     }
 }
@@ -128,6 +129,18 @@ if (formulario) {
 
         const cpfInformado = somenteDigitosCpf(formulario.elements.cpf?.value);
 
+        if (!cpfInformado && formulario.elements.cpf?.dataset.cadastrado === "true") {
+            formulario.elements.cpf.setCustomValidity(
+                "Informe o CPF salvo ou digite a correção."
+            );
+            formulario.elements.cpf.reportValidity();
+            exibirMensagem(
+                "O CPF salvo não pode ficar vazio. Digite o número para corrigir.",
+                "erro"
+            );
+            return;
+        }
+
         if (cpfInformado && !cpfValido(cpfInformado)) {
             formulario.elements.cpf.setCustomValidity("Informe um CPF válido.");
             formulario.elements.cpf.reportValidity();
@@ -182,4 +195,3 @@ document.getElementById("btnSair")?.addEventListener("click", sair);
 document.getElementById("btnExcluirConta")?.addEventListener("click", () => {
     exibirMensagem("A exclusão de conta estará disponível em breve.", "aviso");
 });
-
