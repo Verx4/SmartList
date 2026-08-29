@@ -3,6 +3,7 @@ package br.com.minhalista.pagamento;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -113,7 +114,7 @@ class MercadoPagoBrickServiceTest {
         when(usuario.getId()).thenReturn(UUID.randomUUID());
         when(usuario.getEmail()).thenReturn("cliente@example.com");
         when(usuario.getCpf()).thenReturn("52998224725");
-        when(usuario.getNome()).thenReturn("Cliente Teste");
+        lenient().when(usuario.getNome()).thenReturn("Cliente Teste");
         when(assinatura.getId()).thenReturn(UUID.randomUUID());
         when(assinatura.getCiclo()).thenReturn(CicloAssinatura.MENSAL);
         when(assinatura.getValor()).thenReturn(new BigDecimal("9.97"));
