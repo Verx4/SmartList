@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,10 @@ import jakarta.validation.Valid;
 public class AssinaturaController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AssinaturaController.class);
+    private static final Pattern COLUNA_AUSENTE = Pattern.compile(
+        "column\\s+([a-zA-Z0-9_.]+)\\s+does not exist",
+        Pattern.CASE_INSENSITIVE
+    );
 
     private final AssinaturaService assinaturaService;
     private final MercadoPagoService mercadoPagoService;
@@ -168,7 +174,7 @@ public class AssinaturaController {
             );
             throw new RegraNegocioException(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Não foi possível preparar o pagamento.",
+                mensagemFalhaCheckout(erro),
                 detalhesExcecao(erro),
                 codigoDiagnostico
             );
@@ -206,6 +212,32 @@ public class AssinaturaController {
         }
 
         return detalhes;
+    }
+
+    String mensagemFalhaCheckout(RuntimeException erro) {
+        Throwable causa = causaRaiz(erro);
+        String mensagem = causa.getMessage();
+
+        if (mensagem != null) {
+            Matcher colunaAusente = COLUNA_AUSENTE.matcher(mensagem);
+
+            if (colunaAusente.find()) {
+                return "O banco de dados do checkout está desatualizado: falta a coluna "
+                    + colunaAusente.group(1) + ".";
+            }
+        }
+
+        return "Não foi possível preparar o pagamento.";
+    }
+
+    private Throwable causaRaiz(Throwable erro) {
+        Throwable atual = erro;
+
+        while (atual.getCause() != null && atual.getCause() != atual) {
+            atual = atual.getCause();
+        }
+
+        return atual;
     }
 
     private String novoCodigoDiagnostico() {
