@@ -111,11 +111,6 @@ public class MercadoPagoService {
             exigirConfiguracaoCheckout();
             validarAmbienteCredencial();
             Map<String, Object> corpo = montarCorpoPreferencia(usuario, assinatura);
-            // Deixe o Mercado Pago coletar os dados do comprador no próprio Checkout Pro.
-            // Isso preserva o pagamento como convidado e evita vincular o checkout
-            // à sessão/identidade usada no cadastro do Smart List.
-            corpo.remove("payer");
-
             LOG.info(
                 "Payload Mercado Pago preparado: checkout={}, body={}.",
                 assinaturaId,
@@ -265,9 +260,12 @@ public class MercadoPagoService {
         }
 
         Map<String, Object> item = new LinkedHashMap<>();
-        item.put("id", "premium-" + assinatura.getCiclo().name().toLowerCase());
+        // Cada checkout representa uma compra diferente. Um identificador único
+        // evita que tentativas legítimas sejam confundidas com cobranças duplicadas.
+        item.put("id", "premium-" + assinaturaId);
         item.put("title", "Smart List Premium " + assinatura.getCiclo().getNome());
         item.put("description", "Acesso aos recursos Premium do Smart List");
+        item.put("category_id", "services");
         item.put("quantity", 1);
         item.put("currency_id", "BRL");
         item.put("unit_price", valorCobranca);
@@ -279,6 +277,7 @@ public class MercadoPagoService {
         Map<String, Object> pagador = new LinkedHashMap<>();
         pagador.put("email", usuario.getEmail().trim());
         pagador.put("identification", identificacao);
+        adicionarNomePagador(pagador, usuario.getNome());
 
         Map<String, Object> metodosPagamento = new LinkedHashMap<>();
         // O Checkout Pro disponibiliza todos os meios quando nada é excluído.
@@ -302,6 +301,22 @@ public class MercadoPagoService {
         corpo.put("auto_return", "approved");
         corpo.put("notification_url", montarWebhookUrl());
         return corpo;
+    }
+
+    private void adicionarNomePagador(
+        Map<String, Object> pagador,
+        String nomeCompleto
+    ) {
+        if (!StringUtils.hasText(nomeCompleto)) {
+            return;
+        }
+
+        String[] partes = nomeCompleto.trim().replaceAll("\\s+", " ").split(" ", 2);
+        pagador.put("name", partes[0]);
+
+        if (partes.length > 1 && StringUtils.hasText(partes[1])) {
+            pagador.put("surname", partes[1]);
+        }
     }
 
     private void adicionarSePresente(
@@ -332,7 +347,19 @@ public class MercadoPagoService {
                 );
             }
 
-            return mapearPagamento(resposta);
+            PagamentoConsultado pagamento = mapearPagamento(resposta);
+
+            if ("rejected".equalsIgnoreCase(pagamento.status())) {
+                LOG.warn(
+                    "Pagamento recusado pelo Mercado Pago: pagamento={}, detalhe={}, metodo={}, tipo={}.",
+                    pagamento.id(),
+                    pagamento.statusDetalhe(),
+                    pagamento.metodoPagamento(),
+                    pagamento.tipoPagamento()
+                );
+            }
+
+            return pagamento;
         } catch (RestClientResponseException erro) {
             LOG.warn(
                 "Não foi possível consultar pagamento no Mercado Pago: HTTP {}.",
@@ -418,6 +445,9 @@ public class MercadoPagoService {
         return new PagamentoConsultado(
             texto(resposta.get("id")),
             texto(resposta.get("status")),
+            texto(resposta.get("status_detail")),
+            texto(resposta.get("payment_method_id")),
+            texto(resposta.get("payment_type_id")),
             texto(resposta.get("external_reference")),
             texto(metadata.get("assinatura_id")),
             texto(metadata.get("ciclo")),
