@@ -3,6 +3,8 @@ package br.com.minhalista.pagamento;
 public record PagamentoBrickResultado(
     PagamentoConsultado pagamento,
     String statusDetail,
-    String paymentMethodId
+    String paymentMethodId,
+    String externalResourceUrl,
+    String creq
 ) {
 }
