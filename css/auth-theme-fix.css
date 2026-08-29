@@ -1,136 +1,144 @@
 /*
- * Ajustes de contraste específicos das telas de autenticação.
- * Mantém o tema escuro atual e reforça legibilidade quando a aparência clara
- * estiver selecionada no Smart List.
+ * Contraste das telas de autenticação no modo claro.
+ * Aceita tanto o identificador atual de paleta quanto o identificador legado
+ * de tema para que páginas antigas mantidas pelo PWA também sejam corrigidas.
  */
 
-html[data-palette="claro"] .auth-body {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-body {
     color: #172033;
     background:
         radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 36%),
         #f3f6fb !important;
 }
 
-html[data-palette="claro"] .auth-card {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card {
     color: #172033 !important;
     background: #ffffff !important;
     border-color: #cbd5e1 !important;
     box-shadow: 0 16px 40px rgba(34, 52, 79, 0.10) !important;
 }
 
-html[data-palette="claro"] .auth-card-header h1,
-html[data-palette="claro"] .auth-card-header h2 {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card-header h1,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card-header h2 {
     color: #172033 !important;
 }
 
-html[data-palette="claro"] .auth-card-header p,
-html[data-palette="claro"] .auth-link,
-html[data-palette="claro"] .auth-voltar,
-html[data-palette="claro"] .auth-location-note {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card-header p,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-link,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-voltar,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-location-note {
     color: #475569 !important;
 }
 
-html[data-palette="claro"] .auth-card .page-eyebrow {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .page-eyebrow {
     color: #1d4ed8 !important;
 }
 
-html[data-palette="claro"] .auth-card .form-group label,
-html[data-palette="claro"] .auth-card .form-group legend,
-html[data-palette="claro"] .auth-card .checkbox-label,
-html[data-palette="claro"] .auth-card .checkbox-label span,
-html[data-palette="claro"] .auth-card .form-options {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group label,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group legend,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .checkbox-label,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .checkbox-label span,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-options {
     color: #334155 !important;
+    opacity: 1 !important;
 }
 
-html[data-palette="claro"] .auth-card .form-group input,
-html[data-palette="claro"] .auth-card .form-group select,
-html[data-palette="claro"] .auth-card .form-group textarea {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group input,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group select,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group textarea {
     color: #0f172a !important;
     background: #f8fafc !important;
     border-color: #94a3b8 !important;
+    opacity: 1 !important;
 }
 
-html[data-palette="claro"] .auth-card .form-group input::placeholder,
-html[data-palette="claro"] .auth-card .form-group textarea::placeholder {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group input::placeholder,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group textarea::placeholder {
     color: #64748b !important;
     opacity: 1;
 }
 
-html[data-palette="claro"] .auth-card .form-group input:focus,
-html[data-palette="claro"] .auth-card .form-group select:focus,
-html[data-palette="claro"] .auth-card .form-group textarea:focus {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group input:focus,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group select:focus,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group textarea:focus {
     border-color: #2563eb !important;
     outline: none !important;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18) !important;
 }
 
-html[data-palette="claro"] .auth-card input:-webkit-autofill,
-html[data-palette="claro"] .auth-card input:-webkit-autofill:hover,
-html[data-palette="claro"] .auth-card input:-webkit-autofill:focus,
-html[data-palette="claro"] .auth-card input:-webkit-autofill:active {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card input:-webkit-autofill,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card input:-webkit-autofill:hover,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card input:-webkit-autofill:focus,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card input:-webkit-autofill:active {
+    color: #0f172a !important;
+    background-color: #f8fafc !important;
     -webkit-text-fill-color: #0f172a !important;
     caret-color: #0f172a !important;
     -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
     box-shadow: 0 0 0 1000px #f8fafc inset !important;
+    filter: none !important;
     transition: background-color 9999s ease-out 0s;
 }
 
-html[data-palette="claro"] .auth-card .checkbox-label input {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .checkbox-label input {
     accent-color: #2563eb;
 }
 
-html[data-palette="claro"] .auth-card a,
-html[data-palette="claro"] .auth-link a,
-html[data-palette="claro"] .auth-voltar a,
-html[data-palette="claro"] .auth-card .form-options a,
-html[data-palette="claro"] .auth-card .checkbox-label a {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card a,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-link a,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-voltar a,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-options a,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .checkbox-label a {
     color: #1d4ed8 !important;
 }
 
-html[data-palette="claro"] .auth-card a:hover,
-html[data-palette="claro"] .auth-link a:hover,
-html[data-palette="claro"] .auth-voltar a:hover,
-html[data-palette="claro"] .auth-card .form-options a:hover,
-html[data-palette="claro"] .auth-card .checkbox-label a:hover {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card a:hover,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-link a:hover,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-voltar a:hover,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-options a:hover,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .checkbox-label a:hover {
     color: #1e40af !important;
 }
 
-html[data-palette="claro"] .auth-card .mensagem-aviso {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .mensagem-aviso {
     color: #78350f !important;
     background: #fff7ed !important;
     border-color: #f59e0b !important;
+    opacity: 1 !important;
 }
 
-html[data-palette="claro"] .auth-card .mensagem-erro {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .mensagem-erro {
     color: #991b1b !important;
     background: #fef2f2 !important;
     border-color: #fca5a5 !important;
+    opacity: 1 !important;
 }
 
-html[data-palette="claro"] .auth-card .mensagem-sucesso {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .mensagem-sucesso {
     color: #166534 !important;
     background: #f0fdf4 !important;
     border-color: #86efac !important;
+    opacity: 1 !important;
 }
 
-html[data-palette="claro"] .auth-card .btn-primary,
-html[data-palette="claro"] .auth-card .btn-primary:disabled {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .btn-primary,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .btn-primary:disabled {
     color: #ffffff !important;
     background: #2563eb !important;
 }
 
-html[data-palette="claro"] .auth-card .btn-primary:disabled {
-    opacity: 0.78;
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .btn-primary:disabled {
+    opacity: 0.82;
 }
 
-html[data-palette="claro"] .auth-card .btn-primary:hover:not(:disabled) {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .btn-primary:hover:not(:disabled) {
     background: #1d4ed8 !important;
 }
 
-html[data-palette="claro"] .auth-info > p {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-info > p {
     color: #475569;
 }
 
-html[data-palette="claro"] .auth-beneficios li {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .auth-beneficios li {
     color: #334155;
 }
