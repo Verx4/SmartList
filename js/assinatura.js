@@ -366,12 +366,18 @@ async function enviarCheckout(evento) {
     }
 
     try {
-        const resposta = await api.post("/assinaturas/checkout", {
-            ciclo: ciclo.toUpperCase(),
-            cupom: cupomAplicado?.ciclo === ciclo
-                ? cupomAplicado.codigo
-                : null
-        });
+        const dadosCheckout = {
+            ciclo: ciclo.toUpperCase()
+        };
+
+        if (cupomAplicado?.ciclo === ciclo && cupomAplicado.codigo) {
+            dadosCheckout.cupom = cupomAplicado.codigo;
+        }
+
+        const resposta = await api.post(
+            "/assinaturas/checkout",
+            dadosCheckout
+        );
         const urlPagamento =
             resposta?.checkoutUrl
             || resposta?.urlPagamento

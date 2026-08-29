@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import br.com.minhalista.auth.dto.UsuarioResponse;
 import br.com.minhalista.assinatura.AssinaturaValidadeService;
 import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.usuario.Perfil;
+import br.com.minhalista.usuario.Cpf;
 import br.com.minhalista.usuario.TipoAcesso;
 import br.com.minhalista.usuario.Usuario;
 import br.com.minhalista.usuario.UsuarioRepository;
@@ -46,9 +48,18 @@ public class AuthService {
     @Transactional
     public UsuarioResponse cadastrar(CadastroRequest request) {
         String email = normalizarEmail(request.email());
+        String cpf = Cpf.somenteDigitos(request.cpf());
+
+        if (!Cpf.valido(cpf)) {
+            throw new RegraNegocioException(HttpStatus.BAD_REQUEST, "Informe um CPF válido.");
+        }
 
         if (usuarioRepository.existsByEmailIgnoreCase(email)) {
             throw new RegraNegocioException(HttpStatus.CONFLICT, "Este e-mail já está cadastrado.");
+        }
+
+        if (usuarioRepository.existsByCpf(cpf)) {
+            throw new RegraNegocioException(HttpStatus.CONFLICT, "Este CPF já está cadastrado.");
         }
 
         Usuario usuario = new Usuario();
@@ -56,6 +67,7 @@ public class AuthService {
         usuario.setEstado(request.estado().trim().toUpperCase(Locale.ROOT));
         usuario.setCidade(request.cidade().trim());
         usuario.setEmail(email);
+        usuario.setCpf(cpf);
         usuario.setSenhaHash(passwordEncoder.encode(request.senha()));
         usuario.setPerfil(Perfil.USUARIO);
         usuario.setTipoAcesso(TipoAcesso.FREE);
@@ -63,7 +75,14 @@ public class AuthService {
         usuario.setAceiteTermosEm(Instant.now());
         usuario.setAceiteMarketing(Boolean.TRUE.equals(request.aceiteMarketing()));
 
-        return UsuarioResponse.de(usuarioRepository.save(usuario));
+        try {
+            return UsuarioResponse.de(usuarioRepository.saveAndFlush(usuario));
+        } catch (DataIntegrityViolationException erro) {
+            throw new RegraNegocioException(
+                HttpStatus.CONFLICT,
+                "E-mail ou CPF já cadastrado."
+            );
+        }
     }
 
     public AuthResponse login(LoginRequest request) {

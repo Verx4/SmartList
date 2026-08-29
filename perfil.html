@@ -100,6 +100,21 @@
                             required>
                     </div>
 
+                    <div class="form-group">
+                        <label for="perfilCpf">CPF para pagamentos</label>
+                        <input
+                            type="text"
+                            id="perfilCpf"
+                            name="cpf"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            maxlength="14"
+                            placeholder="000.000.000-00">
+                        <small id="perfilCpfStatus">
+                            Cadastre seu CPF para iniciar pagamentos no Mercado Pago.
+                        </small>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="perfilTelefone">Telefone</label>
@@ -221,8 +236,9 @@
         </div>
     </footer>
 
-    <script type="module" src="./js/perfil.js?v=2"></script>
+    <script type="module" src="./js/perfil.js?v=3"></script>
 
 </body>
 
 </html>
+

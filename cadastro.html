@@ -133,6 +133,20 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="cadastroCpf">CPF</label>
+                    <input
+                        type="text"
+                        id="cadastroCpf"
+                        name="cpf"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="14"
+                        placeholder="000.000.000-00"
+                        required>
+                    <small>O CPF será usado para identificar o comprador no pagamento.</small>
+                </div>
+
+                <div class="form-group">
                     <label for="cadastroSenha">Senha</label>
                     <input
                         type="password"
@@ -202,8 +216,9 @@
 
     </main>
 
-    <script type="module" src="./js/auth-page.js"></script>
+    <script type="module" src="./js/auth-page.js?v=2"></script>
 
 </body>
 
 </html>
+

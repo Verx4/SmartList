@@ -83,7 +83,7 @@ public class CupomService {
             .filter(Cupom::isAtivo)
             .orElseThrow(() -> new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
-                "Cupom inválido ou não autorizado. Cadastre e ative o código no painel ADM."
+                "Cupom inválido, expirado ou não autorizado para este plano."
             ));
 
         if (ciclo != cicloPermitido || cupom.getCiclo() != cicloPermitido) {

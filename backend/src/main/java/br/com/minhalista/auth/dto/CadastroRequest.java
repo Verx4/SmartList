@@ -24,6 +24,13 @@ public record CadastroRequest(
     @Size(max = 180, message = "O e-mail é muito longo.")
     String email,
 
+    @NotBlank(message = "Informe seu CPF.")
+    @Pattern(
+        regexp = "^(?:\\d{11}|\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})$",
+        message = "Informe um CPF válido."
+    )
+    String cpf,
+
     @NotBlank(message = "Informe uma senha.")
     @Size(min = 6, max = 72, message = "A senha deve possuir entre 6 e 72 caracteres.")
     String senha,

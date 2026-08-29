@@ -4,6 +4,7 @@ import {
     solicitarRecuperacao
 } from "./auth.js";
 import { verificarApi } from "./api.js";
+import { cpfValido, formatarCpf, somenteDigitosCpf } from "./cpf.js";
 let temporizadorMensagem = null;
 const STATUS_SERVIDOR_TRANSITORIO = new Set([0, 408, 502, 503, 504]);
 
@@ -208,6 +209,12 @@ function configurarLogin() {
 function configurarCadastro() {
     const formulario =
         document.getElementById("formCadastro");
+    const campoCpf = formulario?.elements?.cpf;
+
+    campoCpf?.addEventListener("input", () => {
+        campoCpf.value = formatarCpf(campoCpf.value);
+        campoCpf.setCustomValidity("");
+    });
 
     formulario?.addEventListener(
         "submit",
@@ -220,6 +227,16 @@ function configurarCadastro() {
 
             const dados =
                 new FormData(formulario);
+            const cpf = somenteDigitosCpf(dados.get("cpf"));
+
+            if (!cpfValido(cpf)) {
+                campoCpf?.setCustomValidity("Informe um CPF válido.");
+                campoCpf?.reportValidity();
+                mostrarMensagem("Informe um CPF válido.", "erro");
+                return;
+            }
+
+            campoCpf?.setCustomValidity("");
 
             const senha =
                 String(dados.get("senha") || "");
@@ -284,6 +301,7 @@ function configurarCadastro() {
                         dados.get("email") || ""
                     ).trim(),
 
+                    cpf,
                     senha,
                     aceiteTermos,
 
@@ -389,3 +407,4 @@ if (document.readyState === "loading") {
 } else {
     iniciar();
 }
+

@@ -17,6 +17,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     boolean existsByEmailIgnoreCase(String email);
 
+    boolean existsByCpf(String cpf);
+
     long countByTipoAcesso(TipoAcesso tipoAcesso);
 
     long countByPerfil(Perfil perfil);

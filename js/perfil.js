@@ -1,7 +1,24 @@
 import { api } from "./api.js";
 import { exigirAutenticacao, sair, usuarioAtual } from "./auth.js";
+import { cpfValido, formatarCpf, somenteDigitosCpf } from "./cpf.js";
 
 let assinaturaAtual;
+
+function atualizarEstadoCpf(resposta = {}) {
+    const campo = document.getElementById("perfilCpf");
+    const status = document.getElementById("perfilCpfStatus");
+
+    if (campo) {
+        campo.value = "";
+        campo.placeholder = resposta.cpfMascarado || "000.000.000-00";
+    }
+
+    if (status) {
+        status.textContent = resposta.cadastrado
+            ? `CPF cadastrado: ${resposta.cpfMascarado}. Digite novamente somente para corrigir.`
+            : "Cadastre seu CPF para iniciar pagamentos no Mercado Pago.";
+    }
+}
 
 function exibirMensagem(texto, tipo = "sucesso") {
     const area = document.getElementById("mensagemPerfil");
@@ -83,22 +100,42 @@ const formulario = document.getElementById("formPerfil");
 preencherPerfil(usuarioAtual());
 
 if (formulario) {
+    const campoCpf = formulario.elements.cpf;
+
+    campoCpf?.addEventListener("input", () => {
+        campoCpf.value = formatarCpf(campoCpf.value);
+        campoCpf.setCustomValidity("");
+    });
+
     Promise.all([
         api.get("/usuarios/me"),
-        api.get("/assinaturas/atual")
+        api.get("/assinaturas/atual"),
+        api.get("/usuarios/me/cpf")
     ])
-        .then(([usuario, assinatura]) => {
+        .then(([usuario, assinatura, cpf]) => {
             assinaturaAtual = assinatura;
             localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
             window.dispatchEvent(new CustomEvent("usuarioatualizado", {
                 detail: { usuario }
             }));
             preencherPerfil(usuario, assinatura);
+            atualizarEstadoCpf(cpf);
         })
         .catch(erro => exibirMensagem(erro.message, "erro"));
 
     formulario.addEventListener("submit", async evento => {
         evento.preventDefault();
+
+        const cpfInformado = somenteDigitosCpf(formulario.elements.cpf?.value);
+
+        if (cpfInformado && !cpfValido(cpfInformado)) {
+            formulario.elements.cpf.setCustomValidity("Informe um CPF válido.");
+            formulario.elements.cpf.reportValidity();
+            exibirMensagem("Informe um CPF válido.", "erro");
+            return;
+        }
+
+        formulario.elements.cpf?.setCustomValidity("");
 
         const botao = formulario.querySelector('button[type="submit"]');
         const textoOriginal = botao?.textContent;
@@ -117,6 +154,11 @@ if (formulario) {
                 notificarPromocoes: formulario.elements.notificarPromocoes.checked,
                 notificarPrecos: formulario.elements.notificarPrecos.checked
             });
+
+            if (cpfInformado) {
+                const cpf = await api.put("/usuarios/me/cpf", { cpf: cpfInformado });
+                atualizarEstadoCpf(cpf);
+            }
 
             localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
             window.dispatchEvent(new CustomEvent("usuarioatualizado", {
@@ -140,3 +182,4 @@ document.getElementById("btnSair")?.addEventListener("click", sair);
 document.getElementById("btnExcluirConta")?.addEventListener("click", () => {
     exibirMensagem("A exclusão de conta estará disponível em breve.", "aviso");
 });
+
