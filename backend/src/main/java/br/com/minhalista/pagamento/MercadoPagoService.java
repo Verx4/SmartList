@@ -1,6 +1,7 @@
 package br.com.minhalista.pagamento;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.time.Duration;
 import java.util.LinkedHashMap;
@@ -63,44 +64,27 @@ public class MercadoPagoService {
         exigirConfiguracao();
 
         String assinaturaId = assinatura.getId().toString();
-        String retornoBase = frontendUrl + "/assinatura.html";
-        Map<String, Object> metadata = new LinkedHashMap<>();
-        metadata.put("assinatura_id", assinaturaId);
-        metadata.put("usuario_id", usuario.getId().toString());
-        metadata.put("ciclo", assinatura.getCiclo().name());
 
-        if (StringUtils.hasText(assinatura.getCupomCodigo())) {
-            metadata.put("cupom_codigo", assinatura.getCupomCodigo());
-            metadata.put(
-                "cupom_percentual_desconto",
-                assinatura.getCupomPercentualDesconto()
-            );
-            metadata.put("cupom_valor_original", assinatura.getCupomValorOriginal());
-            metadata.put("cupom_valor_desconto", assinatura.getCupomValorDesconto());
-            metadata.put("cupom_primeira_cobranca_somente", true);
-        }
-
-        Map<String, Object> corpo = new LinkedHashMap<>();
-        corpo.put("items", List.of(Map.of(
-            "id", "premium-" + assinatura.getCiclo().name().toLowerCase(),
-            "title", "Smart List Premium " + assinatura.getCiclo().getNome(),
-            "description", "Acesso aos recursos Premium do Smart List",
-            "quantity", 1,
-            "currency_id", "BRL",
-            "unit_price", assinatura.getValor()
-        )));
-        corpo.put("payer", Map.of("email", usuario.getEmail()));
-        corpo.put("external_reference", assinaturaId);
-        corpo.put("metadata", metadata);
-        corpo.put("back_urls", Map.of(
-            "success", retornoBase + "?pagamento=sucesso",
-            "pending", retornoBase + "?pagamento=pendente",
-            "failure", retornoBase + "?pagamento=falha"
-        ));
-        corpo.put("auto_return", "approved");
-        corpo.put("notification_url", montarWebhookUrl());
+        LOG.info(
+            "Criando preferência Mercado Pago: checkout={}, usuario={}, ciclo={}, cupom={}, valorOriginal={}, desconto={}, total={}.",
+            assinaturaId,
+            usuario.getId(),
+            assinatura.getCiclo(),
+            StringUtils.hasText(assinatura.getCupomCodigo())
+                ? assinatura.getCupomCodigo()
+                : "SEM_CUPOM",
+            assinatura.getCupomValorOriginal() == null
+                ? assinatura.getValor()
+                : assinatura.getCupomValorOriginal(),
+            assinatura.getCupomValorDesconto() == null
+                ? BigDecimal.ZERO.setScale(2)
+                : assinatura.getCupomValorDesconto(),
+            assinatura.getValor()
+        );
 
         try {
+            Map<String, Object> corpo = montarCorpoPreferencia(usuario, assinatura);
+
             Map<String, Object> resposta = restClient.post()
                 .uri("/checkout/preferences")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -131,22 +115,94 @@ public class MercadoPagoService {
                 checkoutUrl,
                 checkoutUrl
             );
+        } catch (RegraNegocioException erro) {
+            throw erro;
         } catch (RestClientResponseException erro) {
             LOG.warn(
-                "Mercado Pago recusou a criação da preferência com HTTP {}.",
-                erro.getStatusCode().value()
+                "Mercado Pago recusou a preferência do checkout {}: HTTP {}, resposta={}.",
+                assinaturaId,
+                erro.getStatusCode().value(),
+                respostaSegura(erro.getResponseBodyAsString())
             );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
-                "O Mercado Pago recusou a criação do pagamento. Confira as credenciais e tente novamente."
+                "O Mercado Pago recusou a criação do pagamento. Tente novamente em instantes."
             );
         } catch (RestClientException erro) {
-            LOG.warn("Falha de comunicação ao criar preferência no Mercado Pago.");
+            LOG.warn(
+                "Falha de comunicação ao criar a preferência do checkout {} no Mercado Pago: {}.",
+                assinaturaId,
+                erro.getClass().getSimpleName()
+            );
             throw new RegraNegocioException(
                 HttpStatus.BAD_GATEWAY,
                 "Não foi possível conectar ao Mercado Pago. Tente novamente em instantes."
             );
+        } catch (RuntimeException erro) {
+            LOG.error(
+                "Falha interna ao preparar a preferência Mercado Pago do checkout {}.",
+                assinaturaId,
+                erro
+            );
+            throw new RegraNegocioException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Não foi possível preparar o pagamento. Tente novamente."
+            );
         }
+    }
+
+    Map<String, Object> montarCorpoPreferencia(
+        Usuario usuario,
+        Assinatura assinatura
+    ) {
+        if (usuario == null || usuario.getId() == null
+            || !StringUtils.hasText(usuario.getEmail())) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "A conta precisa ter um e-mail válido para iniciar o pagamento."
+            );
+        }
+
+        if (assinatura == null || assinatura.getId() == null
+            || assinatura.getCiclo() == null) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Não foi possível identificar o plano escolhido."
+            );
+        }
+
+        BigDecimal valorCobranca = normalizarValorCobranca(assinatura.getValor());
+        String assinaturaId = assinatura.getId().toString();
+        String retornoBase = frontendUrl + "/assinatura.html";
+        Map<String, Object> metadata = new LinkedHashMap<>();
+        metadata.put("assinatura_id", assinaturaId);
+        metadata.put("usuario_id", usuario.getId().toString());
+        metadata.put("ciclo", assinatura.getCiclo().name());
+
+        // A auditoria do cupom permanece no banco do Smart List. Para o Mercado
+        // Pago seguem apenas os identificadores necessários à confirmação; assim
+        // o request com cupom difere do normal somente pelo unit_price oficial.
+        Map<String, Object> item = new LinkedHashMap<>();
+        item.put("id", "premium-" + assinatura.getCiclo().name().toLowerCase());
+        item.put("title", "Smart List Premium " + assinatura.getCiclo().getNome());
+        item.put("description", "Acesso aos recursos Premium do Smart List");
+        item.put("quantity", 1);
+        item.put("currency_id", "BRL");
+        item.put("unit_price", valorCobranca);
+
+        Map<String, Object> corpo = new LinkedHashMap<>();
+        corpo.put("items", List.of(item));
+        corpo.put("payer", Map.of("email", usuario.getEmail()));
+        corpo.put("external_reference", assinaturaId);
+        corpo.put("metadata", metadata);
+        corpo.put("back_urls", Map.of(
+            "success", retornoBase + "?pagamento=sucesso",
+            "pending", retornoBase + "?pagamento=pendente",
+            "failure", retornoBase + "?pagamento=falha"
+        ));
+        corpo.put("auto_return", "approved");
+        corpo.put("notification_url", montarWebhookUrl());
+        return corpo;
     }
 
     @SuppressWarnings("unchecked")
@@ -217,6 +273,30 @@ public class MercadoPagoService {
     private String montarWebhookUrl() {
         String separador = webhookUrl.contains("?") ? "&" : "?";
         return webhookUrl + separador + "source_news=webhooks";
+    }
+
+    private BigDecimal normalizarValorCobranca(BigDecimal valor) {
+        if (valor == null || valor.signum() <= 0) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "O valor do plano é inválido."
+            );
+        }
+
+        return valor.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private String respostaSegura(String corpo) {
+        if (!StringUtils.hasText(corpo)) {
+            return "sem corpo";
+        }
+
+        String normalizado = corpo
+            .replaceAll("[\\r\\n\\t]+", " ")
+            .replaceAll("(?i)bearer\\s+[a-z0-9._-]+", "Bearer [oculto]");
+        return normalizado.length() <= 1200
+            ? normalizado
+            : normalizado.substring(0, 1200) + "...";
     }
 
     private boolean webhookUrlValida(String valor) {
