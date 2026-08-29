@@ -522,6 +522,7 @@ body[data-admin-page="dashboard"] .admin-grid > .card {
     align-items: center;
     gap: 7px;
     padding: 6px 10px;
+    border: 1px solid transparent;
     border-radius: 999px;
     font-size: 13px;
     font-weight: 700;
@@ -545,6 +546,98 @@ body[data-admin-page="dashboard"] .admin-grid > .card {
 .status-neutro {
     color: var(--cor-texto-secundario, #94a3b8);
     background: var(--cor-superficie-secundaria, #1f2937);
+}
+
+html[data-palette="claro"] body[data-admin-page] .status-ativo,
+html[data-palette="claro"] body[data-admin-page] .status-ok {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+html[data-palette="claro"] body[data-admin-page] .status-inativo,
+html[data-palette="claro"] body[data-admin-page] .status-erro {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+html[data-palette="claro"] body[data-admin-page] .status-alerta,
+html[data-palette="claro"] body[data-admin-page] .status-aviso {
+    color: #92400e;
+    background: #fef3c7;
+    border-color: #fcd34d;
+}
+
+html[data-palette="claro"] body[data-admin-page] .status-neutro {
+    color: #334155;
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.admin-main .btn-secondary,
+.admin-main .btn-secundario {
+    color: var(--cor-texto, #ffffff);
+    background: var(--cor-superficie-secundaria, #1f2937);
+    border: 1px solid var(--cor-borda, #334155);
+}
+
+.admin-main .btn-secondary:hover,
+.admin-main .btn-secundario:hover {
+    color: var(--cor-texto, #ffffff);
+    background: var(--cor-superficie-hover, #263449);
+    border-color: var(--cor-primaria, #2563eb);
+}
+
+.admin-atalhos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+}
+
+.admin-atalho {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 76px;
+    padding: 16px;
+    color: var(--cor-texto, #ffffff) !important;
+    background: var(--cor-superficie-secundaria, #1f2937) !important;
+    border: 1px solid var(--cor-borda, #334155) !important;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.3;
+    text-align: center;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.admin-atalho:hover,
+.admin-atalho:focus-visible {
+    color: var(--cor-texto-botao, #ffffff) !important;
+    background: var(--cor-primaria, #2563eb) !important;
+    border-color: var(--cor-primaria, #2563eb) !important;
+    transform: translateY(-2px);
+}
+
+.admin-atalho:focus-visible {
+    outline: 3px solid rgba(var(--cor-primaria-rgb, 37, 99, 235), 0.3);
+    outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+    .admin-atalhos {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 460px) {
+    .admin-atalhos {
+        grid-template-columns: 1fr;
+    }
 }
 
 .exemplo-margem {

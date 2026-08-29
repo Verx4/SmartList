@@ -36,3 +36,29 @@ test("o item ativo do menu respeita o contraste do tema", () => {
         /\.admin-nav a\.active\s*\{[\s\S]*color:\s*var\(--cor-texto-botao, #ffffff\)/
     );
 });
+
+test("o tema claro usa contraste forte nos estados administrativos", () => {
+    assert.match(
+        css,
+        /html\[data-palette="claro"\] body\[data-admin-page\] \.status-ativo,[\s\S]*color:\s*#166534;[\s\S]*background:\s*#dcfce7;/
+    );
+    assert.match(
+        css,
+        /html\[data-palette="claro"\] body\[data-admin-page\] \.status-inativo,[\s\S]*color:\s*#991b1b;[\s\S]*background:\s*#fee2e2;/
+    );
+});
+
+test("os atalhos administrativos formam uma grade responsiva sem sobreposição", () => {
+    assert.match(
+        css,
+        /\.admin-atalhos\s*\{[\s\S]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/
+    );
+    assert.match(
+        css,
+        /@media \(max-width: 900px\)[\s\S]*\.admin-atalhos\s*\{[\s\S]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/
+    );
+    assert.match(
+        css,
+        /@media \(max-width: 460px\)[\s\S]*\.admin-atalhos\s*\{[\s\S]*grid-template-columns:\s*1fr/
+    );
+});
