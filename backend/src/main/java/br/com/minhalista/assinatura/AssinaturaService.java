@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import br.com.minhalista.pagamento.PagamentoConsultado;
 import br.com.minhalista.usuario.TipoAcesso;
@@ -186,11 +187,36 @@ public class AssinaturaService {
     }
 
     private boolean dadosConferem(Assinatura assinatura, PagamentoConsultado pagamento) {
-        return assinatura.getId().toString().equals(pagamento.assinaturaIdMetadata())
-            && assinatura.getCiclo().name().equalsIgnoreCase(pagamento.cicloMetadata())
-            && pagamento.valor() != null
-            && assinatura.getValor().compareTo(pagamento.valor()) == 0
-            && "BRL".equalsIgnoreCase(pagamento.moeda());
+        boolean assinaturaMetadataConfere =
+            !StringUtils.hasText(pagamento.assinaturaIdMetadata())
+                || assinatura.getId().toString()
+                    .equals(pagamento.assinaturaIdMetadata());
+        boolean cicloMetadataConfere =
+            !StringUtils.hasText(pagamento.cicloMetadata())
+                || assinatura.getCiclo().name()
+                    .equalsIgnoreCase(pagamento.cicloMetadata());
+        boolean valorConfere = pagamento.valor() != null
+            && assinatura.getValor().compareTo(pagamento.valor()) == 0;
+        boolean moedaConfere = "BRL".equalsIgnoreCase(pagamento.moeda());
+
+        if (!assinaturaMetadataConfere
+            || !cicloMetadataConfere
+            || !valorConfere
+            || !moedaConfere) {
+            LOG.warn(
+                "Pagamento Mercado Pago rejeitado na conferência: checkout={}, assinaturaMetadata={}, cicloMetadata={}, valor={}, moeda={}.",
+                assinatura.getId(),
+                assinaturaMetadataConfere,
+                cicloMetadataConfere,
+                valorConfere,
+                moedaConfere
+            );
+        }
+
+        return assinaturaMetadataConfere
+            && cicloMetadataConfere
+            && valorConfere
+            && moedaConfere;
     }
 
     private void ativar(Assinatura assinatura, String pagamentoId) {

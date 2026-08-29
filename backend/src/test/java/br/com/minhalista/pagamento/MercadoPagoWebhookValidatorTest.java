@@ -26,9 +26,18 @@ class MercadoPagoWebhookValidatorTest {
     private static final String REQUEST_ID = "req-123";
 
     @Test
-    void aceitaAssinaturaValidaDentroDaJanela() {
+    void aceitaAssinaturaValidaComTimestampEmMilissegundos() {
         MercadoPagoWebhookValidator validator = validator();
         String timestamp = String.valueOf(AGORA.toEpochMilli());
+        String assinatura = cabecalhoAssinado(DATA_ID, REQUEST_ID, timestamp);
+
+        assertTrue(validator.validar(assinatura, REQUEST_ID, DATA_ID));
+    }
+
+    @Test
+    void aceitaAssinaturaValidaComTimestampEmSegundos() {
+        MercadoPagoWebhookValidator validator = validator();
+        String timestamp = String.valueOf(AGORA.getEpochSecond());
         String assinatura = cabecalhoAssinado(DATA_ID, REQUEST_ID, timestamp);
 
         assertTrue(validator.validar(assinatura, REQUEST_ID, DATA_ID));
@@ -47,7 +56,7 @@ class MercadoPagoWebhookValidatorTest {
     void rejeitaAssinaturaForaDaJanelaDeReplay() {
         MercadoPagoWebhookValidator validator = validator();
         String timestamp = String.valueOf(
-            AGORA.minus(Duration.ofMinutes(6)).toEpochMilli()
+            AGORA.minus(Duration.ofMinutes(6)).getEpochSecond()
         );
         String assinatura = cabecalhoAssinado(DATA_ID, REQUEST_ID, timestamp);
 

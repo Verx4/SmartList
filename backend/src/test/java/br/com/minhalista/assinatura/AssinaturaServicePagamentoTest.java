@@ -99,6 +99,32 @@ class AssinaturaServicePagamentoTest {
     }
 
     @Test
+    void ativaQuandoGatewayNaoReplicaMetadadosDaPreferencia() {
+        PagamentoConsultado pagamento = new PagamentoConsultado(
+            "123456",
+            "approved",
+            assinaturaId.toString(),
+            null,
+            null,
+            new BigDecimal("9.97"),
+            "BRL",
+            false
+        );
+
+        when(repository.findByMercadoPagoPagamentoId("123456"))
+            .thenReturn(Optional.empty());
+        when(repository.findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+            eq(usuario.getId()),
+            eq(StatusAssinatura.ATIVA),
+            any()
+        )).thenReturn(Optional.empty());
+
+        assertTrue(service.confirmarPagamentoDoUsuario(pagamento, usuario.getId()));
+        assertEquals(StatusAssinatura.ATIVA, assinatura.getStatus());
+        assertEquals(TipoAcesso.PREMIUM, usuario.getTipoAcesso());
+    }
+
+    @Test
     void registraQueDescontoFoiUsadoQuandoPrimeiroPagamentoEConfirmado() {
         assinatura.setValor(new BigDecimal("9.47"));
         assinatura.setCupomCodigo("CLUBE5");
