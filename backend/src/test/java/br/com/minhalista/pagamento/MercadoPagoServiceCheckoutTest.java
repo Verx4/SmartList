@@ -45,6 +45,7 @@ class MercadoPagoServiceCheckoutTest {
         );
         lenient().when(usuario.getId()).thenReturn(UUID.randomUUID());
         lenient().when(usuario.getEmail()).thenReturn("cliente@example.com");
+        lenient().when(usuario.getNome()).thenReturn("Cliente Teste");
         lenient().when(usuario.getCpf()).thenReturn("52998224725");
         lenient().when(assinatura.getId()).thenReturn(UUID.randomUUID());
     }
@@ -58,7 +59,14 @@ class MercadoPagoServiceCheckoutTest {
         assertEquals(new BigDecimal("9.97"), valorUnitario(corpo));
         assertTrue(item(corpo).get("title") instanceof String);
         assertEquals(1, item(corpo).get("quantity"));
+        assertEquals("services", item(corpo).get("category_id"));
+        assertEquals(
+            "premium-" + assinatura.getId(),
+            item(corpo).get("id")
+        );
         assertTrue(valorUnitario(corpo).signum() > 0);
+        assertEquals("Cliente", pagador(corpo).get("name"));
+        assertEquals("Teste", pagador(corpo).get("surname"));
         assertEquals("CPF", identificacao(corpo).get("type"));
         assertEquals("52998224725", identificacao(corpo).get("number"));
         assertFalse(metadata(corpo).containsKey("cupom_codigo"));
@@ -221,9 +229,13 @@ class MercadoPagoServiceCheckoutTest {
     }
 
     @SuppressWarnings("unchecked")
+    private Map<String, Object> pagador(Map<String, Object> corpo) {
+        return (Map<String, Object>) corpo.get("payer");
+    }
+
+    @SuppressWarnings("unchecked")
     private Map<String, Object> identificacao(Map<String, Object> corpo) {
-        Map<String, Object> pagador = (Map<String, Object>) corpo.get("payer");
-        return (Map<String, Object>) pagador.get("identification");
+        return (Map<String, Object>) pagador(corpo).get("identification");
     }
 
     private boolean contemNuloOuTextoVazio(Object valor) {
