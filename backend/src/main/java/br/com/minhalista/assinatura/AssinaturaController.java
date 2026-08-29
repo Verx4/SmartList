@@ -3,6 +3,9 @@ package br.com.minhalista.assinatura;
 import java.util.List;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +25,8 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/assinaturas")
 public class AssinaturaController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AssinaturaController.class);
 
     private final AssinaturaService assinaturaService;
     private final MercadoPagoService mercadoPagoService;
@@ -109,7 +114,15 @@ public class AssinaturaController {
         try {
             checkout = mercadoPagoService.criarPreferencia(usuario, assinatura);
         } catch (RuntimeException erro) {
-            assinaturaService.registrarFalhaCheckout(assinatura.getId());
+            try {
+                assinaturaService.registrarFalhaCheckout(assinatura.getId());
+            } catch (RuntimeException falhaRegistro) {
+                LOG.error(
+                    "Não foi possível cancelar o checkout {} após uma falha no Mercado Pago.",
+                    assinatura.getId(),
+                    falhaRegistro
+                );
+            }
             throw erro;
         }
 

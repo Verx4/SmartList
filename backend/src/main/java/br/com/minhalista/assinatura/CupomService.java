@@ -74,7 +74,7 @@ public class CupomService {
         repository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CupomAplicacaoResponse aplicar(String codigoInformado, CicloAssinatura ciclo) {
         String codigo = normalizar(codigoInformado);
         BigDecimal percentual = percentualDoCodigo(codigo);
