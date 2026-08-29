@@ -87,7 +87,7 @@ public class MercadoPagoWebhookValidator {
         Instant instante;
 
         try {
-            instante = Instant.ofEpochMilli(timestamp);
+            instante = converterTimestamp(timestamp);
         } catch (RuntimeException erro) {
             return false;
         }
@@ -163,6 +163,18 @@ public class MercadoPagoWebhookValidator {
         } catch (GeneralSecurityException erro) {
             throw new IllegalStateException("HMAC-SHA256 indisponível.", erro);
         }
+    }
+
+    private Instant converterTimestamp(long timestamp) {
+        if (timestamp <= 0) {
+            throw new IllegalArgumentException("Timestamp inválido.");
+        }
+
+        // O Checkout Pro usa segundos em parte das notificações, enquanto
+        // integrações mais novas do Mercado Pago podem enviar milissegundos.
+        return timestamp < 100_000_000_000L
+            ? Instant.ofEpochSecond(timestamp)
+            : Instant.ofEpochMilli(timestamp);
     }
 
     private String normalizar(String valor) {
