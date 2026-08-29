@@ -32,6 +32,7 @@ test("ADM permite escolher, autorizar, desativar e excluir nomes de cupons", asy
     assert.match(pagina, /Criar e autorizar cupons/);
     assert.match(pagina, /id="formCupom"/);
     assert.match(pagina, /id="codigoCupomAdmin"/);
+    assert.match(pagina, /placeholder="Ex\.: SMART5 ou SMART10"/);
     assert.match(pagina, /id="cicloCupomAdmin"/);
     assert.match(pagina, /class="admin-cupom-form-acoes"/);
     assert.doesNotMatch(pagina, /class="admin-cupom-codigo">FINAL 5/);
