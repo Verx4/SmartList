@@ -60,7 +60,9 @@ public record UsuarioAdminResponse(
             usuario.getPerfil().name(),
             usuario.getTipoAcesso().name(),
             classificar(usuario, assinatura != null),
-            assinatura == null ? null : assinatura.getCiclo().name(),
+            assinatura == null || assinatura.getCiclo() == null
+                ? null
+                : assinatura.getCiclo().name(),
             assinatura != null,
             assinatura == null ? null : assinatura.getVenceEm(),
             usuario.isAtivo(),
