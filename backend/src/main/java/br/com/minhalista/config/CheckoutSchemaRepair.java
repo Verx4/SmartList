@@ -33,16 +33,13 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
             return;
         }
 
-        jdbcTemplate.execute("""
-            ALTER TABLE assinaturas
-                ADD COLUMN IF NOT EXISTS cupom_codigo VARCHAR(30),
-                ADD COLUMN IF NOT EXISTS cupom_percentual_desconto NUMERIC(5, 2),
-                ADD COLUMN IF NOT EXISTS cupom_valor_desconto NUMERIC(10, 2),
-                ADD COLUMN IF NOT EXISTS cupom_valor_original NUMERIC(10, 2),
-                ADD COLUMN IF NOT EXISTS cupom_aplicado_em TIMESTAMP WITH TIME ZONE,
-                ADD COLUMN IF NOT EXISTS cupom_primeira_cobranca_somente BOOLEAN DEFAULT FALSE,
-                ADD COLUMN IF NOT EXISTS cupom_primeiro_pagamento_aplicado BOOLEAN DEFAULT FALSE
-            """);
+        adicionarColunaAssinatura("cupom_codigo VARCHAR(30)");
+        adicionarColunaAssinatura("cupom_percentual_desconto NUMERIC(5, 2)");
+        adicionarColunaAssinatura("cupom_valor_desconto NUMERIC(10, 2)");
+        adicionarColunaAssinatura("cupom_valor_original NUMERIC(10, 2)");
+        adicionarColunaAssinatura("cupom_aplicado_em TIMESTAMP WITH TIME ZONE");
+        adicionarColunaAssinatura("cupom_primeira_cobranca_somente BOOLEAN DEFAULT FALSE");
+        adicionarColunaAssinatura("cupom_primeiro_pagamento_aplicado BOOLEAN DEFAULT FALSE");
         jdbcTemplate.update("""
             UPDATE assinaturas
                SET cupom_primeira_cobranca_somente = FALSE
@@ -53,13 +50,10 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
                SET cupom_primeiro_pagamento_aplicado = FALSE
              WHERE cupom_primeiro_pagamento_aplicado IS NULL
             """);
-        jdbcTemplate.execute("""
-            ALTER TABLE assinaturas
-                ALTER COLUMN cupom_primeira_cobranca_somente SET DEFAULT FALSE,
-                ALTER COLUMN cupom_primeira_cobranca_somente SET NOT NULL,
-                ALTER COLUMN cupom_primeiro_pagamento_aplicado SET DEFAULT FALSE,
-                ALTER COLUMN cupom_primeiro_pagamento_aplicado SET NOT NULL
-            """);
+        alterarColunaAssinatura("cupom_primeira_cobranca_somente SET DEFAULT FALSE");
+        alterarColunaAssinatura("cupom_primeira_cobranca_somente SET NOT NULL");
+        alterarColunaAssinatura("cupom_primeiro_pagamento_aplicado SET DEFAULT FALSE");
+        alterarColunaAssinatura("cupom_primeiro_pagamento_aplicado SET NOT NULL");
 
         if (tabelaExiste("cupons")) {
             jdbcTemplate.execute("""
@@ -69,6 +63,14 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
         }
 
         LOG.info("Esquema do checkout verificado e reparado com sucesso.");
+    }
+
+    private void adicionarColunaAssinatura(String definicao) {
+        jdbcTemplate.execute("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS " + definicao);
+    }
+
+    private void alterarColunaAssinatura(String alteracao) {
+        jdbcTemplate.execute("ALTER TABLE assinaturas ALTER COLUMN " + alteracao);
     }
 
     private boolean tabelaExiste(String tabela) {
