@@ -22,7 +22,6 @@
     <link rel="stylesheet" href="./css/forms.css">
     <link rel="stylesheet" href="./css/checkout.css?v=3">
     <link rel="stylesheet" href="./css/cupom-checkout.css?v=1">
-    <link rel="stylesheet" href="./css/checkout-bricks.css?v=1">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/temas.css">
 </head>
@@ -47,101 +46,79 @@
             <span class="page-eyebrow">Checkout seguro</span>
             <h1>Finalizar assinatura</h1>
             <p>
-                Pague com Pix ou cartão sem sair do Smart List.
-                O processamento é feito com segurança pelo Mercado Pago.
+                Confira o plano e continue para o ambiente seguro do Mercado Pago.
             </p>
         </section>
 
         <div class="checkout-grid">
-            <section class="card checkout-form-card checkout-bricks-card">
-                <div class="checkout-bricks-titulo">
-                    <div>
-                        <span class="card-label">Pagamento no Smart List</span>
-                        <h2>Escolha Pix ou cartão</h2>
+            <section class="card checkout-form-card">
+                <h2>Pagamento protegido</h2>
+
+                <form id="formCheckout" class="form">
+                    <div class="texto-seguranca">
+                        <p>
+                            🔒 O Smart List não solicita, recebe nem armazena número
+                            de cartão, código de segurança ou senha de pagamento.
+                        </p>
+                        <p>
+                            Seu nome, e-mail e CPF de cadastro identificam a assinatura.
+                            Os dados financeiros serão informados apenas ao Mercado Pago.
+                        </p>
                     </div>
-                    <span class="checkout-seguro-badge" aria-label="Pagamento protegido">
-                        🔒 Seguro
-                    </span>
-                </div>
 
-                <div class="texto-seguranca checkout-bricks-seguranca">
-                    <p>
-                        Os campos de cartão são fornecidos diretamente pelo Mercado Pago.
-                        O Smart List não recebe nem armazena número do cartão ou código de segurança.
-                    </p>
-                    <p>
-                        Você não precisa ter uma conta no Mercado Pago para pagar com os meios disponíveis abaixo.
-                    </p>
-                </div>
-
-                <div class="checkout-cupom">
-                    <label for="codigoCupom">Possui um cupom?</label>
-                    <div class="checkout-cupom-acoes">
-                        <input
-                            id="codigoCupom"
-                            type="text"
-                            maxlength="30"
-                            autocomplete="off"
-                            placeholder="Digite o código do cupom">
+                        <div class="checkout-cupom">
+                        <label for="codigoCupom">Possui um cupom?</label>
+                        <div class="checkout-cupom-acoes">
+                            <input
+                                id="codigoCupom"
+                                type="text"
+                                maxlength="30"
+                                autocomplete="off"
+                                placeholder="Digite o código do cupom">
+                            <button
+                                id="btnAplicarCupom"
+                                class="btn btn-secondary"
+                                type="button">
+                                Aplicar
+                            </button>
+                        </div>
                         <button
-                            id="btnAplicarCupom"
-                            class="btn btn-secondary"
-                            type="button">
-                            Aplicar
+                            id="btnRemoverCupom"
+                            class="btn-cupom-remover"
+                            type="button"
+                            hidden>
+                            Remover cupom
                         </button>
+                        <small id="mensagemCupom" aria-live="polite">
+                            O desconto será exibido no resumo antes do pagamento.
+                        </small>
                     </div>
+
+                    <label class="checkbox-label" for="aceitePagamento">
+                        <input
+                            type="checkbox"
+                            id="aceitePagamento"
+                            required>
+
+                        <span>
+                            Confirmo que li as condições da assinatura e aceito
+                            continuar para o Mercado Pago.
+                        </span>
+                    </label>
+
                     <button
-                        id="btnRemoverCupom"
-                        class="btn-cupom-remover"
-                        type="button"
-                        hidden>
-                        Remover cupom
+                        id="btnConfirmarPagamento"
+                        class="btn btn-primary btn-block"
+                        type="submit">
+                        Ir para o Mercado Pago
                     </button>
-                    <small id="mensagemCupom" aria-live="polite">
-                        O desconto será aplicado ao valor enviado ao Mercado Pago.
-                    </small>
-                </div>
 
-                <label class="checkbox-label checkout-aceite" for="aceitePagamento">
-                    <input
-                        type="checkbox"
-                        id="aceitePagamento">
-                    <span>
-                        Confirmo que li as condições da assinatura e autorizo o processamento do pagamento pelo Mercado Pago.
-                    </span>
-                </label>
-
-                <div
-                    id="checkoutBrickLoading"
-                    class="checkout-brick-loading"
-                    role="status"
-                    aria-live="polite">
-                    Carregando pagamento seguro...
-                </div>
-
-                <div id="paymentBrick_container" class="checkout-brick-container"></div>
-                <div
-                    id="statusScreenBrick_container"
-                    class="checkout-brick-container checkout-status-container"
-                    hidden>
-                </div>
-
-                <div class="checkout-bricks-acoes">
-                    <button
-                        id="btnNovoPagamento"
-                        class="btn btn-secondary"
-                        type="button"
-                        hidden>
-                        Tentar outro pagamento
-                    </button>
-                    <a
-                        id="btnVoltarPlanos"
-                        class="btn btn-primary"
-                        href="./assinatura.html"
-                        hidden>
-                        Ver meu plano
-                    </a>
-                </div>
+                    <div
+                        id="mensagemCheckout"
+                        class="mensagem"
+                        aria-live="polite">
+                    </div>
+                </form>
             </section>
 
             <aside id="resumoPlano" class="card checkout-resumo">
@@ -207,9 +184,8 @@
         </div>
     </footer>
 
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/checkout-bricks.js?v=1"></script>
+    <script type="module" src="./js/assinatura.js?v=9"></script>
 </body>
 
 </html>
