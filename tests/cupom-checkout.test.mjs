@@ -23,16 +23,20 @@ test("tela de planos exibe, aplica e remove cupom antes do checkout", async () =
 });
 
 test("ADM permite escolher, autorizar, desativar e excluir nomes de cupons", async () => {
-    const [pagina, script] = await Promise.all([
+    const [pagina, script, estilo] = await Promise.all([
         ler("admin/planos.html"),
-        ler("js/admin-planos.js")
+        ler("js/admin-planos.js"),
+        ler("css/admin.css")
     ]);
 
     assert.match(pagina, /Criar e autorizar cupons/);
     assert.match(pagina, /id="formCupom"/);
     assert.match(pagina, /id="codigoCupomAdmin"/);
     assert.match(pagina, /id="cicloCupomAdmin"/);
+    assert.match(pagina, /class="admin-cupom-form-acoes"/);
     assert.doesNotMatch(pagina, /class="admin-cupom-codigo">FINAL 5/);
+    assert.match(estilo, /grid-template-columns: minmax\(280px, 1\.35fr\) minmax\(320px, 0\.85fr\)/);
+    assert.match(estilo, /\.admin-cupom-form-acoes/);
     assert.match(script, /api\.get\("\/admin\/cupons"\)/);
     assert.match(script, /api\.post\("\/admin\/cupons"/);
     assert.match(script, /api\.delete\(`\/admin\/cupons\/\$\{/);

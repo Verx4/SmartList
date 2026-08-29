@@ -7,6 +7,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,8 @@ import br.com.minhalista.usuario.UsuarioRepository;
 
 @Service
 public class AdminService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminService.class);
 
     private final UsuarioRepository usuarioRepository;
     private final AssinaturaRepository assinaturaRepository;
@@ -58,9 +62,8 @@ public class AdminService {
         this.historicoRepository = historicoRepository;
     }
 
-    @Transactional
     public ResumoAdminResponse resumo() {
-        assinaturaValidadeService.sincronizarAssinaturasExpiradas();
+        sincronizarAssinaturasSemBloquearPainel();
         List<UsuarioAdminResponse> usuarios = usuarioRepository
             .findAllByOrderByCriadoEmDesc()
             .stream()
@@ -81,9 +84,9 @@ public class AdminService {
             usuariosCortesia,
             usuariosPremiumManual,
             usuariosInativos,
-            assinaturaRepository.countByCicloAndStatus(CicloAssinatura.MENSAL, StatusAssinatura.ATIVA),
-            assinaturaRepository.countByCicloAndStatus(CicloAssinatura.TRIMESTRAL, StatusAssinatura.ATIVA),
-            assinaturaRepository.countByCicloAndStatus(CicloAssinatura.ANUAL, StatusAssinatura.ATIVA),
+            contarAssinaturasAtivas(CicloAssinatura.MENSAL),
+            contarAssinaturasAtivas(CicloAssinatura.TRIMESTRAL),
+            contarAssinaturasAtivas(CicloAssinatura.ANUAL),
             listaRepository.count(),
             itemRepository.count(),
             mercadoRepository.count(),
@@ -100,9 +103,8 @@ public class AdminService {
             .count();
     }
 
-    @Transactional
     public List<UsuarioAdminResponse> usuarios() {
-        assinaturaValidadeService.sincronizarAssinaturasExpiradas();
+        sincronizarAssinaturasSemBloquearPainel();
         return usuarioRepository.findAllByOrderByCriadoEmDesc().stream()
             .map(this::respostaUsuario)
             .toList();
@@ -278,15 +280,52 @@ public class AdminService {
     }
 
     private UsuarioAdminResponse respostaUsuario(Usuario usuario) {
-        Assinatura assinatura = assinaturaRepository
-            .findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+        Assinatura assinatura = null;
+
+        try {
+            assinatura = assinaturaRepository
+                .findFirstByUsuarioIdAndStatusAndVenceEmAfterOrderByVenceEmDesc(
+                    usuario.getId(),
+                    StatusAssinatura.ATIVA,
+                    Instant.now()
+                )
+                .orElse(null);
+        } catch (RuntimeException erro) {
+            LOGGER.error(
+                "Falha ao consultar a assinatura ativa do usuário {} no painel administrativo.",
                 usuario.getId(),
-                StatusAssinatura.ATIVA,
-                Instant.now()
-            )
-            .orElse(null);
+                erro
+            );
+        }
 
         return UsuarioAdminResponse.deComAssinatura(usuario, assinatura);
+    }
+
+    private void sincronizarAssinaturasSemBloquearPainel() {
+        try {
+            assinaturaValidadeService.sincronizarAssinaturasExpiradas();
+        } catch (RuntimeException erro) {
+            LOGGER.error(
+                "Falha ao sincronizar assinaturas durante a atualização do painel administrativo.",
+                erro
+            );
+        }
+    }
+
+    private long contarAssinaturasAtivas(CicloAssinatura ciclo) {
+        try {
+            return assinaturaRepository.countByCicloAndStatus(
+                ciclo,
+                StatusAssinatura.ATIVA
+            );
+        } catch (RuntimeException erro) {
+            LOGGER.error(
+                "Falha ao contar assinaturas ativas do ciclo {}.",
+                ciclo,
+                erro
+            );
+            return 0;
+        }
     }
 
     @Transactional
