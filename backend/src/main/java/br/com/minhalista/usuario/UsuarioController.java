@@ -43,8 +43,8 @@ public class UsuarioController {
     public Map<String, String> solicitarExclusao() {
         service.solicitarExclusaoEAnonimizacao();
         return Map.of(
-            "status", "solicitada",
-            "mensagem", "Solicitação de exclusão e anonimização registrada."
+            "status", "excluida",
+            "mensagem", "Seus dados foram apagados do sistema. Muito obrigado por usar o Smart List. Esperamos ter você de volta em breve."
         );
     }
 
