@@ -21,7 +21,6 @@
     <link rel="stylesheet" href="./css/buttons.css">
     <link rel="stylesheet" href="./css/forms.css">
     <link rel="stylesheet" href="./css/checkout.css?v=3">
-    <link rel="stylesheet" href="./css/cupom-checkout.css?v=1">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/temas.css">
 </head>
@@ -66,33 +65,9 @@
                         </p>
                     </div>
 
-                        <div class="checkout-cupom">
-                        <label for="codigoCupom">Possui um cupom?</label>
-                        <div class="checkout-cupom-acoes">
-                            <input
-                                id="codigoCupom"
-                                type="text"
-                                maxlength="30"
-                                autocomplete="off"
-                                placeholder="Digite o código do cupom">
-                            <button
-                                id="btnAplicarCupom"
-                                class="btn btn-secondary"
-                                type="button">
-                                Aplicar
-                            </button>
-                        </div>
-                        <button
-                            id="btnRemoverCupom"
-                            class="btn-cupom-remover"
-                            type="button"
-                            hidden>
-                            Remover cupom
-                        </button>
-                        <small id="mensagemCupom" aria-live="polite">
-                            O desconto será exibido no resumo antes do pagamento.
-                        </small>
-                    </div>
+                    <p class="texto-seguranca">
+                        O valor vigente e os cupons serão exibidos e aplicados diretamente no ambiente da Kiwify.
+                    </p>
 
                     <label class="checkbox-label" for="aceitePagamento">
                         <input
@@ -131,34 +106,9 @@
                     <strong id="checkoutCiclo">Mensal</strong>
                 </div>
 
-                <div class="resumo-linha">
-                    <span>Valor original</span>
-                    <strong id="checkoutValorNormal">R$ 9,97</strong>
-                </div>
-
-                <div class="resumo-linha">
-                    <span>Cupom</span>
-                    <strong id="checkoutCupom">Não aplicado</strong>
-                </div>
-
-                <div class="resumo-linha">
-                    <span>Desconto</span>
-                    <strong id="checkoutPercentual">0%</strong>
-                </div>
-
-                <div class="resumo-linha">
-                    <span>Valor economizado</span>
-                    <strong id="checkoutDesconto">R$ 0,00</strong>
-                </div>
-
                 <div class="resumo-linha resumo-total">
-                    <span>Você paga agora</span>
-                    <strong id="checkoutTotal">R$ 9,97</strong>
-                </div>
-
-                <div class="resumo-linha">
-                    <span>Próxima compra</span>
-                    <strong id="checkoutProximaCobranca">R$ 9,97</strong>
+                    <span>Preço e descontos</span>
+                    <strong>Confirmados na Kiwify</strong>
                 </div>
 
                 <p id="textoRenovacao" class="texto-seguranca">
@@ -185,7 +135,7 @@
     </footer>
 
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/assinatura.js?v=10"></script>
+    <script type="module" src="./js/assinatura.js?v=11"></script>
 </body>
 
 </html>
