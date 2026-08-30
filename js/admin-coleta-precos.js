@@ -85,6 +85,10 @@ async function carregarFiltros() {
     const f = await api.get("/admin/coleta-precos/compras/filtros");
     preencherSelect("filtroMercadoCompra", f.mercados || []);
     preencherSelect("filtroUsuarioCompra", f.usuarios || []);
+    const grupoUsuario = porId("filtroUsuarioCompra")?.closest(".form-group");
+    if (grupoUsuario) {
+        grupoUsuario.hidden = !(f.usuarios || []).length;
+    }
 }
 
 const td = (rotulo, conteudo, classe = "") => `<td data-label="${escapar(rotulo)}"${classe ? ` class="${classe}"` : ""}>${conteudo}</td>`;
@@ -106,7 +110,7 @@ async function carregarCompras() {
         const local = [item.cidade, item.estado].filter(Boolean).join(", ");
         return `<tr data-compra-row="${escapar(item.compraId)}">
             ${td("ID Compra", `<button class="coleta-id-link" type="button" data-abrir-compra="${escapar(item.compraId)}">${escapar(idCurto(item.compraId))}</button>`)}
-            ${td("Usuário", `<strong>${escapar(item.usuarioNome || "Usuário não identificado")}</strong>`)}
+            ${td("Usuário", `<strong>${escapar(item.usuarioNome || "Acesso restrito")}</strong>`)}
             ${td("Data", escapar(partes.data))}
             ${td("Horário", escapar(partes.hora))}
             ${td("Mercado", `<strong>${escapar(item.mercado || "Não informado")}</strong>${local ? `<small>${escapar(local)}</small>` : ""}`)}
@@ -124,7 +128,7 @@ async function abrirCompra(compraId) {
     porId("detalheCompraVazio").hidden = true;
     porId("detalheCompraConteudo").hidden = false;
     porId("detalheCompraId").textContent = idCurto(r.compraId);
-    porId("detalheUsuario").textContent = r.usuarioNome || "Usuário não identificado";
+    porId("detalheUsuario").textContent = r.usuarioNome || "Acesso restrito";
     porId("detalheMercado").textContent = r.mercado || "Não informado";
     porId("detalheLocalidade").textContent = [r.cidade, r.estado].filter(Boolean).join(", ") || "Não informada";
     porId("detalheData").textContent = partes.data;
