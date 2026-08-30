@@ -56,7 +56,12 @@ class AdminPrecoHistoricoIntegrationTest {
         observacao.setItemChave("item-tomate");
         observacaoRepository.saveAndFlush(observacao);
 
-        AdminPrecoService service = new AdminPrecoService(produtoRepository, observacaoRepository);
+        AdminPrecoService service = new AdminPrecoService(
+            produtoRepository,
+            observacaoRepository,
+            null,
+            null
+        );
         AdminPrecoService.PaginaResponse<AdminPrecoService.CompraResumoResponse> pagina =
             service.compras("", "", "", null, null, 0, 20);
 
