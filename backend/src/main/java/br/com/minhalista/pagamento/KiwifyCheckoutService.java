@@ -32,13 +32,6 @@ public class KiwifyCheckoutService {
     }
 
     public CheckoutResponse criarCheckout(Assinatura assinatura) {
-        if (StringUtils.hasText(assinatura.getCupomCodigo())) {
-            throw new RegraNegocioException(
-                HttpStatus.BAD_REQUEST,
-                "Cupons estão temporariamente indisponíveis no checkout da Kiwify."
-            );
-        }
-
         String base = checkoutUrls.get(assinatura.getCiclo());
         if (!StringUtils.hasText(base)) {
             throw new RegraNegocioException(
@@ -53,13 +46,24 @@ public class KiwifyCheckoutService {
                 assinatura.getId().toString(),
                 StandardCharsets.UTF_8
             )
-            + "&region=br";
+            + "&region=br"
+            + parametroCupom(assinatura.getCupomCodigo());
 
         return new CheckoutResponse(
             "kiwify:" + assinatura.getId(),
             url,
             url,
             url
+        );
+    }
+
+    private String parametroCupom(String codigo) {
+        if (!StringUtils.hasText(codigo)) {
+            return "";
+        }
+        return "&coupon=" + URLEncoder.encode(
+            codigo.trim().toUpperCase(),
+            StandardCharsets.UTF_8
         );
     }
 
