@@ -1044,6 +1044,14 @@ function iniciarAplicacao() {
     atualizarTela();
     void sincronizarColetasPendentes();
 
+    window.addEventListener("online", () => {
+        void sincronizarColetasPendentes();
+    });
+
+    window.setInterval(() => {
+        void sincronizarColetasPendentes();
+    }, 30 * 1000);
+
 }
 
 
