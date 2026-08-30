@@ -1,6 +1,9 @@
 package br.com.minhalista.usuario;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +37,15 @@ public class UsuarioController {
     @GetMapping("/me/cpf")
     public CpfPerfilResponse consultarCpf() {
         return service.consultarCpf();
+    }
+
+    @PostMapping("/me/solicitacoes/exclusao")
+    public Map<String, String> solicitarExclusao() {
+        service.solicitarExclusaoEAnonimizacao();
+        return Map.of(
+            "status", "solicitada",
+            "mensagem", "Solicitação de exclusão e anonimização registrada."
+        );
     }
 
     @PutMapping("/me/cpf")
