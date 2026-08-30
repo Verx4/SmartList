@@ -9,14 +9,16 @@ public record AdministradorResponse(
     UUID id,
     String nome,
     String email,
-    Instant criadoEm
+    Instant criadoEm,
+    boolean fundador
 ) {
-    public static AdministradorResponse de(Usuario usuario) {
+    public static AdministradorResponse de(Usuario usuario, boolean fundador) {
         return new AdministradorResponse(
             usuario.getId(),
             usuario.getNome(),
             usuario.getEmail(),
-            usuario.getCriadoEm()
+            usuario.getCriadoEm(),
+            fundador
         );
     }
 }
