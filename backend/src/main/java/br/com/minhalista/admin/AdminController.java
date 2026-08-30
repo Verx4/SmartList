@@ -96,6 +96,14 @@ public class AdminController {
         );
     }
 
+    @DeleteMapping("/usuarios/{id}")
+    public void excluirContaUsuario(
+        @PathVariable UUID id,
+        Principal principal
+    ) {
+        service.excluirContaUsuario(id, principal.getName());
+    }
+
     @PatchMapping("/usuarios/{id}/acesso")
     public AlterarAcessoResponse alterarAcesso(
         @PathVariable UUID id,
