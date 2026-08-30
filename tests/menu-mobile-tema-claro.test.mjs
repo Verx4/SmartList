@@ -28,8 +28,10 @@ test("menu móvel usa uma lista completa em todas as páginas", async () => {
     assert.match(pwa, /\["checkout\.html", "\.\/assinatura\.html"\]/);
     assert.match(pwa, /css\/temas\.css\?v=12/);
 
-    const codigoSemImport = pwa.replace(/^import\s+[^;]+;\s*/m, "");
-    assert.doesNotThrow(() => new Function(codigoSemImport));
+    const codigoCompilavel = pwa
+        .replace(/^import\s+[^;]+;\s*/m, "")
+        .replaceAll("import.meta.url", JSON.stringify("https://smart-list.test/js/pwa.js"));
+    assert.doesNotThrow(() => new Function(codigoCompilavel));
 });
 
 test("tema claro mantém textos, estados e menu com contraste alto", async () => {
