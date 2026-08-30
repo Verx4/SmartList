@@ -62,7 +62,15 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
                 """);
         }
 
-        LOG.info("Esquema do checkout verificado e reparado com sucesso.");
+        if (tabelaExiste("observacoes_precos")) {
+            jdbcTemplate.execute("""
+                ALTER TABLE observacoes_precos
+                    ADD COLUMN IF NOT EXISTS economia_compra
+                    NUMERIC(12, 2) NOT NULL DEFAULT 0
+                """);
+        }
+
+        LOG.info("Esquema do checkout e do histórico verificado e reparado com sucesso.");
     }
 
     private void adicionarColunaAssinatura(String definicao) {

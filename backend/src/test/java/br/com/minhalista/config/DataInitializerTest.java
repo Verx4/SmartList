@@ -22,6 +22,8 @@ import br.com.minhalista.usuario.UsuarioRepository;
 @ExtendWith(MockitoExtension.class)
 class DataInitializerTest {
 
+    private static final String EMAIL_ADMIN_PRINCIPAL = "smartlistevx@gmail.com";
+
     @Mock
     private UsuarioRepository repository;
 
@@ -37,6 +39,8 @@ class DataInitializerTest {
         usuario.setPerfil(Perfil.USUARIO);
         usuario.setTipoAcesso(TipoAcesso.FREE);
 
+        when(repository.findByEmailIgnoreCase(EMAIL_ADMIN_PRINCIPAL))
+            .thenReturn(Optional.empty());
         when(repository.findByEmailIgnoreCase("fernandomfp.s@gmail.com"))
             .thenReturn(Optional.of(usuario));
         when(passwordEncoder.encode("nova-senha-forte"))
@@ -68,6 +72,8 @@ class DataInitializerTest {
         admin.setSenhaHash("senha-alterada-pelo-admin");
         admin.setPerfil(Perfil.ADMIN);
 
+        when(repository.findByEmailIgnoreCase(EMAIL_ADMIN_PRINCIPAL))
+            .thenReturn(Optional.empty());
         when(repository.findByEmailIgnoreCase("admin@teste.local"))
             .thenReturn(Optional.of(admin));
 
