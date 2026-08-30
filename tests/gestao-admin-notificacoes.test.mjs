@@ -45,6 +45,7 @@ test("preços configurados no ADM alimentam catálogo e checkout", async () => {
     ]);
 
     assert.match(pagina, /Salvar Alterações de Preços/);
+    assert.doesNotMatch(pagina, /Criar e autorizar cupons/);
     assert.match(script, /api\.get\("\/assinaturas\/planos"\)/);
     assert.match(assinatura, /planoService\.valorVigente\(ciclo\)/);
     assert.match(planoService, /repository\.findById\(ciclo\)/);
