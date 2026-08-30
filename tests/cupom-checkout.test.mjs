@@ -20,6 +20,8 @@ test("tela de planos exibe, aplica e remove cupom antes do checkout", async () =
     assert.match(checkout, /id="checkoutPercentual"/);
     assert.match(script, /api\.post\("\/assinaturas\/cupom\/validar"/);
     assert.match(script, /cupomAplicado\.codigo/);
+    assert.match(script, /dadosCheckout\.cupom = cupomAplicado\.codigo/);
+    assert.doesNotMatch(script, /Cupons estão temporariamente indisponíveis/);
 });
 
 test("ADM permite escolher, autorizar, desativar e excluir nomes de cupons", async () => {
@@ -65,6 +67,12 @@ test("servidor exige cupom cadastrado e mantém autoridade e auditoria", async (
     assert.match(mercadoPago, /respostaSegura\(resposta\)/);
     assert.match(mercadoPago, /metadata\.put\("cupom_codigo"/);
     assert.match(mercadoPago, /"cupom_valor_original"/);
+
+    const kiwify = await ler(
+        "backend/src/main/java/br/com/minhalista/pagamento/KiwifyCheckoutService.java"
+    );
+    assert.match(kiwify, /"&coupon="/);
+    assert.doesNotMatch(kiwify, /Cupons estão temporariamente indisponíveis/);
     assert.match(migration, /cupom_percentual_desconto/);
     assert.match(migration, /cupom_primeiro_pagamento_aplicado/);
     assert.match(autorizacao, /ADD COLUMN IF NOT EXISTS ciclo/);
