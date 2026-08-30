@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.minhalista.common.RegraNegocioException;
+import br.com.minhalista.pagamento.MercadoPagoService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -20,9 +23,14 @@ import jakarta.validation.Valid;
 public class AdminController {
 
     private final AdminService service;
+    private final MercadoPagoService mercadoPagoService;
 
-    public AdminController(AdminService service) {
+    public AdminController(
+        AdminService service,
+        MercadoPagoService mercadoPagoService
+    ) {
         this.service = service;
+        this.mercadoPagoService = mercadoPagoService;
     }
 
     @GetMapping("/resumo")
@@ -68,6 +76,24 @@ public class AdminController {
     @PostMapping("/usuarios/auditoria/limpar")
     public LimparAuditoriaResponse limparAuditoriaAcessosViaPost() {
         return service.limparAuditoriaAcessos();
+    }
+
+    @GetMapping("/pagamentos/{pagamentoId}/diagnostico")
+    public PagamentoDiagnosticoResponse diagnosticoPagamento(
+        @PathVariable String pagamentoId
+    ) {
+        String identificador = pagamentoId == null ? "" : pagamentoId.trim();
+
+        if (!identificador.matches("\\d{6,20}")) {
+            throw new RegraNegocioException(
+                HttpStatus.BAD_REQUEST,
+                "Informe o número da operação exibido pelo Mercado Pago."
+            );
+        }
+
+        return PagamentoDiagnosticoResponse.de(
+            mercadoPagoService.consultarPagamento(identificador)
+        );
     }
 
     @PatchMapping("/usuarios/{id}/acesso")

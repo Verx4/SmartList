@@ -8,6 +8,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -47,6 +48,10 @@ class MercadoPagoServiceCheckoutTest {
         lenient().when(usuario.getEmail()).thenReturn("cliente@example.com");
         lenient().when(usuario.getNome()).thenReturn("Cliente Teste");
         lenient().when(usuario.getCpf()).thenReturn("52998224725");
+        lenient().when(usuario.getTelefone()).thenReturn("(81) 99999-0000");
+        lenient().when(usuario.getCriadoEm()).thenReturn(
+            Instant.parse("2026-08-01T12:00:00Z")
+        );
         lenient().when(assinatura.getId()).thenReturn(UUID.randomUUID());
     }
 
@@ -69,6 +74,12 @@ class MercadoPagoServiceCheckoutTest {
         assertEquals("Teste", pagador(corpo).get("surname"));
         assertEquals("CPF", identificacao(corpo).get("type"));
         assertEquals("52998224725", identificacao(corpo).get("number"));
+        assertEquals(81, telefone(corpo).get("area_code"));
+        assertEquals(999990000L, telefone(corpo).get("number"));
+        assertEquals(
+            "2026-08-01T12:00:00Z",
+            pagador(corpo).get("date_created")
+        );
         assertFalse(metadata(corpo).containsKey("cupom_codigo"));
         assertFalse(contemNuloOuTextoVazio(corpo));
     }
@@ -82,6 +93,7 @@ class MercadoPagoServiceCheckoutTest {
 
         assertEquals(List.of(), metodos.get("excluded_payment_methods"));
         assertEquals(List.of(), metodos.get("excluded_payment_types"));
+        assertEquals(1, metodos.get("default_installments"));
         assertEquals(12, metodos.get("installments"));
     }
 
@@ -236,6 +248,11 @@ class MercadoPagoServiceCheckoutTest {
     @SuppressWarnings("unchecked")
     private Map<String, Object> identificacao(Map<String, Object> corpo) {
         return (Map<String, Object>) pagador(corpo).get("identification");
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> telefone(Map<String, Object> corpo) {
+        return (Map<String, Object>) pagador(corpo).get("phone");
     }
 
     private boolean contemNuloOuTextoVazio(Object valor) {

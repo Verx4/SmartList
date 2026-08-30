@@ -1029,3 +1029,95 @@ html[data-palette="claro"] body[data-admin-page] .status-neutro {
         grid-column: auto;
     }
 }
+
+
+/* Diagnóstico de pagamentos do Mercado Pago */
+.admin-pagamento-card {
+    display: grid;
+    gap: 22px;
+}
+
+.admin-pagamento-card h2 {
+    margin: 4px 0 8px;
+}
+
+.admin-pagamento-card p {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+}
+
+.admin-pagamento-form {
+    display: grid;
+    grid-template-columns: minmax(240px, 1fr) auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.admin-pagamento-form .form-group {
+    margin: 0;
+}
+
+.admin-pagamento-form .btn {
+    min-height: 48px;
+    white-space: nowrap;
+}
+
+.admin-pagamento-diagnostico {
+    padding: 20px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 16px;
+    background: var(--cor-superficie-secundaria);
+}
+
+.admin-pagamento-diagnostico h3 {
+    margin: 0 0 16px;
+}
+
+.admin-pagamento-diagnostico dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+.admin-pagamento-diagnostico dl div {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 12px;
+    background: var(--cor-superficie);
+}
+
+.admin-pagamento-diagnostico dt {
+    color: var(--cor-texto-secundario);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.admin-pagamento-diagnostico dd {
+    margin: 5px 0 0;
+    overflow-wrap: anywhere;
+    color: var(--cor-texto);
+    font-weight: 700;
+}
+
+.admin-pagamento-diagnostico .admin-pagamento-orientacao {
+    margin-top: 16px;
+    color: var(--cor-texto);
+    font-weight: 600;
+}
+
+@media (max-width: 760px) {
+    .admin-pagamento-form {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-pagamento-form .btn {
+        width: 100%;
+    }
+
+    .admin-pagamento-diagnostico dl {
+        grid-template-columns: 1fr;
+    }
+}

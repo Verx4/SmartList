@@ -282,6 +282,124 @@ function formatarData(valor) {
 }
 
 
+
+
+function explicarRecusaPagamento(statusDetalhe) {
+    const detalhe = String(statusDetalhe || "").toLowerCase();
+    const motivos = {
+        cc_rejected_high_risk:
+            "A análise de segurança do Mercado Pago classificou a tentativa como alto risco. Não repita imediatamente com os mesmos dados e confirme que comprador e vendedor são contas diferentes.",
+        rejected_high_risk:
+            "A análise de risco recusou a operação. O comprador deve usar a própria conta e um dispositivo habitual.",
+        cc_rejected_other_reason:
+            "O banco emissor ou o Mercado Pago recusou a operação sem informar um motivo mais específico.",
+        rejected_by_bank:
+            "O banco emissor recusou a compra. O titular precisa autorizar a operação junto ao banco.",
+        cc_rejected_call_for_authorize:
+            "O banco exige autorização do titular antes de concluir esta compra.",
+        cc_rejected_card_disabled:
+            "O cartão está bloqueado ou desabilitado para esta compra.",
+        cc_rejected_insufficient_amount:
+            "O cartão não possui limite disponível suficiente.",
+        cc_rejected_invalid_installments:
+            "A quantidade de parcelas escolhida não é aceita pelo cartão.",
+        cc_rejected_duplicated_payment:
+            "O Mercado Pago identificou a cobrança como uma tentativa duplicada.",
+        cc_rejected_max_attempts:
+            "O limite de tentativas foi atingido. Aguarde antes de tentar novamente.",
+        cc_rejected_bad_filled_card_number:
+            "O número do cartão foi preenchido incorretamente.",
+        cc_rejected_bad_filled_date:
+            "A validade do cartão foi preenchida incorretamente.",
+        cc_rejected_bad_filled_security_code:
+            "O código de segurança do cartão foi preenchido incorretamente.",
+        rejected_insufficient_data:
+            "O Mercado Pago recebeu dados insuficientes para analisar o pagamento.",
+        rejected_by_regulations:
+            "A operação foi recusada por regras regulatórias.",
+        rejected_by_biz_rule:
+            "A operação foi recusada por uma regra comercial do Mercado Pago."
+    };
+
+    return motivos[detalhe]
+        || "Consulte o status detalhado acima ao falar com o suporte do Mercado Pago ou com o banco emissor.";
+}
+
+
+function renderizarDiagnosticoPagamento(dados = {}) {
+    const resultado = document.getElementById("resultadoDiagnosticoPagamento");
+
+    if (!resultado) {
+        return;
+    }
+
+    const status = String(dados.status || "não informado");
+    const detalhe = String(dados.statusDetalhe || "não informado");
+    const ambiente = dados.ambienteProducao ? "Produção" : "Teste";
+
+    resultado.className = "admin-pagamento-diagnostico";
+    resultado.hidden = false;
+    resultado.innerHTML = `
+        <h3>Resultado da operação ${escaparHtml(dados.pagamentoId || "-")}</h3>
+        <dl>
+            <div><dt>Status</dt><dd>${escaparHtml(status)}</dd></div>
+            <div><dt>Motivo técnico</dt><dd>${escaparHtml(detalhe)}</dd></div>
+            <div><dt>Meio</dt><dd>${escaparHtml(dados.metodoPagamento || "-")}</dd></div>
+            <div><dt>Tipo</dt><dd>${escaparHtml(dados.tipoPagamento || "-")}</dd></div>
+            <div><dt>Valor</dt><dd>${escaparHtml(formatarMoeda(dados.valor))}</dd></div>
+            <div><dt>Ambiente</dt><dd>${escaparHtml(ambiente)}</dd></div>
+        </dl>
+        <p class="admin-pagamento-orientacao">
+            ${escaparHtml(explicarRecusaPagamento(detalhe))}
+        </p>
+    `;
+}
+
+
+async function consultarDiagnosticoPagamento(evento) {
+    evento.preventDefault();
+
+    const campo = document.getElementById("pagamentoMercadoPagoId");
+    const botao = document.getElementById("btnDiagnosticarPagamento");
+    const resultado = document.getElementById("resultadoDiagnosticoPagamento");
+    const pagamentoId = String(campo?.value || "").replace(/\D/g, "");
+
+    if (!/^\d{6,20}$/.test(pagamentoId)) {
+        mensagem("Informe o número da operação exibido pelo Mercado Pago.", "erro");
+        campo?.focus();
+        return;
+    }
+
+    const textoOriginal = botao?.textContent;
+
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Consultando...";
+        botao.setAttribute("aria-busy", "true");
+    }
+
+    try {
+        const dados = await api.get(
+            `/admin/pagamentos/${encodeURIComponent(pagamentoId)}/diagnostico`
+        );
+        renderizarDiagnosticoPagamento(dados);
+    } catch (erro) {
+        if (resultado) {
+            resultado.hidden = false;
+            resultado.className = "mensagem mensagem-erro";
+            resultado.textContent = erro instanceof ApiError
+                ? erro.message
+                : "Não foi possível consultar esta operação no Mercado Pago.";
+        }
+    } finally {
+        if (botao) {
+            botao.disabled = false;
+            botao.textContent = textoOriginal || "Consultar motivo";
+            botao.removeAttribute("aria-busy");
+        }
+    }
+}
+
 function opcoesAcesso(acessoAtual) {
     return ["FREE", "PREMIUM", "CORTESIA"]
         .map(acesso => `
@@ -1140,6 +1258,13 @@ async function iniciar() {
     iniciarAtualizacaoAutomaticaAssinaturas();
 
     atualizarExemploMargem();
+
+    document
+        .getElementById("formDiagnosticoPagamento")
+        ?.addEventListener(
+            "submit",
+            consultarDiagnosticoPagamento
+        );
 
     document
         .getElementById("btnAtualizarAdmin")
