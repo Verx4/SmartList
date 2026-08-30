@@ -70,8 +70,22 @@ export async function sincronizarColetasPendentes() {
             const atuais = lerPendentes().filter(item => item.compraId !== coleta.compraId);
             salvarPendentes(atuais);
             sincronizadas += 1;
-        } catch {
-            break;
+        } catch (erro) {
+            const status = Number(erro?.status || 0);
+
+            if (status >= 400 && status < 500 && status !== 401 && status !== 403) {
+                const atuais = lerPendentes().filter(
+                    item => item.compraId !== coleta.compraId
+                );
+                salvarPendentes(atuais);
+                continue;
+            }
+
+            if (status === 401 || status === 403) {
+                break;
+            }
+
+            // Falhas temporárias permanecem na fila, sem bloquear compras seguintes.
         } finally {
             window.clearTimeout(limite);
         }
