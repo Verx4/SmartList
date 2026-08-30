@@ -335,17 +335,14 @@ async function aplicarCupom(origem = "checkout") {
     }
 }
 
-function urlMercadoPagoValida(valor) {
+function urlKiwifyValida(valor) {
     try {
         const url = new URL(valor);
         const host = url.hostname.toLowerCase();
 
         return url.protocol === "https:"
             && (
-                host === "mercadopago.com.br"
-                || host.endsWith(".mercadopago.com.br")
-                || host === "mercadopago.com"
-                || host.endsWith(".mercadopago.com")
+                host === "pay.kiwify.com.br"
             );
     } catch {
         return false;
@@ -387,7 +384,7 @@ async function enviarCheckout(evento) {
         };
 
         if (cupomAplicado?.ciclo === ciclo && cupomAplicado.codigo) {
-            dadosCheckout.cupom = cupomAplicado.codigo;
+            throw new Error("Cupons estão temporariamente indisponíveis no checkout da Kiwify. Remova o cupom para continuar.");
         }
 
         const resposta = await api.post(
@@ -399,8 +396,8 @@ async function enviarCheckout(evento) {
             || resposta?.urlPagamento
             || resposta?.initPoint;
 
-        if (!urlMercadoPagoValida(urlPagamento)) {
-            throw new Error("O servidor não retornou um endereço seguro do Mercado Pago.");
+        if (!urlKiwifyValida(urlPagamento)) {
+            throw new Error("O servidor não retornou um endereço seguro da Kiwify.");
         }
 
         redirecionando = true;
@@ -410,7 +407,7 @@ async function enviarCheckout(evento) {
     } finally {
         if (botao && !redirecionando) {
             botao.disabled = false;
-            botao.textContent = "Ir para o Mercado Pago";
+            botao.textContent = "Ir para a Kiwify";
         }
     }
 }
@@ -483,8 +480,8 @@ async function mostrarRetornoPagamento() {
     if (!pagamentoId) {
         mostrarMensagem(
             retorno === "pendente"
-                ? "Pagamento pendente. Assim que o Mercado Pago confirmar, o Premium será liberado automaticamente."
-                : "Pagamento recebido. O Premium será liberado após a confirmação automática do Mercado Pago.",
+                ? "Pagamento pendente. Assim que o Kiwify confirmar, o Premium será liberado automaticamente."
+                : "Pagamento recebido. O Premium será liberado após a confirmação automática do Kiwify.",
             "aviso"
         );
         return;
