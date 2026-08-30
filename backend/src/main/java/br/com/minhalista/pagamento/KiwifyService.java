@@ -20,9 +20,9 @@ public class KiwifyService {
         new EnumMap<>(CicloAssinatura.class);
 
     public KiwifyService(
-        @Value("${app.kiwify.checkout.mensal}") String mensal,
-        @Value("${app.kiwify.checkout.trimestral}") String trimestral,
-        @Value("${app.kiwify.checkout.anual}") String anual
+        @Value("${app.kiwify.checkout.mensal:https://pay.kiwify.com.br/CsdUxeJ}") String mensal,
+        @Value("${app.kiwify.checkout.trimestral:https://pay.kiwify.com.br/sd2O7Hi}") String trimestral,
+        @Value("${app.kiwify.checkout.anual:https://pay.kiwify.com.br/FOP3RIc}") String anual
     ) {
         checkoutUrls.put(CicloAssinatura.MENSAL, validarUrl(mensal));
         checkoutUrls.put(CicloAssinatura.TRIMESTRAL, validarUrl(trimestral));
