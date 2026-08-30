@@ -278,6 +278,11 @@ public class MercadoPagoService {
         pagador.put("email", usuario.getEmail().trim());
         pagador.put("identification", identificacao);
         adicionarNomePagador(pagador, usuario.getNome());
+        adicionarTelefonePagador(pagador, usuario.getTelefone());
+
+        if (usuario.getCriadoEm() != null) {
+            pagador.put("date_created", usuario.getCriadoEm().toString());
+        }
 
         Map<String, Object> metodosPagamento = new LinkedHashMap<>();
         // O Checkout Pro disponibiliza todos os meios quando nada é excluído.
@@ -317,6 +322,31 @@ public class MercadoPagoService {
         if (partes.length > 1 && StringUtils.hasText(partes[1])) {
             pagador.put("surname", partes[1]);
         }
+    }
+
+    private void adicionarTelefonePagador(
+        Map<String, Object> pagador,
+        String telefone
+    ) {
+        if (!StringUtils.hasText(telefone)) {
+            return;
+        }
+
+        String digitos = telefone.replaceAll("\\D", "");
+
+        if ((digitos.length() == 12 || digitos.length() == 13)
+            && digitos.startsWith("55")) {
+            digitos = digitos.substring(2);
+        }
+
+        if (digitos.length() != 10 && digitos.length() != 11) {
+            return;
+        }
+
+        Map<String, Object> telefonePagador = new LinkedHashMap<>();
+        telefonePagador.put("area_code", Integer.parseInt(digitos.substring(0, 2)));
+        telefonePagador.put("number", Long.parseLong(digitos.substring(2)));
+        pagador.put("phone", telefonePagador);
     }
 
     private void adicionarSePresente(
@@ -605,6 +635,15 @@ public class MercadoPagoService {
         pagador.put("email", mascararEmail(texto(pagadorOriginal.get("email"))));
         identificacao.put("number", Cpf.mascarar(texto(identificacaoOriginal.get("number"))));
         pagador.put("identification", identificacao);
+
+        if (pagadorOriginal.get("phone") instanceof Map<?, ?> mapaTelefone) {
+            Map<String, Object> telefone = new LinkedHashMap<>(
+                (Map<String, Object>) mapaTelefone
+            );
+            telefone.put("number", "[oculto]");
+            pagador.put("phone", telefone);
+        }
+
         seguro.put("payer", pagador);
         return seguro;
     }
