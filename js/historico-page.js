@@ -1,6 +1,10 @@
 import "./animations.js";
 import { api } from "./api.js";
 import { combinarHistoricos } from "./historico-sync.js";
+import {
+    enfileirarColetaPreco,
+    sincronizarColetasPendentes
+} from "./coleta-precos.js";
 
 import {
     agruparComprasPorCategoria,
@@ -24,7 +28,24 @@ const normalizar = valor => String(valor || "").normalize("NFD").replace(/[\u030
 const lerHistoricoLocal = () => {
     try {
         const dados = JSON.parse(localStorage.getItem("historicoCompras"));
-        return Array.isArray(dados) ? dados : [];
+        const usuario = JSON.parse(localStorage.getItem("usuarioAtual"));
+        const historico = Array.isArray(dados) ? dados : [];
+        const usuarioId = String(usuario?.id || usuario?.usuarioId || "");
+        const usuarioNome = normalizar(usuario?.nome || usuario?.name);
+
+        if (!usuarioId && !usuarioNome) {
+            return [];
+        }
+
+        return historico.filter(compra => {
+            const compraUsuarioId = String(compra.usuarioId || "");
+            if (usuarioId && compraUsuarioId) {
+                return compraUsuarioId === usuarioId;
+            }
+
+            return usuarioNome
+                && normalizar(compra.usuarioNome) === usuarioNome;
+        });
     } catch (_erro) {
         return [];
     }
@@ -171,6 +192,11 @@ async function carregarCompras() {
     listaHistorico.innerHTML = '<p class="historico-vazio">Carregando compras salvas...</p>';
     const locais = lerHistoricoLocal();
     let remotas = [];
+
+    for (const compra of locais) {
+        enfileirarColetaPreco(compra);
+    }
+    await sincronizarColetasPendentes();
 
     try {
         const dados = await api.get("/coleta-precos/compras/historico");
