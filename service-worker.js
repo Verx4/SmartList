@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v66`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v66`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v67`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v67`;
 
 const PRECACHE_URLS = [
     "./",
@@ -70,23 +70,50 @@ const PRECACHE_URLS = [
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
-        caches.open(STATIC_CACHE).then((cache) => cache.addAll(PRECACHE_URLS))
+        caches.open(STATIC_CACHE)
+            .then((cache) => cache.addAll(PRECACHE_URLS))
+            .then(() => self.skipWaiting())
     );
 });
 
 self.addEventListener("activate", (event) => {
-    event.waitUntil(
-        caches.keys()
-            .then((keys) => Promise.all(
-                keys
-                    .filter((key) => key.startsWith(CACHE_PREFIX)
-                        && key !== STATIC_CACHE
-                        && key !== PAGE_CACHE)
-                    .map((key) => caches.delete(key))
-            ))
-            .then(() => self.clients.claim())
-    );
+    event.waitUntil(ativarNovaVersao());
 });
+
+async function ativarNovaVersao() {
+    const keys = await caches.keys();
+    const cachesAntigos = keys.filter((key) =>
+        key.startsWith(CACHE_PREFIX)
+        && key !== STATIC_CACHE
+        && key !== PAGE_CACHE
+    );
+
+    await Promise.all(cachesAntigos.map((key) => caches.delete(key)));
+    await self.clients.claim();
+
+    if (cachesAntigos.length === 0) {
+        return;
+    }
+
+    const clientes = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true
+    });
+
+    await Promise.all(clientes.map((cliente) => {
+        try {
+            const url = new URL(cliente.url);
+
+            if (url.origin === self.location.origin) {
+                return cliente.navigate(cliente.url);
+            }
+        } catch (_erro) {
+            // Ignora clientes sem uma URL navegável.
+        }
+
+        return Promise.resolve();
+    }));
+}
 
 self.addEventListener("message", (event) => {
     if (event.data?.type === "SKIP_WAITING") {
@@ -104,15 +131,12 @@ self.addEventListener("fetch", (event) => {
     const url = new URL(request.url);
     const scope = new URL(self.registration.scope);
 
-    // Nunca armazena chamadas de API, autenticação ou recursos de outra origem.
     if (url.origin !== self.location.origin
         || !url.pathname.startsWith(scope.pathname)
         || url.pathname.includes("/api/")) {
         return;
     }
 
-    // O painel administrativo precisa sempre carregar o HTML publicado mais
-    // recente. Não permite que uma versão antiga esconda ferramentas novas.
     if (request.mode === "navigate" && url.pathname.includes("/admin/")) {
         return;
     }
