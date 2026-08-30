@@ -18,6 +18,7 @@ import br.com.minhalista.common.RegraNegocioException;
 public class UsuarioService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
+    private static final String EMAIL_FUNDADOR = "smartlistevx@gmail.com";
 
     private final UsuarioRepository repository;
     private final AssinaturaValidadeService assinaturaValidadeService;
@@ -109,6 +110,14 @@ public class UsuarioService {
     @Transactional
     public void solicitarExclusaoEAnonimizacao() {
         Usuario usuario = obterAutenticado();
+
+        if (EMAIL_FUNDADOR.equalsIgnoreCase(usuario.getEmail())) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "A conta ADM principal não pode ser excluída."
+            );
+        }
+
         String identificador = usuario.getId().toString();
 
         usuario.setNome("Conta excluída");
