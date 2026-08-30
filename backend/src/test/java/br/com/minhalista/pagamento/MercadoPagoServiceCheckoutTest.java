@@ -93,6 +93,7 @@ class MercadoPagoServiceCheckoutTest {
 
         assertEquals(List.of(), metodos.get("excluded_payment_methods"));
         assertEquals(List.of(), metodos.get("excluded_payment_types"));
+        assertEquals(1, metodos.get("default_installments"));
         assertEquals(12, metodos.get("installments"));
     }
 
