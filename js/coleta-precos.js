@@ -1,6 +1,7 @@
 import { api } from "./api.js";
 
 const CHAVE_PENDENTES = "coletasPrecosPendentes";
+const LIMITE_COLETAS_PENDENTES = 1000;
 
 function lerPendentes() {
     try {
@@ -52,7 +53,7 @@ export function enfileirarColetaPreco(compra) {
 
     const pendentes = lerPendentes().filter(item => item.compraId !== payload.compraId);
     pendentes.push(payload);
-    salvarPendentes(pendentes.slice(-50));
+    salvarPendentes(pendentes.slice(-LIMITE_COLETAS_PENDENTES));
 }
 
 export async function sincronizarColetasPendentes() {
