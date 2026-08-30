@@ -64,7 +64,7 @@ export async function sincronizarColetasPendentes() {
 
     for (const coleta of [...pendentes]) {
         const controlador = new AbortController();
-        const limite = window.setTimeout(() => controlador.abort(), 12000);
+        const limite = window.setTimeout(() => controlador.abort(), 90000);
 
         try {
             await api.post("/coleta-precos/compras", coleta, { signal: controlador.signal });
