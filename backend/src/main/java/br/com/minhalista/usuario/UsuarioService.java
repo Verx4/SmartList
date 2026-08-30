@@ -109,17 +109,30 @@ public class UsuarioService {
     @Transactional
     public void solicitarExclusaoEAnonimizacao() {
         Usuario usuario = obterAutenticado();
-        if (usuario.getExclusaoSolicitadaEm() == null) {
-            usuario.setExclusaoSolicitadaEm(Instant.now());
-            usuario.setNotificarPromocoes(false);
-            usuario.setNotificarPrecos(false);
-            usuario.setAceiteMarketing(false);
-            repository.save(usuario);
-            LOGGER.info(
-                "Solicitação LGPD de exclusão/anonimização registrada para usuário {}.",
-                usuario.getId()
-            );
-        }
+        String identificador = usuario.getId().toString();
+
+        usuario.setNome("Conta excluída");
+        usuario.setEmail("excluido-" + identificador + "@anonimo.smartlist");
+        usuario.setCpf(null);
+        usuario.setTelefone(null);
+        usuario.setCidade(null);
+        usuario.setEstado(null);
+        usuario.setSenhaHash("CONTA_EXCLUIDA_" + identificador);
+        usuario.setPerfil(Perfil.USUARIO);
+        usuario.setTipoAcesso(TipoAcesso.FREE);
+        usuario.setCortesiaAte(null);
+        usuario.setAtivo(false);
+        usuario.setAceiteMarketing(false);
+        usuario.setNotificarPromocoes(false);
+        usuario.setNotificarPrecos(false);
+        usuario.setExclusaoSolicitadaEm(Instant.now());
+        repository.saveAndFlush(usuario);
+
+        SecurityContextHolder.clearContext();
+        LOGGER.info(
+            "Conta {} excluída e anonimizada imediatamente pelo próprio usuário.",
+            usuario.getId()
+        );
     }
 
     public void exigirPremium(Usuario usuario) {
