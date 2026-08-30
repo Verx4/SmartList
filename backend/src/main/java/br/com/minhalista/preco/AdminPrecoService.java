@@ -155,8 +155,15 @@ public class AdminPrecoService {
         }
 
         ObservacaoPreco primeiro = itens.get(0);
-        BigDecimal total = itens.stream().map(ObservacaoPreco::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-        Instant realizadaEm = itens.stream().map(ObservacaoPreco::getRealizadaEm).max(Instant::compareTo).orElse(primeiro.getRealizadaEm());
+        BigDecimal total = itens.stream()
+            .map(ObservacaoPreco::getSubtotal)
+            .filter(java.util.Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        Instant realizadaEm = itens.stream()
+            .map(ObservacaoPreco::getRealizadaEm)
+            .filter(java.util.Objects::nonNull)
+            .max(Instant::compareTo)
+            .orElse(primeiro.getCriadoEm());
         return new CompraDetalheResponse(
             compraId,
             primeiro.getUsuario() == null ? null : primeiro.getUsuario().getId(),
@@ -258,7 +265,32 @@ public class AdminPrecoService {
         if (preenchido(f.estado())) p.add(cb.equal(r.get("estado"), f.estado().toUpperCase(Locale.ROOT))); if (preenchido(f.cidade())) p.add(cb.equal(r.get("cidade"), f.cidade())); if (preenchido(f.mercado())) p.add(cb.equal(r.get("mercado"), f.mercado())); if (f.origem() != null) p.add(cb.equal(r.get("origem"), f.origem())); if (f.inicio() != null) p.add(cb.greaterThanOrEqualTo(r.<Instant>get("realizadaEm"), f.inicio())); if (f.fim() != null) p.add(cb.lessThanOrEqualTo(r.<Instant>get("realizadaEm"), f.fim()));
     }
     private ProdutoResumoResponse produtoResumo(ProdutoPreco p, ObservacaoPrecoRepository.AgregadoProduto a) { return new ProdutoResumoResponse(p.getId(), p.getNomeExibicao(), p.getNomeNormalizado(), p.getCategoria(), a == null ? 0 : a.getTotalObservacoes(), a == null ? null : a.getPrecoMinimo(), a == null || a.getPrecoMedio() == null ? null : BigDecimal.valueOf(a.getPrecoMedio()).setScale(4, RoundingMode.HALF_UP), a == null ? null : a.getPrecoMaximo(), a == null ? null : a.getUltimaCompraEm(), p.getCriadoEm(), p.getAtualizadoEm()); }
-    private ObservacaoResponse observacao(ObservacaoPreco o) { return new ObservacaoResponse(o.getId(), o.getProduto().getId(), o.getProduto().getNomeExibicao(), o.getProduto().getCategoria(), o.getNomeOriginal(), o.getQuantidade(), o.getUnidade(), o.getPrecoUnitario(), o.getSubtotal(), o.getMercado(), o.getCidade(), o.getEstado(), o.getRealizadaEm(), o.getOrigem().name(), o.getUsuario() == null ? null : o.getUsuario().getId(), o.getUsuario() == null ? "Usuário não identificado" : o.getUsuario().getNome(), o.getCompraChave(), o.getItemChave(), o.getCriadoEm()); }
+    private ObservacaoResponse observacao(ObservacaoPreco o) {
+        ProdutoPreco produto = o.getProduto();
+        return new ObservacaoResponse(
+            o.getId(),
+            produto == null ? null : produto.getId(),
+            produto == null
+                ? (o.getNomeOriginal() == null ? "Item da compra" : o.getNomeOriginal())
+                : produto.getNomeExibicao(),
+            produto == null ? CATEGORIA_OUTROS : produto.getCategoria(),
+            o.getNomeOriginal() == null ? "Item da compra" : o.getNomeOriginal(),
+            o.getQuantidade() == null ? BigDecimal.ONE : o.getQuantidade(),
+            o.getUnidade() == null ? "unidade" : o.getUnidade(),
+            o.getPrecoUnitario() == null ? BigDecimal.ZERO : o.getPrecoUnitario(),
+            o.getSubtotal() == null ? BigDecimal.ZERO : o.getSubtotal(),
+            o.getMercado(),
+            o.getCidade(),
+            o.getEstado(),
+            o.getRealizadaEm() == null ? o.getCriadoEm() : o.getRealizadaEm(),
+            o.getOrigem() == null ? OrigemPreco.COMPRA_USUARIO.name() : o.getOrigem().name(),
+            o.getUsuario() == null ? null : o.getUsuario().getId(),
+            o.getUsuario() == null ? "Usuário não identificado" : o.getUsuario().getNome(),
+            o.getCompraChave(),
+            o.getItemChave(),
+            o.getCriadoEm()
+        );
+    }
     private AnaliseResponse analise(ObservacaoPrecoRepository.AnaliseAgrupada d) { return new AnaliseResponse(d.getNome(), d.getTotalObservacoes(), d.getPrecoMedio() == null ? null : BigDecimal.valueOf(d.getPrecoMedio()).setScale(4, RoundingMode.HALF_UP)); }
     private <T> PaginaResponse<T> pagina(List<T> c, Page<?> p) { return new PaginaResponse<>(c, p.getNumber(), p.getSize(), p.getTotalElements(), p.getTotalPages(), p.hasNext(), p.hasPrevious()); }
     private int limitarTamanho(int t) { return Math.min(100, Math.max(1, t)); } private boolean preenchido(String v) { return v != null && !v.isBlank(); }
