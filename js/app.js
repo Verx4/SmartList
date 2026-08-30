@@ -1033,6 +1033,12 @@ function iniciarAplicacao() {
     produtos = listarProdutos();
     historico = carregarHistorico();
 
+    // Recupera também compras antigas que ficaram apenas no histórico local.
+    // O backend deduplica compra e item, então reenviar é seguro.
+    for (const compra of historico) {
+        enfileirarColetaPreco(compra);
+    }
+
     preencherUsuarioDashboard();
     configurarEventos();
     atualizarTela();
