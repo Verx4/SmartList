@@ -59,62 +59,10 @@
             <div id="mensagemPlanos" class="mensagem" aria-live="polite" hidden></div>
         </section>
 
-        <section class="card admin-cupons-card">
-            <div class="section-header">
-                <div>
-                    <span class="card-label">CUPONS DE DESCONTO</span>
-                    <h2>Criar e autorizar cupons</h2>
-                    <p>
-                        Você escolhe o nome. Somente códigos cadastrados e ativos nesta lista
-                        poderão ser usados pelos clientes.
-                    </p>
-                </div>
-            </div>
-
-            <form id="formCupom" class="admin-cupom-form">
-                <div class="form-group">
-                    <label for="codigoCupomAdmin">Nome do cupom</label>
-                    <input
-                        id="codigoCupomAdmin"
-                        name="codigo"
-                        type="text"
-                        maxlength="30"
-                        autocomplete="off"
-                        placeholder="Ex.: SMART5 ou SMART10"
-                        required>
-                    <small>Você escolhe o nome completo do código.</small>
-                </div>
-                <div class="form-group">
-                    <label for="cicloCupomAdmin">Plano e desconto</label>
-                    <select id="cicloCupomAdmin" name="ciclo" required>
-                        <option value="MENSAL">Mensal — 5% (termina em 5)</option>
-                        <option value="TRIMESTRAL">Trimestral — 10% (termina em 10)</option>
-                    </select>
-                    <small>Escolha o plano correspondente ao final do código.</small>
-                </div>
-                <div class="admin-cupom-form-acoes">
-                    <label class="admin-cupom-ativo" for="cupomAtivoAdmin">
-                        <input id="cupomAtivoAdmin" name="ativo" type="checkbox" checked>
-                        <span>Autorizar imediatamente</span>
-                    </label>
-                    <button class="btn btn-primary" type="submit">Adicionar cupom</button>
-                </div>
-            </form>
-
-            <div id="mensagemCupons" class="mensagem" aria-live="polite" hidden></div>
-
-            <div id="listaCupons" class="admin-cupons-lista" aria-live="polite">
-                <p class="estado-vazio">Nenhum cupom autorizado.</p>
-            </div>
-
-            <p class="estado-vazio">
-                O Plano Anual não aceita cupom. O desconto vale somente para a primeira cobrança.
-            </p>
-        </section>
     </main>
 </div>
 <script src="../js/tema.js?v=12"></script>
 <script src="../js/admin-nav.js?v=5"></script>
-<script type="module" src="../js/admin-planos.js?v=4"></script>
+<script type="module" src="../js/admin-planos.js?v=5"></script>
 </body>
 </html>
