@@ -56,10 +56,11 @@ async function carregarAdministradores() {
             ? administradores.map(administrador => {
                 const proprioAcesso = String(administrador.email).toLowerCase()
                     === String(usuarioLogado?.email).toLowerCase();
+                const protegido = proprioAcesso || Boolean(administrador.fundador);
 
                 return `
                     <tr>
-                        <td>${escapar(administrador.nome)}</td>
+                        <td>${escapar(administrador.nome)}${administrador.fundador ? " <strong>(Fundador)</strong>" : ""}</td>
                         <td>${escapar(administrador.email)}</td>
                         <td>${escapar(formatarData(administrador.criadoEm))}</td>
                         <td>
@@ -68,7 +69,7 @@ async function carregarAdministradores() {
                                 class="btn btn-danger"
                                 data-revogar-admin="${escapar(administrador.id)}"
                                 data-admin-email="${escapar(administrador.email)}"
-                                ${proprioAcesso ? 'disabled title="Você não pode revogar o próprio acesso"' : ""}>
+                                ${protegido ? 'disabled title="O acesso do fundador não pode ser revogado"' : ""}>
                                 Revogar acesso
                             </button>
                         </td>
@@ -93,7 +94,7 @@ document.getElementById("formAdministrador")?.addEventListener("submit", async e
         const administrador = await api.post("/admin/administradores", { email });
         formulario.reset();
         await carregarAdministradores();
-        mostrarMensagem(`${administrador.email} agora possui acesso completo ao painel ADM.`);
+        mostrarMensagem(`${administrador.email} agora possui acesso administrativo limitado.`);
     } catch (erro) {
         mostrarMensagem(
             erro instanceof ApiError ? erro.message : "Não foi possível conceder o acesso.",
