@@ -1,6 +1,11 @@
 import { api, ApiError } from "./api.js";
 
+const EMAIL_FUNDADOR = "smartlistevx@gmail.com";
 let usuarioLogado = null;
+
+function emailFundador(email) {
+    return String(email || "").trim().toLowerCase() === EMAIL_FUNDADOR;
+}
 
 function escapar(valor) {
     const elemento = document.createElement("div");
@@ -43,6 +48,12 @@ async function validarAdministrador() {
         return false;
     }
 
+    const fundador = emailFundador(usuarioLogado?.email);
+    const secaoNovoAcesso = document.querySelector(".admin-gerenciamento-form");
+    if (secaoNovoAcesso) {
+        secaoNovoAcesso.hidden = !fundador;
+    }
+
     return true;
 }
 
@@ -56,11 +67,12 @@ async function carregarAdministradores() {
             ? administradores.map(administrador => {
                 const proprioAcesso = String(administrador.email).toLowerCase()
                     === String(usuarioLogado?.email).toLowerCase();
-                const protegido = proprioAcesso || Boolean(administrador.fundador);
+                const contaFundadora = emailFundador(administrador.email);
+                const protegido = proprioAcesso || contaFundadora || Boolean(administrador.fundador);
 
                 return `
                     <tr>
-                        <td>${escapar(administrador.nome)}${administrador.fundador ? " <strong>(Fundador)</strong>" : ""}</td>
+                        <td>${escapar(administrador.nome)}${(contaFundadora || administrador.fundador) ? " <strong>(Fundador)</strong>" : ""}</td>
                         <td>${escapar(administrador.email)}</td>
                         <td>${escapar(formatarData(administrador.criadoEm))}</td>
                         <td>
@@ -85,6 +97,11 @@ async function carregarAdministradores() {
 
 document.getElementById("formAdministrador")?.addEventListener("submit", async evento => {
     evento.preventDefault();
+
+    if (!emailFundador(usuarioLogado?.email)) {
+        mostrarMensagem("Somente a conta ADM principal pode conceder novos administradores.", "erro");
+        return;
+    }
     const formulario = evento.currentTarget;
     const botao = formulario.querySelector('button[type="submit"]');
     const email = formulario.email.value.trim();
