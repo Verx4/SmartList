@@ -7,6 +7,7 @@
             itens: [
                 ["dashboard", "./index.html", "🏠", "Dashboard"],
                 ["usuarios", "./usuarios.html", "👥", "Usuários"],
+                ["planos", "./planos.html", "💳", "Gestão de Planos"],
                 ["coleta-precos", "./coleta-precos.html", "💲", "Coleta de Preços"],
                 ["localizacao", "./localizacao.html", "🗺️", "Uso por região"]
             ]
