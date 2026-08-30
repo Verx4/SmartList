@@ -220,7 +220,7 @@ document.addEventListener("click", async e => {
             await carregarFiltros();
             await carregarTudo();
         } catch (erro) {
-            window.alert(erro instanceof ApiError ? erro.message : "Não foi possível excluir esta compra.");
+            window.alert(erro?.message || `Não foi possível excluir esta compra (status ${Number(erro?.status || 0) || "sem resposta"}).`);
             excluir.disabled = false;
         }
         return;
