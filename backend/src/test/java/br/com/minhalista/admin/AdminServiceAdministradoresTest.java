@@ -47,7 +47,10 @@ class AdminServiceAdministradoresTest {
         when(usuarioRepository.save(any(Usuario.class)))
             .thenAnswer(invocacao -> invocacao.getArgument(0));
 
-        service.concederAcessoAdministrador("NOVO@smartlist.com");
+        service.concederAcessoAdministrador(
+            "NOVO@smartlist.com",
+            "smartlistevx@gmail.com"
+        );
 
         assertEquals(Perfil.ADMIN, usuario.getPerfil());
         verify(usuarioRepository).save(usuario);
