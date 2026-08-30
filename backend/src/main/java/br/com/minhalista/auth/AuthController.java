@@ -13,6 +13,7 @@ import br.com.minhalista.auth.dto.LoginRequest;
 import br.com.minhalista.auth.dto.MensagemResponse;
 import br.com.minhalista.auth.dto.RecuperarSenhaRequest;
 import br.com.minhalista.auth.dto.UsuarioResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -26,8 +27,23 @@ public class AuthController {
     }
 
     @PostMapping("/cadastro")
-    public ResponseEntity<UsuarioResponse> cadastrar(@Valid @RequestBody CadastroRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrar(request));
+    public ResponseEntity<UsuarioResponse> cadastrar(
+        @Valid @RequestBody CadastroRequest request,
+        HttpServletRequest httpRequest
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            service.cadastrar(request, ipDoCliente(httpRequest))
+        );
+    }
+
+    private String ipDoCliente(HttpServletRequest request) {
+        String encaminhado = request.getHeader("X-Forwarded-For");
+        String ip = encaminhado == null || encaminhado.isBlank()
+            ? request.getRemoteAddr()
+            : encaminhado.split(",")[0].trim();
+        return ip == null || ip.isBlank()
+            ? "nao-identificado"
+            : ip.substring(0, Math.min(ip.length(), 64));
     }
 
     @PostMapping("/login")
