@@ -35,7 +35,11 @@ public class AdminPrecoController {
     }
 
     @GetMapping("/resumo") public AdminPrecoService.ResumoResponse resumo() { return service.resumo(); }
-    @GetMapping("/resumo-compras") public AdminPrecoService.ResumoComprasResponse resumoCompras() { return service.resumoCompras(); }
+    @GetMapping("/resumo-compras")
+    public AdminPrecoService.ResumoComprasResponse resumoCompras() {
+        service.sincronizarListasFinalizadas();
+        return service.resumoCompras();
+    }
     @GetMapping("/filtros") public AdminPrecoService.FiltrosResponse filtros() { return service.filtros(); }
     @GetMapping("/compras/filtros")
     public AdminPrecoService.ComprasFiltrosResponse filtrosCompras(Principal principal) {
@@ -59,6 +63,7 @@ public class AdminPrecoController {
         @RequestParam(defaultValue = "20") int tamanho,
         Principal principal
     ) {
+        service.sincronizarListasFinalizadas();
         AdminPrecoService.PaginaResponse<AdminPrecoService.CompraResumoResponse> paginaCompras =
             service.compras(busca, mercado, usuario, inicio, fim, pagina, tamanho);
         if (podeVerIdentidade(principal)) {
