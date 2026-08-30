@@ -336,6 +336,53 @@ public class AdminService {
     }
 
     @Transactional
+    public void excluirContaUsuario(UUID usuarioId, String administradorEmail) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new RegraNegocioException(
+                HttpStatus.NOT_FOUND,
+                "Usuário não encontrado."
+            ));
+
+        if (usuario.getEmail().equalsIgnoreCase(administradorEmail)) {
+            throw new RegraNegocioException(
+                HttpStatus.CONFLICT,
+                "Você não pode excluir a própria conta."
+            );
+        }
+
+        if (usuario.getPerfil() == Perfil.ADMIN) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "Contas administrativas não podem ser excluídas por esta função."
+            );
+        }
+
+        String identificador = usuario.getId().toString();
+        usuario.setNome("Conta excluída");
+        usuario.setEmail("excluido-" + identificador + "@anonimo.smartlist");
+        usuario.setCpf(null);
+        usuario.setTelefone(null);
+        usuario.setCidade(null);
+        usuario.setEstado(null);
+        usuario.setSenhaHash("CONTA_EXCLUIDA_" + identificador);
+        usuario.setPerfil(Perfil.USUARIO);
+        usuario.setTipoAcesso(TipoAcesso.FREE);
+        usuario.setCortesiaAte(null);
+        usuario.setAtivo(false);
+        usuario.setAceiteMarketing(false);
+        usuario.setNotificarPromocoes(false);
+        usuario.setNotificarPrecos(false);
+        usuario.setExclusaoSolicitadaEm(Instant.now());
+        usuarioRepository.save(usuario);
+
+        LOGGER.info(
+            "Conta {} excluída e anonimizada pelo administrador {}.",
+            usuarioId,
+            administradorEmail
+        );
+    }
+
+    @Transactional
     public UsuarioAdminResponse alternarBloqueio(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
