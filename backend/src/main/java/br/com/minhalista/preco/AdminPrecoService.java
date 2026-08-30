@@ -220,6 +220,34 @@ public class AdminPrecoService {
     }
 
     @Transactional
+    public void excluirCompra(String compraId) {
+        int removidas = observacaoRepository.deleteByOrigemAndCompraChave(
+            OrigemPreco.COMPRA_USUARIO,
+            compraId
+        );
+
+        boolean listaRemovida = false;
+        try {
+            UUID listaId = UUID.fromString(compraId);
+            ListaCompra lista = listaCompraRepository.findById(listaId).orElse(null);
+
+            if (lista != null && lista.getStatus() == StatusLista.FINALIZADA) {
+                listaCompraRepository.delete(lista);
+                listaRemovida = true;
+            }
+        } catch (IllegalArgumentException _erro) {
+            // Compras antigas do aplicativo usam IDs que não são UUID.
+        }
+
+        if (removidas == 0 && !listaRemovida) {
+            throw new RegraNegocioException(
+                HttpStatus.NOT_FOUND,
+                "Compra finalizada não encontrada."
+            );
+        }
+    }
+
+    @Transactional
     public void excluirObservacao(UUID id) {
         ObservacaoPreco observacao = observacaoRepository.findById(id).orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Observação de preço não encontrada."));
         observacaoRepository.delete(observacao);
