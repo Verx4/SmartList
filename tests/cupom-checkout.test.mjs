@@ -5,45 +5,21 @@ import test from "node:test";
 const raiz = new URL("../", import.meta.url);
 const ler = caminho => readFile(new URL(caminho, raiz), "utf8");
 
-test("tela de planos exibe, aplica e remove cupom antes do checkout", async () => {
-    const [pagina, checkout, script] = await Promise.all([
+test("cupom é informado somente no checkout da Kiwify", async () => {
+    const [pagina, checkout, adminPlanos, adminScript] = await Promise.all([
         ler("assinatura.html"),
         ler("checkout.html"),
-        ler("js/assinatura.js")
-    ]);
-
-    assert.match(pagina, /Possui um cupom\?/);
-    assert.match(pagina, /id="codigoCupomPlano"/);
-    assert.match(pagina, /id="btnRemoverCupomPlano"/);
-    assert.match(pagina, /id="promocaoCupomPlano"/);
-    assert.match(checkout, /id="checkoutProximaCobranca"/);
-    assert.match(checkout, /id="checkoutPercentual"/);
-    assert.match(script, /api\.post\("\/assinaturas\/cupom\/validar"/);
-    assert.match(script, /cupomAplicado\.codigo/);
-    assert.match(script, /dadosCheckout\.cupom = cupomAplicado\.codigo/);
-    assert.doesNotMatch(script, /Cupons estão temporariamente indisponíveis/);
-    assert.match(script, /A Kiwify confirmará a validade/);
-});
-
-test("ADM permite escolher, autorizar, desativar e excluir nomes de cupons", async () => {
-    const [pagina, script, estilo] = await Promise.all([
         ler("admin/planos.html"),
-        ler("js/admin-planos.js"),
-        ler("css/admin.css")
+        ler("js/admin-planos.js")
     ]);
 
-    assert.match(pagina, /Criar e autorizar cupons/);
-    assert.match(pagina, /id="formCupom"/);
-    assert.match(pagina, /id="codigoCupomAdmin"/);
-    assert.match(pagina, /placeholder="Ex\.: SMART5 ou SMART10"/);
-    assert.match(pagina, /id="cicloCupomAdmin"/);
-    assert.match(pagina, /class="admin-cupom-form-acoes"/);
-    assert.doesNotMatch(pagina, /class="admin-cupom-codigo">FINAL 5/);
-    assert.match(estilo, /grid-template-columns: minmax\(280px, 1\.35fr\) minmax\(320px, 0\.85fr\)/);
-    assert.match(estilo, /\.admin-cupom-form-acoes/);
-    assert.match(script, /api\.get\("\/admin\/cupons"\)/);
-    assert.match(script, /api\.post\("\/admin\/cupons"/);
-    assert.match(script, /api\.delete\(`\/admin\/cupons\/\$\{/);
+    assert.doesNotMatch(pagina, /Possui um cupom\?/);
+    assert.doesNotMatch(checkout, /Possui um cupom\?/);
+    assert.doesNotMatch(checkout, /checkoutCupom/);
+    assert.match(checkout, /aplique-o diretamente no checkout da Kiwify/);
+    assert.match(adminPlanos, /Salvar Alterações de Preços/);
+    assert.doesNotMatch(adminPlanos, /Criar e autorizar cupons/);
+    assert.doesNotMatch(adminScript, /\/admin\/cupons/);
 });
 
 test("servidor exige cupom cadastrado e mantém autoridade e auditoria", async () => {
