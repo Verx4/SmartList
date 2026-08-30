@@ -384,7 +384,7 @@ async function enviarCheckout(evento) {
         };
 
         if (cupomAplicado?.ciclo === ciclo && cupomAplicado.codigo) {
-            throw new Error("Cupons estão temporariamente indisponíveis no checkout da Kiwify. Remova o cupom para continuar.");
+            dadosCheckout.cupom = cupomAplicado.codigo;
         }
 
         const resposta = await api.post(
