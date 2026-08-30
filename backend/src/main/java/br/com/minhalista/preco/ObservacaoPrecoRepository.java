@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +25,17 @@ public interface ObservacaoPrecoRepository
     );
 
     boolean existsByProdutoId(UUID produtoId);
+
+    @Modifying
+    @Query("""
+        delete from ObservacaoPreco o
+         where o.origem = :origem
+           and o.compraChave = :compraChave
+        """)
+    int deleteByOrigemAndCompraChave(
+        @Param("origem") OrigemPreco origem,
+        @Param("compraChave") String compraChave
+    );
 
     boolean existsByOrigemAndCompraChave(
         OrigemPreco origem,
