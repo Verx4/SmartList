@@ -52,6 +52,11 @@ app:
     nome: ${ADMIN_NOME:Administrador}
     email: ${ADMIN_EMAIL:}
     senha: ${ADMIN_PASSWORD:}
+  kiwify:
+    checkout:
+      mensal: ${KIWIFY_CHECKOUT_MENSAL:https://pay.kiwify.com.br/CsdUxeJ}
+      trimestral: ${KIWIFY_CHECKOUT_TRIMESTRAL:https://pay.kiwify.com.br/sd2O7Hi}
+      anual: ${KIWIFY_CHECKOUT_ANUAL:https://pay.kiwify.com.br/FOP3RIc}
   mercado-pago:
     environment: ${MERCADO_PAGO_ENVIRONMENT:production}
     access-token: ${MERCADO_PAGO_ACCESS_TOKEN:${MERCADO_PAGO_TOKEN:}}
