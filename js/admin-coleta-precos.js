@@ -78,7 +78,6 @@ async function carregarResumo() {
     porId("totalMercados").textContent = numero(r.totalMercados);
     porId("valorTotalCompras").textContent = moeda(r.valorTotal);
     porId("totalItens").textContent = numero(r.totalItens);
-    porId("excluirTodasCompras").disabled = Number(r.totalCompras || 0) === 0;
 }
 
 async function carregarFiltros() {
@@ -159,30 +158,10 @@ function fecharDetalhe() {
 }
 
 async function excluirCompra(compraId) {
-    const detalhe = await api.get(`/admin/coleta-precos/compras/${encodeURIComponent(compraId)}`);
-    const itens = detalhe.itens || [];
-    await Promise.all(itens.map(item => api.delete(`/admin/coleta-precos/observacoes/${encodeURIComponent(item.id)}`)));
+    await api.delete(
+        `/admin/coleta-precos/compras/${encodeURIComponent(compraId)}`
+    );
     if (estado.compraAberta === compraId) fecharDetalhe();
-}
-
-async function listarTodasCompras() {
-    const todas = [];
-    let pagina = 0;
-    let temProxima = true;
-    while (temProxima) {
-        const r = await api.get(`/admin/coleta-precos/compras?pagina=${pagina}&tamanho=100`);
-        todas.push(...(r.conteudo || []));
-        temProxima = Boolean(r.temProxima);
-        pagina += 1;
-    }
-    return todas;
-}
-
-async function excluirTodasCompras() {
-    const compras = await listarTodasCompras();
-    for (const compra of compras) {
-        await excluirCompra(compra.compraId);
-    }
 }
 
 function exibirErro(erro) {
@@ -228,25 +207,6 @@ porId("atualizarCompras").addEventListener("click", carregarTudo);
 porId("comprasAnterior").addEventListener("click", () => { if (estado.pagina > 0) estado.pagina -= 1; carregarCompras().catch(exibirErro); });
 porId("comprasProxima").addEventListener("click", () => { estado.pagina += 1; carregarCompras().catch(exibirErro); });
 porId("fecharDetalheCompra").addEventListener("click", fecharDetalhe);
-
-porId("excluirTodasCompras").addEventListener("click", async () => {
-    const confirmou = window.confirm("Excluir TODAS as compras finalizadas? Esta ação não pode ser desfeita.");
-    if (!confirmou) return;
-    const botao = porId("excluirTodasCompras");
-    botao.disabled = true;
-    try {
-        await excluirTodasCompras();
-        fecharDetalhe();
-        estado.pagina = 0;
-        await carregarFiltros();
-        await carregarTudo();
-        window.alert("Todas as compras finalizadas foram excluídas.");
-    } catch (erro) {
-        window.alert(erro instanceof ApiError ? erro.message : "Não foi possível excluir todas as compras.");
-    } finally {
-        botao.disabled = false;
-    }
-});
 
 document.addEventListener("click", async e => {
     const excluir = e.target.closest("[data-excluir-compra]");
