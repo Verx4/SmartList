@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.pagamento.PagamentoConsultado;
 import br.com.minhalista.usuario.TipoAcesso;
 import br.com.minhalista.usuario.Usuario;
@@ -75,16 +76,33 @@ public class AssinaturaService {
         if (codigoCupom == null || codigoCupom.isBlank()) {
             assinatura.setValor(planoService.valorVigente(ciclo));
         } else {
-            CupomAplicacaoResponse cupom = cupomService.aplicar(codigoCupom, ciclo);
-            assinatura.setValor(cupom.total());
-            assinatura.setCupomCodigo(cupom.codigo());
-            assinatura.setCupomPercentualDesconto(cupom.percentualDesconto());
-            assinatura.setCupomValorDesconto(cupom.desconto());
-            assinatura.setCupomValorOriginal(cupom.valorOriginal());
-            assinatura.setCupomAplicadoEm(Instant.now());
-            assinatura.setCupomPrimeiraCobrancaSomente(
-                cupom.primeiraCobrancaSomente()
-            );
+            try {
+                CupomAplicacaoResponse cupom = cupomService.aplicar(codigoCupom, ciclo);
+                assinatura.setValor(cupom.total());
+                assinatura.setCupomCodigo(cupom.codigo());
+                assinatura.setCupomPercentualDesconto(cupom.percentualDesconto());
+                assinatura.setCupomValorDesconto(cupom.desconto());
+                assinatura.setCupomValorOriginal(cupom.valorOriginal());
+                assinatura.setCupomAplicadoEm(Instant.now());
+                assinatura.setCupomPrimeiraCobrancaSomente(
+                    cupom.primeiraCobrancaSomente()
+                );
+            } catch (RegraNegocioException cupomNaoCadastradoLocalmente) {
+                BigDecimal valorOriginal = planoService.valorVigente(ciclo);
+                assinatura.setValor(valorOriginal);
+                assinatura.setCupomCodigo(
+                    codigoCupom.trim().toUpperCase(Locale.ROOT)
+                );
+                assinatura.setCupomPercentualDesconto(BigDecimal.ZERO);
+                assinatura.setCupomValorDesconto(BigDecimal.ZERO);
+                assinatura.setCupomValorOriginal(valorOriginal);
+                assinatura.setCupomAplicadoEm(Instant.now());
+                assinatura.setCupomPrimeiraCobrancaSomente(true);
+                LOG.info(
+                    "Cupom {} será validado diretamente pela Kiwify.",
+                    assinatura.getCupomCodigo()
+                );
+            }
             assinatura.setCupomPrimeiroPagamentoAplicado(false);
         }
         return repository.save(assinatura);
@@ -222,8 +240,15 @@ public class AssinaturaService {
             : evento.toLowerCase(Locale.ROOT);
         String pagamentoId = "kiwify:" + orderId;
 
+        BigDecimal valorMaximo = StringUtils.hasText(assinatura.getCupomCodigo())
+            && assinatura.getCupomValorOriginal() != null
+                ? assinatura.getCupomValorOriginal()
+                : assinatura.getValor();
+        boolean valorConfere = StringUtils.hasText(assinatura.getCupomCodigo())
+            ? valor.signum() > 0 && valor.compareTo(valorMaximo) <= 0
+            : assinatura.getValor().compareTo(valor) == 0;
         boolean dadosConferem =
-            assinatura.getValor().compareTo(valor) == 0
+            valorConfere
             && "BRL".equalsIgnoreCase(moeda)
             && assinatura.getUsuario().getEmail().equalsIgnoreCase(email);
 
@@ -256,6 +281,8 @@ public class AssinaturaService {
             LOG.info("Venda Kiwify {} ainda não está paga: {}.", orderId, status);
             return false;
         }
+
+        assinatura.setValor(valor);
 
         if (pagamentoId.equals(assinatura.getMercadoPagoPagamentoId())) {
             return assinatura.getStatus() == StatusAssinatura.ATIVA;
