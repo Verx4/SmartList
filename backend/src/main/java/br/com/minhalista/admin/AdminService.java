@@ -331,6 +331,10 @@ public class AdminService {
         }
     }
 
+    public boolean isFundador(String email) {
+        return false;
+    }
+
     @Transactional
     public UsuarioAdminResponse alternarBloqueio(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
