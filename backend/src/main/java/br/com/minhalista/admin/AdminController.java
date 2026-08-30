@@ -54,7 +54,10 @@ public class AdminController {
         Principal principal
     ) {
         exigirFundador(principal);
-        return service.concederAcessoAdministrador(request.email());
+        return service.concederAcessoAdministrador(
+            request.email(),
+            principal.getName()
+        );
     }
 
     private void exigirFundador(Principal principal) {
