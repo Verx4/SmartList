@@ -21,7 +21,6 @@
     <link rel="stylesheet" href="./css/buttons.css">
     <link rel="stylesheet" href="./css/forms.css">
     <link rel="stylesheet" href="./css/checkout.css?v=3">
-    <link rel="stylesheet" href="./css/cupom-checkout.css?v=2">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/temas.css">
 </head>
@@ -105,8 +104,7 @@
                         <input type="radio" name="cicloPremium" value="mensal" checked>
                         <span class="opcao-ciclo-conteudo">
                             <strong>Mensal</strong>
-                            <span data-preco-ciclo="mensal">R$ 9,97</span>
-                            <small data-descricao-ciclo="mensal">por mês</small>
+                            <small>Ver condições na Kiwify</small>
                         </span>
                     </label>
 
@@ -114,8 +112,7 @@
                         <input type="radio" name="cicloPremium" value="trimestral">
                         <span class="opcao-ciclo-conteudo">
                             <strong>Trimestral</strong>
-                            <span data-preco-ciclo="trimestral">R$ 26,91</span>
-                            <small data-descricao-ciclo="trimestral">pagamento único</small>
+                            <small>Ver condições na Kiwify</small>
                         </span>
                     </label>
 
@@ -123,54 +120,14 @@
                         <input type="radio" name="cicloPremium" value="anual">
                         <span class="opcao-ciclo-conteudo">
                             <strong>Anual</strong>
-                            <span data-preco-ciclo="anual">R$ 95,64</span>
-                            <small data-descricao-ciclo="anual">pagamento único</small>
+                            <small>Ver condições na Kiwify</small>
                         </span>
                     </label>
                 </div>
 
-                <div class="preco-premium-linha">
-                    <strong id="precoPremium">R$ 9,97</strong>
-                    <span id="periodoPremium">/mês</span>
-                </div>
-
-                <div id="promocaoCupomPlano" class="plano-promocao" hidden>
-                    <span>De <s id="precoOriginalCupomPlano">R$ 9,97</s> por</span>
-                    <strong id="precoPromocionalCupomPlano">R$ 9,47</strong>
-                    <span id="badgeCupomPlano" class="cupom-badge">5% OFF</span>
-                    <small>
-                        Desconto válido somente para esta primeira cobrança.
-                        Uma nova compra usará o valor normal vigente.
-                    </small>
-                </div>
-
-                <div class="checkout-cupom plano-cupom">
-                    <label for="codigoCupomPlano">Possui um cupom?</label>
-                    <div class="checkout-cupom-acoes">
-                        <input
-                            id="codigoCupomPlano"
-                            type="text"
-                            maxlength="30"
-                            autocomplete="off"
-                            placeholder="Digite o código do cupom">
-                        <button
-                            id="btnAplicarCupomPlano"
-                            class="btn btn-secondary"
-                            type="button">
-                            Aplicar
-                        </button>
-                    </div>
-                    <button
-                        id="btnRemoverCupomPlano"
-                        class="btn-cupom-remover"
-                        type="button"
-                        hidden>
-                        Remover cupom
-                    </button>
-                    <small id="mensagemCupomPlano" aria-live="polite">
-                        Use um código autorizado no ADM: final 5 no Mensal ou final 10 no Trimestral.
-                    </small>
-                </div>
+                <p class="plano-observacao">
+                    O valor vigente e os cupons disponíveis serão informados e aplicados diretamente no checkout da Kiwify.
+                </p>
 
                 <h3 class="plano-secao-titulo">Tudo incluído</h3>
                 <ul class="lista-recursos">
@@ -209,7 +166,7 @@
     </footer>
 
     <script src="./js/tema.js?v=11"></script>
-    <script type="module" src="./js/assinatura.js?v=9"></script>
+    <script type="module" src="./js/assinatura.js?v=11"></script>
 </body>
 
 </html>
