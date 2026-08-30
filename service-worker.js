@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v62`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v62`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v63`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v63`;
 
 const PRECACHE_URLS = [
     "./",
@@ -108,6 +108,12 @@ self.addEventListener("fetch", (event) => {
     if (url.origin !== self.location.origin
         || !url.pathname.startsWith(scope.pathname)
         || url.pathname.includes("/api/")) {
+        return;
+    }
+
+    // O painel administrativo precisa sempre carregar o HTML publicado mais
+    // recente. Não permite que uma versão antiga esconda ferramentas novas.
+    if (request.mode === "navigate" && url.pathname.includes("/admin/")) {
         return;
     }
 
