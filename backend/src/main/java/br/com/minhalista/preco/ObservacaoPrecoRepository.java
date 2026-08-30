@@ -25,6 +25,11 @@ public interface ObservacaoPrecoRepository
 
     boolean existsByProdutoId(UUID produtoId);
 
+    boolean existsByOrigemAndCompraChave(
+        OrigemPreco origem,
+        String compraChave
+    );
+
     Page<ObservacaoPreco> findByProdutoIdOrderByRealizadaEmDesc(UUID produtoId, Pageable pageable);
 
     List<ObservacaoPreco> findByOrigemAndCompraChaveOrderByCriadoEmAsc(OrigemPreco origem, String compraChave);
