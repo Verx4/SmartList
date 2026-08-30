@@ -52,6 +52,8 @@ async function validarAdministrador() {
     const secaoNovoAcesso = document.querySelector(".admin-gerenciamento-form");
     if (secaoNovoAcesso) {
         secaoNovoAcesso.hidden = !fundador;
+        secaoNovoAcesso.style.display = fundador ? "" : "none";
+        secaoNovoAcesso.setAttribute("aria-hidden", String(!fundador));
     }
 
     return true;
