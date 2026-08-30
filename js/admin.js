@@ -460,6 +460,13 @@ function renderizarUsuarios(usuarios = []) {
                             data-usuario-id="${escaparHtml(usuario.id)}"
                             data-acao="alternar-bloqueio"
                         >${usuario.ativo === false ? "Desbloquear" : "Bloquear"}</button>
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-pequeno"
+                            data-usuario-id="${escaparHtml(usuario.id)}"
+                            data-acao="excluir-conta"
+                            data-usuario-email="${escaparHtml(usuario.email)}"
+                        >Excluir conta</button>
                     </div>
                 </td>
             </tr>
@@ -961,6 +968,37 @@ async function alternarBloqueioUsuario(id) {
 }
 
 
+async function excluirContaUsuario(id, email) {
+    const confirmacao = window.prompt(
+        `Esta ação excluirá e anonimizará definitivamente a conta. Digite o e-mail ${email} para confirmar:`
+    );
+
+    if (confirmacao?.trim().toLowerCase() !== String(email).toLowerCase()) {
+        if (confirmacao !== null) {
+            mensagem("O e-mail informado não corresponde à conta.", "erro");
+        }
+        return;
+    }
+
+    try {
+        await api.delete(`/admin/usuarios/${id}`);
+        mensagem("Conta excluída e dados pessoais anonimizados.");
+        await Promise.all([
+            carregarUsuarios(),
+            carregarResumo(),
+            carregarAuditoriaAcessos()
+        ]);
+    } catch (erro) {
+        mensagem(
+            erro instanceof ApiError
+                ? erro.message
+                : "Não foi possível excluir a conta.",
+            "erro"
+        );
+    }
+}
+
+
 function atualizarExemploMargem() {
 
     const campoMargem =
@@ -1245,6 +1283,13 @@ async function iniciar() {
 
                 if (botao?.dataset.acao === "alterar-acesso") {
                     alterarAcessoUsuario(botao.dataset.usuarioId);
+                }
+
+                if (botao?.dataset.acao === "excluir-conta") {
+                    excluirContaUsuario(
+                        botao.dataset.usuarioId,
+                        botao.dataset.usuarioEmail
+                    );
                 }
 
             }
