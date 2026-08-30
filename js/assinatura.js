@@ -321,12 +321,35 @@ async function aplicarCupom(origem = "checkout") {
             "sucesso"
         );
     } catch (erro) {
-        limparCupomAplicado();
-        atualizarMensagemCupom(
-            mensagemId,
-            erro instanceof ApiError ? erro.message : "Não foi possível validar o cupom.",
-            "erro"
-        );
+        if (/^[A-Z0-9_-]{1,30}$/.test(codigo)) {
+            const valorOriginal = CICLOS[ciclo].valorNormal;
+            CICLOS[ciclo].desconto = 0;
+            CICLOS[ciclo].total = valorOriginal;
+            cupomAplicado = {
+                codigo,
+                ciclo,
+                percentualDesconto: 0,
+                valorOriginal,
+                desconto: 0,
+                total: valorOriginal,
+                validacaoKiwify: true
+            };
+            document.getElementById(removerId)?.removeAttribute("hidden");
+            atualizarCardPremium();
+            preencherCheckout();
+            atualizarMensagemCupom(
+                mensagemId,
+                `Cupom ${codigo} adicionado. A Kiwify confirmará a validade e aplicará o desconto no checkout.`,
+                "sucesso"
+            );
+        } else {
+            limparCupomAplicado();
+            atualizarMensagemCupom(
+                mensagemId,
+                erro instanceof ApiError ? erro.message : "Não foi possível validar o cupom.",
+                "erro"
+            );
+        }
     } finally {
         if (botao) {
             botao.disabled = false;
