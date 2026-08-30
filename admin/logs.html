@@ -60,7 +60,7 @@
                     <h1>Logs e erros</h1>
 
                     <p>
-                        Consulte eventos do backend, pagamentos e scrapers.
+                        Consulte eventos do backend e scrapers.
                     </p>
                 </div>
 
@@ -83,46 +83,6 @@
                 </div>
 
             </header>
-
-            <section class="card admin-pagamento-card" aria-labelledby="tituloDiagnosticoPagamento">
-                <div>
-                    <span class="page-eyebrow">Mercado Pago</span>
-                    <h2 id="tituloDiagnosticoPagamento">Diagnosticar pagamento recusado</h2>
-                    <p>
-                        Informe o número da operação exibido na tela do Mercado Pago para consultar
-                        o motivo técnico retornado pelo cartão ou banco.
-                    </p>
-                </div>
-
-                <form id="formDiagnosticoPagamento" class="admin-pagamento-form">
-                    <div class="form-group">
-                        <label for="pagamentoMercadoPagoId">Número da operação</label>
-                        <input
-                            id="pagamentoMercadoPagoId"
-                            name="pagamentoId"
-                            type="text"
-                            inputmode="numeric"
-                            autocomplete="off"
-                            pattern="[0-9]{6,20}"
-                            placeholder="Ex.: 123456789012"
-                            required>
-                    </div>
-
-                    <button
-                        id="btnDiagnosticarPagamento"
-                        class="btn btn-primary"
-                        type="submit">
-                        Consultar motivo
-                    </button>
-                </form>
-
-                <article
-                    id="resultadoDiagnosticoPagamento"
-                    class="admin-pagamento-diagnostico"
-                    aria-live="polite"
-                    hidden>
-                </article>
-            </section>
 
             <section class="grid-resumo">
 
