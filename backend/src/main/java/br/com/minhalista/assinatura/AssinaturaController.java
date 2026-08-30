@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.minhalista.common.RegraNegocioException;
 import br.com.minhalista.pagamento.CheckoutResponse;
+import br.com.minhalista.pagamento.KiwifyCheckoutService;
 import br.com.minhalista.pagamento.MercadoPagoService;
 import br.com.minhalista.pagamento.PagamentoConsultado;
 import br.com.minhalista.usuario.Usuario;
@@ -39,17 +40,20 @@ public class AssinaturaController {
 
     private final AssinaturaService assinaturaService;
     private final MercadoPagoService mercadoPagoService;
+    private final KiwifyCheckoutService kiwifyCheckoutService;
     private final UsuarioService usuarioService;
     private final AssinaturaReconciliacaoService reconciliacaoService;
 
     public AssinaturaController(
         AssinaturaService assinaturaService,
         MercadoPagoService mercadoPagoService,
+        KiwifyCheckoutService kiwifyCheckoutService,
         UsuarioService usuarioService,
         AssinaturaReconciliacaoService reconciliacaoService
     ) {
         this.assinaturaService = assinaturaService;
         this.mercadoPagoService = mercadoPagoService;
+        this.kiwifyCheckoutService = kiwifyCheckoutService;
         this.usuarioService = usuarioService;
         this.reconciliacaoService = reconciliacaoService;
     }
@@ -143,15 +147,10 @@ public class AssinaturaController {
                 request.cupom()
             );
             CheckoutResponse checkout =
-                mercadoPagoService.criarPreferencia(usuario, assinatura);
-
-            assinaturaService.vincularPreferencia(
-                assinatura.getId(),
-                checkout.preferenceId()
-            );
+                kiwifyCheckoutService.criarCheckout(assinatura);
 
             LOG.info(
-                "Checkout preparado: diagnostico={}, checkout={}, preferencia={}.",
+                "Checkout preparado: diagnostico={}, checkout={}, referencia={}.",
                 codigoDiagnostico,
                 assinatura.getId(),
                 checkout.preferenceId()
@@ -176,7 +175,7 @@ public class AssinaturaController {
             LOG.error(
                 "Falha inesperada no checkout. diagnostico={}, etapa={}.",
                 codigoDiagnostico,
-                assinatura == null ? "CRIAR_ASSINATURA" : "CRIAR_PREFERENCIA",
+                assinatura == null ? "CRIAR_ASSINATURA" : "CRIAR_CHECKOUT_KIWIFY",
                 erro
             );
             throw new RegraNegocioException(
