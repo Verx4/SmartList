@@ -194,27 +194,51 @@ document.getElementById("btnSair")?.addEventListener("click", sair);
 
 document.getElementById("btnExcluirConta")?.addEventListener("click", async () => {
     const confirmou = window.confirm(
-        "Deseja solicitar a exclusão definitiva da conta e a anonimização dos seus dados? Esta solicitação será analisada conforme as obrigações legais de retenção."
+        "Deseja excluir definitivamente sua conta e apagar seus dados pessoais? Esta ação não pode ser desfeita."
     );
     if (!confirmou) return;
 
     const botao = document.getElementById("btnExcluirConta");
+    const textoOriginal = botao?.textContent;
+
     if (botao) {
         botao.disabled = true;
-        botao.textContent = "Registrando solicitação...";
+        botao.textContent = "Excluindo conta...";
     }
 
+    const controlador = new AbortController();
+    const limite = window.setTimeout(() => controlador.abort(), 30000);
+
     try {
-        const resposta = await api.post("/usuarios/me/solicitacoes/exclusao", {});
-        exibirMensagem(
-            resposta?.mensagem || "Solicitação registrada com sucesso.",
-            "sucesso"
+        const resposta = await api.post(
+            "/usuarios/me/solicitacoes/exclusao",
+            {},
+            { signal: controlador.signal }
         );
+        const mensagem = resposta?.mensagem
+            || "Seus dados foram apagados do sistema. Muito obrigado por usar o Smart List. Esperamos ter você de volta em breve.";
+
+        localStorage.removeItem("usuarioAtual");
+        localStorage.removeItem("usuarioLogado");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("token");
+
+        exibirMensagem(mensagem, "sucesso");
+        window.alert(mensagem);
+        window.location.replace("./login.html?conta=excluida");
     } catch (erro) {
-        exibirMensagem(erro.message || "Não foi possível registrar a solicitação.", "erro");
+        const mensagem = erro?.name === "AbortError"
+            ? "A exclusão demorou mais que o esperado. Tente novamente."
+            : erro.message || "Não foi possível excluir a conta.";
+        exibirMensagem(mensagem, "erro");
+
         if (botao) {
             botao.disabled = false;
-            botao.textContent = "Excluir minha conta";
+            botao.textContent = textoOriginal || "Excluir minha conta";
         }
+    } finally {
+        window.clearTimeout(limite);
     }
 });
