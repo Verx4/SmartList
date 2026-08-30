@@ -132,18 +132,19 @@ public class AdminPrecoService {
 
     @Transactional
     public CompraDetalheResponse compra(String compraId) {
-        List<ObservacaoPrecoRepository.ItemCompraDetalhe> itens =
-            observacaoRepository.listarItensCompra(
+        List<ObservacaoPreco> itens = observacaoRepository
+            .findByOrigemAndCompraChaveOrderByCriadoEmAsc(
                 OrigemPreco.COMPRA_USUARIO,
                 compraId
             );
 
         if (itens.isEmpty()) {
             importarListaFinalizadaPorId(compraId);
-            itens = observacaoRepository.listarItensCompra(
-                OrigemPreco.COMPRA_USUARIO,
-                compraId
-            );
+            itens = observacaoRepository
+                .findByOrigemAndCompraChaveOrderByCriadoEmAsc(
+                    OrigemPreco.COMPRA_USUARIO,
+                    compraId
+                );
         }
 
         if (itens.isEmpty()) {
@@ -153,51 +154,30 @@ public class AdminPrecoService {
             );
         }
 
-        ObservacaoPrecoRepository.ItemCompraDetalhe primeiro = itens.get(0);
+        ObservacaoPreco primeiro = itens.get(0);
         BigDecimal total = itens.stream()
-            .map(ObservacaoPrecoRepository.ItemCompraDetalhe::getSubtotal)
+            .map(ObservacaoPreco::getSubtotal)
             .filter(java.util.Objects::nonNull)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
         Instant realizadaEm = itens.stream()
-            .map(ObservacaoPrecoRepository.ItemCompraDetalhe::getRealizadaEm)
+            .map(ObservacaoPreco::getRealizadaEm)
             .filter(java.util.Objects::nonNull)
             .max(Instant::compareTo)
             .orElse(primeiro.getCriadoEm());
-        List<ObservacaoResponse> respostas = itens.stream()
-            .map(item -> new ObservacaoResponse(
-                item.getId(),
-                item.getProdutoId(),
-                item.getProduto(),
-                item.getCategoria(),
-                item.getNomeOriginal(),
-                item.getQuantidade(),
-                item.getUnidade(),
-                item.getPrecoUnitario(),
-                item.getSubtotal(),
-                item.getMercado(),
-                item.getCidade(),
-                item.getEstado(),
-                item.getRealizadaEm(),
-                OrigemPreco.COMPRA_USUARIO.name(),
-                item.getUsuarioId(),
-                item.getUsuarioNome(),
-                compraId,
-                item.getItemId(),
-                item.getCriadoEm()
-            ))
-            .toList();
 
         return new CompraDetalheResponse(
             compraId,
-            primeiro.getUsuarioId(),
-            primeiro.getUsuarioNome(),
+            primeiro.getUsuario() == null ? null : primeiro.getUsuario().getId(),
+            primeiro.getUsuario() == null
+                ? "Usuário não identificado"
+                : primeiro.getUsuario().getNome(),
             primeiro.getMercado(),
             primeiro.getCidade(),
             primeiro.getEstado(),
             realizadaEm,
-            respostas.size(),
+            itens.size(),
             total,
-            respostas
+            itens.stream().map(this::observacao).toList()
         );
     }
 
