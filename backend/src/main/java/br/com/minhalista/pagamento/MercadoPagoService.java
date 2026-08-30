@@ -290,6 +290,7 @@ public class MercadoPagoService {
         // enquanto installments habilita o parcelamento dos cartões.
         metodosPagamento.put("excluded_payment_methods", List.of());
         metodosPagamento.put("excluded_payment_types", List.of());
+        metodosPagamento.put("default_installments", 1);
         metodosPagamento.put("installments", 12);
 
         Map<String, Object> corpo = new LinkedHashMap<>();
