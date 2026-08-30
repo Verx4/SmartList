@@ -12,6 +12,7 @@
     <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
     <link rel="stylesheet" href="./css/pwa.css">
+    <link rel="stylesheet" href="./css/mobile-app.css?v=2">
     <script type="module" src="./js/pwa.js"></script>
     <title>Planos e Assinatura | Smart List</title>
 
@@ -23,6 +24,12 @@
     <link rel="stylesheet" href="./css/checkout.css?v=3">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/temas.css">
+    <style>
+        @media (max-width: 768px) {
+            .site-header { display: none !important; }
+            body { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+        }
+    </style>
 </head>
 
 <body>
@@ -170,6 +177,7 @@
     </footer>
 
     <script src="./js/tema.js?v=11"></script>
+    <script src="./js/mobile-nav.js?v=5"></script>
     <script type="module" src="./js/assinatura.js?v=11"></script>
 </body>
 
