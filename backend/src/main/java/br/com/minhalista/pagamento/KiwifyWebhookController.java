@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 @RestController
 @RequestMapping("/api/pagamentos/webhook/kiwify")
 public class KiwifyWebhookController {
@@ -21,7 +19,7 @@ public class KiwifyWebhookController {
 
     @PostMapping
     public ResponseEntity<Map<String, String>> receber(
-        @RequestBody(required = false) JsonNode payload
+        @RequestBody(required = false) Map<String, Object> payload
     ) {
         String evento = primeiroTexto(
             payload,
@@ -32,9 +30,9 @@ public class KiwifyWebhookController {
         );
 
         LOG.info(
-            "Webhook Kiwify recebido: evento={}, estrutura={}.",
+            "Webhook Kiwify recebido: evento={}, campos={}.",
             evento == null ? "NAO_INFORMADO" : evento,
-            payload == null ? "VAZIO" : payload.fieldNames()
+            payload == null ? "VAZIO" : payload.keySet()
         );
 
         return ResponseEntity.ok(Map.of(
@@ -43,15 +41,18 @@ public class KiwifyWebhookController {
         ));
     }
 
-    private String primeiroTexto(JsonNode payload, String... campos) {
+    private String primeiroTexto(
+        Map<String, Object> payload,
+        String... campos
+    ) {
         if (payload == null) {
             return null;
         }
 
         for (String campo : campos) {
-            JsonNode valor = payload.path(campo);
-            if (valor.isTextual() && !valor.asText().isBlank()) {
-                return valor.asText();
+            Object valor = payload.get(campo);
+            if (valor instanceof String texto && !texto.isBlank()) {
+                return texto;
             }
         }
 
