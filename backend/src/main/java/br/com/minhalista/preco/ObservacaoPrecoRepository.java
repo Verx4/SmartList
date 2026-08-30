@@ -44,36 +44,6 @@ public interface ObservacaoPrecoRepository
 
     Page<ObservacaoPreco> findByProdutoIdOrderByRealizadaEmDesc(UUID produtoId, Pageable pageable);
 
-    @Query("""
-        select o.id as id,
-               p.id as produtoId,
-               coalesce(p.nomeExibicao, o.nomeOriginal) as produto,
-               coalesce(p.categoria, '📦 Outros') as categoria,
-               coalesce(o.nomeOriginal, 'Item da compra') as nomeOriginal,
-               coalesce(o.quantidade, 1) as quantidade,
-               coalesce(o.unidade, 'unidade') as unidade,
-               coalesce(o.precoUnitario, 0) as precoUnitario,
-               coalesce(o.subtotal, 0) as subtotal,
-               o.mercado as mercado,
-               o.cidade as cidade,
-               o.estado as estado,
-               coalesce(o.realizadaEm, o.criadoEm) as realizadaEm,
-               u.id as usuarioId,
-               coalesce(u.nome, 'Usuário não identificado') as usuarioNome,
-               o.itemChave as itemId,
-               o.criadoEm as criadoEm
-          from ObservacaoPreco o
-          left join o.produto p
-          left join o.usuario u
-         where o.origem = :origem
-           and o.compraChave = :compraChave
-         order by o.criadoEm asc
-        """)
-    List<ItemCompraDetalhe> listarItensCompra(
-        @Param("origem") OrigemPreco origem,
-        @Param("compraChave") String compraChave
-    );
-
     @EntityGraph(attributePaths = { "produto", "usuario" })
     List<ObservacaoPreco> findByOrigemAndCompraChaveOrderByCriadoEmAsc(
         OrigemPreco origem,
@@ -221,26 +191,6 @@ public interface ObservacaoPrecoRepository
 
     @Query("select distinct o.estado from ObservacaoPreco o where o.estado is not null order by o.estado")
     List<String> listarEstados();
-
-    interface ItemCompraDetalhe {
-        UUID getId();
-        UUID getProdutoId();
-        String getProduto();
-        String getCategoria();
-        String getNomeOriginal();
-        BigDecimal getQuantidade();
-        String getUnidade();
-        BigDecimal getPrecoUnitario();
-        BigDecimal getSubtotal();
-        String getMercado();
-        String getCidade();
-        String getEstado();
-        Instant getRealizadaEm();
-        UUID getUsuarioId();
-        String getUsuarioNome();
-        String getItemId();
-        Instant getCriadoEm();
-    }
 
     interface AgregadoProduto {
         UUID getProdutoId();
