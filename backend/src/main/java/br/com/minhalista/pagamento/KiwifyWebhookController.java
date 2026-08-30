@@ -10,12 +10,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.minhalista.assinatura.AssinaturaService;
+
 @RestController
 @RequestMapping("/api/pagamentos/webhook/kiwify")
 public class KiwifyWebhookController {
 
     private static final Logger LOG =
         LoggerFactory.getLogger(KiwifyWebhookController.class);
+
+    private final KiwifyApiService kiwifyApiService;
+    private final AssinaturaService assinaturaService;
+
+    public KiwifyWebhookController(
+        KiwifyApiService kiwifyApiService,
+        AssinaturaService assinaturaService
+    ) {
+        this.kiwifyApiService = kiwifyApiService;
+        this.assinaturaService = assinaturaService;
+    }
 
     @PostMapping
     public ResponseEntity<Map<String, String>> receber(
@@ -28,15 +41,30 @@ public class KiwifyWebhookController {
             "event_type",
             "type"
         );
-
-        LOG.info(
-            "Webhook Kiwify recebido: evento={}, campos={}.",
-            evento == null ? "NAO_INFORMADO" : evento,
-            payload == null ? "VAZIO" : payload.keySet()
+        String pedidoId = primeiroTexto(
+            payload,
+            "order_id",
+            "order_ref"
         );
 
+        LOG.info(
+            "Webhook Kiwify recebido: evento={}, pedido={}.",
+            evento == null ? "NAO_INFORMADO" : evento,
+            pedidoId == null ? "NAO_INFORMADO" : pedidoId
+        );
+
+        if (pedidoId == null) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "status", "invalid",
+                "provider", "kiwify"
+            ));
+        }
+
+        Map<String, Object> venda = kiwifyApiService.consultarVenda(pedidoId);
+        assinaturaService.processarVendaKiwify(venda, evento);
+
         return ResponseEntity.ok(Map.of(
-            "status", "received",
+            "status", "processed",
             "provider", "kiwify"
         ));
     }
@@ -51,8 +79,8 @@ public class KiwifyWebhookController {
 
         for (String campo : campos) {
             Object valor = payload.get(campo);
-            if (valor instanceof String texto && !texto.isBlank()) {
-                return texto;
+            if (valor != null && !valor.toString().isBlank()) {
+                return valor.toString();
             }
         }
 
