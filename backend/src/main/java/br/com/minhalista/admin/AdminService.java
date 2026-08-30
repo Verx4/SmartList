@@ -67,6 +67,7 @@ public class AdminService {
         List<UsuarioAdminResponse> usuarios = usuarioRepository
             .findAllByOrderByCriadoEmDesc()
             .stream()
+            .filter(usuario -> usuario.getExclusaoSolicitadaEm() == null)
             .map(this::respostaUsuario)
             .toList();
 
@@ -106,6 +107,7 @@ public class AdminService {
     public List<UsuarioAdminResponse> usuarios() {
         sincronizarAssinaturasSemBloquearPainel();
         return usuarioRepository.findAllByOrderByCriadoEmDesc().stream()
+            .filter(usuario -> usuario.getExclusaoSolicitadaEm() == null)
             .map(this::respostaUsuario)
             .toList();
     }
