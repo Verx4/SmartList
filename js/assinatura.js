@@ -335,18 +335,13 @@ async function aplicarCupom(origem = "checkout") {
     }
 }
 
-function urlMercadoPagoValida(valor) {
+function urlKiwifyValida(valor) {
     try {
         const url = new URL(valor);
         const host = url.hostname.toLowerCase();
 
         return url.protocol === "https:"
-            && (
-                host === "mercadopago.com.br"
-                || host.endsWith(".mercadopago.com.br")
-                || host === "mercadopago.com"
-                || host.endsWith(".mercadopago.com")
-            );
+            && host === "pay.kiwify.com.br";
     } catch {
         return false;
     }
@@ -399,8 +394,8 @@ async function enviarCheckout(evento) {
             || resposta?.urlPagamento
             || resposta?.initPoint;
 
-        if (!urlMercadoPagoValida(urlPagamento)) {
-            throw new Error("O servidor não retornou um endereço seguro do Mercado Pago.");
+        if (!urlKiwifyValida(urlPagamento)) {
+            throw new Error("O servidor não retornou um endereço seguro da Kiwify.");
         }
 
         redirecionando = true;
@@ -410,7 +405,7 @@ async function enviarCheckout(evento) {
     } finally {
         if (botao && !redirecionando) {
             botao.disabled = false;
-            botao.textContent = "Ir para o Mercado Pago";
+            botao.textContent = "Ir para a Kiwify";
         }
     }
 }
