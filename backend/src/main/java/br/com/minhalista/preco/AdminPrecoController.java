@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.minhalista.admin.AdminService;
+import br.com.minhalista.common.RegraNegocioException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
@@ -91,6 +93,22 @@ public class AdminPrecoController {
         return podeVerIdentidade(principal)
             ? compra
             : ocultarIdentidade(compra);
+    }
+
+    @DeleteMapping("/compras/{compraId}")
+    public ResponseEntity<Void> excluirCompra(
+        @PathVariable String compraId,
+        Principal principal
+    ) {
+        if (!podeVerIdentidade(principal)) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "Somente a conta ADM principal pode excluir compras."
+            );
+        }
+
+        service.excluirCompra(compraId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/produtos")
