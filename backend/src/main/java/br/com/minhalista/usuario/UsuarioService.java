@@ -1,5 +1,6 @@
 package br.com.minhalista.usuario;
 
+import java.time.Instant;
 import java.util.Locale;
 
 import org.slf4j.Logger;
@@ -103,6 +104,22 @@ public class UsuarioService {
         usuario.setNotificarPrecos(request.notificarPrecos());
 
         return repository.save(usuario);
+    }
+
+    @Transactional
+    public void solicitarExclusaoEAnonimizacao() {
+        Usuario usuario = obterAutenticado();
+        if (usuario.getExclusaoSolicitadaEm() == null) {
+            usuario.setExclusaoSolicitadaEm(Instant.now());
+            usuario.setNotificarPromocoes(false);
+            usuario.setNotificarPrecos(false);
+            usuario.setAceiteMarketing(false);
+            repository.save(usuario);
+            LOGGER.info(
+                "Solicitação LGPD de exclusão/anonimização registrada para usuário {}.",
+                usuario.getId()
+            );
+        }
     }
 
     public void exigirPremium(Usuario usuario) {
