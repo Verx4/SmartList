@@ -4,16 +4,31 @@ const appRoot = new URL("../", import.meta.url);
 const serviceWorkerUrl = new URL("service-worker.js", appRoot);
 const manifestUrl = new URL("manifest.webmanifest", appRoot);
 const iconUrl = new URL("assets/icons/icon-192.png", appRoot);
-const themeStyleUrl = new URL("css/temas.css", appRoot);
-const themeScriptUrl = new URL("js/tema.js?v=11", appRoot);
+const themeStyleUrl = new URL("css/temas.css?v=12", appRoot);
+const themeScriptUrl = new URL("js/tema.js?v=12", appRoot);
 
-const PAGINAS_COM_RETORNO_AO_INICIO = new Set([
-    "perfil.html",
-    "assinatura.html",
-    "sugestoes.html",
-    "suporte.html",
-    "termos.html",
-    "privacidade.html"
+const DESTINOS_RETORNO = new Map([
+    ["checkout.html", "./assinatura.html"],
+    ["perfil.html", "./inicio.html"],
+    ["assinatura.html", "./inicio.html"],
+    ["favoritos.html", "./inicio.html"],
+    ["relatorios.html", "./inicio.html"],
+    ["sugestoes.html", "./inicio.html"],
+    ["suporte.html", "./inicio.html"],
+    ["termos.html", "./inicio.html"],
+    ["privacidade.html", "./inicio.html"]
+]);
+
+const ROTAS_MENU_PRINCIPAL = Object.freeze([
+    ["dashboard.html", "Minha lista"],
+    ["comparar-embalagens.html", "Comparação"],
+    ["historico.html", "Histórico"],
+    ["favoritos.html", "Favoritos"],
+    ["relatorios.html", "Relatórios"],
+    ["sugestoes.html", "Sugestões"],
+    ["suporte.html", "Suporte"],
+    ["assinatura.html", "Planos"],
+    ["perfil.html", "Perfil"]
 ]);
 
 let installEvent = null;
@@ -31,7 +46,7 @@ function carregarAparencia() {
         document.querySelectorAll('link[rel="stylesheet"]')
     ).some((link) => {
         try {
-            return new URL(link.href).pathname === themeStyleUrl.pathname;
+            return new URL(link.href).href === themeStyleUrl.href;
         } catch (_erro) {
             return false;
         }
@@ -63,6 +78,7 @@ function configurarMenuMovel() {
     }
 
     configurarRetornoAoInicio(conteudo);
+    sincronizarMenuPrincipal(navegacao);
 
     if (document.body.classList.contains("sem-menu-superior")) {
         cabecalho.classList.add("menu-superior-removido");
@@ -126,10 +142,44 @@ function configurarMenuMovel() {
     });
 }
 
+function sincronizarMenuPrincipal(navegacao) {
+    const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+    const fragmento = document.createDocumentFragment();
+
+    for (const [arquivo, rotulo] of ROTAS_MENU_PRINCIPAL) {
+        const link = document.createElement("a");
+        link.href = `./${arquivo}`;
+        link.textContent = rotulo;
+
+        if (arquivo === paginaAtual) {
+            link.classList.add("active");
+            link.setAttribute("aria-current", "page");
+        }
+
+        if (arquivo === "sugestoes.html") {
+            link.classList.add("link-sugestoes-notificacao");
+            link.dataset.sugestoesLink = "";
+
+            const badge = document.createElement("span");
+            badge.className = "badge-sugestoes";
+            badge.dataset.badgeSugestoes = "";
+            badge.hidden = true;
+            badge.setAttribute("aria-label", "Nova resposta");
+            link.append(badge);
+        }
+
+        fragmento.append(link);
+    }
+
+    navegacao.replaceChildren(fragmento);
+}
+
 function configurarRetornoAoInicio(conteudo) {
     const pagina = window.location.pathname.split("/").pop() || "index.html";
 
-    if (!PAGINAS_COM_RETORNO_AO_INICIO.has(pagina)) {
+    const destinoRetorno = DESTINOS_RETORNO.get(pagina);
+
+    if (!destinoRetorno) {
         return;
     }
 
@@ -148,7 +198,7 @@ function configurarRetornoAoInicio(conteudo) {
 
     const atualizar = () => {
         if (telaMovel.matches) {
-            marca.setAttribute("href", "./inicio.html");
+            marca.setAttribute("href", destinoRetorno);
             marca.className = `${classeOriginal} btn btn-secondary mobile-back-link`;
             marca.innerHTML = '<span aria-hidden="true">←</span><span>Voltar</span>';
             marca.setAttribute("aria-label", "Voltar à tela inicial");
