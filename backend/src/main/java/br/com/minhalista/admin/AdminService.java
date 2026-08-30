@@ -122,7 +122,17 @@ public class AdminService {
     }
 
     @Transactional
-    public AdministradorResponse concederAcessoAdministrador(String email) {
+    public AdministradorResponse concederAcessoAdministrador(
+        String email,
+        String administradorEmail
+    ) {
+        if (!isFundador(administradorEmail)) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "Somente a conta ADM principal pode conceder novos acessos administrativos."
+            );
+        }
+
         Usuario usuario = usuarioRepository
             .findByEmailIgnoreCase(email.trim().toLowerCase(Locale.ROOT))
             .orElseThrow(() -> new RegraNegocioException(
