@@ -190,6 +190,15 @@ function exibirErro(erro) {
     porId("tabelaCompras").innerHTML = `<tr><td colspan="8" class="coleta-vazio">${escapar(msg)}</td></tr>`;
 }
 
+function exibirErroDetalhe(erro) {
+    const msg = erro instanceof ApiError
+        ? erro.message
+        : "Não foi possível abrir os detalhes desta compra.";
+    porId("detalheCompraVazio").hidden = false;
+    porId("detalheCompraConteudo").hidden = true;
+    porId("detalheCompraVazio").innerHTML = `<h2>Detalhes da compra</h2><p>${escapar(msg)}</p>`;
+}
+
 async function carregarTudo() {
     const botao = porId("atualizarCompras");
     botao.disabled = true;
@@ -258,7 +267,7 @@ document.addEventListener("click", async e => {
     }
 
     const botao = e.target.closest("[data-abrir-compra]");
-    if (botao) abrirCompra(botao.dataset.abrirCompra).catch(exibirErro);
+    if (botao) abrirCompra(botao.dataset.abrirCompra).catch(exibirErroDetalhe);
 });
 
 if (await garantirAdmin()) {
