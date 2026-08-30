@@ -104,7 +104,8 @@
                         <input type="radio" name="cicloPremium" value="mensal" checked>
                         <span class="opcao-ciclo-conteudo">
                             <strong>Mensal</strong>
-                            <small>Ver condições na Kiwify</small>
+                            <span data-preco-ciclo="mensal">R$ 9,97</span>
+                            <small data-descricao-ciclo="mensal">por mês</small>
                         </span>
                     </label>
 
@@ -112,7 +113,8 @@
                         <input type="radio" name="cicloPremium" value="trimestral">
                         <span class="opcao-ciclo-conteudo">
                             <strong>Trimestral</strong>
-                            <small>Ver condições na Kiwify</small>
+                            <span data-preco-ciclo="trimestral">R$ 26,91</span>
+                            <small data-descricao-ciclo="trimestral">pagamento único</small>
                         </span>
                     </label>
 
@@ -120,14 +122,16 @@
                         <input type="radio" name="cicloPremium" value="anual">
                         <span class="opcao-ciclo-conteudo">
                             <strong>Anual</strong>
-                            <small>Ver condições na Kiwify</small>
+                            <span data-preco-ciclo="anual">R$ 95,64</span>
+                            <small data-descricao-ciclo="anual">pagamento único</small>
                         </span>
                     </label>
                 </div>
 
-                <p class="plano-observacao">
-                    O valor vigente e os cupons disponíveis serão informados e aplicados diretamente no checkout da Kiwify.
-                </p>
+                <div class="preco-premium-linha">
+                    <strong id="precoPremium">R$ 9,97</strong>
+                    <span id="periodoPremium">/mês</span>
+                </div>
 
                 <h3 class="plano-secao-titulo">Tudo incluído</h3>
                 <ul class="lista-recursos">
