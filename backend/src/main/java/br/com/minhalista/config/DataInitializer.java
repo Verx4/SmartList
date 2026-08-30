@@ -19,6 +19,9 @@ import br.com.minhalista.usuario.UsuarioRepository;
 @Component
 public class DataInitializer implements ApplicationRunner {
 
+    private static final String EMAIL_ADMIN_PRINCIPAL = "smartlistevx@gmail.com";
+    private static final Instant ACESSO_PERMANENTE = Instant.parse("2999-12-31T23:59:59Z");
+
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final String nome;
@@ -43,6 +46,8 @@ public class DataInitializer implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         repository.inicializarUltimosAcessosAusentes(Instant.now());
+        repository.findByEmailIgnoreCase(EMAIL_ADMIN_PRINCIPAL)
+            .ifPresent(this::garantirAdministradorPrincipal);
 
         if (!StringUtils.hasText(email) || !StringUtils.hasText(senha)) {
             return;
@@ -69,6 +74,15 @@ public class DataInitializer implements ApplicationRunner {
         admin.setAtivo(true);
         admin.setAceiteTermosEm(Instant.now());
         repository.save(admin);
+    }
+
+    private void garantirAdministradorPrincipal(Usuario usuario) {
+        usuario.setPerfil(Perfil.ADMIN);
+        usuario.setTipoAcesso(TipoAcesso.CORTESIA);
+        usuario.setCortesiaAte(ACESSO_PERMANENTE);
+        usuario.setAtivo(true);
+        usuario.setExclusaoSolicitadaEm(null);
+        repository.save(usuario);
     }
 
     private void promoverAdministrador(Usuario usuario) {
