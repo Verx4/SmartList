@@ -14,6 +14,7 @@ test("Checkout Pro envia sinais antifraude válidos do comprador", async () => {
     assert.match(servico, /adicionarTelefonePagador\(pagador, usuario\.getTelefone\(\)\)/);
     assert.match(servico, /pagador\.put\("date_created", usuario\.getCriadoEm\(\)\.toString\(\)\)/);
     assert.match(servico, /telefone\.put\("number", "\[oculto\]"\)/);
+    assert.match(servico, /metodosPagamento\.put\("default_installments", 1\)/);
     assert.match(testeBackend, /assertEquals\(81, telefone\(corpo\)\.get\("area_code"\)\)/);
     assert.match(testeBackend, /assertEquals\(999990000L, telefone\(corpo\)\.get\("number"\)\)/);
 });
