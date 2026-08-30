@@ -32,7 +32,11 @@ public interface ObservacaoPrecoRepository
 
     Page<ObservacaoPreco> findByProdutoIdOrderByRealizadaEmDesc(UUID produtoId, Pageable pageable);
 
-    List<ObservacaoPreco> findByOrigemAndCompraChaveOrderByCriadoEmAsc(OrigemPreco origem, String compraChave);
+    @EntityGraph(attributePaths = { "produto", "usuario" })
+    List<ObservacaoPreco> findByOrigemAndCompraChaveOrderByCriadoEmAsc(
+        OrigemPreco origem,
+        String compraChave
+    );
 
     @EntityGraph(attributePaths = { "produto", "usuario" })
     List<ObservacaoPreco> findByUsuario_IdAndOrigemOrderByRealizadaEmDescCriadoEmAsc(
