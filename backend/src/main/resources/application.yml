@@ -73,3 +73,13 @@ logging:
     org.springframework.security: INFO
 
 
+
+
+app.kiwify:
+  client-id: ${KIWIFY_CLIENT_ID:}
+  client-secret: ${KIWIFY_CLIENT_SECRET:}
+  account-id: ${KIWIFY_ACCOUNT_ID:}
+  checkout:
+    mensal: ${KIWIFY_CHECKOUT_MENSAL:https://pay.kiwify.com.br/CsdUxeJ}
+    trimestral: ${KIWIFY_CHECKOUT_TRIMESTRAL:https://pay.kiwify.com.br/sd2O7Hi}
+    anual: ${KIWIFY_CHECKOUT_ANUAL:https://pay.kiwify.com.br/FOP3RIc}

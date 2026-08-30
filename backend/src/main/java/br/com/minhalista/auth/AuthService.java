@@ -26,6 +26,9 @@ import br.com.minhalista.usuario.UsuarioRepository;
 @Service
 public class AuthService {
 
+    public static final String TERMOS_VERSAO = "2026-08-30";
+    public static final String PRIVACIDADE_VERSAO = "2026-08-30";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
     private final UsuarioRepository usuarioRepository;
@@ -47,6 +50,11 @@ public class AuthService {
 
     @Transactional
     public UsuarioResponse cadastrar(CadastroRequest request) {
+        return cadastrar(request, "nao-identificado");
+    }
+
+    @Transactional
+    public UsuarioResponse cadastrar(CadastroRequest request, String aceiteIp) {
         String email = normalizarEmail(request.email());
         if (!Cpf.valido(request.cpf())) {
             throw new RegraNegocioException(HttpStatus.BAD_REQUEST, "Informe um CPF válido.");
@@ -73,6 +81,9 @@ public class AuthService {
         usuario.setTipoAcesso(TipoAcesso.FREE);
         usuario.setAtivo(true);
         usuario.setAceiteTermosEm(Instant.now());
+        usuario.setAceiteTermosVersao(TERMOS_VERSAO);
+        usuario.setAceitePrivacidadeVersao(PRIVACIDADE_VERSAO);
+        usuario.setAceiteIp(aceiteIp);
         usuario.setAceiteMarketing(Boolean.TRUE.equals(request.aceiteMarketing()));
 
         try {

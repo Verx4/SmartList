@@ -210,6 +210,17 @@ function configurarCadastro() {
     const formulario =
         document.getElementById("formCadastro");
     const campoCpf = formulario?.elements?.cpf;
+    const aceite = formulario?.elements?.aceiteTermos;
+    const botaoCriar = document.getElementById("btnCriarConta");
+
+    const sincronizarAceite = () => {
+        if (botaoCriar) {
+            botaoCriar.disabled = !aceite?.checked;
+        }
+    };
+
+    aceite?.addEventListener("change", sincronizarAceite);
+    sincronizarAceite();
 
     campoCpf?.addEventListener("input", () => {
         campoCpf.value = formatarCpf(campoCpf.value);

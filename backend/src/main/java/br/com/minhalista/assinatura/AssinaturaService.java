@@ -1,9 +1,11 @@
 package br.com.minhalista.assinatura;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -184,6 +186,125 @@ public class AssinaturaService {
                 yield false;
             }
         };
+    }
+
+    @Transactional
+    public boolean processarVendaKiwify(
+        Map<String, Object> venda,
+        String evento
+    ) {
+        String orderId = texto(venda.get("id"));
+        Map<String, Object> tracking = mapa(venda.get("tracking"));
+        UUID assinaturaId = converterReferencia(texto(tracking.get("s1")));
+
+        if (!StringUtils.hasText(orderId) || assinaturaId == null) {
+            LOG.warn("Venda Kiwify ignorada: pedido ou parâmetro s1 inválido.");
+            return false;
+        }
+
+        Optional<Assinatura> encontrada =
+            repository.buscarPorIdParaAtualizacao(assinaturaId);
+        if (encontrada.isEmpty()) {
+            LOG.warn("Venda Kiwify {} ignorada: assinatura não encontrada.", orderId);
+            return false;
+        }
+
+        Assinatura assinatura = encontrada.get();
+        Map<String, Object> pagamento = mapa(venda.get("payment"));
+        Map<String, Object> cliente = mapa(venda.get("customer"));
+        BigDecimal valor = decimal(pagamento.get("charge_amount"))
+            .movePointLeft(2);
+        String moeda = texto(pagamento.get("charge_currency"));
+        String email = texto(cliente.get("email"));
+        String status = texto(venda.get("status")).toLowerCase(Locale.ROOT);
+        String eventoNormalizado = evento == null
+            ? ""
+            : evento.toLowerCase(Locale.ROOT);
+        String pagamentoId = "kiwify:" + orderId;
+
+        boolean dadosConferem =
+            assinatura.getValor().compareTo(valor) == 0
+            && "BRL".equalsIgnoreCase(moeda)
+            && assinatura.getUsuario().getEmail().equalsIgnoreCase(email);
+
+        if (!dadosConferem) {
+            LOG.warn(
+                "Venda Kiwify {} rejeitada: valor/moeda/email divergentes para checkout {}.",
+                orderId,
+                assinaturaId
+            );
+            return false;
+        }
+
+        if (eventoNormalizado.contains("refund")
+            || eventoNormalizado.contains("chargeback")) {
+            cancelar(assinatura, pagamentoId);
+            return false;
+        }
+
+        if (eventoNormalizado.contains("canceled")
+            || eventoNormalizado.contains("late")) {
+            LOG.info(
+                "Assinatura Kiwify {} recebeu evento {}; acesso preservado até o vencimento.",
+                assinaturaId,
+                eventoNormalizado
+            );
+            return false;
+        }
+
+        if (!"paid".equals(status)) {
+            LOG.info("Venda Kiwify {} ainda não está paga: {}.", orderId, status);
+            return false;
+        }
+
+        if (pagamentoId.equals(assinatura.getMercadoPagoPagamentoId())) {
+            return assinatura.getStatus() == StatusAssinatura.ATIVA;
+        }
+
+        if (assinatura.getStatus() == StatusAssinatura.PENDENTE) {
+            ativar(assinatura, pagamentoId);
+        } else if (
+            assinatura.getStatus() == StatusAssinatura.ATIVA
+            && eventoNormalizado.contains("renew")
+        ) {
+            Instant agora = Instant.now();
+            Instant base = assinatura.getVenceEm() != null
+                && assinatura.getVenceEm().isAfter(agora)
+                    ? assinatura.getVenceEm()
+                    : agora;
+            assinatura.setVenceEm(
+                base.atZone(ZoneOffset.UTC)
+                    .plusMonths(assinatura.getCiclo().getMeses())
+                    .toInstant()
+            );
+            assinatura.setMercadoPagoPagamentoId(pagamentoId);
+            assinatura.getUsuario().setTipoAcesso(TipoAcesso.PREMIUM);
+        }
+
+        return assinatura.getStatus() == StatusAssinatura.ATIVA
+            && assinatura.getVenceEm() != null
+            && assinatura.getVenceEm().isAfter(Instant.now());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> mapa(Object valor) {
+        return valor instanceof Map<?, ?> mapa
+            ? (Map<String, Object>) mapa
+            : Map.of();
+    }
+
+    private String texto(Object valor) {
+        return valor == null ? "" : valor.toString().trim();
+    }
+
+    private BigDecimal decimal(Object valor) {
+        try {
+            return valor == null
+                ? BigDecimal.ZERO
+                : new BigDecimal(valor.toString());
+        } catch (NumberFormatException erro) {
+            return BigDecimal.ZERO;
+        }
     }
 
     private boolean dadosConferem(Assinatura assinatura, PagamentoConsultado pagamento) {

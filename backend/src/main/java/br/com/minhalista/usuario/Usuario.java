@@ -62,6 +62,18 @@ public class Usuario implements UserDetails {
     @Column(name = "aceite_termos_em", nullable = false)
     private Instant aceiteTermosEm;
 
+    @Column(name = "aceite_termos_versao", length = 20)
+    private String aceiteTermosVersao;
+
+    @Column(name = "aceite_privacidade_versao", length = 20)
+    private String aceitePrivacidadeVersao;
+
+    @Column(name = "aceite_ip", length = 64)
+    private String aceiteIp;
+
+    @Column(name = "exclusao_solicitada_em")
+    private Instant exclusaoSolicitadaEm;
+
     @Column(name = "aceite_marketing", nullable = false)
     private boolean aceiteMarketing;
 
@@ -215,6 +227,38 @@ public class Usuario implements UserDetails {
 
     public void setAceiteTermosEm(Instant aceiteTermosEm) {
         this.aceiteTermosEm = aceiteTermosEm;
+    }
+
+    public String getAceiteTermosVersao() {
+        return aceiteTermosVersao;
+    }
+
+    public void setAceiteTermosVersao(String aceiteTermosVersao) {
+        this.aceiteTermosVersao = aceiteTermosVersao;
+    }
+
+    public String getAceitePrivacidadeVersao() {
+        return aceitePrivacidadeVersao;
+    }
+
+    public void setAceitePrivacidadeVersao(String aceitePrivacidadeVersao) {
+        this.aceitePrivacidadeVersao = aceitePrivacidadeVersao;
+    }
+
+    public String getAceiteIp() {
+        return aceiteIp;
+    }
+
+    public void setAceiteIp(String aceiteIp) {
+        this.aceiteIp = aceiteIp;
+    }
+
+    public Instant getExclusaoSolicitadaEm() {
+        return exclusaoSolicitadaEm;
+    }
+
+    public void setExclusaoSolicitadaEm(Instant exclusaoSolicitadaEm) {
+        this.exclusaoSolicitadaEm = exclusaoSolicitadaEm;
     }
 
     public boolean isAceiteMarketing() {

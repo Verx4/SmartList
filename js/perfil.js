@@ -17,7 +17,7 @@ function atualizarEstadoCpf(resposta = {}) {
     if (status) {
         status.textContent = resposta.cadastrado
             ? "CPF salvo e disponível para identificar seus pagamentos."
-            : "Cadastre seu CPF para iniciar pagamentos no Mercado Pago.";
+            : "Cadastre seu CPF para identificação do assinante e pagamentos pela Kiwify.";
     }
 }
 
@@ -192,6 +192,29 @@ if (formulario) {
 
 document.getElementById("btnSair")?.addEventListener("click", sair);
 
-document.getElementById("btnExcluirConta")?.addEventListener("click", () => {
-    exibirMensagem("A exclusão de conta estará disponível em breve.", "aviso");
+document.getElementById("btnExcluirConta")?.addEventListener("click", async () => {
+    const confirmou = window.confirm(
+        "Deseja solicitar a exclusão definitiva da conta e a anonimização dos seus dados? Esta solicitação será analisada conforme as obrigações legais de retenção."
+    );
+    if (!confirmou) return;
+
+    const botao = document.getElementById("btnExcluirConta");
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Registrando solicitação...";
+    }
+
+    try {
+        const resposta = await api.post("/usuarios/me/solicitacoes/exclusao", {});
+        exibirMensagem(
+            resposta?.mensagem || "Solicitação registrada com sucesso.",
+            "sucesso"
+        );
+    } catch (erro) {
+        exibirMensagem(erro.message || "Não foi possível registrar a solicitação.", "erro");
+        if (botao) {
+            botao.disabled = false;
+            botao.textContent = "Excluir minha conta";
+        }
+    }
 });
