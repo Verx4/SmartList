@@ -273,7 +273,7 @@ public class AdminPrecoService {
             produto == null
                 ? (o.getNomeOriginal() == null ? "Item da compra" : o.getNomeOriginal())
                 : produto.getNomeExibicao(),
-            produto == null ? CATEGORIA_OUTROS : produto.getCategoria(),
+            produto == null ? ColetaPrecoService.CATEGORIA_OUTROS : produto.getCategoria(),
             o.getNomeOriginal() == null ? "Item da compra" : o.getNomeOriginal(),
             o.getQuantidade() == null ? BigDecimal.ONE : o.getQuantidade(),
             o.getUnidade() == null ? "unidade" : o.getUnidade(),
