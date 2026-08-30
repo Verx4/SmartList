@@ -22,6 +22,7 @@ test("tela de planos exibe, aplica e remove cupom antes do checkout", async () =
     assert.match(script, /cupomAplicado\.codigo/);
     assert.match(script, /dadosCheckout\.cupom = cupomAplicado\.codigo/);
     assert.doesNotMatch(script, /Cupons estão temporariamente indisponíveis/);
+    assert.match(script, /A Kiwify confirmará a validade/);
 });
 
 test("ADM permite escolher, autorizar, desativar e excluir nomes de cupons", async () => {
@@ -63,6 +64,8 @@ test("servidor exige cupom cadastrado e mantém autoridade e auditoria", async (
     assert.match(service, /divide\(CEM, 2, RoundingMode\.HALF_UP\)/);
     assert.match(assinaturaService, /setCupomValorOriginal/);
     assert.match(assinaturaService, /setCupomPrimeiroPagamentoAplicado\(true\)/);
+    assert.match(assinaturaService, /será validado diretamente pela Kiwify/);
+    assert.match(assinaturaService, /valor\.compareTo\(valorMaximo\) <= 0/);
     assert.match(mercadoPago, /"unit_price", valorCobranca/);
     assert.match(mercadoPago, /respostaSegura\(resposta\)/);
     assert.match(mercadoPago, /metadata\.put\("cupom_codigo"/);
