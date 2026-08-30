@@ -10,6 +10,7 @@ class AssinaturaControllerDiagnosticoTest {
         null,
         null,
         null,
+        null,
         null
     );
 
