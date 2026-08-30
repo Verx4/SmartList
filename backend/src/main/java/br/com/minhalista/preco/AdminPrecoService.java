@@ -22,6 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.minhalista.common.RegraNegocioException;
+import br.com.minhalista.lista.ListaCompra;
+import br.com.minhalista.lista.ListaCompraRepository;
+import br.com.minhalista.lista.StatusLista;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 
@@ -32,8 +35,42 @@ public class AdminPrecoService {
 
     private final ProdutoPrecoRepository produtoRepository;
     private final ObservacaoPrecoRepository observacaoRepository;
-    public AdminPrecoService(ProdutoPrecoRepository produtoRepository, ObservacaoPrecoRepository observacaoRepository) {
-        this.produtoRepository = produtoRepository; this.observacaoRepository = observacaoRepository;
+    private final ListaCompraRepository listaCompraRepository;
+    private final ColetaPrecoService coletaPrecoService;
+
+    public AdminPrecoService(
+        ProdutoPrecoRepository produtoRepository,
+        ObservacaoPrecoRepository observacaoRepository,
+        ListaCompraRepository listaCompraRepository,
+        ColetaPrecoService coletaPrecoService
+    ) {
+        this.produtoRepository = produtoRepository;
+        this.observacaoRepository = observacaoRepository;
+        this.listaCompraRepository = listaCompraRepository;
+        this.coletaPrecoService = coletaPrecoService;
+    }
+
+    @Transactional
+    public int sincronizarListasFinalizadas() {
+        int importadas = 0;
+        List<ListaCompra> finalizadas = listaCompraRepository
+            .findByStatusOrderByFinalizadoEmAsc(StatusLista.FINALIZADA);
+
+        for (ListaCompra lista : finalizadas) {
+            String compraId = lista.getId().toString();
+
+            if (observacaoRepository.existsByOrigemAndCompraChave(
+                OrigemPreco.COMPRA_USUARIO,
+                compraId
+            )) {
+                continue;
+            }
+
+            coletaPrecoService.coletar(lista.getUsuario(), lista);
+            importadas += 1;
+        }
+
+        return importadas;
     }
 
     @Transactional(readOnly = true)
