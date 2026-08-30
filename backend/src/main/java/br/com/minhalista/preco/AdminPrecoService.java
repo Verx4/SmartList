@@ -130,10 +130,30 @@ public class AdminPrecoService {
         return new PaginaResponse<>(conteudo, paginaSegura, tamanhoSeguro, total, totalPaginas, paginaSegura + 1 < totalPaginas, paginaSegura > 0);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CompraDetalheResponse compra(String compraId) {
-        List<ObservacaoPreco> itens = observacaoRepository.findByOrigemAndCompraChaveOrderByCriadoEmAsc(OrigemPreco.COMPRA_USUARIO, compraId);
-        if (itens.isEmpty()) throw new RegraNegocioException(HttpStatus.NOT_FOUND, "Compra não encontrada.");
+        List<ObservacaoPreco> itens = observacaoRepository
+            .findByOrigemAndCompraChaveOrderByCriadoEmAsc(
+                OrigemPreco.COMPRA_USUARIO,
+                compraId
+            );
+
+        if (itens.isEmpty()) {
+            importarListaFinalizadaPorId(compraId);
+            itens = observacaoRepository
+                .findByOrigemAndCompraChaveOrderByCriadoEmAsc(
+                    OrigemPreco.COMPRA_USUARIO,
+                    compraId
+                );
+        }
+
+        if (itens.isEmpty()) {
+            throw new RegraNegocioException(
+                HttpStatus.NOT_FOUND,
+                "Compra finalizada não encontrada."
+            );
+        }
+
         ObservacaoPreco primeiro = itens.get(0);
         BigDecimal total = itens.stream().map(ObservacaoPreco::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
         Instant realizadaEm = itens.stream().map(ObservacaoPreco::getRealizadaEm).max(Instant::compareTo).orElse(primeiro.getRealizadaEm());
@@ -144,6 +164,20 @@ public class AdminPrecoService {
             primeiro.getMercado(), primeiro.getCidade(), primeiro.getEstado(), realizadaEm,
             itens.size(), total, itens.stream().map(this::observacao).toList()
         );
+    }
+
+    private void importarListaFinalizadaPorId(String compraId) {
+        try {
+            UUID id = UUID.fromString(compraId);
+            listaCompraRepository.findById(id)
+                .filter(lista -> lista.getStatus() == StatusLista.FINALIZADA)
+                .ifPresent(lista -> coletaPrecoService.coletar(
+                    lista.getUsuario(),
+                    lista
+                ));
+        } catch (IllegalArgumentException _erro) {
+            // IDs gerados pelo aplicativo web não pertencem à tabela de listas.
+        }
     }
 
     @Transactional(readOnly = true)
