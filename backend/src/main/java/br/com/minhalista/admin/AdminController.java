@@ -50,9 +50,20 @@ public class AdminController {
 
     @PostMapping("/administradores")
     public AdministradorResponse concederAcessoAdministrador(
-        @Valid @RequestBody AdministradorRequest request
+        @Valid @RequestBody AdministradorRequest request,
+        Principal principal
     ) {
+        exigirFundador(principal);
         return service.concederAcessoAdministrador(request.email());
+    }
+
+    private void exigirFundador(Principal principal) {
+        if (principal == null || !service.isFundador(principal.getName())) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "Somente a conta ADM principal pode conceder novos acessos administrativos."
+            );
+        }
     }
 
     @DeleteMapping("/administradores/{id}")
