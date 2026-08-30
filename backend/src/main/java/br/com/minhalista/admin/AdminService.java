@@ -32,6 +32,7 @@ import br.com.minhalista.usuario.UsuarioRepository;
 public class AdminService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminService.class);
+    private static final String EMAIL_FUNDADOR = "smartlistevx@gmail.com";
 
     private final UsuarioRepository usuarioRepository;
     private final AssinaturaRepository assinaturaRepository;
@@ -116,7 +117,7 @@ public class AdminService {
     public List<AdministradorResponse> administradores() {
         return usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN)
             .stream()
-            .map(usuario -> AdministradorResponse.de(usuario, false))
+            .map(usuario -> AdministradorResponse.de(usuario, isFundador(usuario.getEmail())))
             .toList();
     }
 
@@ -132,7 +133,7 @@ public class AdminService {
         usuario.setPerfil(Perfil.ADMIN);
         return AdministradorResponse.de(
             usuarioRepository.save(usuario),
-            false
+            isFundador(usuario.getEmail())
         );
     }
 
@@ -148,6 +149,13 @@ public class AdminService {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
                 "Este usuário não possui acesso administrativo."
+            );
+        }
+
+        if (isFundador(usuario.getEmail())) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "O acesso da conta ADM principal não pode ser revogado."
             );
         }
 
@@ -334,7 +342,7 @@ public class AdminService {
     }
 
     public boolean isFundador(String email) {
-        return false;
+        return email != null && EMAIL_FUNDADOR.equalsIgnoreCase(email.trim());
     }
 
     @Transactional
@@ -344,6 +352,13 @@ public class AdminService {
                 HttpStatus.NOT_FOUND,
                 "Usuário não encontrado."
             ));
+
+        if (isFundador(usuario.getEmail())) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "A conta ADM principal não pode ser excluída."
+            );
+        }
 
         if (usuario.getEmail().equalsIgnoreCase(administradorEmail)) {
             throw new RegraNegocioException(
@@ -388,6 +403,14 @@ public class AdminService {
     public UsuarioAdminResponse alternarBloqueio(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Usuário não encontrado."));
+
+        if (isFundador(usuario.getEmail())) {
+            throw new RegraNegocioException(
+                HttpStatus.FORBIDDEN,
+                "A conta ADM principal não pode ser bloqueada."
+            );
+        }
+
         usuario.setAtivo(!usuario.isAtivo());
         usuarioRepository.save(usuario);
         return respostaUsuario(usuario);
