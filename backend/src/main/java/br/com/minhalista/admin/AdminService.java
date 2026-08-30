@@ -112,17 +112,9 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public List<AdministradorResponse> administradores() {
-        List<Usuario> administradores =
-            usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN);
-        UUID fundadorId = fundador(administradores)
-            .map(Usuario::getId)
-            .orElse(null);
-
-        return administradores.stream()
-            .map(usuario -> AdministradorResponse.de(
-                usuario,
-                usuario.getId().equals(fundadorId)
-            ))
+        return usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN)
+            .stream()
+            .map(usuario -> AdministradorResponse.de(usuario, false))
             .toList();
     }
 
@@ -136,11 +128,10 @@ public class AdminService {
             ));
 
         usuario.setPerfil(Perfil.ADMIN);
-        Usuario salvo = usuarioRepository.save(usuario);
-        boolean fundador = fundador(
-            usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN)
-        ).map(Usuario::getId).filter(salvo.getId()::equals).isPresent();
-        return AdministradorResponse.de(salvo, fundador);
+        return AdministradorResponse.de(
+            usuarioRepository.save(usuario),
+            false
+        );
     }
 
     @Transactional
@@ -155,17 +146,6 @@ public class AdminService {
             throw new RegraNegocioException(
                 HttpStatus.BAD_REQUEST,
                 "Este usuário não possui acesso administrativo."
-            );
-        }
-
-        UUID fundadorId = fundador(
-            usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN)
-        ).map(Usuario::getId).orElse(null);
-
-        if (usuario.getId().equals(fundadorId)) {
-            throw new RegraNegocioException(
-                HttpStatus.FORBIDDEN,
-                "O acesso do fundador não pode ser revogado."
             );
         }
 
@@ -349,26 +329,6 @@ public class AdminService {
             );
             return 0;
         }
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isFundador(String email) {
-        if (email == null || email.isBlank()) {
-            return false;
-        }
-
-        return fundador(
-            usuarioRepository.findAllByPerfilOrderByNomeAsc(Perfil.ADMIN)
-        ).map(Usuario::getEmail)
-            .filter(emailFundador -> emailFundador.equalsIgnoreCase(email))
-            .isPresent();
-    }
-
-    private Optional<Usuario> fundador(List<Usuario> administradores) {
-        return administradores.stream()
-            .min(java.util.Comparator
-                .comparing(Usuario::getCriadoEm)
-                .thenComparing(usuario -> usuario.getId().toString()));
     }
 
     @Transactional
