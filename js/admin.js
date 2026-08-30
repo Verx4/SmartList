@@ -326,80 +326,6 @@ function explicarRecusaPagamento(statusDetalhe) {
 }
 
 
-function renderizarDiagnosticoPagamento(dados = {}) {
-    const resultado = document.getElementById("resultadoDiagnosticoPagamento");
-
-    if (!resultado) {
-        return;
-    }
-
-    const status = String(dados.status || "não informado");
-    const detalhe = String(dados.statusDetalhe || "não informado");
-    const ambiente = dados.ambienteProducao ? "Produção" : "Teste";
-
-    resultado.className = "admin-pagamento-diagnostico";
-    resultado.hidden = false;
-    resultado.innerHTML = `
-        <h3>Resultado da operação ${escaparHtml(dados.pagamentoId || "-")}</h3>
-        <dl>
-            <div><dt>Status</dt><dd>${escaparHtml(status)}</dd></div>
-            <div><dt>Motivo técnico</dt><dd>${escaparHtml(detalhe)}</dd></div>
-            <div><dt>Meio</dt><dd>${escaparHtml(dados.metodoPagamento || "-")}</dd></div>
-            <div><dt>Tipo</dt><dd>${escaparHtml(dados.tipoPagamento || "-")}</dd></div>
-            <div><dt>Valor</dt><dd>${escaparHtml(formatarMoeda(dados.valor))}</dd></div>
-            <div><dt>Ambiente</dt><dd>${escaparHtml(ambiente)}</dd></div>
-        </dl>
-        <p class="admin-pagamento-orientacao">
-            ${escaparHtml(explicarRecusaPagamento(detalhe))}
-        </p>
-    `;
-}
-
-
-async function consultarDiagnosticoPagamento(evento) {
-    evento.preventDefault();
-
-    const campo = document.getElementById("pagamentoMercadoPagoId");
-    const botao = document.getElementById("btnDiagnosticarPagamento");
-    const resultado = document.getElementById("resultadoDiagnosticoPagamento");
-    const pagamentoId = String(campo?.value || "").replace(/\D/g, "");
-
-    if (!/^\d{6,20}$/.test(pagamentoId)) {
-        mensagem("Informe o número da operação exibido pelo Mercado Pago.", "erro");
-        campo?.focus();
-        return;
-    }
-
-    const textoOriginal = botao?.textContent;
-
-    if (botao) {
-        botao.disabled = true;
-        botao.textContent = "Consultando...";
-        botao.setAttribute("aria-busy", "true");
-    }
-
-    try {
-        const dados = await api.get(
-            `/admin/pagamentos/${encodeURIComponent(pagamentoId)}/diagnostico`
-        );
-        renderizarDiagnosticoPagamento(dados);
-    } catch (erro) {
-        if (resultado) {
-            resultado.hidden = false;
-            resultado.className = "mensagem mensagem-erro";
-            resultado.textContent = erro instanceof ApiError
-                ? erro.message
-                : "Não foi possível consultar esta operação no Mercado Pago.";
-        }
-    } finally {
-        if (botao) {
-            botao.disabled = false;
-            botao.textContent = textoOriginal || "Consultar motivo";
-            botao.removeAttribute("aria-busy");
-        }
-    }
-}
-
 function opcoesAcesso(acessoAtual) {
     return ["FREE", "PREMIUM", "CORTESIA"]
         .map(acesso => `
@@ -1258,13 +1184,6 @@ async function iniciar() {
     iniciarAtualizacaoAutomaticaAssinaturas();
 
     atualizarExemploMargem();
-
-    document
-        .getElementById("formDiagnosticoPagamento")
-        ?.addEventListener(
-            "submit",
-            consultarDiagnosticoPagamento
-        );
 
     document
         .getElementById("btnAtualizarAdmin")
