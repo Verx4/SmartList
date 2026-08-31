@@ -1,10 +1,13 @@
+import { api, ApiError } from "./api.js";
 import { estaAutenticado } from "./auth.js";
+
 
 const MARGEM_SCRAPER = 5;
 let usuariosAdmin = [];
 let atualizacaoAssinaturasEmAndamento = false;
 let atualizacaoPainelEmAndamento = false;
 let intervaloAtualizacaoAssinaturas = null;
+
 
 function formatarMoeda(valor) {
 
@@ -17,6 +20,7 @@ function formatarMoeda(valor) {
     );
 
 }
+
 
 function preencherTexto(id, valor) {
 
@@ -32,9 +36,11 @@ function preencherTexto(id, valor) {
 
 }
 
+
 function preencherTextos(ids, valor) {
     ids.forEach(id => preencherTexto(id, valor));
 }
+
 
 function mensagem(
     texto,
@@ -71,6 +77,7 @@ function mensagem(
 
 }
 
+
 function exibirResultadoCortesia(texto, tipo = "sucesso") {
     const resultado = document.getElementById("mensagemCortesia");
 
@@ -92,6 +99,7 @@ function exibirResultadoCortesia(texto, tipo = "sucesso") {
     });
 }
 
+
 function descreverErroCortesia(erro) {
     if (!(erro instanceof ApiError)) {
         return "Não foi possível conceder a cortesia.";
@@ -110,6 +118,7 @@ function descreverErroCortesia(erro) {
         : erro.message;
 }
 
+
 function renderizarOpcoesCortesia(usuarios = []) {
     const lista = document.getElementById("usuariosCortesiaDisponiveis");
 
@@ -127,6 +136,7 @@ function renderizarOpcoesCortesia(usuarios = []) {
         .join("");
 }
 
+
 function mostrarBackendOffline() {
 
     const status =
@@ -141,6 +151,7 @@ function mostrarBackendOffline() {
     }
 
 }
+
 
 function renderizarGraficoUsuarios(dados = {}) {
     const grafico = document.getElementById("graficoUsuariosAcesso");
@@ -188,6 +199,7 @@ function renderizarGraficoUsuarios(dados = {}) {
         `;
     }).join("");
 }
+
 
 async function carregarResumo() {
     const possuiResumo =
@@ -257,6 +269,7 @@ function escaparHtml(valor) {
     return elemento.innerHTML;
 }
 
+
 function formatarData(valor) {
     if (!valor) {
         return "-";
@@ -267,6 +280,9 @@ function formatarData(valor) {
         ? "-"
         : data.toLocaleString("pt-BR");
 }
+
+
+
 
 function explicarRecusaPagamento(statusDetalhe) {
     const detalhe = String(statusDetalhe || "").toLowerCase();
@@ -309,6 +325,7 @@ function explicarRecusaPagamento(statusDetalhe) {
         || "Consulte o status detalhado acima ao falar com o suporte do Mercado Pago ou com o banco emissor.";
 }
 
+
 function opcoesAcesso(acessoAtual) {
     const acessos = acessoAtual === "ADM"
         ? ["ADM"]
@@ -322,6 +339,7 @@ function opcoesAcesso(acessoAtual) {
         `)
         .join("");
 }
+
 
 function classificacaoUsuario(usuario) {
     if (usuario?.perfil === "ADMIN"
@@ -347,6 +365,7 @@ function classificacaoUsuario(usuario) {
 
     return "FREE";
 }
+
 
 function apresentarClassificacao(usuario) {
     const classificacao = classificacaoUsuario(usuario);
@@ -385,6 +404,7 @@ function apresentarClassificacao(usuario) {
 
     return opcoes[classificacao] || opcoes.FREE;
 }
+
 
 function renderizarUsuarios(usuarios = []) {
     const corpo = document.getElementById("tabelaAdminUsuarios");
@@ -473,6 +493,7 @@ function renderizarUsuarios(usuarios = []) {
     }).join("");
 }
 
+
 function renderizarUltimosUsuarios(usuarios = []) {
     const container = document.getElementById("adminUltimosUsuarios");
 
@@ -506,6 +527,7 @@ function renderizarUltimosUsuarios(usuarios = []) {
     }).join("");
 }
 
+
 function aplicarFiltrosUsuarios() {
     const busca = document.getElementById("buscarAdminUsuario")?.value
         .trim()
@@ -534,6 +556,7 @@ function aplicarFiltrosUsuarios() {
 
     renderizarUsuarios(filtrados);
 }
+
 
 async function carregarUsuarios() {
     const possuiTabela = document.getElementById("tabelaAdminUsuarios");
@@ -566,6 +589,7 @@ async function carregarUsuarios() {
     }
 }
 
+
 function registrarHorarioAtualizacao() {
     const horario = document.getElementById("ultimaAtualizacaoAdmin");
 
@@ -577,6 +601,7 @@ function registrarHorarioAtualizacao() {
         })}`;
     }
 }
+
 
 async function atualizarPainelAdmin() {
     if (atualizacaoPainelEmAndamento) {
@@ -611,6 +636,7 @@ async function atualizarPainelAdmin() {
     }
 }
 
+
 async function atualizarAssinaturasAdmin() {
     if (atualizacaoAssinaturasEmAndamento || document.hidden) {
         return;
@@ -625,6 +651,7 @@ async function atualizarAssinaturasAdmin() {
         atualizacaoAssinaturasEmAndamento = false;
     }
 }
+
 
 function iniciarAtualizacaoAutomaticaAssinaturas() {
     const exibeAssinaturas =
@@ -654,6 +681,7 @@ function iniciarAtualizacaoAutomaticaAssinaturas() {
     }, { once: true });
 }
 
+
 async function enviarAlteracaoAcesso(id, dados) {
     try {
         return await api.patch(`/admin/usuarios/${id}/acesso`, dados);
@@ -676,6 +704,7 @@ async function enviarAlteracaoAcesso(id, dados) {
         throw erro;
     }
 }
+
 
 async function alterarAcessoUsuario(id) {
     const usuario = usuariosAdmin.find(item => item.id === id);
@@ -749,6 +778,7 @@ async function alterarAcessoUsuario(id) {
         );
     }
 }
+
 
 async function concederCortesia(evento) {
     evento.preventDefault();
@@ -840,6 +870,7 @@ async function concederCortesia(evento) {
     }
 }
 
+
 function renderizarAuditoriaAcessos(registros = []) {
     const corpo = document.getElementById("tabelaAuditoriaAcesso");
     const botaoLimpar = document.getElementById("btnLimparAuditoria");
@@ -869,6 +900,7 @@ function renderizarAuditoriaAcessos(registros = []) {
     `).join("");
 }
 
+
 async function carregarAuditoriaAcessos() {
     if (!document.getElementById("tabelaAuditoriaAcesso")) {
         return;
@@ -885,6 +917,7 @@ async function carregarAuditoriaAcessos() {
         );
     }
 }
+
 
 async function limparAuditoriaAcessos() {
     const botao = document.getElementById("btnLimparAuditoria");
@@ -929,6 +962,7 @@ async function limparAuditoriaAcessos() {
     }
 }
 
+
 async function alternarBloqueioUsuario(id) {
     const usuario = usuariosAdmin.find(item => item.id === id);
 
@@ -951,6 +985,7 @@ async function alternarBloqueioUsuario(id) {
         );
     }
 }
+
 
 async function excluirContaUsuario(id, email) {
     const confirmacao = window.prompt(
@@ -981,6 +1016,7 @@ async function excluirContaUsuario(id, email) {
         );
     }
 }
+
 
 function atualizarExemploMargem() {
 
@@ -1035,6 +1071,7 @@ function atualizarExemploMargem() {
 
 }
 
+
 async function salvarMargemScraper(evento) {
 
     evento.preventDefault();
@@ -1065,6 +1102,7 @@ async function salvarMargemScraper(evento) {
     }
 
 }
+
 
 async function executarScraper() {
 
@@ -1101,6 +1139,7 @@ async function executarScraper() {
     }
 
 }
+
 
 function configurarFormulariosComEndpoint() {
 
@@ -1161,6 +1200,7 @@ function configurarFormulariosComEndpoint() {
         });
 
 }
+
 
 async function iniciar() {
 
@@ -1290,6 +1330,7 @@ async function iniciar() {
     configurarFormulariosComEndpoint();
 
 }
+
 
 document.addEventListener(
     "DOMContentLoaded",
