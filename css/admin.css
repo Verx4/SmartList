@@ -1121,3 +1121,72 @@ html[data-palette="claro"] body[data-admin-page] .status-neutro {
         grid-template-columns: 1fr;
     }
 }
+
+/* Ações principais do menu administrativo */
+.admin-nav .admin-acao {
+    width: 100%;
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    padding: 12px 16px;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    font: inherit;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgb(0 0 0 / 12%);
+    transition: transform 160ms ease, filter 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+.admin-nav .admin-abrir-app.admin-acao {
+    background: var(--cor-primaria, #2563eb);
+    border-color: var(--cor-primaria, #2563eb);
+    color: var(--cor-texto-botao, #ffffff);
+}
+.admin-nav .admin-abrir-app.admin-acao:hover {
+    background: var(--cor-primaria-hover, var(--cor-primaria, #1d4ed8));
+    border-color: var(--cor-primaria-hover, var(--cor-primaria, #1d4ed8));
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+.admin-nav .admin-sair-conta {
+    background: var(--cor-superficie, #131c2f);
+    border-color: var(--cor-borda, #334155);
+    color: var(--cor-texto, #ffffff);
+}
+.admin-nav .admin-sair-conta:hover {
+    background: var(--cor-superficie-secundaria, #1e293b);
+    border-color: var(--cor-primaria, #2563eb);
+    color: var(--cor-primaria, #60a5fa);
+    transform: translateY(-1px);
+}
+.admin-acao-logo {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 7px rgb(0 0 0 / 24%);
+}
+.admin-acao-icone {
+    width: 30px;
+    height: 30px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 30px;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    font-size: 20px;
+    line-height: 1;
+}
+.admin-nav .admin-acao:focus-visible {
+    outline: 3px solid var(--cor-primaria, #2563eb);
+    outline-offset: 3px;
+}
+.admin-nav .admin-acao:active {
+    transform: translateY(0);
+}
+
