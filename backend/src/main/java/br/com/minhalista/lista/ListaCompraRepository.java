@@ -14,7 +14,7 @@ public interface ListaCompraRepository extends JpaRepository<ListaCompra, UUID> 
         StatusLista status
     );
 
-    List<ListaCompra> findByUsuarioIdAndStatusOrderByFinalizadoEmDesc(
+    List<ListaCompra> findByUsuarioIdAndStatusAndOcultaParaUsuarioFalseOrderByFinalizadoEmDesc(
         UUID usuarioId,
         StatusLista status
     );
