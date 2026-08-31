@@ -53,7 +53,7 @@
         }
 
         const script = document.createElement("script");
-        script.src = "./js/acesso-premium.js?v=3";
+        script.src = "./js/acesso-premium.js?v=4";
         script.onload = criar;
         script.onerror = criar;
         document.head.appendChild(script);

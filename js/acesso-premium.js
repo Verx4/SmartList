@@ -41,6 +41,31 @@
             || usuario?.assinaturaAtiva === true;
     }
 
+    async function sincronizarUsuario() {
+        if (!possuiToken()) {
+            return;
+        }
+
+        try {
+            const premiumAnterior = possuiPremium();
+            const { api } = await import("./api.js");
+            const usuario = await api.get("/usuarios/me");
+            const premiumAtual = possuiPremium(usuario);
+
+            localStorage.setItem("usuarioAtual", JSON.stringify(usuario));
+            localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
+            window.dispatchEvent(new CustomEvent("usuarioatualizado", {
+                detail: { usuario }
+            }));
+
+            if (premiumAnterior !== premiumAtual) {
+                window.location.reload();
+            }
+        } catch {
+            // Mantém o estado local quando a API estiver temporariamente indisponível.
+        }
+    }
+
     function urlPlanos(recurso) {
         const parametros = new URLSearchParams({
             acesso: "premium",
@@ -211,4 +236,6 @@
     } else {
         aplicar();
     }
+
+    sincronizarUsuario();
 })();
