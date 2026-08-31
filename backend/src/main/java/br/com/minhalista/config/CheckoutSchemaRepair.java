@@ -66,7 +66,20 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
             jdbcTemplate.execute("""
                 ALTER TABLE observacoes_precos
                     ADD COLUMN IF NOT EXISTS economia_compra
-                    NUMERIC(12, 2) NOT NULL DEFAULT 0
+                    NUMERIC(12, 2) DEFAULT 0
+                """);
+            jdbcTemplate.execute("""
+                ALTER TABLE observacoes_precos
+                    ALTER COLUMN economia_compra SET DEFAULT 0
+                """);
+            jdbcTemplate.update("""
+                UPDATE observacoes_precos
+                   SET economia_compra = 0
+                 WHERE economia_compra IS NULL
+                """);
+            jdbcTemplate.execute("""
+                ALTER TABLE observacoes_precos
+                    ALTER COLUMN economia_compra SET NOT NULL
                 """);
         }
 
