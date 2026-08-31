@@ -90,13 +90,13 @@
                     <option value="claro">Modo claro</option>
                 </select>
             </div>
-            <a class="admin-abrir-app" href="../inicio.html">
-                <span aria-hidden="true">🛒</span>
+            <a class="admin-acao admin-abrir-app" href="../inicio.html">
+                <img class="admin-acao-logo" src="../assets/logo/smart-list-app.png" alt="" width="30" height="30">
                 <span>Abrir Smart List</span>
             </a>
-            <a class="admin-abrir-app" href="../login.html" data-admin-logout>
-                <span aria-hidden="true">🚪</span>
-                <span>SAIR DA CONTA</span>
+            <a class="admin-acao admin-sair-conta" href="../login.html" data-admin-logout>
+                <span class="admin-acao-icone" aria-hidden="true">↪</span>
+                <span>Sair da conta</span>
             </a>
         `;
 
