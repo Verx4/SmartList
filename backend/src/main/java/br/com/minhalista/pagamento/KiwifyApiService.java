@@ -4,6 +4,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -74,6 +76,49 @@ public class KiwifyApiService {
             .header("x-kiwify-account-id", accountId)
             .retrieve()
             .body(Map.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> listarVendasPagasRecentes(
+        Instant inicio,
+        Instant fim
+    ) {
+        if (!configurado()) {
+            throw new IllegalStateException(
+                "As credenciais da API Kiwify não estão configuradas."
+            );
+        }
+
+        Map<String, Object> resposta = restClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/v1/sales")
+                .queryParam("status", "paid")
+                .queryParam("view_full_sale_details", true)
+                .queryParam("page_size", 100)
+                .queryParam(
+                    "start_date",
+                    inicio.atZone(ZoneOffset.UTC).toLocalDate()
+                )
+                .queryParam(
+                    "end_date",
+                    fim.atZone(ZoneOffset.UTC).toLocalDate()
+                )
+                .build()
+            )
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + obterToken())
+            .header("x-kiwify-account-id", accountId)
+            .retrieve()
+            .body(Map.class);
+
+        Object dados = resposta == null ? null : resposta.get("data");
+        if (!(dados instanceof List<?> vendas)) {
+            return List.of();
+        }
+
+        return vendas.stream()
+            .filter(Map.class::isInstance)
+            .map(item -> (Map<String, Object>) item)
+            .toList();
     }
 
     @SuppressWarnings("unchecked")
