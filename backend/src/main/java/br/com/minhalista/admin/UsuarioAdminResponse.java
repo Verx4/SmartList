@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import br.com.minhalista.assinatura.Assinatura;
+import br.com.minhalista.usuario.Perfil;
 import br.com.minhalista.usuario.TipoAcesso;
 import br.com.minhalista.usuario.Usuario;
 
@@ -25,6 +26,7 @@ public record UsuarioAdminResponse(
     Instant ultimoAcessoEm,
     Instant criadoEm
 ) {
+    private static final String EMAIL_ADM_PRINCIPAL = "smartlistevx@gmail.com";
     public static final long DIAS_PARA_INATIVIDADE = 40;
 
     public static UsuarioAdminResponse de(Usuario usuario, String ciclo) {
@@ -76,6 +78,11 @@ public record UsuarioAdminResponse(
         Usuario usuario,
         boolean possuiAssinaturaAtiva
     ) {
+        if (usuario.getPerfil() == Perfil.ADMIN
+            && EMAIL_ADM_PRINCIPAL.equalsIgnoreCase(usuario.getEmail())) {
+            return "ADM";
+        }
+
         if (estaInativo(usuario)) {
             return "INATIVO";
         }
