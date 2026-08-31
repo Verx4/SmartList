@@ -1,6 +1,5 @@
 package br.com.minhalista.config;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-
 /**
  * Garante o contrato mínimo do checkout mesmo em bancos antigos nos quais o
  * histórico do Flyway não corresponde mais ao esquema físico.
@@ -20,17 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CheckoutSchemaRepair implements ApplicationRunner {
 
-
     private static final Logger LOG = LoggerFactory.getLogger(CheckoutSchemaRepair.class);
 
-
     private final JdbcTemplate jdbcTemplate;
-
 
     public CheckoutSchemaRepair(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     @Override
     @Transactional
@@ -38,7 +32,6 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
         if (!tabelaExiste("assinaturas")) {
             return;
         }
-
 
         adicionarColunaAssinatura("cupom_codigo VARCHAR(30)");
         adicionarColunaAssinatura("cupom_percentual_desconto NUMERIC(5, 2)");
@@ -62,14 +55,12 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
         alterarColunaAssinatura("cupom_primeiro_pagamento_aplicado SET DEFAULT FALSE");
         alterarColunaAssinatura("cupom_primeiro_pagamento_aplicado SET NOT NULL");
 
-
         if (tabelaExiste("cupons")) {
             jdbcTemplate.execute("""
                 ALTER TABLE cupons
                     ADD COLUMN IF NOT EXISTS ciclo VARCHAR(20)
                 """);
         }
-
 
         if (tabelaExiste("observacoes_precos")) {
             jdbcTemplate.execute("""
@@ -91,7 +82,6 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
                     ALTER COLUMN economia_compra SET NOT NULL
                 """);
         }
-
 
         if (tabelaExiste("listas_compras")) {
             jdbcTemplate.execute("""
@@ -117,16 +107,13 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
         LOG.info("Esquema do checkout e do histórico verificado e reparado com sucesso.");
     }
 
-
     private void adicionarColunaAssinatura(String definicao) {
         jdbcTemplate.execute("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS " + definicao);
     }
 
-
     private void alterarColunaAssinatura(String alteracao) {
         jdbcTemplate.execute("ALTER TABLE assinaturas ALTER COLUMN " + alteracao);
     }
-
 
     private boolean tabelaExiste(String tabela) {
         Integer quantidade = jdbcTemplate.queryForObject(
