@@ -327,7 +327,11 @@ function explicarRecusaPagamento(statusDetalhe) {
 
 
 function opcoesAcesso(acessoAtual) {
-    return ["FREE", "PREMIUM", "CORTESIA"]
+    const acessos = acessoAtual === "ADM"
+        ? ["ADM"]
+        : ["FREE", "PREMIUM", "CORTESIA"];
+
+    return acessos
         .map(acesso => `
             <option value="${acesso}" ${acesso === acessoAtual ? "selected" : ""}>
                 ${acesso === "CORTESIA" ? "Cortesia" : acesso}
@@ -338,6 +342,11 @@ function opcoesAcesso(acessoAtual) {
 
 
 function classificacaoUsuario(usuario) {
+    if (usuario?.perfil === "ADMIN"
+        && String(usuario?.email || "").toLowerCase() === "smartlistevx@gmail.com") {
+        return "ADM";
+    }
+
     if (usuario?.classificacaoAcesso) {
         return usuario.classificacaoAcesso;
     }
@@ -361,6 +370,11 @@ function classificacaoUsuario(usuario) {
 function apresentarClassificacao(usuario) {
     const classificacao = classificacaoUsuario(usuario);
     const opcoes = {
+        ADM: {
+            rotulo: "ADM",
+            classe: "status-aviso",
+            titulo: "Conta administrativa principal, fora dos gráficos"
+        },
         PAGANTE: {
             rotulo: "Pagante",
             classe: "status-ok",
@@ -411,7 +425,10 @@ function renderizarUsuarios(usuarios = []) {
     }
 
     corpo.innerHTML = usuarios.map(usuario => {
-        const acesso = usuario.tipoAcesso || "FREE";
+        const codigoClassificacao = classificacaoUsuario(usuario);
+        const acesso = codigoClassificacao === "ADM"
+            ? "ADM"
+            : usuario.tipoAcesso || "FREE";
         const classificacao = apresentarClassificacao(usuario);
 
         return `
@@ -426,6 +443,7 @@ function renderizarUsuarios(usuarios = []) {
                         <select
                             data-acesso-usuario="${escaparHtml(usuario.id)}"
                             aria-label="Novo acesso de ${escaparHtml(usuario.nome || usuario.email)}"
+                            ${codigoClassificacao === "ADM" ? "disabled" : ""}
                         >
                             ${opcoesAcesso(acesso)}
                         </select>
@@ -453,7 +471,8 @@ function renderizarUsuarios(usuarios = []) {
                             class="btn btn-primary btn-pequeno"
                             data-usuario-id="${escaparHtml(usuario.id)}"
                             data-acao="alterar-acesso"
-                        >Alterar acesso</button>
+                            ${codigoClassificacao === "ADM" ? "disabled" : ""}
+                        >${codigoClassificacao === "ADM" ? "Conta principal" : "Alterar acesso"}</button>
                         <button
                             type="button"
                             class="btn-secundario btn-pequeno"
