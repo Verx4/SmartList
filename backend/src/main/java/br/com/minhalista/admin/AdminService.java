@@ -72,15 +72,19 @@ public class AdminService {
             .map(this::respostaUsuario)
             .toList();
 
-        long usuariosFree = contarClassificacao(usuarios, "FREE");
-        long usuariosPagantes = contarClassificacao(usuarios, "PAGANTE");
-        long usuariosCortesia = contarClassificacao(usuarios, "CORTESIA");
+        List<UsuarioAdminResponse> usuariosGrafico = usuarios.stream()
+            .filter(usuario -> !"ADM".equals(usuario.classificacaoAcesso()))
+            .toList();
+
+        long usuariosFree = contarClassificacao(usuariosGrafico, "FREE");
+        long usuariosPagantes = contarClassificacao(usuariosGrafico, "PAGANTE");
+        long usuariosCortesia = contarClassificacao(usuariosGrafico, "CORTESIA");
         long usuariosPremiumManual =
-            contarClassificacao(usuarios, "PREMIUM_MANUAL");
-        long usuariosInativos = contarClassificacao(usuarios, "INATIVO");
+            contarClassificacao(usuariosGrafico, "PREMIUM_MANUAL");
+        long usuariosInativos = contarClassificacao(usuariosGrafico, "INATIVO");
 
         return new ResumoAdminResponse(
-            usuarios.size(),
+            usuariosGrafico.size(),
             usuariosFree,
             usuariosPagantes + usuariosPremiumManual,
             usuariosCortesia,
