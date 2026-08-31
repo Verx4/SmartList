@@ -417,14 +417,41 @@ function criarPdfMinhaLista(comprasSelecionadas, logo) {
     return new Uint8Array([...pdf].map(caractere => caractere.charCodeAt(0) & 255));
 }
 
-async function exportarMinhaListaPdf() {
+function escolherComprasParaPdf() {
     if (!comprasVisiveis.length) {
         window.alert("Não há compras neste período para exportar.");
-        return;
+        return null;
     }
 
+    const opcoes = comprasVisiveis.map((compra, indice) => {
+        const data = dataDaCompra(compra).toLocaleDateString("pt-BR");
+        return (indice + 1) + " - " + data + " | " + mercadoDaCompra(compra) + " | " + moeda(totalDaCompra(compra));
+    });
+
+    const resposta = window.prompt(
+        "Escolha o conteúdo do PDF:\n\n" +
+        "0 - Todas as compras exibidas (" + comprasVisiveis.length + ")\n" +
+        opcoes.join("\n") +
+        "\n\nDigite 0 para todas ou o número de uma compra:"
+    );
+
+    if (resposta === null) return null;
+    const escolha = Number(String(resposta).trim());
+
+    if (!Number.isInteger(escolha) || escolha < 0 || escolha > comprasVisiveis.length) {
+        window.alert("Escolha inválida. Digite 0 para todas ou o número de uma compra da lista.");
+        return null;
+    }
+
+    return escolha === 0 ? [...comprasVisiveis] : [comprasVisiveis[escolha - 1]];
+}
+
+async function exportarMinhaListaPdf() {
+    const comprasSelecionadas = escolherComprasParaPdf();
+    if (!comprasSelecionadas) return;
+
     const arquivo = new File(
-        [criarPdfMinhaLista(comprasVisiveis, await carregarLogoPdf())],
+        [criarPdfMinhaLista(comprasSelecionadas, await carregarLogoPdf())],
         "MINHA LISTA.pdf",
         { type: "application/pdf" }
     );
@@ -432,8 +459,10 @@ async function exportarMinhaListaPdf() {
     if (navigator.share && navigator.canShare?.({ files: [arquivo] })) {
         try {
             await navigator.share({
-                title: "MINHA LISTA",
-                text: "Minha lista de compras do Smart List.",
+                title: "SMART LIST - MINHA LISTA",
+                text: comprasSelecionadas.length === 1
+                    ? "Minha compra do Smart List."
+                    : "Minhas compras do Smart List.",
                 files: [arquivo]
             });
             return;
