@@ -94,6 +94,10 @@
                 <span aria-hidden="true">🛒</span>
                 <span>Abrir Smart List</span>
             </a>
+            <a class="admin-abrir-app" href="../login.html" data-admin-logout>
+                <span aria-hidden="true">🚪</span>
+                <span>SAIR DA CONTA</span>
+            </a>
         `;
 
         const seletorTema = nav.querySelector("[data-admin-theme-select]");
@@ -111,6 +115,17 @@
         });
         window.addEventListener("temaalterado", atualizarSeletorTema);
         atualizarSeletorTema();
+
+        nav.querySelector("[data-admin-logout]")?.addEventListener("click", event => {
+            event.preventDefault();
+            [localStorage, sessionStorage].forEach(armazenamento => {
+                armazenamento.removeItem("token");
+                armazenamento.removeItem("accessToken");
+                armazenamento.removeItem("refreshToken");
+            });
+            localStorage.removeItem("usuarioAtual");
+            location.assign("../login.html");
+        });
 
         botaoMenu.addEventListener("click", () => {
             const aberto = sidebar.classList.toggle("admin-menu-aberto");
