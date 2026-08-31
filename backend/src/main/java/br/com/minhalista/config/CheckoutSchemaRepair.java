@@ -104,7 +104,6 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
                 """);
         }
 
-
         LOG.info("Esquema do checkout e do histórico verificado e reparado com sucesso.");
     }
 
