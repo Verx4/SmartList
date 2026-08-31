@@ -247,16 +247,26 @@ public class AssinaturaService {
         boolean valorConfere = StringUtils.hasText(assinatura.getCupomCodigo())
             ? valor.signum() > 0 && valor.compareTo(valorMaximo) <= 0
             : assinatura.getValor().compareTo(valor) == 0;
-        boolean dadosConferem =
-            valorConfere
-            && "BRL".equalsIgnoreCase(moeda)
-            && assinatura.getUsuario().getEmail().equalsIgnoreCase(email);
+        boolean moedaConfere = "BRL".equalsIgnoreCase(moeda);
+        boolean emailConfere =
+            assinatura.getUsuario().getEmail().equalsIgnoreCase(email);
+        boolean dadosConferem = valorConfere && moedaConfere;
+
+        if (!emailConfere) {
+            LOG.warn(
+                "Venda Kiwify {} usa e-mail diferente do cadastro do checkout {}; vínculo s1 preservado.",
+                orderId,
+                assinaturaId
+            );
+        }
 
         if (!dadosConferem) {
             LOG.warn(
-                "Venda Kiwify {} rejeitada: valor/moeda/email divergentes para checkout {}.",
+                "Venda Kiwify {} rejeitada para checkout {}: valor={}, moeda={}.",
                 orderId,
-                assinaturaId
+                assinaturaId,
+                valorConfere,
+                moedaConfere
             );
             return false;
         }
