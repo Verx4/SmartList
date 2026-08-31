@@ -242,13 +242,159 @@ document.getElementById("btnLimparHistorico").addEventListener("click", () => {
     }
 });
 
-document.getElementById("btnExportarHistorico").addEventListener("click", () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(comprasVisiveis, null, 2)], { type: "application/json" }));
+function limparTextoPdf(valor) {
+    return String(valor ?? "")
+        .replace(/[\p{Extended_Pictographic}\uFE0F]/gu, "")
+        .replace(/[\r\n\t]+/g, " ")
+        .replace(/\s{2,}/g, " ")
+        .trim();
+}
+
+function escaparTextoPdf(valor) {
+    return limparTextoPdf(valor)
+        .replaceAll("\\", "\\\\")
+        .replaceAll("(", "\\(")
+        .replaceAll(")", "\\)");
+}
+
+function criarPdfMinhaLista(comprasSelecionadas) {
+    const largura = 595;
+    const altura = 842;
+    const margem = 48;
+    const paginas = [];
+    let comandos = [];
+    let y = 755;
+
+    const escrever = (texto, tamanho = 11, negrito = false, cor = "0.08 0.12 0.20") => {
+        comandos.push("BT /" + (negrito ? "F2" : "F1") + " " + tamanho + " Tf " + cor + " rg " + margem + " " + y + " Td (" + escaparTextoPdf(texto) + ") Tj ET");
+        y -= tamanho + 7;
+    };
+
+    const novaPagina = () => {
+        if (comandos.length) paginas.push(comandos.join("\n"));
+        comandos = [
+            "0.03 0.10 0.20 rg 0 782 595 60 re f",
+            "0.18 0.44 0.95 rg 0 778 595 4 re f",
+            "BT /F2 22 Tf 1 1 1 rg 48 802 Td (MINHA LISTA) Tj ET"
+        ];
+        y = 755;
+    };
+
+    const garantirEspaco = (alturaNecessaria = 70) => {
+        if (y < 55 + alturaNecessaria) novaPagina();
+    };
+
+    novaPagina();
+    escrever("Exportado em " + new Date().toLocaleString("pt-BR"), 9, false, "0.35 0.42 0.52");
+    y -= 8;
+
+    comprasSelecionadas.forEach((compra, indiceCompra) => {
+        const itens = itensDaCompra(compra);
+        garantirEspaco(85);
+        escrever(dataDaCompra(compra).toLocaleDateString("pt-BR") + " - " + mercadoDaCompra(compra), 15, true);
+        escrever("Comprador: " + usuarioDaCompra(compra), 10, false, "0.30 0.36 0.45");
+        y -= 5;
+
+        itens.forEach((item, indiceItem) => {
+            garantirEspaco(55);
+            const quantidade = quantidadeCompradaDoItem(item);
+            const medida = limparTextoPdf(item.medida || item.unidade || "unidade");
+            const categoria = limparTextoPdf(item.categoria || "Sem categoria");
+            escrever((indiceItem + 1) + ". " + limparTextoPdf(item.nome || item.produto || "Item"), 11, true);
+            escrever(categoria + " | " + numero(quantidade) + " " + medida + " x " + moeda(precoUnitarioDoItem(item)) + " = " + moeda(subtotalDoItem(item)), 9, false, "0.25 0.31 0.40");
+            y -= 4;
+        });
+
+        garantirEspaco(45);
+        escrever("Total da compra: " + moeda(totalDaCompra(compra)), 12, true, "0.08 0.40 0.24");
+        if (indiceCompra < comprasSelecionadas.length - 1) {
+            comandos.push("0.82 0.85 0.90 RG 0.7 w " + margem + " " + y + " m " + (largura - margem) + " " + y + " l S");
+            y -= 22;
+        }
+    });
+
+    const resumo = resumirCompras(comprasSelecionadas);
+    garantirEspaco(75);
+    y -= 8;
+    escrever("RESUMO", 13, true, "0.18 0.44 0.95");
+    escrever("Compras: " + resumo.quantidadeCompras + " | Itens: " + numero(resumo.itensComprados) + " | Total: " + moeda(resumo.totalGasto), 11, true);
+    paginas.push(comandos.join("\n"));
+
+    const objetos = [];
+    const adicionarObjeto = conteudo => {
+        objetos.push(conteudo);
+        return objetos.length;
+    };
+
+    adicionarObjeto("<< /Type /Catalog /Pages 2 0 R >>");
+    adicionarObjeto("");
+    adicionarObjeto("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
+    adicionarObjeto("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+
+    const referenciasPaginas = [];
+    paginas.forEach(conteudo => {
+        const paginaId = objetos.length + 1;
+        const conteudoId = paginaId + 1;
+        referenciasPaginas.push(paginaId + " 0 R");
+        adicionarObjeto("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + largura + " " + altura + "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + conteudoId + " 0 R >>");
+        adicionarObjeto("<< /Length " + conteudo.length + " >>\nstream\n" + conteudo + "\nendstream");
+    });
+    objetos[1] = "<< /Type /Pages /Kids [" + referenciasPaginas.join(" ") + "] /Count " + paginas.length + " >>";
+
+    let pdf = "%PDF-1.4\n%âãÏÓ\n";
+    const offsets = [0];
+    objetos.forEach((objeto, indice) => {
+        offsets.push(pdf.length);
+        pdf += (indice + 1) + " 0 obj\n" + objeto + "\nendobj\n";
+    });
+    const inicioXref = pdf.length;
+    pdf += "xref\n0 " + (objetos.length + 1) + "\n0000000000 65535 f \n";
+    offsets.slice(1).forEach(offset => {
+        pdf += String(offset).padStart(10, "0") + " 00000 n \n";
+    });
+    pdf += "trailer\n<< /Size " + (objetos.length + 1) + " /Root 1 0 R >>\nstartxref\n" + inicioXref + "\n%%EOF";
+
+    return new Uint8Array([...pdf].map(caractere => caractere.charCodeAt(0) & 255));
+}
+
+async function exportarMinhaListaPdf() {
+    if (!comprasVisiveis.length) {
+        window.alert("Não há compras neste período para exportar.");
+        return;
+    }
+
+    const arquivo = new File(
+        [criarPdfMinhaLista(comprasVisiveis)],
+        "MINHA LISTA.pdf",
+        { type: "application/pdf" }
+    );
+
+    if (navigator.share && navigator.canShare?.({ files: [arquivo] })) {
+        try {
+            await navigator.share({
+                title: "MINHA LISTA",
+                text: "Minha lista de compras do Smart List.",
+                files: [arquivo]
+            });
+            return;
+        } catch (erro) {
+            if (erro?.name !== "AbortError") console.warn("Não foi possível compartilhar o PDF.", erro);
+            if (erro?.name === "AbortError") return;
+        }
+    }
+
+    const url = URL.createObjectURL(arquivo);
     const link = document.createElement("a");
     link.href = url;
-    link.download = periodoSelecionado === "todos" ? "historico-smart-list.json" : `historico-smart-list-${periodoSelecionado}.json`;
+    link.download = "MINHA LISTA.pdf";
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
-});
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+const botaoExportarHistorico = document.getElementById("btnExportarHistorico");
+botaoExportarHistorico.textContent = "Exportar PDF";
+botaoExportarHistorico.addEventListener("click", exportarMinhaListaPdf);
 
 carregarCompras();
