@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import br.com.minhalista.pagamento.KiwifyApiService;
 import br.com.minhalista.pagamento.MercadoPagoService;
 import br.com.minhalista.pagamento.PagamentoConsultado;
 import br.com.minhalista.usuario.Usuario;
@@ -29,6 +30,9 @@ class AssinaturaReconciliacaoServiceTest {
     private MercadoPagoService mercadoPagoService;
 
     @Mock
+    private KiwifyApiService kiwifyApiService;
+
+    @Mock
     private AssinaturaService assinaturaService;
 
     private AssinaturaReconciliacaoService service;
@@ -41,6 +45,7 @@ class AssinaturaReconciliacaoServiceTest {
         service = new AssinaturaReconciliacaoService(
             repository,
             mercadoPagoService,
+            kiwifyApiService,
             assinaturaService
         );
         usuario = new Usuario();
