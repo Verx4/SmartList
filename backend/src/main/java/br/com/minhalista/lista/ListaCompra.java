@@ -57,7 +57,6 @@ public class ListaCompra {
     @Column(nullable = false, length = 20)
     private StatusLista status = StatusLista.ABERTA;
 
-
     @Column(name = "oculta_para_usuario", nullable = false)
     private boolean ocultaParaUsuario = false;
 
@@ -155,11 +154,9 @@ public class ListaCompra {
         this.status = status;
     }
 
-
     public boolean isOcultaParaUsuario() {
         return ocultaParaUsuario;
     }
-
 
     public void setOcultaParaUsuario(boolean ocultaParaUsuario) {
         this.ocultaParaUsuario = ocultaParaUsuario;
