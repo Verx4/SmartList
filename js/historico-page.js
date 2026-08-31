@@ -257,67 +257,116 @@ function escaparTextoPdf(valor) {
         .replaceAll(")", "\\)");
 }
 
-function criarPdfMinhaLista(comprasSelecionadas) {
+async function carregarLogoPdf() {
+    try {
+        const imagem = new Image();
+        imagem.src = "../assets/logo/smart-list-app.png";
+        await imagem.decode();
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 180;
+        canvas.height = 180;
+        const contexto = canvas.getContext("2d");
+        contexto.fillStyle = "#05070b";
+        contexto.fillRect(0, 0, canvas.width, canvas.height);
+        contexto.drawImage(imagem, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", 0.92));
+        if (!blob) return null;
+
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        let binario = "";
+        const bloco = 8192;
+        for (let indice = 0; indice < bytes.length; indice += bloco) {
+            binario += String.fromCharCode(...bytes.subarray(indice, indice + bloco));
+        }
+
+        return { binario, largura: canvas.width, altura: canvas.height };
+    } catch (erro) {
+        console.warn("Não foi possível incorporar a logo ao PDF.", erro);
+        return null;
+    }
+}
+
+function criarPdfMinhaLista(comprasSelecionadas, logo) {
     const largura = 595;
     const altura = 842;
-    const margem = 48;
+    const margem = 44;
     const paginas = [];
     let comandos = [];
-    let y = 755;
+    let y = 730;
 
-    const escrever = (texto, tamanho = 11, negrito = false, cor = "0.08 0.12 0.20") => {
-        comandos.push("BT /" + (negrito ? "F2" : "F1") + " " + tamanho + " Tf " + cor + " rg " + margem + " " + y + " Td (" + escaparTextoPdf(texto) + ") Tj ET");
+    const escrever = (texto, tamanho = 11, negrito = false, cor = "1 1 1", x = margem) => {
+        comandos.push("BT /" + (negrito ? "F2" : "F1") + " " + tamanho + " Tf " + cor + " rg " + x + " " + y + " Td (" + escaparTextoPdf(texto) + ") Tj ET");
         y -= tamanho + 7;
+    };
+
+    const caixa = (x, topo, larguraCaixa, alturaCaixa, cor = "0.06 0.17 0.31") => {
+        comandos.push(cor + " rg " + x + " " + (topo - alturaCaixa) + " " + larguraCaixa + " " + alturaCaixa + " re f");
     };
 
     const novaPagina = () => {
         if (comandos.length) paginas.push(comandos.join("\n"));
         comandos = [
-            "0.03 0.10 0.20 rg 0 782 595 60 re f",
-            "0.18 0.44 0.95 rg 0 778 595 4 re f",
-            "BT /F2 22 Tf 1 1 1 rg 48 802 Td (MINHA LISTA) Tj ET"
+            "0.02 0.09 0.19 rg 0 0 595 842 re f",
+            "0.08 0.24 0.43 rg 28 760 539 62 re f",
+            "0.10 0.48 0.96 rg 28 754 539 5 re f"
         ];
-        y = 755;
+        if (logo) {
+            comandos.push("q 44 0 0 44 42 770 cm /Logo Do Q");
+        }
+        comandos.push("BT /F2 20 Tf 1 1 1 rg " + (logo ? 98 : 44) + " 787 Td (SMART LIST - MINHA LISTA) Tj ET");
+        y = 730;
     };
 
     const garantirEspaco = (alturaNecessaria = 70) => {
-        if (y < 55 + alturaNecessaria) novaPagina();
+        if (y < 48 + alturaNecessaria) novaPagina();
     };
 
     novaPagina();
-    escrever("Exportado em " + new Date().toLocaleString("pt-BR"), 9, false, "0.35 0.42 0.52");
+    escrever("Exportado em " + new Date().toLocaleString("pt-BR"), 9, false, "0.65 0.79 0.94");
     y -= 8;
 
     comprasSelecionadas.forEach((compra, indiceCompra) => {
         const itens = itensDaCompra(compra);
-        garantirEspaco(85);
+        const alturaCabecalho = 63;
+        garantirEspaco(alturaCabecalho + 45);
+        caixa(margem - 10, y + 15, largura - (margem * 2) + 20, alturaCabecalho);
+        escrever("COMPRA " + (indiceCompra + 1), 9, true, "0.25 0.68 1");
         escrever(dataDaCompra(compra).toLocaleDateString("pt-BR") + " - " + mercadoDaCompra(compra), 15, true);
-        escrever("Comprador: " + usuarioDaCompra(compra), 10, false, "0.30 0.36 0.45");
-        y -= 5;
+        escrever("Comprador: " + usuarioDaCompra(compra), 10, false, "0.72 0.82 0.93");
+        y -= 12;
 
         itens.forEach((item, indiceItem) => {
-            garantirEspaco(55);
+            garantirEspaco(58);
             const quantidade = quantidadeCompradaDoItem(item);
             const medida = limparTextoPdf(item.medida || item.unidade || "unidade");
             const categoria = limparTextoPdf(item.categoria || "Sem categoria");
+            caixa(margem - 6, y + 12, largura - (margem * 2) + 12, 49, "0.04 0.14 0.27");
             escrever((indiceItem + 1) + ". " + limparTextoPdf(item.nome || item.produto || "Item"), 11, true);
-            escrever(categoria + " | " + numero(quantidade) + " " + medida + " x " + moeda(precoUnitarioDoItem(item)) + " = " + moeda(subtotalDoItem(item)), 9, false, "0.25 0.31 0.40");
-            y -= 4;
+            escrever("Categoria: " + categoria, 9, false, "0.36 0.72 1");
+            escrever(numero(quantidade) + " " + medida + " x " + moeda(precoUnitarioDoItem(item)) + " = " + moeda(subtotalDoItem(item)), 9, false, "0.78 0.86 0.95");
+            y -= 9;
         });
 
-        garantirEspaco(45);
-        escrever("Total da compra: " + moeda(totalDaCompra(compra)), 12, true, "0.08 0.40 0.24");
-        if (indiceCompra < comprasSelecionadas.length - 1) {
-            comandos.push("0.82 0.85 0.90 RG 0.7 w " + margem + " " + y + " m " + (largura - margem) + " " + y + " l S");
-            y -= 22;
-        }
+        garantirEspaco(48);
+        escrever("TOTAL DA COMPRA: " + moeda(totalDaCompra(compra)), 13, true, "0.28 0.90 0.58");
+        if (indiceCompra < comprasSelecionadas.length - 1) y -= 18;
     });
 
     const resumo = resumirCompras(comprasSelecionadas);
-    garantirEspaco(75);
+    const categorias = new Set(
+        comprasSelecionadas.flatMap(compra =>
+            itensDaCompra(compra).map(item => limparTextoPdf(item.categoria || "Sem categoria"))
+        )
+    );
+    garantirEspaco(112);
     y -= 8;
-    escrever("RESUMO", 13, true, "0.18 0.44 0.95");
-    escrever("Compras: " + resumo.quantidadeCompras + " | Itens: " + numero(resumo.itensComprados) + " | Total: " + moeda(resumo.totalGasto), 11, true);
+    caixa(margem - 10, y + 17, largura - (margem * 2) + 20, 96, "0.08 0.24 0.43");
+    escrever("RESUMO", 15, true, "0.25 0.68 1");
+    escrever("Compras: " + resumo.quantidadeCompras + " | Itens comprados: " + numero(resumo.itensComprados), 11, true);
+    escrever("Categorias: " + categorias.size, 11, true);
+    escrever("TOTAL GERAL: " + moeda(resumo.totalGasto), 14, true, "0.28 0.90 0.58");
     paginas.push(comandos.join("\n"));
 
     const objetos = [];
@@ -331,12 +380,23 @@ function criarPdfMinhaLista(comprasSelecionadas) {
     adicionarObjeto("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
     adicionarObjeto("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
 
+    let logoId = null;
+    if (logo) {
+        logoId = adicionarObjeto(
+            "<< /Type /XObject /Subtype /Image /Width " + logo.largura +
+            " /Height " + logo.altura +
+            " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " +
+            logo.binario.length + " >>\nstream\n" + logo.binario + "\nendstream"
+        );
+    }
+
     const referenciasPaginas = [];
     paginas.forEach(conteudo => {
         const paginaId = objetos.length + 1;
         const conteudoId = paginaId + 1;
         referenciasPaginas.push(paginaId + " 0 R");
-        adicionarObjeto("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + largura + " " + altura + "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + conteudoId + " 0 R >>");
+        const recursoLogo = logoId ? " /XObject << /Logo " + logoId + " 0 R >>" : "";
+        adicionarObjeto("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + largura + " " + altura + "] /Resources << /Font << /F1 3 0 R /F2 4 0 R >>" + recursoLogo + " >> /Contents " + conteudoId + " 0 R >>");
         adicionarObjeto("<< /Length " + conteudo.length + " >>\nstream\n" + conteudo + "\nendstream");
     });
     objetos[1] = "<< /Type /Pages /Kids [" + referenciasPaginas.join(" ") + "] /Count " + paginas.length + " >>";
@@ -364,7 +424,7 @@ async function exportarMinhaListaPdf() {
     }
 
     const arquivo = new File(
-        [criarPdfMinhaLista(comprasVisiveis)],
+        [criarPdfMinhaLista(comprasVisiveis, await carregarLogoPdf())],
         "MINHA LISTA.pdf",
         { type: "application/pdf" }
     );
