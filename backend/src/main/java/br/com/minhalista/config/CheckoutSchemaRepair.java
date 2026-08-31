@@ -83,6 +83,27 @@ public class CheckoutSchemaRepair implements ApplicationRunner {
                 """);
         }
 
+        if (tabelaExiste("listas_compras")) {
+            jdbcTemplate.execute("""
+                ALTER TABLE listas_compras
+                    ADD COLUMN IF NOT EXISTS oculta_para_usuario
+                    BOOLEAN DEFAULT FALSE
+                """);
+            jdbcTemplate.update("""
+                UPDATE listas_compras
+                   SET oculta_para_usuario = FALSE
+                 WHERE oculta_para_usuario IS NULL
+                """);
+            jdbcTemplate.execute("""
+                ALTER TABLE listas_compras
+                    ALTER COLUMN oculta_para_usuario SET DEFAULT FALSE
+                """);
+            jdbcTemplate.execute("""
+                ALTER TABLE listas_compras
+                    ALTER COLUMN oculta_para_usuario SET NOT NULL
+                """);
+        }
+
         LOG.info("Esquema do checkout e do histórico verificado e reparado com sucesso.");
     }
 

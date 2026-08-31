@@ -138,7 +138,10 @@ public class ListaCompraService {
         usuarioService.exigirPremium(usuario);
 
         return listaRepository
-            .findByUsuarioIdAndStatusOrderByFinalizadoEmDesc(usuario.getId(), StatusLista.FINALIZADA)
+            .findByUsuarioIdAndStatusAndOcultaParaUsuarioFalseOrderByFinalizadoEmDesc(
+                usuario.getId(),
+                StatusLista.FINALIZADA
+            )
             .stream()
             .map(this::montarResposta)
             .toList();
@@ -149,6 +152,12 @@ public class ListaCompraService {
         Usuario usuario = usuarioService.obterAutenticado();
         ListaCompra lista = listaRepository.findByIdAndUsuarioId(id, usuario.getId())
             .orElseThrow(() -> new RegraNegocioException(HttpStatus.NOT_FOUND, "Lista não encontrada."));
+        if (lista.getStatus() == StatusLista.FINALIZADA) {
+            lista.setOcultaParaUsuario(true);
+            listaRepository.save(lista);
+            return;
+        }
+
         listaRepository.delete(lista);
     }
 

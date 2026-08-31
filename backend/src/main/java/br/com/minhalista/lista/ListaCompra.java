@@ -57,6 +57,9 @@ public class ListaCompra {
     @Column(nullable = false, length = 20)
     private StatusLista status = StatusLista.ABERTA;
 
+    @Column(name = "oculta_para_usuario", nullable = false)
+    private boolean ocultaParaUsuario = false;
+
     @OneToMany(mappedBy = "lista", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("criadoEm ASC")
     private List<ItemLista> itens = new ArrayList<>();
@@ -149,6 +152,14 @@ public class ListaCompra {
 
     public void setStatus(StatusLista status) {
         this.status = status;
+    }
+
+    public boolean isOcultaParaUsuario() {
+        return ocultaParaUsuario;
+    }
+
+    public void setOcultaParaUsuario(boolean ocultaParaUsuario) {
+        this.ocultaParaUsuario = ocultaParaUsuario;
     }
 
     public List<ItemLista> getItens() {
