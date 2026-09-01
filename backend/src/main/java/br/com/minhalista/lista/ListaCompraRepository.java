@@ -19,6 +19,8 @@ public interface ListaCompraRepository extends JpaRepository<ListaCompra, UUID> 
         StatusLista status
     );
 
+    List<ListaCompra> findAllByUsuarioId(UUID usuarioId);
+
     Optional<ListaCompra> findByIdAndUsuarioId(UUID id, UUID usuarioId);
 
     @EntityGraph(attributePaths = { "usuario", "mercado", "itens" })
