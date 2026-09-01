@@ -179,15 +179,31 @@ async function responderNavegacao(request) {
 
         return response;
     } catch (_erro) {
-        const cache = await caches.open(PAGE_CACHE);
-        return (await cache.match(request))
-            || cache.match("./offline.html");
+        return (await caches.match(request, { ignoreSearch: true }))
+            || (await caches.match("./offline.html"));
     }
+}
+
+async function responderRecursoEstatico(request) {
+    const armazenado = await caches.match(request, { ignoreSearch: true });
+
+    if (armazenado) {
+        return armazenado;
+    }
+
+    const response = await fetch(request);
+
+    if (response.ok && response.type === "basic") {
+        const cache = await caches.open(STATIC_CACHE);
+        await cache.put(request, response.clone());
+    }
+
+    return response;
 }
 
 async function responderRecursoAtualizavel(request) {
     try {
-        const response = await fetch(request, { cache: "no-store" });
+        const response = await fetch(request);
 
         if (response.ok && response.type === "basic") {
             const cache = await caches.open(STATIC_CACHE);
@@ -196,28 +212,7 @@ async function responderRecursoAtualizavel(request) {
 
         return response;
     } catch (_erro) {
-        const cache = await caches.open(STATIC_CACHE);
-        return cache.match(request);
-    }
-}
-
-async function responderRecursoEstatico(request) {
-    const cache = await caches.open(STATIC_CACHE);
-    const emCache = await cache.match(request);
-
-    if (emCache) {
-        return emCache;
-    }
-
-    try {
-        const response = await fetch(request);
-
-        if (response.ok && response.type === "basic") {
-            await cache.put(request, response.clone());
-        }
-
-        return response;
-    } catch (_erro) {
-        return Response.error();
+        return (await caches.match(request, { ignoreSearch: true }))
+            || Response.error();
     }
 }
