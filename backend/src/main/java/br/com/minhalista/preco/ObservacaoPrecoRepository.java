@@ -37,6 +37,17 @@ public interface ObservacaoPrecoRepository
         @Param("compraChave") String compraChave
     );
 
+    @Modifying
+    @Query("""
+        delete from ObservacaoPreco o
+         where o.usuario.id = :usuarioId
+           and o.origem = :origem
+        """)
+    int deleteByUsuarioIdAndOrigem(
+        @Param("usuarioId") UUID usuarioId,
+        @Param("origem") OrigemPreco origem
+    );
+
     boolean existsByOrigemAndCompraChave(
         OrigemPreco origem,
         String compraChave
