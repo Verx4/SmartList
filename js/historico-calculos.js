@@ -21,8 +21,13 @@ export const dataDaCompra = compra => new Date(
 );
 
 export function quantidadeCompradaDoItem(item = {}) {
-    if (Object.prototype.hasOwnProperty.call(item, "quantidade")) {
-        return numeroNaoNegativo(item.quantidade);
+    const quantidadeInformada = numeroNaoNegativo(item.quantidade);
+
+    // Itens vendidos por peso podem chegar do backend com quantidade = 0
+    // e peso > 0. Eles continuam sendo 1 item comprado; o peso é mostrado
+    // separadamente na descrição (ex.: 1 kg × R$ 6,99/kg).
+    if (quantidadeInformada > 0) {
+        return quantidadeInformada;
     }
 
     const quantidadeNosPrecos = Array.isArray(item.precos)
@@ -33,7 +38,13 @@ export function quantidadeCompradaDoItem(item = {}) {
         : 0;
 
     if (quantidadeNosPrecos > 0) return quantidadeNosPrecos;
-    return numeroNaoNegativo(item.peso) > 0 ? 0 : 1;
+    if (numeroNaoNegativo(item.peso) > 0) return 1;
+
+    if (Object.prototype.hasOwnProperty.call(item, "quantidade")) {
+        return quantidadeInformada;
+    }
+
+    return 1;
 }
 
 export const totalItensComprados = compras => (
