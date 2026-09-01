@@ -54,10 +54,9 @@
             <a href="./minha-economia.html">Minha Economia</a>
         </section>
 
-        <details class="inicio-dados">
-            <summary>Seus dados e armazenamento</summary>
-            <div><p>Apague a lista, o histórico, os gastos, os mercados e os itens salvos neste aparelho.</p><button id="btnLimparDados" type="button">Limpar todos os dados</button></div>
-        </details>
+        <!-- A ação de limpeza foi movida para o Menu. Este elemento invisível
+             mantém compatibilidade com o código legado da tela inicial. -->
+        <button id="btnLimparDados" type="button" hidden aria-hidden="true">Limpar todos os dados</button>
     </main>
 
     <div id="confirmarLimpeza" class="limpeza-overlay" hidden>
