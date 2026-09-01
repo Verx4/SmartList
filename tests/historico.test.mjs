@@ -51,6 +51,38 @@ test("categorias somam quantidades reais, não a quantidade de linhas", () => {
     assert.equal(categorias.get("Outros").quantidade, 19);
 });
 
+test("itens vendidos por peso contam como 1 item quando a quantidade vem zerada", () => {
+    const compraPorPeso = {
+        data: "2026-08-31T12:00:00.000Z",
+        total: 14.98,
+        itens: [
+            {
+                nome: "Banana prata",
+                categoria: "🍎 Hortifruti",
+                quantidade: 0,
+                peso: 1,
+                precoUnitario: 6.99,
+                subtotal: 6.99
+            },
+            {
+                nome: "Banana prata",
+                categoria: "🍎 Hortifruti",
+                quantidade: 0,
+                peso: 1,
+                precoUnitario: 7.99,
+                subtotal: 7.99
+            }
+        ]
+    };
+
+    const categorias = agruparComprasPorCategoria([compraPorPeso]);
+    const hortifruti = categorias.get("🍎 Hortifruti");
+
+    assert.equal(hortifruti.itens.length, 2);
+    assert.equal(hortifruti.quantidade, 2);
+    assert.equal(totalItensComprados([compraPorPeso]), 2);
+});
+
 test("seletor por dia separa as compras e a opção todos mantém o conjunto completo", () => {
     const diaDois = { ...compra, data: "2026-09-02T12:00:00.000Z" };
     const diaVinteESete = { ...compra, data: "2026-08-27T12:00:00.000Z" };
