@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v70`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v70`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v71`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v71`;
 
 const PRECACHE_URLS = [
     "./",
@@ -52,6 +52,7 @@ const PRECACHE_URLS = [
     "./js/acesso-premium.js",
     "./js/comparar-embalagens.js",
     "./js/inicio.js",
+    "./js/menu.js",
     "./js/historico-page.js",
     "./js/historico-calculos.js",
     "./js/minha-economia.js",
@@ -178,31 +179,15 @@ async function responderNavegacao(request) {
 
         return response;
     } catch (_erro) {
-        return (await caches.match(request, { ignoreSearch: true }))
-            || (await caches.match("./offline.html"));
+        const cache = await caches.open(PAGE_CACHE);
+        return (await cache.match(request))
+            || cache.match("./offline.html");
     }
-}
-
-async function responderRecursoEstatico(request) {
-    const armazenado = await caches.match(request, { ignoreSearch: true });
-
-    if (armazenado) {
-        return armazenado;
-    }
-
-    const response = await fetch(request);
-
-    if (response.ok && response.type === "basic") {
-        const cache = await caches.open(STATIC_CACHE);
-        await cache.put(request, response.clone());
-    }
-
-    return response;
 }
 
 async function responderRecursoAtualizavel(request) {
     try {
-        const response = await fetch(request);
+        const response = await fetch(request, { cache: "no-store" });
 
         if (response.ok && response.type === "basic") {
             const cache = await caches.open(STATIC_CACHE);
@@ -211,7 +196,28 @@ async function responderRecursoAtualizavel(request) {
 
         return response;
     } catch (_erro) {
-        return (await caches.match(request, { ignoreSearch: true }))
-            || Response.error();
+        const cache = await caches.open(STATIC_CACHE);
+        return cache.match(request);
+    }
+}
+
+async function responderRecursoEstatico(request) {
+    const cache = await caches.open(STATIC_CACHE);
+    const emCache = await cache.match(request);
+
+    if (emCache) {
+        return emCache;
+    }
+
+    try {
+        const response = await fetch(request);
+
+        if (response.ok && response.type === "basic") {
+            await cache.put(request, response.clone());
+        }
+
+        return response;
+    } catch (_erro) {
+        return Response.error();
     }
 }
