@@ -62,6 +62,9 @@ const PRECACHE_URLS = [
     "./js/listas-salvas-ui.js",
     "./js/admin-return.js",
     "./assets/logo/smart-list-app.png",
+
+
+// Atualiza os arquivos da tela inicial com os cards Premium.
     "./assets/logo/logo.png",
     "./assets/icons/icon-192.png",
     "./assets/icons/icon-512.png",
