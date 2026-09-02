@@ -4,7 +4,7 @@ const AMBIENTE_LOCAL = ["localhost", "127.0.0.1"].includes(
 
 const URL_PADRAO_API = AMBIENTE_LOCAL
     ? "http://localhost:8080/api"
-    : "https://smart-list-backend-j4bp.onrender.com/api";
+    : "https://smart-list-backend-production.up.railway.app/api";
 
 export const API_BASE_URL = (
     AMBIENTE_LOCAL
