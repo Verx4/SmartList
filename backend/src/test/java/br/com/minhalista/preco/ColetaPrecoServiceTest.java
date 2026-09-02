@@ -20,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import br.com.minhalista.lista.ListaCompraRepository;
 import br.com.minhalista.usuario.Usuario;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +32,12 @@ class ColetaPrecoServiceTest {
     @Mock
     private ObservacaoPrecoRepository observacaoRepository;
 
+    @Mock
+    private ListaCompraRepository listaCompraRepository;
+
     @Test
     void deveColetarCompraUmaUnicaVezComUsuarioResponsavel() {
-        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
+        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository, listaCompraRepository);
         Usuario usuario = new Usuario();
         usuario.setNome("Matheus");
         usuario.setCidade("Recife");
@@ -73,7 +77,7 @@ class ColetaPrecoServiceTest {
 
     @Test
     void deveRemoverProdutoDoCatalogoQuandoNaoHaColetas() {
-        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
+        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository, listaCompraRepository);
         ProdutoPreco produto = new ProdutoPreco();
         UUID id = UUID.randomUUID();
         definirId(produto, id);
@@ -90,7 +94,7 @@ class ColetaPrecoServiceTest {
 
     @Test
     void naoDeveRemoverProdutoDoCatalogoQuandoExisteHistorico() {
-        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
+        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository, listaCompraRepository);
         ProdutoPreco produto = new ProdutoPreco();
         UUID id = UUID.randomUUID();
         definirId(produto, id);
@@ -107,7 +111,7 @@ class ColetaPrecoServiceTest {
 
     @Test
     void deveUsarCategoriaDeterministicaEFallbackExistente() {
-        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository);
+        ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository, listaCompraRepository);
         assertEquals("🧼 Limpeza", service.resolverCategoria("Detergente neutro", null));
         assertEquals("📦 Outros", service.resolverCategoria("Item desconhecido", null));
         assertEquals("🥛 Laticínios", service.resolverCategoria("Qualquer nome", "🥛 Laticínios"));
