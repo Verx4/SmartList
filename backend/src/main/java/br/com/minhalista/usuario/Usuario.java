@@ -92,6 +92,9 @@ public class Usuario implements UserDetails {
     @Column(name = "ultimo_acesso_em")
     private Instant ultimoAcessoEm;
 
+    @Column(name = "dados_compras_limpos_em")
+    private Instant dadosComprasLimposEm;
+
     @PrePersist
     void antesDeSalvar() {
         if (criadoEm == null) {
@@ -303,5 +306,13 @@ public class Usuario implements UserDetails {
 
     public void setUltimoAcessoEm(Instant ultimoAcessoEm) {
         this.ultimoAcessoEm = ultimoAcessoEm;
+    }
+
+    public Instant getDadosComprasLimposEm() {
+        return dadosComprasLimposEm;
+    }
+
+    public void setDadosComprasLimposEm(Instant dadosComprasLimposEm) {
+        this.dadosComprasLimposEm = dadosComprasLimposEm;
     }
 }
