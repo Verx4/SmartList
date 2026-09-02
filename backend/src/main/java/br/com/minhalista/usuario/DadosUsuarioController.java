@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.minhalista.lista.ListaCompra;
 import br.com.minhalista.lista.ListaCompraRepository;
-import br.com.minhalista.preco.ObservacaoPrecoRepository;
-import br.com.minhalista.preco.OrigemPreco;
 
 @RestController
 @RequestMapping("/api/usuario")
@@ -21,16 +19,13 @@ public class DadosUsuarioController {
 
     private final UsuarioService usuarioService;
     private final ListaCompraRepository listaRepository;
-    private final ObservacaoPrecoRepository observacaoRepository;
 
     public DadosUsuarioController(
         UsuarioService usuarioService,
-        ListaCompraRepository listaRepository,
-        ObservacaoPrecoRepository observacaoRepository
+        ListaCompraRepository listaRepository
     ) {
         this.usuarioService = usuarioService;
         this.listaRepository = listaRepository;
-        this.observacaoRepository = observacaoRepository;
     }
 
     @DeleteMapping("/dados")
@@ -39,12 +34,9 @@ public class DadosUsuarioController {
     public void limparDadosDeCompras() {
         Usuario usuario = usuarioService.obterAutenticado();
         UUID usuarioId = usuario.getId();
-
-        // Remove o histórico de preços/coletas criado pelas compras do usuário.
-        observacaoRepository.deleteByUsuarioIdAndOrigem(
-            usuarioId,
-            OrigemPreco.COMPRA_USUARIO
-        );
+        // As observações históricas de preços são preservadas.
+        // Elas alimentam a Coleta de Preços do painel administrativo e são
+        // independentes da lista e do histórico pessoal exibidos ao usuário.
 
         // Remove definitivamente listas abertas e finalizadas do próprio usuário.
         // O relacionamento ListaCompra -> ItemLista usa cascade + orphanRemoval.
