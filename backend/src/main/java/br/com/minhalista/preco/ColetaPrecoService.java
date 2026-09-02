@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import br.com.minhalista.lista.ItemLista;
 import br.com.minhalista.lista.ListaCompra;
+import br.com.minhalista.lista.ListaCompraRepository;
+import br.com.minhalista.lista.StatusLista;
 import br.com.minhalista.oferta.NormalizadorProduto;
 import br.com.minhalista.usuario.Usuario;
 import jakarta.validation.Valid;
@@ -61,10 +63,16 @@ public class ColetaPrecoService {
     );
     private final ProdutoPrecoRepository produtoRepository;
     private final ObservacaoPrecoRepository observacaoRepository;
+    private final ListaCompraRepository listaCompraRepository;
 
-    public ColetaPrecoService(ProdutoPrecoRepository produtoRepository, ObservacaoPrecoRepository observacaoRepository) {
+    public ColetaPrecoService(
+        ProdutoPrecoRepository produtoRepository,
+        ObservacaoPrecoRepository observacaoRepository,
+        ListaCompraRepository listaCompraRepository
+    ) {
         this.produtoRepository = produtoRepository;
         this.observacaoRepository = observacaoRepository;
+        this.listaCompraRepository = listaCompraRepository;
     }
 
     @Transactional
@@ -117,11 +125,21 @@ public class ColetaPrecoService {
                 usuario.getId(),
                 OrigemPreco.COMPRA_USUARIO
             );
+        Set<String> comprasOcultas = Set.copyOf(
+            listaCompraRepository
+                .findByUsuarioIdAndStatusAndOcultaParaUsuarioTrue(
+                    usuario.getId(),
+                    StatusLista.FINALIZADA
+                )
+                .stream()
+                .map(lista -> lista.getId().toString())
+                .toList()
+        );
         Map<String, List<ObservacaoPreco>> porCompra = new LinkedHashMap<>();
 
         for (ObservacaoPreco observacao : observacoes) {
             String compraId = observacao.getCompraChave();
-            if (compraId == null || compraId.isBlank()) continue;
+            if (compraId == null || compraId.isBlank() || comprasOcultas.contains(compraId)) continue;
             porCompra.computeIfAbsent(compraId, chave -> new ArrayList<>()).add(observacao);
         }
 
