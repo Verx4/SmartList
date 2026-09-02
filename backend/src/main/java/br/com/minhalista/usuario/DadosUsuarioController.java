@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.minhalista.lista.ListaCompra;
 import br.com.minhalista.lista.ListaCompraRepository;
+import br.com.minhalista.lista.StatusLista;
 
 @RestController
 @RequestMapping("/api/usuario")
@@ -34,15 +35,23 @@ public class DadosUsuarioController {
     public void limparDadosDeCompras() {
         Usuario usuario = usuarioService.obterAutenticado();
         UUID usuarioId = usuario.getId();
-        // As observações históricas de preços são preservadas.
-        // Elas alimentam a Coleta de Preços do painel administrativo e são
-        // independentes da lista e do histórico pessoal exibidos ao usuário.
 
-        // Remove definitivamente listas abertas e finalizadas do próprio usuário.
-        // O relacionamento ListaCompra -> ItemLista usa cascade + orphanRemoval.
         List<ListaCompra> listas = listaRepository.findAllByUsuarioId(usuarioId);
-        if (!listas.isEmpty()) {
-            listaRepository.deleteAll(listas);
+
+        // Compras finalizadas deixam de aparecer somente para o usuário.
+        // Elas permanecem no banco para alimentar a Coleta de Preços do ADM.
+        listas.stream()
+            .filter(lista -> lista.getStatus() == StatusLista.FINALIZADA)
+            .forEach(lista -> lista.setOcultaParaUsuario(true));
+
+        // Listas abertas ainda podem ser removidas definitivamente, pois não
+        // representam compras concluídas nem dados históricos administrativos.
+        List<ListaCompra> abertas = listas.stream()
+            .filter(lista -> lista.getStatus() == StatusLista.ABERTA)
+            .toList();
+
+        if (!abertas.isEmpty()) {
+            listaRepository.deleteAll(abertas);
         }
     }
 }
