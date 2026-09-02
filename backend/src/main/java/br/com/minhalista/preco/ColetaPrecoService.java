@@ -125,6 +125,18 @@ public class ColetaPrecoService {
                 usuario.getId(),
                 OrigemPreco.COMPRA_USUARIO
             );
+
+        // A coleta administrativa permanece intacta. Para o próprio usuário,
+        // somente compras posteriores à última limpeza podem ser exibidas.
+        Instant dadosLimposEm = usuario.getDadosComprasLimposEm();
+        if (dadosLimposEm != null) {
+            observacoes = observacoes.stream()
+                .filter(observacao ->
+                    observacao.getRealizadaEm() != null
+                    && observacao.getRealizadaEm().isAfter(dadosLimposEm)
+                )
+                .toList();
+        }
         Set<String> comprasOcultas = Set.copyOf(
             listaCompraRepository
                 .findByUsuarioIdAndStatusAndOcultaParaUsuarioTrue(
