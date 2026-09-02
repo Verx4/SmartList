@@ -604,3 +604,20 @@
     .inicio-cupons-grid { gap: 5px; }
     .inicio-cupons-grid div { padding: 8px 2px; font-size: 11px; }
 }
+
+/* Navegação inferior fixa e área segura da tela de Início */
+body.app-mobile .inicio-shell {
+    padding-bottom: calc(var(--nav-h, 72px) + env(safe-area-inset-bottom) + 40px);
+}
+
+body.app-mobile .app-bottom-nav {
+    position: fixed !important;
+    z-index: 1900;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.inicio-planos[hidden] {
+    display: none !important;
+}
