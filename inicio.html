@@ -1,64 +1,55 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#07182d">
-    <title>Início | Smart List</title>
-    <link rel="manifest" href="./manifest.webmanifest">
-    <link rel="stylesheet" href="./css/global.css?v=50">
-    <link rel="stylesheet" href="./css/mobile-app.css">
-    <link rel="stylesheet" href="./css/inicio.css?v=1">
-    <link rel="stylesheet" href="./css/temas.css">
-</head>
-<body>
-    <main class="app-shell inicio-shell">
-        <header class="app-topbar inicio-topbar">
-            <a class="app-brand inicio-marca" href="./inicio.html">
-                <img src="./assets/logo/smart-list-app.png" alt="" aria-hidden="true">
-                <span><span class="smart">Smart</span> <span class="list">List</span></span>
-            </a>
-            <div class="inicio-topbar-acoes">
-                <button id="btnTemaInicio" type="button" aria-label="Abrir opções de tema" title="Temas">🎨</button>
+<!DOCTYPE html><html lang="pt-BR"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <meta name="theme-color" content="#07182d">    <title>Início | Smart List</title>    <link rel="manifest" href="./manifest.webmanifest">    <link rel="stylesheet" href="./css/global.css?v=50">    <link rel="stylesheet" href="./css/mobile-app.css">    <link rel="stylesheet" href="./css/inicio.css?v=2">    <link rel="stylesheet" href="./css/temas.css"></head><body>    <main class="app-shell inicio-shell">        <header class="app-topbar inicio-topbar">            <a class="app-brand inicio-marca" href="./inicio.html">                <img src="./assets/logo/smart-list-app.png" alt="" aria-hidden="true">                <span><span class="smart">Smart</span> <span class="list">List</span></span>            </a>            <div class="inicio-topbar-acoes">                <button id="btnTemaInicio" type="button" aria-label="Abrir opções de tema" title="Temas">🎨</button>            </div>        </header>        <section class="inicio-saudacao">            <div><small>Resumo de hoje</small><h1 id="saudacaoInicio">Olá! 👋</h1></div>            <a class="inicio-lista-atalho" href="./dashboard.html">Abrir lista <span>→</span></a>        </section>        <section class="inicio-destaque" aria-label="Resumo mensal" data-premium-content>            <div class="inicio-destaque-topo"><span>Gasto neste mês</span><small id="mesReferencia"></small></div>            <strong id="gastoMes">R$ 0,00</strong>            <div class="inicio-destaque-rodape"><span id="variacaoMes" class="inicio-variacao neutra">Sem compras registradas</span><span id="mediaCompra">Média R$ 0,00</span></div>        </section>        <section class="inicio-metricas" aria-label="Indicadores das compras" data-premium-content>            <article><span>Compras no mês</span><strong id="comprasMes">0</strong></article>            <article><span>Economia no mês</span><strong id="economiaMes">R$ 0,00</strong></article>            <article><span>Itens na lista</span><strong id="itensLista">0</strong></article>        </section>        <section class="inicio-painel" data-premium-content>            <header><div><small>Este mês</small><h2>Gastos por categoria</h2></div><a href="./historico.html">Ver detalhes</a></header>            <div id="graficoGastos" class="inicio-grafico" aria-label="Gráfico de gastos por categoria"></div>            <div class="inicio-insights">                <div><span>Categoria principal</span><strong id="categoriaPrincipal">Sem dados</strong></div>                <div><span>Última compra</span><strong id="ultimaCompraInicio">—</strong></div>            </div>        </section>
+
+        <section class="inicio-planos" aria-labelledby="tituloPlanosInicio">
+            <header class="inicio-planos-cabecalho">
+                <div>
+                    <small>👑 Assinatura Premium</small>
+                    <h2 id="tituloPlanosInicio">Planos Premium</h2>
+                </div>
+                <p>Escolha o plano ideal para você e aproveite todos os recursos.</p>
+            </header>
+
+            <div class="inicio-planos-grid">
+                <article class="inicio-plano-card inicio-plano-mensal">
+                    <h3>Mensal</h3>
+                    <p>Acesso completo</p>
+                    <del>R$ 9,97</del>
+                    <strong>R$ 9,97</strong>
+                    <span>/mês</span>
+                    <a href="https://pay.kiwify.com.br/CsdUxeJ" rel="noopener">Assinar</a>
+                </article>
+
+                <article class="inicio-plano-card inicio-plano-trimestral">
+                    <em>MAIS VANTAJOSO</em>
+                    <h3>Trimestral</h3>
+                    <p>Acesso completo</p>
+                    <del>R$ 29,91</del>
+                    <strong>R$ 26,91</strong>
+                    <span>/3 meses</span>
+                    <a href="https://pay.kiwify.com.br/sd2O7Hi" rel="noopener">Assinar</a>
+                </article>
+
+                <article class="inicio-plano-card inicio-plano-anual">
+                    <em>MELHOR DESCONTO</em>
+                    <h3>Anual</h3>
+                    <p>Acesso completo</p>
+                    <del>R$ 119,64</del>
+                    <strong>R$ 95,64</strong>
+                    <span>/ano</span>
+                    <a href="https://pay.kiwify.com.br/FOP3RIc" rel="noopener">Assinar</a>
+                </article>
             </div>
-        </header>
 
-        <section class="inicio-saudacao">
-            <div><small>Resumo de hoje</small><h1 id="saudacaoInicio">Olá! 👋</h1></div>
-            <a class="inicio-lista-atalho" href="./dashboard.html">Abrir lista <span>→</span></a>
-        </section>
-
-        <section class="inicio-destaque" aria-label="Resumo mensal" data-premium-content>
-            <div class="inicio-destaque-topo"><span>Gasto neste mês</span><small id="mesReferencia"></small></div>
-            <strong id="gastoMes">R$ 0,00</strong>
-            <div class="inicio-destaque-rodape"><span id="variacaoMes" class="inicio-variacao neutra">Sem compras registradas</span><span id="mediaCompra">Média R$ 0,00</span></div>
-        </section>
-
-        <section class="inicio-metricas" aria-label="Indicadores das compras" data-premium-content>
-            <article><span>Compras no mês</span><strong id="comprasMes">0</strong></article>
-            <article><span>Economia no mês</span><strong id="economiaMes">R$ 0,00</strong></article>
-            <article><span>Itens na lista</span><strong id="itensLista">0</strong></article>
-        </section>
-
-        <section class="inicio-painel" data-premium-content>
-            <header><div><small>Este mês</small><h2>Gastos por categoria</h2></div><a href="./historico.html">Ver detalhes</a></header>
-            <div id="graficoGastos" class="inicio-grafico" aria-label="Gráfico de gastos por categoria"></div>
-            <div class="inicio-insights">
-                <div><span>Categoria principal</span><strong id="categoriaPrincipal">Sem dados</strong></div>
-                <div><span>Última compra</span><strong id="ultimaCompraInicio">—</strong></div>
-            </div>
-        </section>
-
-        <section class="inicio-acoes" aria-label="Ações rápidas">
-            <a href="./dashboard.html">＋ Adicionar itens</a>
-            <a href="./minha-economia.html">Minha Economia</a>
-        </section>
-    </main>
-
-    <script src="./js/tema.js?v=11"></script>
-    <script src="./js/acesso-premium.js?v=4"></script>
-    <script type="module" src="./js/inicio.js?v=3"></script>
-    <script src="./js/admin-return.js"></script>
-    <script src="./js/mobile-nav.js?v=4"></script>
-</body>
-</html>
+            <aside class="inicio-cupons" aria-label="Cupons de primeira assinatura">
+                <div class="inicio-cupons-titulo">
+                    <span aria-hidden="true">🎟️</span>
+                    <div><strong>Cupons de primeira assinatura</strong><p>Use um cupom e economize ainda mais no seu plano:</p></div>
+                </div>
+                <div class="inicio-cupons-grid">
+                    <div><b>SMART5</b><span>→ 5% OFF</span><small>no plano Mensal</small></div>
+                    <div><b>SMART10</b><span>→ 10% OFF</span><small>no plano Trimestral</small></div>
+                    <div><b>SMART20</b><span>→ 20% OFF</span><small>no plano Anual</small></div>
+                </div>
+                <p class="inicio-cupons-aviso">ⓘ Válido somente na primeira assinatura.</p>
+            </aside>
+        </section>    </main>    <script src="./js/tema.js?v=11"></script>    <script src="./js/acesso-premium.js?v=4"></script>    <script type="module" src="./js/inicio.js?v=3"></script>    <script src="./js/admin-return.js"></script>
