@@ -1,5 +1,6 @@
 package br.com.minhalista.usuario;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,10 @@ public class DadosUsuarioController {
     public void limparDadosDeCompras() {
         Usuario usuario = usuarioService.obterAutenticado();
         UUID usuarioId = usuario.getId();
+
+        // Este marco impede que qualquer cópia histórica anterior volte a ser
+        // exibida no Início ou no Histórico do próprio usuário.
+        usuario.setDadosComprasLimposEm(Instant.now());
 
         List<ListaCompra> listas = listaRepository.findAllByUsuarioId(usuarioId);
 
