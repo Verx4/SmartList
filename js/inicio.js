@@ -126,29 +126,7 @@ carregarResumoInicio().catch(erro => {
     console.warn("Não foi possível carregar o resumo da tela inicial.", erro);
 });
 
-const CHAVES_DADOS = [
-    "produtos", "historicoCompras", "ultimaCompra", "economiaAcumulada",
-    "favoritos", "preferencias", "orcamentoCompra", "mercadoAtual",
-    "mercadosFrequentes", "mercadosRecentes", "sugestoesLocais",
-    "listasSalvas", "listaAtualId"
-];
-const overlay = document.getElementById("confirmarLimpeza");
 document.getElementById("btnTemaInicio").addEventListener("click", evento => {
     evento.stopPropagation();
     document.getElementById("botaoTemaGlobal")?.click();
 });
-document.getElementById("btnLimparDados").addEventListener("click", () => {
-    overlay.hidden = false;
-    document.body.style.overflow = "hidden";
-});
-overlay.querySelector(".limpeza-cancelar").addEventListener("click", fecharConfirmacao);
-overlay.addEventListener("click", evento => { if (evento.target === overlay) fecharConfirmacao(); });
-overlay.querySelector(".limpeza-confirmar").addEventListener("click", () => {
-    CHAVES_DADOS.forEach(chave => localStorage.removeItem(chave));
-    window.location.reload();
-});
-
-function fecharConfirmacao() {
-    overlay.hidden = true;
-    document.body.style.overflow = "";
-}
