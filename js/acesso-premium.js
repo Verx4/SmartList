@@ -217,7 +217,21 @@
             });
     }
 
+
+    function atualizarPlanosInicio() {
+        const planos = document.querySelector("[data-planos-assinatura]");
+
+        if (!planos) {
+            return;
+        }
+
+        const ocultar = possuiPremium();
+        planos.hidden = ocultar;
+        planos.setAttribute("aria-hidden", String(ocultar));
+    }
+
     function aplicar() {
+        atualizarPlanosInicio();
         sinalizarLinksPagos();
         bloquearConteudoPagoInicio();
         bloquearPaginaPaga();
@@ -237,5 +251,6 @@
         aplicar();
     }
 
+    window.addEventListener("usuarioatualizado", aplicar);
     sincronizarUsuario();
 })();
