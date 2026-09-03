@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.util.HtmlUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import jakarta.mail.internet.MimeMessage;
 
