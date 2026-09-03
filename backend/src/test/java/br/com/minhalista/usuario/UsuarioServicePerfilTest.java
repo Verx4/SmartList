@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.minhalista.assinatura.AssinaturaValidadeService;
 
@@ -27,6 +28,9 @@ class UsuarioServicePerfilTest {
 
     @Mock
     private AssinaturaValidadeService assinaturaValidadeService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private UsuarioService service;
@@ -78,4 +82,25 @@ class UsuarioServicePerfilTest {
         assertEquals("***.***.***-25", resposta.cpfMascarado());
         verify(repository).saveAndFlush(usuario);
     }
+
+    @Test
+    void deveAlterarSenhaQuandoSenhaAtualConfere() {
+        Usuario usuario = new Usuario();
+        usuario.setEmail("cliente@example.com");
+        usuario.setSenhaHash("hash-atual");
+
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken("cliente@example.com", null)
+        );
+        when(repository.findByEmailIgnoreCase("cliente@example.com"))
+            .thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches("senha-atual", "hash-atual")).thenReturn(true);
+        when(passwordEncoder.encode("senha-nova")).thenReturn("hash-novo");
+
+        service.alterarSenha(new AlterarSenhaRequest("senha-atual", "senha-nova"));
+
+        assertEquals("hash-novo", usuario.getSenhaHash());
+        verify(repository).saveAndFlush(usuario);
+    }
+
 }

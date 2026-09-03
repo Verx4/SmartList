@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#07182d">
+    <meta name="application-name" content="Smart List">
+    <title>Alterar senha | Smart List</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/global.css?v=50">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/temas.css">
+    <link rel="stylesheet" href="./css/configuracoes.css?v=1">
+    <script type="module" src="./js/pwa.js"></script>
+</head>
+<body class="sem-controle-tema configuracoes-page">
+    <main class="configuracoes-shell">
+        <header class="configuracoes-topo">
+            <a class="configuracoes-voltar" href="./configuracoes.html" aria-label="Voltar às Configurações">←</a>
+            <a class="configuracoes-marca" href="./inicio.html" aria-label="Smart List - Ir para o início">
+                <img src="./assets/logo/smart-list-app.png" alt="" aria-hidden="true" width="38" height="38">
+                <span><b>Smart</b> List</span>
+            </a>
+            <span aria-hidden="true"></span>
+        </header>
+
+        <section class="configuracoes-cabecalho">
+            <small>SEGURANÇA</small>
+            <h1>Alterar senha</h1>
+            <p>Confirme sua senha atual e escolha uma nova senha para a conta.</p>
+        </section>
+
+        <section class="alterar-senha-card">
+            <form id="formAlterarSenha" class="alterar-senha-form" novalidate>
+                <label for="senhaAtual">
+                    <span>Senha atual</span>
+                    <input id="senhaAtual" name="senhaAtual" type="password" autocomplete="current-password" minlength="6" maxlength="72" required>
+                </label>
+
+                <label for="novaSenha">
+                    <span>Nova senha</span>
+                    <input id="novaSenha" name="novaSenha" type="password" autocomplete="new-password" minlength="6" maxlength="72" aria-describedby="regraNovaSenha" required>
+                    <small id="regraNovaSenha">Use pelo menos 6 caracteres.</small>
+                </label>
+
+                <label for="confirmarNovaSenha">
+                    <span>Confirmar nova senha</span>
+                    <input id="confirmarNovaSenha" name="confirmarNovaSenha" type="password" autocomplete="new-password" minlength="6" maxlength="72" required>
+                </label>
+
+                <button id="btnAlterarSenha" type="submit">Salvar nova senha</button>
+                <div id="mensagemAlterarSenha" class="configuracoes-mensagem" aria-live="polite" hidden></div>
+            </form>
+        </section>
+
+        <p class="configuracoes-recuperar">Não lembra a senha atual? <a href="./recuperar-senha.html?origem=configuracoes">Recuperar senha</a></p>
+    </main>
+
+    <script type="module" src="./js/alterar-senha.js?v=1"></script>
+    <script src="./js/tema.js?v=11"></script>
+    <script src="./js/mobile-nav.js?v=6"></script>
+</body>
+</html>

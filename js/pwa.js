@@ -26,7 +26,8 @@ const ROTAS_MENU_PRINCIPAL = Object.freeze([
 
 const PAGINAS_MENU_APP = new Set([
     "perfil.html", "assinatura.html", "sugestoes.html", "modo-de-usar.html", "suporte.html",
-    "termos.html", "privacidade.html", "minha-economia.html", "configuracoes.html"
+    "termos.html", "privacidade.html", "minha-economia.html", "configuracoes.html",
+    "alterar-senha.html"
 ]);
 
 let installEvent = null;

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#07182d">
+    <meta name="application-name" content="Smart List">
+    <title>Configurações | Smart List</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/global.css?v=50">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/temas.css">
+    <link rel="stylesheet" href="./css/configuracoes.css?v=1">
+    <script type="module" src="./js/pwa.js"></script>
+</head>
+<body class="sem-controle-tema configuracoes-page">
+    <main class="configuracoes-shell">
+        <header class="configuracoes-topo">
+            <a class="configuracoes-voltar" href="./menu.html" aria-label="Voltar ao Menu">←</a>
+            <a class="configuracoes-marca" href="./inicio.html" aria-label="Smart List - Ir para o início">
+                <img src="./assets/logo/smart-list-app.png" alt="" aria-hidden="true" width="38" height="38">
+                <span><b>Smart</b> List</span>
+            </a>
+            <span aria-hidden="true"></span>
+        </header>
+
+        <section class="configuracoes-cabecalho">
+            <small>CONTA E SEGURANÇA</small>
+            <h1>Configurações</h1>
+            <p>Escolha o que deseja fazer com a senha da sua conta.</p>
+        </section>
+
+        <section class="configuracoes-opcoes" aria-label="Opções de senha">
+            <a href="./alterar-senha.html" class="configuracao-opcao">
+                <span class="configuracao-icone" aria-hidden="true">🔑</span>
+                <span class="configuracao-texto">
+                    <strong>Alterar senha</strong>
+                    <small>Use sua senha atual para criar uma nova senha.</small>
+                </span>
+                <b aria-hidden="true">›</b>
+            </a>
+
+            <a href="./recuperar-senha.html?origem=configuracoes" class="configuracao-opcao">
+                <span class="configuracao-icone" aria-hidden="true">✉️</span>
+                <span class="configuracao-texto">
+                    <strong>Recuperar senha</strong>
+                    <small>Receba instruções no e-mail cadastrado.</small>
+                </span>
+                <b aria-hidden="true">›</b>
+            </a>
+        </section>
+
+        <aside class="configuracoes-aviso">
+            <span aria-hidden="true">🛡️</span>
+            <p>Nunca compartilhe sua senha. O Smart List não solicita sua senha por mensagem ou ligação.</p>
+        </aside>
+    </main>
+
+    <script src="./js/tema.js?v=11"></script>
+    <script src="./js/mobile-nav.js?v=6"></script>
+</body>
+</html>
