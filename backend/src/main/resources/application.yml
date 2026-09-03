@@ -21,6 +21,18 @@
     locations: classpath:db/migration/{vendor}
   jackson:
     time-zone: America/Fortaleza
+  mail:
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    port: ${EMAIL_PORT:587}
+    username: "${EMAIL_USER:}"
+    password: "${EMAIL_PASSWORD:}"
+    test-connection: false
+    properties:
+      "[mail.smtp.auth]": ${EMAIL_SMTP_AUTH:true}
+      "[mail.smtp.starttls.enable]": ${EMAIL_STARTTLS:true}
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 10000
+      "[mail.smtp.writetimeout]": 10000
   servlet:
     multipart:
       max-file-size: 10MB
@@ -48,6 +60,18 @@ app:
   frontend-url: ${FRONTEND_URL:http://127.0.0.1:5500}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:${FRONTEND_URL:http://127.0.0.1:5500}}
+  password-reset:
+    email-enabled: ${MAIL_ENABLED:false}
+    email-from: "${EMAIL_FROM:${EMAIL_USER:}}"
+    pepper: "${PASSWORD_RESET_PEPPER:${JWT_SECRET}}"
+    codigo-expiracao-minutos: ${PASSWORD_RESET_CODE_EXPIRATION_MINUTES:10}
+    max-tentativas-codigo: ${PASSWORD_RESET_MAX_ATTEMPTS:5}
+    max-solicitacoes-por-email: ${PASSWORD_RESET_MAX_EMAIL_REQUESTS:3}
+    max-solicitacoes-por-ip: ${PASSWORD_RESET_MAX_IP_REQUESTS:10}
+    janela-solicitacoes-minutos: ${PASSWORD_RESET_REQUEST_WINDOW_MINUTES:30}
+    intervalo-reenvio-segundos: ${PASSWORD_RESET_RESEND_SECONDS:60}
+    max-falhas-alteracao-senha: ${PASSWORD_CHANGE_MAX_FAILURES:5}
+    janela-alteracao-senha-minutos: ${PASSWORD_CHANGE_WINDOW_MINUTES:15}
   admin:
     nome: ${ADMIN_NOME:Administrador}
     email: ${ADMIN_EMAIL:}

@@ -3,6 +3,7 @@ import { api, ApiError } from "./api.js";
 const formulario = document.getElementById("formAlterarSenha");
 const botao = document.getElementById("btnAlterarSenha");
 const mensagem = document.getElementById("mensagemAlterarSenha");
+const sucesso = document.getElementById("sucessoAlteracaoSenha");
 
 function possuiSessao() {
     return Boolean(
@@ -54,7 +55,8 @@ formulario?.addEventListener("submit", async evento => {
     try {
         await api.put("/usuarios/me/senha", { senhaAtual, novaSenha });
         formulario.reset();
-        mostrarMensagem("Senha alterada com sucesso.", "sucesso");
+        formulario.hidden = true;
+        sucesso.hidden = false;
     } catch (erro) {
         const texto = erro instanceof ApiError
             ? erro.message
@@ -66,6 +68,6 @@ formulario?.addEventListener("submit", async evento => {
         }
     } finally {
         botao.disabled = false;
-        botao.textContent = "Salvar nova senha";
+        botao.textContent = "ALTERAR SENHA";
     }
 });

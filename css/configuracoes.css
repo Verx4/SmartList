@@ -168,6 +168,36 @@ body.configuracoes-page {
 .configuracoes-recuperar { margin: 18px 4px; text-align: center; }
 .configuracoes-recuperar a { color: var(--cor-destaque, var(--config-azul)); font-weight: 800; }
 
+.configuracoes-sucesso {
+    padding: 10px 0 2px;
+    text-align: center;
+}
+.configuracoes-sucesso-icone {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 14px;
+    color: #fff;
+    background: #16a34a;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    font-weight: 900;
+}
+.configuracoes-sucesso h2 { margin: 0 0 7px; }
+.configuracoes-sucesso p { margin: 0 0 20px; color: var(--cor-texto-secundario, var(--config-muted)); }
+.configuracoes-sucesso a {
+    display: inline-grid;
+    place-items: center;
+    min-height: 48px;
+    padding: 10px 24px;
+    color: #fff;
+    background: #2563eb;
+    border-radius: 12px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
 @media (max-width: 390px) {
     .configuracoes-shell { padding-inline: 10px; }
     .configuracoes-cabecalho,

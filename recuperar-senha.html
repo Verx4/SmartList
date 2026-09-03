@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -8,16 +7,12 @@
     <meta name="application-name" content="Smart List">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Recuperar senha | Smart List</title>
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
     <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
     <link rel="stylesheet" href="./css/pwa.css">
-    <script src="./js/auth-theme.js?v=2"></script>
-    <script type="module" src="./js/pwa.js"></script>
-
-    <title>Recuperar Senha | Smart List</title>
-
-    <link rel="stylesheet" href="./css/global.css?v=48">
+    <link rel="stylesheet" href="./css/global.css?v=50">
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/cards.css">
     <link rel="stylesheet" href="./css/buttons.css">
@@ -26,62 +21,75 @@
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/temas.css">
     <link rel="stylesheet" href="./css/auth-theme-fix.css?v=2">
+    <link rel="stylesheet" href="./css/recuperar-senha.css?v=1">
+    <script src="./js/auth-theme.js?v=2"></script>
+    <script type="module" src="./js/pwa.js"></script>
 </head>
-
 <body class="auth-body sem-controle-tema" data-controle-tema="oculto">
-
-    <main class="auth-container auth-container-centralizado">
-
-        <section class="auth-card card">
-
-            <a class="brand" href="./login.html"><img class="brand-logo" src="./assets/logo/smart-list-app.png" alt="" width="32" height="32"><span>Smart List</span></a>
+    <main class="auth-container auth-container-centralizado recuperacao-container">
+        <section class="auth-card card recuperacao-card">
+            <a id="linkVoltarRecuperacaoTopo" class="brand" href="./login.html">
+                <img class="brand-logo" src="./assets/logo/smart-list-app.png" alt="" width="32" height="32">
+                <span>Smart List</span>
+            </a>
 
             <div class="auth-card-header">
-                <span class="page-eyebrow">Recuperação</span>
-                <h1>Esqueceu sua senha?</h1>
-
-                <p>
-                    Informe o e-mail da sua conta para receber as instruções
-                    de recuperação.
-                </p>
+                <span class="page-eyebrow">Segurança da conta</span>
+                <h1 id="tituloRecuperacao">Recuperar senha</h1>
+                <p id="descricaoRecuperacao">Informe o e-mail cadastrado para receber um código de recuperação.</p>
             </div>
 
-            <form id="formRecuperarSenha" class="form" novalidate>
+            <section id="etapaEmail" data-recuperacao-etapa>
+                <form id="formSolicitarCodigo" class="form" novalidate>
+                    <div class="form-group">
+                        <label for="recuperarEmail">E-mail</label>
+                        <input type="email" id="recuperarEmail" name="email" placeholder="seuemail@exemplo.com" autocomplete="email" maxlength="180" required>
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">ENVIAR CÓDIGO</button>
+                </form>
+            </section>
 
-                <div class="form-group">
-                    <label for="recuperarEmail">E-mail</label>
-                    <input
-                        type="email"
-                        id="recuperarEmail"
-                        name="email"
-                        placeholder="seuemail@exemplo.com"
-                        autocomplete="email"
-                        required>
-                </div>
+            <section id="etapaCodigo" data-recuperacao-etapa hidden>
+                <p class="recuperacao-destino">Digite o código de 6 dígitos enviado para <strong id="emailRecuperacao"></strong>.</p>
+                <form id="formVerificarCodigo" class="form" novalidate>
+                    <div class="form-group">
+                        <label for="codigoRecuperacao">Código de recuperação</label>
+                        <input class="recuperacao-codigo" type="text" id="codigoRecuperacao" name="codigo" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="000000" required>
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">CONFIRMAR CÓDIGO</button>
+                </form>
+                <button id="btnReenviarCodigo" class="recuperacao-link-botao" type="button">Enviar novo código</button>
+            </section>
 
-                <button class="btn btn-primary btn-block" type="submit">
-                    Enviar instruções
-                </button>
+            <section id="etapaNovaSenha" data-recuperacao-etapa hidden>
+                <form id="formRedefinirSenha" class="form" novalidate>
+                    <div class="form-group">
+                        <label for="novaSenhaRecuperacao">Nova senha</label>
+                        <input type="password" id="novaSenhaRecuperacao" name="novaSenha" autocomplete="new-password" minlength="6" maxlength="72" required>
+                        <small>Use pelo menos 6 caracteres.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmarSenhaRecuperacao">Confirmar nova senha</label>
+                        <input type="password" id="confirmarSenhaRecuperacao" name="confirmarSenha" autocomplete="new-password" minlength="6" maxlength="72" required>
+                    </div>
+                    <button class="btn btn-primary btn-block" type="submit">ALTERAR SENHA</button>
+                </form>
+            </section>
 
-                <div
-                    id="mensagemAuth"
-                    class="mensagem"
-                    aria-live="polite">
-                </div>
+            <section id="etapaSucesso" class="recuperacao-sucesso" data-recuperacao-etapa hidden>
+                <span aria-hidden="true">✓</span>
+                <h2>Senha alterada com sucesso!</h2>
+                <p>Sua senha foi alterada. Agora você pode entrar na sua conta.</p>
+                <a class="btn btn-primary btn-block" href="./login.html">VOLTAR PARA O LOGIN</a>
+            </section>
 
-            </form>
+            <div id="mensagemRecuperacao" class="mensagem recuperacao-mensagem" aria-live="polite" hidden></div>
 
-            <p class="auth-link">
-                Lembrou sua senha?
-                <a href="./login.html">Voltar ao login</a>
+            <p id="rodapeRecuperacao" class="auth-link">
+                <a id="linkVoltarRecuperacao" href="./login.html">Voltar para o login</a>
             </p>
-
         </section>
-
     </main>
-
-    <script type="module" src="./js/auth-page.js"></script>
-
+    <script type="module" src="./js/recuperar-senha.js?v=1"></script>
 </body>
-
 </html>

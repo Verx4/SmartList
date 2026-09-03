@@ -4,6 +4,10 @@
     username: sa
     password:
     driver-class-name: org.h2.Driver
+  mail:
+    host: localhost
+    port: 2525
+    test-connection: false
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -17,6 +21,10 @@ app:
   frontend-url: http://127.0.0.1:5500
   cors:
     allowed-origins: http://127.0.0.1:5500
+  password-reset:
+    email-enabled: false
+    email-from: ""
+    pepper: chave-de-teste-com-mais-de-trinta-e-dois-caracteres
   admin:
     nome: ""
     email: ""
