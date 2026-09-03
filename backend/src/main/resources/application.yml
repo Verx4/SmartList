@@ -1,4 +1,4 @@
-﻿spring:
+spring:
   application:
     name: smart-list-backend
   datasource:
@@ -30,6 +30,7 @@
     properties:
       "[mail.smtp.auth]": ${EMAIL_SMTP_AUTH:true}
       "[mail.smtp.starttls.enable]": ${EMAIL_STARTTLS:true}
+      "[mail.smtp.ssl.enable]": ${EMAIL_SSL_ENABLE:false}
       "[mail.smtp.connectiontimeout]": 5000
       "[mail.smtp.timeout]": 10000
       "[mail.smtp.writetimeout]": 10000
@@ -62,7 +63,7 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:${FRONTEND_URL:http://127.0.0.1:5500}}
   password-reset:
     email-enabled: ${MAIL_ENABLED:false}
-    email-from: "${EMAIL_FROM:${EMAIL_USER:}}"
+    email-from: "${EMAIL_FROM:}"
     pepper: "${PASSWORD_RESET_PEPPER:${JWT_SECRET}}"
     codigo-expiracao-minutos: ${PASSWORD_RESET_CODE_EXPIRATION_MINUTES:10}
     max-tentativas-codigo: ${PASSWORD_RESET_MAX_ATTEMPTS:5}
