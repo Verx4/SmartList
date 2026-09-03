@@ -69,12 +69,19 @@ function configurarMenuMovel() {
     const navegacao = conteudo?.querySelector(".main-nav");
     if (!cabecalho || !conteudo || !navegacao) return;
 
+    const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+
     configurarRetornoAoInicio(conteudo);
     sincronizarMenuPrincipal(navegacao);
-    if (document.body.classList.contains("sem-menu-superior")) {
+
+    if (
+        PAGINAS_MENU_APP.has(paginaAtual)
+        || document.body.classList.contains("sem-menu-superior")
+    ) {
         cabecalho.classList.add("menu-superior-removido");
         return;
     }
+
     if (!navegacao.id) navegacao.id = "menuPrincipal";
     const botao = document.createElement("button");
     botao.type = "button";
