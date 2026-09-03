@@ -9,30 +9,50 @@
         ["menu.html", "☰", "Menu"]
     ];
 
+    const paginasDoMenu = new Set([
+        "menu.html",
+        "minha-economia.html",
+        "perfil.html",
+        "assinatura.html",
+        "sugestoes.html",
+        "suporte.html",
+        "termos.html",
+        "privacidade.html",
+        "configuracoes.html"
+    ]);
+
     function paginaAtual() {
         const nome = location.pathname.split("/").pop() || "inicio.html";
 
-        if (nome === "index.html" || nome === "") {
-            return "inicio.html";
-        }
-
-        if (nome === "comparacao.html") {
-            return "comparar-embalagens.html";
-        }
-
-        if (nome === "minha-economia.html") {
-            return "historico.html";
-        }
-
+        if (nome === "index.html" || nome === "") return "inicio.html";
+        if (nome === "comparacao.html") return "comparar-embalagens.html";
         return nome;
     }
 
+    function itemAtivo(pagina) {
+        if (paginasDoMenu.has(pagina)) return "menu.html";
+        if (pagina === "minha-economia.html") return "menu.html";
+        return pagina;
+    }
+
+    function garantirEstilos() {
+        const jaExiste = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+            .some(link => link.href.includes("/css/mobile-app.css"));
+        if (jaExiste) return;
+
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = "./css/mobile-app.css?v=2";
+        document.head.appendChild(link);
+    }
+
     function criar() {
+        garantirEstilos();
         document.body.classList.add("app-mobile");
         document.querySelectorAll(".mobile-nav,.app-bottom-nav")
             .forEach(elemento => elemento.remove());
 
-        const atual = paginaAtual();
+        const atual = itemAtivo(paginaAtual());
         const nav = document.createElement("nav");
         nav.className = "app-bottom-nav";
         nav.setAttribute("aria-label", "Navegação principal");
