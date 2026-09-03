@@ -29,7 +29,7 @@
             <div>
                 <span class="page-eyebrow">GESTÃO</span>
                 <h1>Gestão de Planos</h1>
-                <p>Defina os preços que serão usados na página de assinatura e no checkout.</p>
+                <p>Defina preços e controle a exibição dos cupons da tela inicial em um só lugar.</p>
             </div>
         </header>
 
@@ -38,7 +38,7 @@
                 <div>
                     <span class="card-label">PREÇOS VIGENTES</span>
                     <h2>Planos Premium</h2>
-                    <p>Os novos valores entram em vigor para checkouts iniciados após o salvamento.</p>
+                    <p>Os valores salvos passam a ser usados na tela inicial e nos novos checkouts.</p>
                 </div>
             </div>
             <form id="formPlanos" class="admin-planos-form">
@@ -56,6 +56,23 @@
                 </div>
                 <button class="btn btn-primary admin-planos-salvar" type="submit">Salvar Alterações de Preços</button>
             </form>
+        </section>
+
+        <section class="card" style="margin-top:24px">
+            <div class="section-header">
+                <div>
+                    <span class="card-label">EXIBIÇÃO NA TELA INICIAL</span>
+                    <h2>Card de cupons</h2>
+                    <p>Desative para remover somente a seção de cupons. Os cards Mensal, Trimestral e Anual continuarão visíveis.</p>
+                </div>
+            </div>
+            <form id="formCupons" class="form">
+                <label class="checkbox-label" for="exibirCupons">
+                    <input id="exibirCupons" name="exibirCupons" type="checkbox">
+                    <span>Exibir o card “Cupons de primeira assinatura” na tela inicial</span>
+                </label>
+                <button class="btn btn-primary" type="submit" style="margin-top:18px">Salvar Exibição dos Cupons</button>
+            </form>
             <div id="mensagemPlanos" class="mensagem" aria-live="polite" hidden></div>
         </section>
 
@@ -63,6 +80,6 @@
 </div>
 <script src="../js/tema.js?v=12"></script>
 <script src="../js/admin-nav.js?v=5"></script>
-<script type="module" src="../js/admin-planos.js?v=5"></script>
+<script type="module" src="../js/admin-planos.js?v=6"></script>
 </body>
 </html>
