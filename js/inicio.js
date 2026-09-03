@@ -122,11 +122,44 @@ async function carregarResumoInicio() {
         : "Nenhuma compra";
 }
 
+async function carregarGestaoPlanosInicio() {
+    try {
+        const [planos, configuracao] = await Promise.all([
+            api.get("/assinaturas/planos"),
+            api.get("/assinaturas/configuracao-planos")
+        ]);
+
+        const porCiclo = Object.fromEntries(
+            (Array.isArray(planos) ? planos : []).map(plano => [String(plano.ciclo || "").toUpperCase(), plano])
+        );
+        const mensal = Number(porCiclo.MENSAL?.valor || 9.97);
+        const trimestral = Number(porCiclo.TRIMESTRAL?.valor || 26.91);
+        const anual = Number(porCiclo.ANUAL?.valor || 95.64);
+
+        const cardMensal = document.querySelector(".inicio-plano-mensal");
+        const cardTrimestral = document.querySelector(".inicio-plano-trimestral");
+        const cardAnual = document.querySelector(".inicio-plano-anual");
+
+        cardMensal?.querySelector(":scope > strong")?.replaceChildren(document.createTextNode(moeda(mensal)));
+        cardTrimestral?.querySelector(":scope > strong")?.replaceChildren(document.createTextNode(moeda(trimestral)));
+        cardAnual?.querySelector(":scope > strong")?.replaceChildren(document.createTextNode(moeda(anual)));
+
+        cardTrimestral?.querySelector("del")?.replaceChildren(document.createTextNode(moeda(mensal * 3)));
+        cardAnual?.querySelector("del")?.replaceChildren(document.createTextNode(moeda(mensal * 12)));
+
+        const cupons = document.querySelector(".inicio-cupons");
+        if (cupons) cupons.hidden = configuracao?.exibirCupons === false;
+    } catch (erro) {
+        console.warn("Não foi possível sincronizar a Gestão de Planos na tela inicial.", erro);
+    }
+}
+
 carregarResumoInicio().catch(erro => {
     console.warn("Não foi possível carregar o resumo da tela inicial.", erro);
 });
+carregarGestaoPlanosInicio();
 
-document.getElementById("btnTemaInicio").addEventListener("click", evento => {
+document.getElementById("btnTemaInicio")?.addEventListener("click", evento => {
     evento.stopPropagation();
     document.getElementById("botaoTemaGlobal")?.click();
 });
