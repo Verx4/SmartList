@@ -50,9 +50,16 @@
                     <input id="confirmarNovaSenha" name="confirmarNovaSenha" type="password" autocomplete="new-password" minlength="6" maxlength="72" required>
                 </label>
 
-                <button id="btnAlterarSenha" type="submit">Salvar nova senha</button>
+                <button id="btnAlterarSenha" type="submit">ALTERAR SENHA</button>
                 <div id="mensagemAlterarSenha" class="configuracoes-mensagem" aria-live="polite" hidden></div>
             </form>
+
+            <div id="sucessoAlteracaoSenha" class="configuracoes-sucesso" hidden>
+                <span class="configuracoes-sucesso-icone" aria-hidden="true">✓</span>
+                <h2>Senha alterada com sucesso!</h2>
+                <p>Sua senha foi alterada com sucesso.</p>
+                <a href="./configuracoes.html">VOLTAR</a>
+            </div>
         </section>
 
         <p class="configuracoes-recuperar">Não lembra a senha atual? <a href="./recuperar-senha.html?origem=configuracoes">Recuperar senha</a></p>

@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.com.minhalista.assinatura.AssinaturaValidadeService;
+import br.com.minhalista.auth.PasswordChangeRateLimiter;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioServicePerfilTest {
@@ -31,6 +32,9 @@ class UsuarioServicePerfilTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private PasswordChangeRateLimiter passwordChangeRateLimiter;
 
     @InjectMocks
     private UsuarioService service;

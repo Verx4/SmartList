@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.minhalista.auth.dto.AuthResponse;
+import br.com.minhalista.auth.dto.CodigoRecuperacaoResponse;
 import br.com.minhalista.auth.dto.CadastroRequest;
 import br.com.minhalista.auth.dto.LoginRequest;
 import br.com.minhalista.auth.dto.MensagemResponse;
 import br.com.minhalista.auth.dto.RecuperarSenhaRequest;
+import br.com.minhalista.auth.dto.RedefinirSenhaRequest;
 import br.com.minhalista.auth.dto.UsuarioResponse;
+import br.com.minhalista.auth.dto.VerificarCodigoRecuperacaoRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -21,9 +24,14 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final AuthService service;
+    private final PasswordResetService passwordResetService;
 
-    public AuthController(AuthService service) {
+    public AuthController(
+        AuthService service,
+        PasswordResetService passwordResetService
+    ) {
         this.service = service;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/cadastro")
@@ -52,9 +60,27 @@ public class AuthController {
     }
 
     @PostMapping("/recuperar-senha")
-    public MensagemResponse recuperarSenha(@Valid @RequestBody RecuperarSenhaRequest request) {
-        return new MensagemResponse(
-            "Se o e-mail estiver cadastrado, as instruções de recuperação serão enviadas."
+    public MensagemResponse recuperarSenha(
+        @Valid @RequestBody RecuperarSenhaRequest request,
+        HttpServletRequest httpRequest
+    ) {
+        return passwordResetService.solicitarRecuperacao(
+            request,
+            ipDoCliente(httpRequest)
         );
+    }
+
+    @PostMapping("/verificar-codigo-recuperacao")
+    public CodigoRecuperacaoResponse verificarCodigo(
+        @Valid @RequestBody VerificarCodigoRecuperacaoRequest request
+    ) {
+        return passwordResetService.verificarCodigo(request);
+    }
+
+    @PostMapping("/redefinir-senha")
+    public MensagemResponse redefinirSenha(
+        @Valid @RequestBody RedefinirSenhaRequest request
+    ) {
+        return passwordResetService.redefinirSenha(request);
     }
 }
