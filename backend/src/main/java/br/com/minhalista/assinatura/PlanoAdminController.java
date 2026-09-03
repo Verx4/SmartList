@@ -31,4 +31,16 @@ public class PlanoAdminController {
     ) {
         return service.atualizar(request);
     }
+
+    @GetMapping("/configuracao")
+    public ConfiguracaoPlanosResponse configuracao() {
+        return service.configuracao();
+    }
+
+    @PutMapping("/configuracao")
+    public ConfiguracaoPlanosResponse atualizarConfiguracao(
+        @RequestBody ConfiguracaoPlanosAdminRequest request
+    ) {
+        return service.atualizarConfiguracao(request);
+    }
 }
