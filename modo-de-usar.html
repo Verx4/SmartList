@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#07182d">
+    <meta name="application-name" content="Smart List">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Modo de usar | Smart List</title>
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+    <link rel="stylesheet" href="./css/global.css?v=50">
+    <link rel="stylesheet" href="./css/mobile-app.css">
+    <link rel="stylesheet" href="./css/temas.css">
+    <link rel="stylesheet" href="./css/modo-de-usar.css?v=1">
+    <script type="module" src="./js/pwa.js"></script>
+</head>
+<body class="sem-controle-tema modo-de-usar-page">
+    <main class="modo-shell">
+        <header class="modo-topo">
+            <a class="modo-voltar" href="./menu.html" aria-label="Voltar ao Menu">←</a>
+            <a class="modo-marca" href="./inicio.html" aria-label="Smart List - Ir para o início">
+                <img src="./assets/logo/smart-list-app.png" alt="" aria-hidden="true" width="38" height="38">
+                <span><b>Smart</b> List</span>
+            </a>
+            <span class="modo-topo-espaco" aria-hidden="true"></span>
+        </header>
+
+        <section class="modo-hero" aria-labelledby="tituloModoUsar">
+            <span>GUIA DO APLICATIVO</span>
+            <h1 id="tituloModoUsar">Modo de usar</h1>
+            <p>Aprenda a criar sua lista, comparar embalagens e acompanhar quanto você gastou e economizou.</p>
+            <div class="modo-hero-fluxo" aria-label="Fluxo principal do Smart List">
+                <div><i>1</i><strong>Crie a lista</strong></div>
+                <span aria-hidden="true">›</span>
+                <div><i>2</i><strong>Registre preços</strong></div>
+                <span aria-hidden="true">›</span>
+                <div><i>3</i><strong>Finalize</strong></div>
+            </div>
+        </section>
+
+        <nav class="modo-atalhos" aria-label="Atalhos deste guia">
+            <a href="#lista">🛒 Lista</a>
+            <a href="#varios-precos">💵 Vários preços</a>
+            <a href="#comparacao">⚖ Comparação</a>
+            <a href="#historico">◷ Histórico</a>
+            <a href="#economia">📈 Minha Economia</a>
+            <a href="#demais-recursos">☰ Outros recursos</a>
+        </nav>
+
+        <section id="inicio" class="modo-secao">
+            <header class="modo-secao-titulo"><span>01</span><div><small>VISÃO GERAL</small><h2>Comece pela tela Início</h2></div></header>
+            <p>A tela <b>Início</b> mostra o resumo do mês, quantidade de compras, economia, itens da lista e gastos por categoria. Toque em <b>Abrir lista</b> para começar ou use a barra inferior para navegar.</p>
+            <div class="modo-ilustracao inicio-ilustracao" aria-label="Exemplo da tela inicial">
+                <div class="mini-saldo"><small>Gasto neste mês</small><strong>R$ 248,90</strong><span>Economia R$ 31,40</span></div>
+                <div class="mini-metricas"><span><b>2</b> compras</span><span><b>8</b> itens</span><span><b>3</b> categorias</span></div>
+            </div>
+            <aside class="modo-dica"><b>💡 Dica</b><span>A barra inferior leva rapidamente para Início, Lista, Comparação, Histórico e Menu.</span></aside>
+        </section>
+
+        <section id="lista" class="modo-secao">
+            <header class="modo-secao-titulo"><span>02</span><div><small>MINHA LISTA</small><h2>Prepare a compra</h2></div></header>
+            <ol class="modo-passos">
+                <li><b>Defina o orçamento.</b><span>Toque no lápis do card Orçamento, informe o limite e salve. O app mostra quanto foi usado e quanto ainda está disponível.</span></li>
+                <li><b>Escolha o mercado.</b><span>Abra Mercado atual, selecione um mercado frequente ou cadastre outro. Você pode aplicar o mercado aos produtos já adicionados.</span></li>
+                <li><b>Crie ou troque de lista.</b><span>Em Minhas listas, use <b>+ Nova lista</b> para separar, por exemplo, “Compra do mês” e “Churrasco”.</span></li>
+                <li><b>Adicione os produtos.</b><span>Toque em <b>+ Adicionar item</b>, informe nome, categoria, preço, quantidade e forma de compra.</span></li>
+            </ol>
+            <div class="modo-ilustracao lista-ilustracao" aria-label="Exemplo de cadastro de produto">
+                <div class="mini-form-titulo">Adicionar produto</div>
+                <label>Nome do produto <span>Arroz</span></label>
+                <div class="mini-form-duplo"><label>Preço <span>R$ 22,90</span></label><label>Quantidade <span>2</span></label></div>
+                <label>Forma de compra <span>Unidade⌄</span></label>
+                <button type="button" tabindex="-1">Salvar produto</button>
+            </div>
+            <aside class="modo-atencao"><b>Kg ou Unidade?</b><span>Para produtos vendidos por peso, escolha <b>Kg</b> e informe o peso real, como 1,5 kg. Para pacotes, garrafas, caixas e unidades, escolha <b>Unidade</b>.</span></aside>
+        </section>
+
+        <section id="varios-precos" class="modo-secao destaque">
+            <header class="modo-secao-titulo"><span>03</span><div><small>RECURSO IMPORTANTE</small><h2>Coloque vários valores em um único item</h2></div></header>
+            <p>Use este recurso quando o mesmo produto tiver unidades com preços diferentes. Exemplo: duas unidades por R$ 5,00 e mais três unidades por R$ 4,50.</p>
+            <ol class="modo-passos compactos">
+                <li><b>1. Adicione o item normalmente.</b><span>Cadastre o produto usando a forma de compra <b>Unidade</b>.</span></li>
+                <li><b>2. Toque no lápis ✎.</b><span>O painel de edição do produto será aberto.</span></li>
+                <li><b>3. Toque em “+ Adicionar preço”.</b><span>Depois use <b>+ Outro preço</b> para criar quantos grupos forem necessários.</span></li>
+                <li><b>4. Informe valor e quantidade.</b><span>O subtotal de cada grupo e o total do produto são calculados automaticamente.</span></li>
+            </ol>
+            <div class="modo-ilustracao precos-ilustracao" aria-label="Exemplo de vários preços no mesmo produto">
+                <header><div><strong>Leite</strong><small>3 preços</small></div><b>Total R$ 27,50</b></header>
+                <div><span>Valor <b>R$ 5,00</b></span><span>Qtd. <b>2</b></span><em>R$ 10,00</em></div>
+                <div><span>Valor <b>R$ 4,50</b></span><span>Qtd. <b>3</b></span><em>R$ 13,50</em></div>
+                <div><span>Valor <b>R$ 4,00</b></span><span>Qtd. <b>1</b></span><em>R$ 4,00</em></div>
+                <button type="button" tabindex="-1">+ Outro preço</button>
+            </div>
+            <aside class="modo-dica"><b>Importante</b><span>Os vários preços são usados em produtos por <b>Unidade</b>. Produtos por peso usam um valor por kg e o peso total comprado.</span></aside>
+        </section>
+
+        <section id="finalizar" class="modo-secao">
+            <header class="modo-secao-titulo"><span>04</span><div><small>FECHAMENTO</small><h2>Finalize a compra</h2></div></header>
+            <p>Confira os itens, quantidades, preços e mercado. Depois toque em <b>✅ Finalizar compra</b>. A compra finalizada alimenta o Histórico, a tela Início e a análise de Minha Economia.</p>
+            <aside class="modo-atencao"><b>Antes de finalizar</b><span>Verifique se o mercado está correto. Essa informação ajuda a comparar compras e descobrir onde cada item ficou mais barato.</span></aside>
+        </section>
+
+        <section id="comparacao" class="modo-secao destaque-verde">
+            <header class="modo-secao-titulo"><span>05</span><div><small>COMPARAÇÃO DE EMBALAGENS</small><h2>Descubra qual produto compensa levar</h2></div></header>
+            <p>Compare duas embalagens do mesmo produto, mesmo quando elas usam tamanhos ou unidades diferentes.</p>
+            <ol class="modo-passos compactos">
+                <li><b>Preencha a Embalagem 1.</b><span>Informe peso ou volume, escolha a unidade e digite o preço.</span></li>
+                <li><b>Preencha a Embalagem 2.</b><span>Repita com a segunda opção. Os resultados são atualizados automaticamente.</span></li>
+                <li><b>Leia “Melhor opção”.</b><span>O app normaliza as medidas, calcula o preço por kg, litro ou unidade e mostra quanto você economiza.</span></li>
+            </ol>
+            <div class="modo-ilustracao comparacao-ilustracao" aria-label="Exemplo de comparação entre gramas e quilos">
+                <article><small>Embalagem 1</small><div><b>500</b><span>g⌄</span></div><strong>R$ 7,50</strong></article>
+                <span class="versus">×</span>
+                <article><small>Embalagem 2</small><div><b>1</b><span>kg⌄</span></div><strong>R$ 13,90</strong></article>
+                <div class="mini-vencedor"><span>🏆 MELHOR OPÇÃO</span><b>Levar a embalagem de 1 kg</b><small>Você economiza R$ 1,10 na mesma quantidade.</small></div>
+            </div>
+            <div class="modo-unidades" aria-label="Unidades disponíveis na comparação">
+                <span><b>g</b> gramas</span><span><b>kg</b> quilos</span><span><b>ml</b> mililitros</span><span><b>L</b> litros</span><span><b>un</b> unidades</span>
+            </div>
+            <aside class="modo-dica"><b>Troca de unidades</b><span>Toque no seletor ao lado da quantidade para mudar entre <b>g e kg</b>, <b>ml e L</b> ou <b>un</b>. Você pode usar unidades diferentes nas duas embalagens; o app faz a conversão.</span></aside>
+        </section>
+
+        <section id="historico" class="modo-secao">
+            <header class="modo-secao-titulo"><span>06</span><div><small>COMPRAS SALVAS</small><h2>Como funciona o Histórico</h2></div></header>
+            <p>Cada compra finalizada fica salva com data, mercado, usuário, itens e valores. No topo, você vê total gasto, economia, número de compras, itens comprados e média por compra.</p>
+            <ul class="modo-lista">
+                <li><b>Filtre pelo período:</b> veja todas as compras ou selecione um dia.</li>
+                <li><b>Consulte categorias:</b> toque no gráfico para detalhar os itens de cada categoria.</li>
+                <li><b>Pesquise:</b> encontre uma compra pelo item, mercado ou usuário.</li>
+                <li><b>Abra uma compra:</b> toque no registro para conferir a lista completa.</li>
+                <li><b>Exporte:</b> use Exportar para guardar ou compartilhar o relatório.</li>
+            </ul>
+            <aside class="modo-atencao"><b>“Limpar local”</b><span>Use com cuidado: esse botão remove o histórico salvo neste dispositivo.</span></aside>
+        </section>
+
+        <section id="economia" class="modo-secao destaque-verde">
+            <header class="modo-secao-titulo"><span>07</span><div><small>CONTROLE FINANCEIRO</small><h2>Como funciona Minha Economia</h2></div></header>
+            <p>Minha Economia usa as compras finalizadas para mostrar a evolução dos gastos, comparar meses, identificar a categoria que mais consumiu o orçamento e apontar produtos que aumentaram.</p>
+            <div class="modo-ilustracao economia-ilustracao" aria-label="Exemplo de análise de economia">
+                <div><small>Este mês</small><strong>R$ 410,00</strong></div>
+                <div><small>Mês passado</small><strong>R$ 465,00</strong></div>
+                <div class="positivo"><small>Você gastou a menos</small><strong>R$ 55,00</strong></div>
+            </div>
+            <h3>Comparar mercados</h3>
+            <p>Depois de finalizar pelo menos duas compras, escolha uma compra em cada seletor. O app compara os mesmos produtos, normaliza por kg, litro ou unidade e mostra qual mercado teve os melhores preços.</p>
+            <aside class="modo-dica"><b>Cálculo confiável</b><span>O app só chama a redução de “economia” quando os períodos têm volume de compras comparável. Comprar menos vezes, sozinho, não significa que os preços ficaram melhores.</span></aside>
+        </section>
+
+        <section id="demais-recursos" class="modo-secao">
+            <header class="modo-secao-titulo"><span>08</span><div><small>TODO O APP</small><h2>Outros recursos</h2></div></header>
+            <div class="modo-recursos">
+                <article><span>⭐</span><div><h3>Favoritos</h3><p>Marque produtos com a estrela para encontrá-los rapidamente. A área separa produtos e supermercados favoritos.</p></div></article>
+                <article><span>📊</span><div><h3>Relatórios</h3><p>Acompanhe estatísticas por período, categorias, gastos e economia com base nas compras registradas.</p></div></article>
+                <article><span>🔎</span><div><h3>Busca e filtros</h3><p>Na Lista, pesquise pelo nome do produto, filtre por categoria e organize os itens para facilitar a compra.</p></div></article>
+                <article><span>👤</span><div><h3>Perfil e configurações</h3><p>Atualize foto, nome, telefone, cidade e estado. Nas configurações, ajuste a aparência e os dados da conta.</p></div></article>
+                <article><span>💬</span><div><h3>Sugestões e feedback</h3><p>Envie ideias ou relate problemas. Quando houver resposta, o Menu mostra uma notificação.</p></div></article>
+                <article><span>👑</span><div><h3>Plano Premium</h3><p>Recursos com cadeado ficam disponíveis conforme o plano. Em Escolha seu plano, consulte valores e benefícios.</p></div></article>
+                <article><span>🎨</span><div><h3>Aparência</h3><p>Use o botão de temas para escolher o modo visual que fica mais confortável para você.</p></div></article>
+                <article><span>🔐</span><div><h3>Segurança da conta</h3><p>Em Configurações você pode alterar a senha. Use Sair da conta ao terminar em um dispositivo compartilhado.</p></div></article>
+            </div>
+        </section>
+
+        <section class="modo-secao modo-resumo">
+            <span>PRONTO PARA COMEÇAR?</span>
+            <h2>Monte sua próxima lista</h2>
+            <p>Cadastre o mercado, adicione os itens e finalize a compra para liberar análises cada vez mais completas.</p>
+            <a href="./dashboard.html">Abrir minha lista →</a>
+        </section>
+    </main>
+
+    <script src="./js/tema.js?v=11"></script>
+    <script src="./js/mobile-nav.js?v=6"></script>
+</body>
+</html>

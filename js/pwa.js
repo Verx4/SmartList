@@ -18,13 +18,14 @@ const ROTAS_MENU_PRINCIPAL = Object.freeze([
     ["favoritos.html", "Favoritos"],
     ["relatorios.html", "Relatórios"],
     ["sugestoes.html", "Sugestões"],
+    ["modo-de-usar.html", "Modo de usar"],
     ["suporte.html", "Suporte"],
     ["assinatura.html", "Planos"],
     ["perfil.html", "Perfil"]
 ]);
 
 const PAGINAS_MENU_APP = new Set([
-    "perfil.html", "assinatura.html", "sugestoes.html", "suporte.html",
+    "perfil.html", "assinatura.html", "sugestoes.html", "modo-de-usar.html", "suporte.html",
     "termos.html", "privacidade.html", "minha-economia.html", "configuracoes.html"
 ]);
 
