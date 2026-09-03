@@ -12,10 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PlanoService {
 
-    private final PlanoRepository repository;
+    private static final int CONFIGURACAO_ID = 1;
 
-    public PlanoService(PlanoRepository repository) {
+    private final PlanoRepository repository;
+    private final ConfiguracaoPlanosRepository configuracaoRepository;
+
+    public PlanoService(
+        PlanoRepository repository,
+        ConfiguracaoPlanosRepository configuracaoRepository
+    ) {
         this.repository = repository;
+        this.configuracaoRepository = configuracaoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -46,6 +53,23 @@ public class PlanoService {
         salvar(CicloAssinatura.TRIMESTRAL, request.trimestral());
         salvar(CicloAssinatura.ANUAL, request.anual());
         return catalogo();
+    }
+
+    @Transactional
+    public ConfiguracaoPlanosResponse configuracao() {
+        return ConfiguracaoPlanosResponse.de(obterConfiguracao());
+    }
+
+    @Transactional
+    public ConfiguracaoPlanosResponse atualizarConfiguracao(ConfiguracaoPlanosAdminRequest request) {
+        ConfiguracaoPlanos configuracao = obterConfiguracao();
+        configuracao.setExibirCupons(request.exibirCupons());
+        return ConfiguracaoPlanosResponse.de(configuracaoRepository.save(configuracao));
+    }
+
+    private ConfiguracaoPlanos obterConfiguracao() {
+        return configuracaoRepository.findById(CONFIGURACAO_ID)
+            .orElseGet(() -> configuracaoRepository.save(new ConfiguracaoPlanos(CONFIGURACAO_ID, true)));
     }
 
     private void salvar(CicloAssinatura ciclo, BigDecimal valor) {
