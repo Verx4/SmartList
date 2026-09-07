@@ -115,7 +115,7 @@ button { font: inherit; }
 .onboarding-controles {
     position: relative;
     z-index: 4;
-    grid-row: 3;
+    grid-row: 2;
     align-self: end;
     padding: 22px 18px calc(18px + env(safe-area-inset-bottom));
     background: linear-gradient(180deg, transparent 0%, rgba(3, 12, 25, .78) 22%, rgba(3, 12, 25, .98) 72%);
