@@ -92,6 +92,8 @@ export function estaAutenticado() {
 }
 
 export function sair() {
+    localStorage.setItem(CHAVE_ONBOARDING, "true");
+
     [localStorage, sessionStorage]
         .forEach(armazenamento => {
             armazenamento.removeItem("accessToken");
