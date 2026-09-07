@@ -1,5 +1,7 @@
 import { api } from "./api.js";
 
+const CHAVE_ONBOARDING = "smartlist_onboarding_completed";
+
 export function usuarioAtual() {
     try {
         return (
@@ -16,6 +18,7 @@ function salvarSessao(
     dados,
     manterConectado = false
 ) {
+    localStorage.setItem(CHAVE_ONBOARDING, "true");
     [localStorage, sessionStorage]
         .forEach(armazenamento => {
             armazenamento.removeItem("token");
