@@ -1,11 +1,12 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v76`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v76`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v77`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v77`;
 
 const PRECACHE_URLS = [
     "./",
     "./index.html",
     "./login.html",
+    "./onboarding.html",
     "./cadastro.html",
     "./recuperar-senha.html",
     "./inicio.html",
@@ -26,6 +27,7 @@ const PRECACHE_URLS = [
     "./css/global.css",
     "./css/animations.css",
     "./css/login-intro.css",
+    "./css/onboarding.css",
     "./css/layout.css",
     "./css/cards.css",
     "./css/buttons.css",
@@ -50,6 +52,7 @@ const PRECACHE_URLS = [
     "./js/pwa.js",
     "./js/animations.js",
     "./js/login-intro.js",
+    "./js/onboarding.js",
     "./js/auth-theme.js",
     "./js/categorias.js",
     "./js/medidas-produtos.js",
@@ -70,6 +73,9 @@ const PRECACHE_URLS = [
     "./js/listas-salvas-ui.js",
     "./js/admin-return.js",
     "./assets/logo/smart-list-app.png",
+    "./assets/onboarding/onboarding-1.svg",
+    "./assets/onboarding/onboarding-2.svg",
+    "./assets/onboarding/onboarding-3.svg",
 
 
 // Atualiza os arquivos da tela inicial com os cards Premium.
