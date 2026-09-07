@@ -102,14 +102,22 @@ button { font: inherit; }
 
 .onboarding-slide.saindo-esquerda { transform: translateX(-8%); }
 
-.onboarding-slide img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    user-select: none;
-    -webkit-user-drag: none;
+.onboarding-slide {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+.onboarding-arte-1 {
+    background-image: url("../assets/onboarding/onboarding-1.svg");
+}
+
+.onboarding-arte-2 {
+    background-image: url("../assets/onboarding/onboarding-2.svg");
+}
+
+.onboarding-arte-3 {
+    background-image: url("../assets/onboarding/onboarding-3.svg");
 }
 
 .onboarding-controles {
@@ -220,7 +228,4 @@ button { font: inherit; }
     }
 }
 
-/* Mantém cada arte 9:16 integralmente visível em qualquer celular. */
-.onboarding-slide { background: var(--onboarding-fundo); }
-.onboarding-slide img { object-position: center center; }
 .onboarding-acoes { display: block; }
