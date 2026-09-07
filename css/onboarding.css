@@ -229,3 +229,71 @@ button { font: inherit; }
 }
 
 .onboarding-acoes { display: block; }
+
+
+/* Tela cheia: não depende do grid nem da largura intrínseca das artes. */
+html,
+body {
+    width: 100vw;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.onboarding {
+    position: fixed;
+    inset: 0;
+    display: block;
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.onboarding-slides,
+.onboarding-slide {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+}
+
+.onboarding-slide {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100vw 100dvh;
+}
+
+.onboarding-controles {
+    position: fixed;
+    z-index: 20;
+    right: auto;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 50%;
+    width: min(460px, calc(100vw - 28px));
+    padding: 10px;
+    transform: translateX(-50%);
+    background: rgba(3, 12, 25, .42);
+    border: 1px solid rgba(125, 211, 252, .18);
+    border-radius: 22px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, .28);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.onboarding-indicadores {
+    margin-bottom: 9px;
+}
+
+.onboarding-botao.principal {
+    width: 100%;
+    min-height: 50px;
+}
