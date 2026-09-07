@@ -1,9 +1,7 @@
 const CHAVE_ONBOARDING = "smartlist_onboarding_completed";
 const slides = [...document.querySelectorAll(".onboarding-slide")];
 const indicadores = [...document.querySelectorAll("#indicadoresOnboarding button")];
-const botaoVoltar = document.getElementById("voltarOnboarding");
 const botaoAvancar = document.getElementById("avancarOnboarding");
-const botaoPular = document.getElementById("pularOnboarding");
 const areaSlides = document.getElementById("onboardingSlides");
 
 let indiceAtual = 0;
@@ -38,22 +36,18 @@ function exibirSlide(novoIndice) {
         if (ativo) indicador.setAttribute("aria-current", "step");
         else indicador.removeAttribute("aria-current");
     });
-
-    botaoVoltar.hidden = indiceAtual === 0;
-    botaoAvancar.textContent = indiceAtual === 0
-        ? "Começar"
-        : indiceAtual === slides.length - 1
-            ? "Começar agora"
-            : "Próximo";
+    botaoAvancar.textContent = indiceAtual === slides.length - 1
+        ? "Criar conta"
+        : "Próximo";
 }
 
 botaoAvancar.addEventListener("click", () => {
-    if (indiceAtual === slides.length - 1) concluirOnboarding();
+    if (indiceAtual === slides.length - 1) {
+        try { localStorage.setItem(CHAVE_ONBOARDING, "true"); } catch (_erro) {}
+        location.replace("./cadastro.html");
+    }
     else exibirSlide(indiceAtual + 1);
 });
-
-botaoVoltar.addEventListener("click", () => exibirSlide(indiceAtual - 1));
-botaoPular.addEventListener("click", concluirOnboarding);
 indicadores.forEach((indicador, indice) => {
     indicador.addEventListener("click", () => exibirSlide(indice));
 });
@@ -79,6 +73,4 @@ areaSlides.addEventListener("touchend", evento => {
 
 document.addEventListener("keydown", evento => {
     if (evento.key === "ArrowRight") botaoAvancar.click();
-    if (evento.key === "ArrowLeft" && indiceAtual > 0) botaoVoltar.click();
-    if (evento.key === "Escape") concluirOnboarding();
 });
