@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0b1220">
+    <script>
+        (() => {
+            const autenticado = Boolean(
+                sessionStorage.getItem("accessToken")
+                || localStorage.getItem("accessToken")
+            );
+            const concluido =
+                localStorage.getItem("smartlist_onboarding_completed") === "true";
+
+            if (!autenticado && !concluido) {
+                location.replace("./onboarding.html");
+            }
+        })();
+    </script>
     <meta name="application-name" content="Smart List">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
