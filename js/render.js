@@ -498,7 +498,7 @@ function montarProduto(produto) {
                         ${possuiUltimaCompra ? `
                             <div class="produto-ultima-compra" aria-label="Dados da última compra">
                                 <span>Último preço <strong>${ultimoPreco > 0 ? formatarMoeda(ultimoPreco) : "—"}</strong></span>
-                                <span>Última qtd. <strong>${ultimaQuantidade > 0 ? formatarQuantidade(ultimaQuantidade) : "—"}</strong></span>
+                                <span>${porPeso ? "Último kg" : "Última qtd."} <strong>${ultimaQuantidade > 0 ? formatarQuantidade(ultimaQuantidade) : "—"}</strong></span>
                             </div>
                         ` : `<small class="produto-sem-ultima-compra">Sem compra finalizada</small>`}
                     </div>
