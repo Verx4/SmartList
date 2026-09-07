@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v79`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v79`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v80`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v80`;
 
 const PRECACHE_URLS = [
     "./",
@@ -73,9 +73,6 @@ const PRECACHE_URLS = [
     "./js/listas-salvas-ui.js",
     "./js/admin-return.js",
     "./assets/logo/smart-list-app.png",
-    "./assets/onboarding/onboarding-1.svg",
-    "./assets/onboarding/onboarding-2.svg",
-    "./assets/onboarding/onboarding-3.svg",
 
 
 // Atualiza os arquivos da tela inicial com os cards Premium.
