@@ -36,16 +36,11 @@
             document.documentElement.classList.remove("onboarding-checking");
         })();
     </script>
-    <link rel="stylesheet" href="./css/onboarding.css?v=1">
+    <link rel="stylesheet" href="./css/onboarding.css?v=2">
 </head>
 <body>
     <main class="onboarding" aria-label="Apresentação do Smart List">
-        <header class="onboarding-topo">
-            <img src="./assets/logo/smart-list-app.png" alt="Smart List" width="38" height="38">
-            <button id="pularOnboarding" class="onboarding-pular" type="button">Pular</button>
-        </header>
-
-        <section id="onboardingSlides" class="onboarding-slides" aria-live="polite">
+<section id="onboardingSlides" class="onboarding-slides" aria-live="polite">
             <article class="onboarding-slide ativo" data-slide="0" aria-hidden="false">
                 <h1 class="sr-only">Chega de calculadora no mercado</h1>
                 <img src="./assets/onboarding/onboarding-1.svg" alt="Chega de calculadora no mercado. O Smart List soma automaticamente sua compra enquanto você adiciona os itens.">
@@ -67,11 +62,10 @@
                 <button type="button" aria-label="Ir para a tela 3"></button>
             </div>
             <div class="onboarding-acoes">
-                <button id="voltarOnboarding" class="onboarding-botao secundario" type="button" hidden>Voltar</button>
-                <button id="avancarOnboarding" class="onboarding-botao principal" type="button">Começar</button>
+<button id="avancarOnboarding" class="onboarding-botao principal" type="button">Próximo</button>
             </div>
         </footer>
     </main>
-    <script src="./js/onboarding.js?v=1" defer></script>
+    <script src="./js/onboarding.js?v=2" defer></script>
 </body>
 </html>
