@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -40,6 +41,7 @@ public class EmailRecuperacaoService {
     private final String brevoApiUrl;
     private final RestClient restClient;
 
+    @Autowired
     public EmailRecuperacaoService(
         JavaMailSender mailSender,
         PasswordResetProperties properties,
@@ -65,6 +67,32 @@ public class EmailRecuperacaoService {
         this.brevoApiKey = brevoApiKey;
         this.brevoApiUrl = brevoApiUrl;
         this.restClient = RestClient.create();
+    }
+
+    EmailRecuperacaoService(
+        JavaMailSender mailSender,
+        PasswordResetProperties properties,
+        String host,
+        int port,
+        String usuario,
+        String senha,
+        boolean autenticacao,
+        boolean startTls,
+        boolean ssl
+    ) {
+        this(
+            mailSender,
+            properties,
+            host,
+            port,
+            usuario,
+            senha,
+            autenticacao,
+            startTls,
+            ssl,
+            "",
+            "https://api.brevo.com/v3/smtp/email"
+        );
     }
 
     public boolean disponivel() {
