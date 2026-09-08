@@ -68,6 +68,7 @@ import {
     enfileirarColetaPreco,
     sincronizarColetasPendentes
 } from "./coleta-precos.js";
+import { iniciarSincronizacaoListas } from "./listas-sync.js";
 
 import {
     animarAberturaModal,
@@ -1028,7 +1029,9 @@ function configurarEventos() {
 }
 
 
-function iniciarAplicacao() {
+async function iniciarAplicacao() {
+
+    await iniciarSincronizacaoListas();
 
     produtos = listarProdutos();
     historico = carregarHistorico();
@@ -1070,5 +1073,5 @@ window.toggleHistorico = alternarHistorico;
 
 document.addEventListener(
     "DOMContentLoaded",
-    iniciarAplicacao
+    () => void iniciarAplicacao()
 );

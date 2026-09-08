@@ -1,12 +1,24 @@
 const CHAVE_MERCADO_ATUAL = "mercadoAtual";
 const CHAVE_MERCADOS = "mercadosFrequentes";
 const CHAVE_MERCADOS_ANTIGOS = "mercadosRecentes";
+const CHAVE_ULTIMA_ALTERACAO_LISTAS = "listasUltimaAlteracao";
 
 const MERCADOS_INICIAIS = [
     "Assaí",
     "Atacadão",
     "Novo Atacarejo"
 ];
+
+
+function sinalizarAlteracaoDaLista() {
+
+    const atualizadoEm = new Date().toISOString();
+    localStorage.setItem(CHAVE_ULTIMA_ALTERACAO_LISTAS, atualizadoEm);
+    window.dispatchEvent(new CustomEvent("dadoslistaalterados", {
+        detail: { atualizadoEm }
+    }));
+
+}
 
 
 function limparTexto(valor) {
@@ -71,6 +83,7 @@ function salvarLista(lista) {
     const mercados = removerDuplicados(lista);
 
     localStorage.setItem(CHAVE_MERCADOS, JSON.stringify(mercados));
+    sinalizarAlteracaoDaLista();
 
     return mercados;
 
@@ -165,6 +178,7 @@ export function salvarMercadoAtual(nome) {
     }
 
     localStorage.setItem(CHAVE_MERCADO_ATUAL, mercado);
+    sinalizarAlteracaoDaLista();
 
     renderizarMercados();
     atualizarMercadoNoModal();
@@ -177,6 +191,7 @@ export function salvarMercadoAtual(nome) {
 export function limparMercadoAtual() {
 
     localStorage.removeItem(CHAVE_MERCADO_ATUAL);
+    sinalizarAlteracaoDaLista();
     renderizarMercados();
     atualizarMercadoNoModal();
 

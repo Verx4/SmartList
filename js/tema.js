@@ -387,7 +387,12 @@
             botao.focus();
         });
 
-        seletorCor?.addEventListener("change", aplicarCorEscolhida);
+        seletorCor?.addEventListener("keydown", (evento) => {
+            if (evento.key === "Enter") {
+                evento.preventDefault();
+                aplicarCorEscolhida();
+            }
+        });
 
         document.addEventListener("click", (evento) => {
             if (!controle.contains(evento.target)) {
