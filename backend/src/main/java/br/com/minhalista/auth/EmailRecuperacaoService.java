@@ -3,6 +3,7 @@ package br.com.minhalista.auth;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.HtmlUtils;
 
 import jakarta.mail.internet.MimeMessage;
@@ -34,6 +36,9 @@ public class EmailRecuperacaoService {
     private final boolean autenticacao;
     private final boolean startTls;
     private final boolean ssl;
+    private final String brevoApiKey;
+    private final String brevoApiUrl;
+    private final RestClient restClient;
 
     public EmailRecuperacaoService(
         JavaMailSender mailSender,
@@ -44,7 +49,9 @@ public class EmailRecuperacaoService {
         @Value("${spring.mail.password:}") String senha,
         @Value("${EMAIL_SMTP_AUTH:true}") boolean autenticacao,
         @Value("${EMAIL_STARTTLS:true}") boolean startTls,
-        @Value("${EMAIL_SSL_ENABLE:false}") boolean ssl
+        @Value("${EMAIL_SSL_ENABLE:false}") boolean ssl,
+        @Value("${BREVO_API_KEY:}") String brevoApiKey,
+        @Value("${BREVO_API_URL:https://api.brevo.com/v3/smtp/email}") String brevoApiUrl
     ) {
         this.mailSender = mailSender;
         this.properties = properties;
@@ -55,6 +62,9 @@ public class EmailRecuperacaoService {
         this.autenticacao = autenticacao;
         this.startTls = startTls;
         this.ssl = ssl;
+        this.brevoApiKey = brevoApiKey;
+        this.brevoApiUrl = brevoApiUrl;
+        this.restClient = RestClient.create();
     }
 
     public boolean disponivel() {
@@ -80,6 +90,11 @@ public class EmailRecuperacaoService {
                     + "Cadastre no ambiente de produção: {}.",
                 String.join(", ", ausentes)
             );
+            return;
+        }
+
+        if (StringUtils.hasText(brevoApiKey)) {
+            LOGGER.info("Recuperação de senha configurada pela API HTTPS da Brevo.");
             return;
         }
 
@@ -155,6 +170,11 @@ public class EmailRecuperacaoService {
                     properties.getCodigoExpiracaoMinutos()
                 );
 
+            if (StringUtils.hasText(brevoApiKey)) {
+                enviarPelaBrevo(destino, texto, html);
+                return;
+            }
+
             helper.setFrom(properties.getEmailFrom(), "Smart List");
             helper.setTo(destino);
             helper.setSubject("Recuperação de senha — Smart List");
@@ -171,13 +191,37 @@ public class EmailRecuperacaoService {
         }
     }
 
+    private void enviarPelaBrevo(String destino, String texto, String html) {
+        Map<String, Object> corpo = Map.of(
+            "sender", Map.of(
+                "name", "Smart List",
+                "email", properties.getEmailFrom()
+            ),
+            "to", List.of(Map.of("email", destino)),
+            "subject", "Recuperação de senha — Smart List",
+            "textContent", texto,
+            "htmlContent", html
+        );
+
+        restClient.post()
+            .uri(brevoApiUrl)
+            .header("api-key", brevoApiKey)
+            .header("accept", "application/json")
+            .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+            .body(corpo)
+            .retrieve()
+            .toBodilessEntity();
+    }
+
     private List<String> variaveisAusentes() {
         List<String> ausentes = new ArrayList<>();
-        if (!StringUtils.hasText(host)) ausentes.add("EMAIL_HOST");
-        if (port < 1 || port > 65_535) ausentes.add("EMAIL_PORT");
-        if (autenticacao && !StringUtils.hasText(usuario)) ausentes.add("EMAIL_USER");
-        if (autenticacao && !StringUtils.hasText(senha)) ausentes.add("EMAIL_PASSWORD");
         if (!StringUtils.hasText(properties.getEmailFrom())) ausentes.add("EMAIL_FROM");
+        if (!StringUtils.hasText(brevoApiKey)) {
+            if (!StringUtils.hasText(host)) ausentes.add("EMAIL_HOST");
+            if (port < 1 || port > 65_535) ausentes.add("EMAIL_PORT");
+            if (autenticacao && !StringUtils.hasText(usuario)) ausentes.add("EMAIL_USER");
+            if (autenticacao && !StringUtils.hasText(senha)) ausentes.add("EMAIL_PASSWORD");
+        }
         return ausentes;
     }
 
