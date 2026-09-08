@@ -6,6 +6,8 @@ import {
 const CHAVE_PRODUTOS = "produtos";
 const CHAVE_LISTAS_SALVAS = "listasSalvas";
 const CHAVE_LISTA_ATUAL = "listaAtualId";
+const CHAVE_LISTAS_EXCLUIDAS = "listasExcluidasSync";
+const CHAVE_ULTIMA_ALTERACAO = "listasUltimaAlteracao";
 
 
 function criarId() {
@@ -703,6 +705,26 @@ function gravarListas(listas, idAtual) {
     localStorage.setItem(CHAVE_LISTAS_SALVAS, JSON.stringify(listas));
     localStorage.setItem(CHAVE_LISTA_ATUAL, String(idAtual));
 
+    const atualizadoEm = new Date().toISOString();
+    localStorage.setItem(CHAVE_ULTIMA_ALTERACAO, atualizadoEm);
+    window.dispatchEvent(new CustomEvent("dadoslistaalterados", {
+        detail: { atualizadoEm }
+    }));
+
+}
+
+
+function registrarListaExcluida(id) {
+
+    const excluidas = lerJson(CHAVE_LISTAS_EXCLUIDAS, []);
+    const registros = Array.isArray(excluidas) ? excluidas : [];
+    const excluidoEm = new Date().toISOString();
+    const atualizadas = registros
+        .filter(item => String(item?.id) !== String(id));
+
+    atualizadas.push({ id: String(id), excluidoEm });
+    localStorage.setItem(CHAVE_LISTAS_EXCLUIDAS, JSON.stringify(atualizadas));
+
 }
 
 
@@ -830,6 +852,8 @@ export function excluirListaSalva(id) {
     const alvo = listas.find(lista => lista.id === String(id));
 
     if (!alvo) return null;
+
+    registrarListaExcluida(alvo.id);
 
     let restantes = listas.filter(lista => lista.id !== alvo.id);
 

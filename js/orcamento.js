@@ -7,6 +7,18 @@ import {
 } from "./animations.js";
 
 const CHAVE_ORCAMENTO = "orcamentoCompra";
+const CHAVE_ULTIMA_ALTERACAO_LISTAS = "listasUltimaAlteracao";
+
+
+function sinalizarAlteracaoDaLista() {
+
+    const atualizadoEm = new Date().toISOString();
+    localStorage.setItem(CHAVE_ULTIMA_ALTERACAO_LISTAS, atualizadoEm);
+    window.dispatchEvent(new CustomEvent("dadoslistaalterados", {
+        detail: { atualizadoEm }
+    }));
+
+}
 
 
 function numeroSeguro(valor) {
@@ -157,6 +169,8 @@ export function salvarOrcamento(valor) {
         String(limite)
     );
 
+    sinalizarAlteracaoDaLista();
+
     return limite;
 
 }
@@ -165,6 +179,7 @@ export function salvarOrcamento(valor) {
 export function limparOrcamento() {
 
     localStorage.removeItem(CHAVE_ORCAMENTO);
+    sinalizarAlteracaoDaLista();
 
 }
 

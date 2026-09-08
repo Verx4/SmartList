@@ -10,7 +10,15 @@ import {
     obterMercadoAtual
 } from "./mercado-atual.js";
 
-ativarGerenciadorDeListas();
+if (window.__smartListSincronizacaoInicialConcluida) {
+    ativarGerenciadorDeListas();
+} else {
+    window.addEventListener(
+        "listassincronizadas",
+        ativarGerenciadorDeListas,
+        { once: true }
+    );
+}
 
 function ativarGerenciadorDeListas() {
     if (document.getElementById("gerenciadorListasSalvas")) return;

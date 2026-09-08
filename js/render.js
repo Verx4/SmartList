@@ -838,6 +838,12 @@ export function renderizarProdutos(produtos, handlers = {}) {
 
         elementoProduto.querySelector('[data-acao="abrir-precos"]')?.addEventListener("click", () => {
             sincronizarPrecosComResumoEditavel(elementoProduto, produto);
+            const chave = String(id);
+
+            // O painel precisa estar marcado como aberto antes de o handler
+            // recriar os produtos. Caso contrário, o primeiro preço é criado
+            // escondido e um segundo clique acaba criando outra linha.
+            precosAbertos.add(chave);
             handlers.aoAbrirNovoPreco?.(id, {
                 nome: elementoProduto.querySelector('[data-editar="nome"]')?.value.trim(),
                 categoria: elementoProduto.querySelector('[data-editar="categoria"]')?.value,
@@ -850,7 +856,16 @@ export function renderizarProdutos(produtos, handlers = {}) {
                     elementoProduto.querySelector('[data-editar="valor-unitario"]')?.value
                 )
             });
-            precosAbertos.add(String(id));
+
+            requestAnimationFrame(() => {
+                const produtoAtualizado = [...document.querySelectorAll("[data-produto-id]")]
+                    .find(elemento => elemento.dataset.produtoId === chave);
+                const campos = produtoAtualizado?.querySelectorAll('[data-campo-preco="valor"]');
+                const novoCampo = campos?.[campos.length - 1];
+
+                novoCampo?.focus();
+                novoCampo?.select();
+            });
         });
 
         elementoProduto.querySelector('[data-acao="alternar-precos"]')?.addEventListener("click", () => {
