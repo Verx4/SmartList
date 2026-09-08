@@ -123,7 +123,7 @@ public class EmailRecuperacaoService {
             MimeMessage mensagem = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(
                 mensagem,
-                false,
+                true,
                 StandardCharsets.UTF_8.name()
             );
 
