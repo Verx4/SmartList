@@ -140,6 +140,54 @@
         return `#${canais.map(canal => canal.toString(16).padStart(2, "0")).join("")}`;
     }
 
+    function limitar(valor, minimo, maximo) {
+        return Math.min(maximo, Math.max(minimo, valor));
+    }
+
+    function hexParaHsv(hex) {
+        const [vermelho, verde, azul] = rgb(hex).map(canal => canal / 255);
+        const maximo = Math.max(vermelho, verde, azul);
+        const minimo = Math.min(vermelho, verde, azul);
+        const diferenca = maximo - minimo;
+        let matiz = 0;
+
+        if (diferenca) {
+            if (maximo === vermelho) {
+                matiz = 60 * (((verde - azul) / diferenca) % 6);
+            } else if (maximo === verde) {
+                matiz = 60 * ((azul - vermelho) / diferenca + 2);
+            } else {
+                matiz = 60 * ((vermelho - verde) / diferenca + 4);
+            }
+        }
+
+        return {
+            h: (matiz + 360) % 360,
+            s: maximo ? diferenca / maximo : 0,
+            v: maximo
+        };
+    }
+
+    function hsvParaHex(h, s, v) {
+        const matiz = ((h % 360) + 360) % 360;
+        const saturacao = limitar(s, 0, 1);
+        const brilho = limitar(v, 0, 1);
+        const croma = brilho * saturacao;
+        const intermediario = croma * (1 - Math.abs((matiz / 60) % 2 - 1));
+        const ajuste = brilho - croma;
+        let canais;
+
+        if (matiz < 60) canais = [croma, intermediario, 0];
+        else if (matiz < 120) canais = [intermediario, croma, 0];
+        else if (matiz < 180) canais = [0, croma, intermediario];
+        else if (matiz < 240) canais = [0, intermediario, croma];
+        else if (matiz < 300) canais = [intermediario, 0, croma];
+        else canais = [croma, 0, intermediario];
+
+        return `#${canais.map(canal => Math.round((canal + ajuste) * 255)
+            .toString(16).padStart(2, "0")).join("")}`;
+    }
+
     function limparEstiloPersonalizado() {
         VARIAVEIS_PERSONALIZADAS.forEach(nome => document.documentElement.style.removeProperty(nome));
     }
@@ -302,10 +350,15 @@
     function fecharMenu(controle) {
         const botao = controle.querySelector("#botaoTemaGlobal");
         const menu = controle.querySelector("#menuTemaGlobal");
+        const seletor = controle.querySelector("#modalSeletorCor");
 
         menu.hidden = true;
+        if (seletor) {
+            seletor.hidden = true;
+        }
         botao.setAttribute("aria-expanded", "false");
         controle.classList.remove("aberto");
+        document.body.classList.remove("seletor-cor-aberto");
     }
 
     function deveExibirControleTema() {
@@ -329,9 +382,48 @@
         const opcoesPremium = possuiCoresPremium()
             ? [
                 `<div class="divisor-menu-tema"></div>`,
-                `<div class="cor-personalizada-premium"><label for="corTemaPersonalizada">Escolha seu novo tema</label>`,
-                `<div><input id="corTemaPersonalizada" type="color" value="`, corPersonalizada(), `">`,
-                `<button id="aplicarCorPersonalizada" type="button">APLICAR</button></div></div>`
+                `<div class="cor-personalizada-premium"><span class="titulo-cor-personalizada">Escolha seu novo tema</span>`,
+                `<button id="abrirSeletorCor" class="abrir-seletor-cor" type="button"`,
+                ` aria-haspopup="dialog" aria-controls="modalSeletorCor"`,
+                ` style="--cor-selecionada:`, corPersonalizada(), `"`,
+                ` aria-label="Escolher uma cor personalizada"><span aria-hidden="true"></span>`,
+                `<small>Toque para escolher a cor</small></button></div>`
+            ]
+            : [];
+        const seletorPremium = possuiCoresPremium()
+            ? [
+                `<div id="modalSeletorCor" class="modal-seletor-cor" hidden>`,
+                `<section class="painel-seletor-cor" role="dialog" aria-modal="true" aria-labelledby="tituloSeletorCor">`,
+                `<header class="cabecalho-seletor-cor"><span aria-hidden="true">🎨</span>`,
+                `<h2 id="tituloSeletorCor">Cores</h2>`,
+                `<button id="fecharSeletorCor" type="button" aria-label="Cancelar e fechar o seletor">×</button></header>`,
+                `<div class="abas-seletor-cor" role="tablist" aria-label="Formas de escolher a cor">`,
+                `<button type="button" role="tab" data-aba-cor="grade" aria-selected="false">Grade</button>`,
+                `<button type="button" role="tab" data-aba-cor="espectro" aria-selected="true">Espectro</button>`,
+                `<button type="button" role="tab" data-aba-cor="controles" aria-selected="false">Controles</button></div>`,
+                `<div class="conteudo-seletor-cor">`,
+                `<div class="painel-cor painel-grade-cor" data-painel-cor="grade" role="tabpanel" hidden>`,
+                `<div class="grade-cores-prontas" aria-label="Cores prontas">`,
+                ...["#111827", "#2563eb", "#16a34a", "#eab308", "#ef4444", "#9333ea", "#0891b2", "#ea580c", "#db2777", "#65a30d", "#0f766e", "#4f46e5"]
+                    .map(cor => `<button type="button" class="cor-rapida" data-cor-rapida="${cor}" style="--cor-rapida:${cor}" aria-label="Selecionar a cor ${cor}"></button>`),
+                `</div></div>`,
+                `<div class="painel-cor painel-espectro-cor" data-painel-cor="espectro" role="tabpanel">`,
+                `<div id="espectroCor" class="espectro-cor" role="slider" tabindex="0"`,
+                ` aria-label="Saturação e brilho" aria-valuemin="0" aria-valuemax="100">`,
+                `<span class="ponteiro-espectro-cor" aria-hidden="true"></span></div>`,
+                `<label class="controle-matiz-cor"><span>Matiz</span>`,
+                `<input id="matizCor" type="range" min="0" max="359" step="1" aria-label="Matiz da cor"></label>`,
+                `</div>`,
+                `<div class="painel-cor painel-controles-cor" data-painel-cor="controles" role="tabpanel" hidden>`,
+                `<label>Matiz <input id="controleMatizCor" type="range" min="0" max="359" step="1"></label>`,
+                `<label>Saturação <input id="controleSaturacaoCor" type="range" min="0" max="100" step="1"></label>`,
+                `<label>Brilho <input id="controleBrilhoCor" type="range" min="0" max="100" step="1"></label>`,
+                `<label class="campo-hex-cor">Código da cor <input id="codigoHexCor" type="text" inputmode="text" maxlength="7" spellcheck="false"></label>`,
+                `</div></div>`,
+                `<footer class="rodape-seletor-cor"><div class="amostra-cor-pendente">`,
+                `<span id="amostraCorPendente" aria-hidden="true"></span><strong id="textoCorPendente"></strong></div>`,
+                `<button id="aplicarCorPersonalizada" type="button">APLICAR</button></footer>`,
+                `</section></div>`
             ]
             : [];
         controle.innerHTML = [
@@ -344,23 +436,108 @@
             linhaOpcao("claro", "☀️", "Modo claro", "Interface branca"),
             linhaOpcao("escuro", "🌙", "Modo escuro", "Interface preta"),
             ...opcoesPremium,
-            "</div>"
+            "</div>",
+            ...seletorPremium
         ].join("");
 
         document.body.appendChild(controle);
 
         const botao = controle.querySelector("#botaoTemaGlobal");
         const menu = controle.querySelector("#menuTemaGlobal");
-        const seletorCor = menu.querySelector("#corTemaPersonalizada");
+        const abrirSeletorCor = menu.querySelector("#abrirSeletorCor");
+        const modalSeletorCor = controle.querySelector("#modalSeletorCor");
+        const espectroCor = controle.querySelector("#espectroCor");
+        const matizCor = controle.querySelector("#matizCor");
+        const controleMatiz = controle.querySelector("#controleMatizCor");
+        const controleSaturacao = controle.querySelector("#controleSaturacaoCor");
+        const controleBrilho = controle.querySelector("#controleBrilhoCor");
+        const codigoHex = controle.querySelector("#codigoHexCor");
+        const amostraPendente = controle.querySelector("#amostraCorPendente");
+        const textoPendente = controle.querySelector("#textoCorPendente");
+        let corPendente = corPersonalizada();
+        let hsvPendente = hexParaHsv(corPendente);
+        let arrastandoEspectro = false;
+
+        function atualizarSeletorCor() {
+            corPendente = hsvParaHex(hsvPendente.h, hsvPendente.s, hsvPendente.v);
+
+            espectroCor?.style.setProperty("--matiz-selecionada", `hsl(${hsvPendente.h} 100% 50%)`);
+            const ponteiro = espectroCor?.querySelector(".ponteiro-espectro-cor");
+            if (ponteiro) {
+                ponteiro.style.left = `${hsvPendente.s * 100}%`;
+                ponteiro.style.top = `${(1 - hsvPendente.v) * 100}%`;
+            }
+            if (espectroCor) {
+                espectroCor.setAttribute("aria-valuenow", String(Math.round(hsvPendente.v * 100)));
+                espectroCor.setAttribute("aria-valuetext", `${Math.round(hsvPendente.s * 100)}% de saturação e ${Math.round(hsvPendente.v * 100)}% de brilho`);
+            }
+            [matizCor, controleMatiz].forEach(campo => {
+                if (campo) campo.value = String(Math.round(hsvPendente.h));
+            });
+            if (controleSaturacao) controleSaturacao.value = String(Math.round(hsvPendente.s * 100));
+            if (controleBrilho) controleBrilho.value = String(Math.round(hsvPendente.v * 100));
+            if (codigoHex) codigoHex.value = corPendente.toUpperCase();
+            if (amostraPendente) amostraPendente.style.background = corPendente;
+            if (textoPendente) textoPendente.textContent = corPendente.toUpperCase();
+        }
+
+        function selecionarAbaCor(nome) {
+            controle.querySelectorAll("[data-aba-cor]").forEach(aba => {
+                const ativa = aba.dataset.abaCor === nome;
+                aba.setAttribute("aria-selected", String(ativa));
+                aba.classList.toggle("ativa", ativa);
+            });
+            controle.querySelectorAll("[data-painel-cor]").forEach(painel => {
+                painel.hidden = painel.dataset.painelCor !== nome;
+            });
+        }
+
+        function abrirPainelCor() {
+            if (!modalSeletorCor) return;
+
+            corPendente = corPersonalizada();
+            hsvPendente = hexParaHsv(corPendente);
+            atualizarSeletorCor();
+            selecionarAbaCor("espectro");
+            menu.hidden = true;
+            modalSeletorCor.hidden = false;
+            document.body.classList.add("seletor-cor-aberto");
+            requestAnimationFrame(() => espectroCor?.focus());
+        }
+
+        function fecharPainelCor(retornarAoMenu = true) {
+            if (!modalSeletorCor) return;
+
+            modalSeletorCor.hidden = true;
+            document.body.classList.remove("seletor-cor-aberto");
+            if (retornarAoMenu) {
+                menu.hidden = false;
+                botao.setAttribute("aria-expanded", "true");
+                controle.classList.add("aberto");
+                abrirSeletorCor?.focus();
+            }
+        }
+
+        function atualizarPeloEspectro(evento) {
+            const area = espectroCor?.getBoundingClientRect();
+            if (!area?.width || !area?.height) return;
+
+            hsvPendente.s = limitar((evento.clientX - area.left) / area.width, 0, 1);
+            hsvPendente.v = limitar(1 - (evento.clientY - area.top) / area.height, 0, 1);
+            atualizarSeletorCor();
+        }
 
         function aplicarCorEscolhida() {
-            if (!seletorCor) {
+            if (!modalSeletorCor) {
                 return;
             }
 
-            localStorage.setItem(CHAVE_COR_PERSONALIZADA, seletorCor.value);
+            localStorage.setItem(CHAVE_COR_PERSONALIZADA, corPendente);
             aplicarAparencia("personalizada");
             fecharMenu(controle);
+            if (abrirSeletorCor) {
+                abrirSeletorCor.style.setProperty("--cor-selecionada", corPendente);
+            }
             botao.focus();
         }
 
@@ -372,8 +549,8 @@
         });
 
         menu.addEventListener("click", (evento) => {
-            if (evento.target.closest("#aplicarCorPersonalizada")) {
-                aplicarCorEscolhida();
+            if (evento.target.closest("#abrirSeletorCor")) {
+                abrirPainelCor();
                 return;
             }
             const opcao = evento.target.closest("[data-aparencia]");
@@ -387,11 +564,66 @@
             botao.focus();
         });
 
-        seletorCor?.addEventListener("keydown", (evento) => {
-            if (evento.key === "Enter") {
-                evento.preventDefault();
+        modalSeletorCor?.addEventListener("click", (evento) => {
+            const aba = evento.target.closest("[data-aba-cor]");
+            const corRapida = evento.target.closest("[data-cor-rapida]");
+
+            if (evento.target === modalSeletorCor || evento.target.closest("#fecharSeletorCor")) {
+                fecharPainelCor(true);
+            } else if (evento.target.closest("#aplicarCorPersonalizada")) {
                 aplicarCorEscolhida();
+            } else if (aba) {
+                selecionarAbaCor(aba.dataset.abaCor);
+            } else if (corRapida) {
+                corPendente = corRapida.dataset.corRapida;
+                hsvPendente = hexParaHsv(corPendente);
+                atualizarSeletorCor();
             }
+        });
+
+        espectroCor?.addEventListener("pointerdown", (evento) => {
+            arrastandoEspectro = true;
+            espectroCor.setPointerCapture?.(evento.pointerId);
+            atualizarPeloEspectro(evento);
+        });
+        espectroCor?.addEventListener("pointermove", (evento) => {
+            if (arrastandoEspectro) atualizarPeloEspectro(evento);
+        });
+        ["pointerup", "pointercancel"].forEach(tipo => {
+            espectroCor?.addEventListener(tipo, () => {
+                arrastandoEspectro = false;
+            });
+        });
+        espectroCor?.addEventListener("keydown", (evento) => {
+            const passo = evento.shiftKey ? 0.1 : 0.02;
+            if (evento.key === "ArrowLeft") hsvPendente.s = limitar(hsvPendente.s - passo, 0, 1);
+            else if (evento.key === "ArrowRight") hsvPendente.s = limitar(hsvPendente.s + passo, 0, 1);
+            else if (evento.key === "ArrowUp") hsvPendente.v = limitar(hsvPendente.v + passo, 0, 1);
+            else if (evento.key === "ArrowDown") hsvPendente.v = limitar(hsvPendente.v - passo, 0, 1);
+            else return;
+            evento.preventDefault();
+            atualizarSeletorCor();
+        });
+
+        matizCor?.addEventListener("input", () => {
+            hsvPendente.h = Number(matizCor.value);
+            atualizarSeletorCor();
+        });
+        [controleMatiz, controleSaturacao, controleBrilho].forEach(campo => {
+            campo?.addEventListener("input", () => {
+                hsvPendente.h = Number(controleMatiz.value);
+                hsvPendente.s = Number(controleSaturacao.value) / 100;
+                hsvPendente.v = Number(controleBrilho.value) / 100;
+                atualizarSeletorCor();
+            });
+        });
+        codigoHex?.addEventListener("change", () => {
+            const valor = codigoHex.value.trim();
+            if (/^#[0-9a-f]{6}$/i.test(valor)) {
+                corPendente = valor;
+                hsvPendente = hexParaHsv(corPendente);
+            }
+            atualizarSeletorCor();
         });
 
         document.addEventListener("click", (evento) => {
@@ -401,7 +633,9 @@
         });
 
         document.addEventListener("keydown", (evento) => {
-            if (evento.key === "Escape" && !menu.hidden) {
+            if (evento.key === "Escape" && modalSeletorCor && !modalSeletorCor.hidden) {
+                fecharPainelCor(true);
+            } else if (evento.key === "Escape" && !menu.hidden) {
                 fecharMenu(controle);
                 botao.focus();
             }

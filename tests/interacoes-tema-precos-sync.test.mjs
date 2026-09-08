@@ -16,12 +16,17 @@ test("Adicionar preço abre o painel antes de recriar a lista e foca o novo camp
     assert.match(trecho, /novoCampo\?\.select\(\)/);
 });
 
-test("a cor personalizada só é aplicada pelo botão ou pela tecla Enter", async () => {
+test("a cor personalizada usa seletor próprio e só é salva pelo botão Aplicar", async () => {
     const tema = await ler("js/tema.js");
 
     assert.doesNotMatch(tema, /addEventListener\("change", aplicarCorEscolhida\)/);
-    assert.match(tema, /evento\.key === "Enter"/);
+    assert.doesNotMatch(tema, /type="color"/);
+    assert.match(tema, /id="modalSeletorCor"/);
     assert.match(tema, /closest\("#aplicarCorPersonalizada"\)/);
+    assert.match(tema, /data-aba-cor="grade"/);
+    assert.match(tema, /data-aba-cor="espectro"/);
+    assert.match(tema, /data-aba-cor="controles"/);
+    assert.match(tema, /localStorage\.setItem\(CHAVE_COR_PERSONALIZADA, corPendente\)/);
 });
 
 test("listas possuem sincronização autenticada e persistência por usuário", async () => {
