@@ -11,6 +11,8 @@ const CHAVE_EXCLUIDAS = "listasExcluidasSync";
 const CHAVE_ULTIMA_ALTERACAO = "listasUltimaAlteracao";
 const CHAVE_USUARIO_ATIVO = "smartListUsuarioListasAtivo";
 const PREFIXO_CACHE_USUARIO = "smartListListasUsuario:";
+const PREFIXO_BACKUP_MIGRACAO = "smartListBackupMigracaoListas:";
+const PREFIXO_SINCRONIZACAO_INICIAL = "smartListListasSincronizadas:";
 const TEMPO_LIMITE_REQUISICAO = 6000;
 
 let sincronizando = false;
@@ -34,16 +36,81 @@ function instante(valor) {
     return Number.isFinite(tempo) ? tempo : 0;
 }
 
-function usuarioSincronizacao() {
-    for (const chave of ["usuarioAtual", "usuarioLogado"]) {
-        const usuario = lerJson(chave, null);
-        const identificador = texto(usuario?.id || usuario?.usuarioId || usuario?.email)
-            .toLocaleLowerCase("pt-BR");
+function identificadoresUsuarioSincronizacao() {
+    const usuarios = ["usuarioAtual", "usuarioLogado"]
+        .map(chave => lerJson(chave, null))
+        .filter(Boolean);
+    const identificadores = [];
 
-        if (identificador) return identificador;
+    [["id", "usuarioId"], ["email"]].forEach(campos => {
+        usuarios.forEach(usuario => {
+            campos.forEach(campo => {
+                const identificador = texto(usuario?.[campo])
+                    .toLocaleLowerCase("pt-BR");
+
+                if (identificador && !identificadores.includes(identificador)) {
+                    identificadores.push(identificador);
+                }
+            });
+        });
+    });
+
+    return identificadores;
+}
+
+function usuarioSincronizacao() {
+    return identificadoresUsuarioSincronizacao()[0] || "";
+}
+
+function combinarProdutos(primeiros, segundos) {
+    const produtosPorId = new Map();
+    const produtosSemId = [];
+
+    [...(primeiros || []), ...(segundos || [])].forEach(produto => {
+        const id = texto(produto?.id);
+
+        if (!id) {
+            produtosSemId.push(produto);
+            return;
+        }
+
+        const anterior = produtosPorId.get(id);
+        if (!anterior || instante(produto?.atualizadoEm) >= instante(anterior?.atualizadoEm)) {
+            produtosPorId.set(id, produto);
+        }
+    });
+
+    return [...produtosPorId.values(), ...produtosSemId];
+}
+
+function reconciliarProdutosLegados(listas) {
+    const produtosEspelho = lerJson(CHAVE_PRODUTOS, null);
+
+    if (!Array.isArray(produtosEspelho) || !produtosEspelho.length || !listas.length) {
+        return listas;
     }
 
-    return "";
+    const listaAtualId = texto(localStorage.getItem(CHAVE_LISTA_ATUAL));
+    const indiceAtual = Math.max(
+        0,
+        listas.findIndex(lista => lista.id === listaAtualId)
+    );
+    const listaAtual = listas[indiceAtual];
+    const produtosCombinados = combinarProdutos(listaAtual.produtos, produtosEspelho);
+
+    if (JSON.stringify(produtosCombinados) === JSON.stringify(listaAtual.produtos)) {
+        return listas;
+    }
+
+    const atualizadas = [...listas];
+    atualizadas[indiceAtual] = {
+        ...listaAtual,
+        produtos: produtosCombinados,
+        atualizadoEm: localStorage.getItem(CHAVE_ULTIMA_ALTERACAO)
+            || new Date().toISOString()
+    };
+
+    return atualizadas;
 }
 
 function possuiSessao() {
@@ -90,6 +157,8 @@ function capturarEstadoLocal() {
     let listas = (lerJson(CHAVE_LISTAS, []) || [])
         .map(normalizarLista)
         .filter(lista => lista.id);
+
+    listas = reconciliarProdutosLegados(listas);
 
     if (!listas.length) {
         const produtosLegados = lerJson(CHAVE_PRODUTOS, []);
@@ -176,7 +245,7 @@ function unirTextos(primeira, segunda) {
     return resultado;
 }
 
-function combinarEstados(localInformado, remotoInformado) {
+function combinarEstados(localInformado, remotoInformado, opcoes = {}) {
     const local = normalizarEstado(localInformado);
     const remoto = normalizarEstado(remotoInformado);
 
@@ -197,6 +266,23 @@ function combinarEstados(localInformado, remotoInformado) {
 
     [...remoto.listas, ...local.listas].forEach(lista => {
         const anterior = listasPorId.get(lista.id);
+
+        if (
+            anterior
+            && opcoes.protegerProdutosNaPrimeiraSincronizacao
+            && Boolean(anterior.produtos.length) !== Boolean(lista.produtos.length)
+        ) {
+            const maisNova = instante(lista.atualizadoEm) >= instante(anterior.atualizadoEm)
+                ? lista
+                : anterior;
+            const comProdutos = lista.produtos.length ? lista : anterior;
+            listasPorId.set(lista.id, {
+                ...maisNova,
+                produtos: comProdutos.produtos
+            });
+            return;
+        }
+
         if (!anterior || instante(lista.atualizadoEm) >= instante(anterior.atualizadoEm)) {
             listasPorId.set(lista.id, lista);
         }
@@ -305,19 +391,58 @@ function prepararArmazenamentoDoUsuario() {
     const usuario = usuarioSincronizacao();
     if (!usuario) return;
 
+    const identificadores = identificadoresUsuarioSincronizacao();
     const anterior = texto(localStorage.getItem(CHAVE_USUARIO_ATIVO));
-    if (anterior && anterior !== usuario) {
+    const mesmaConta = anterior && identificadores.includes(anterior);
+
+    if (anterior && anterior !== usuario && !mesmaConta) {
         localStorage.setItem(
             `${PREFIXO_CACHE_USUARIO}${anterior}`,
             JSON.stringify(capturarEstadoLocal())
         );
         limparDadosDeOutraConta();
+    }
 
-        const cache = lerJson(`${PREFIXO_CACHE_USUARIO}${usuario}`, null);
-        if (cache) aplicarEstadoLocal(cache);
+    let recuperado = capturarEstadoLocal();
+    let encontrouCache = false;
+
+    identificadores.forEach(identificador => {
+        const cache = lerJson(`${PREFIXO_CACHE_USUARIO}${identificador}`, null);
+        if (!cache) return;
+
+        recuperado = combinarEstados(recuperado, cache, {
+            protegerProdutosNaPrimeiraSincronizacao: true
+        });
+        encontrouCache = true;
+    });
+
+    if (encontrouCache) {
+        aplicarEstadoLocal(recuperado);
     }
 
     localStorage.setItem(CHAVE_USUARIO_ATIVO, usuario);
+}
+
+function chaveSincronizacaoInicial() {
+    return `${PREFIXO_SINCRONIZACAO_INICIAL}${usuarioSincronizacao()}`;
+}
+
+function primeiraSincronizacaoConcluida() {
+    return localStorage.getItem(chaveSincronizacaoInicial()) === "true";
+}
+
+function guardarBackupDaMigracao(estado) {
+    const usuario = usuarioSincronizacao();
+    if (!usuario || !estado.listas.some(lista => lista.produtos.length)) return;
+
+    const chave = `${PREFIXO_BACKUP_MIGRACAO}${usuario}`;
+    if (!localStorage.getItem(chave)) {
+        localStorage.setItem(chave, JSON.stringify(estado));
+    }
+}
+
+function marcarSincronizacaoInicialConcluida() {
+    localStorage.setItem(chaveSincronizacaoInicial(), "true");
 }
 
 async function requisicaoComPrazo(executor) {
@@ -370,25 +495,35 @@ async function sincronizar(tentativa = 0) {
     sincronizando = true;
 
     try {
+        const protegerPrimeiraSincronizacao = !primeiraSincronizacaoConcluida();
+        const local = capturarEstadoLocal();
+
+        if (protegerPrimeiraSincronizacao) {
+            guardarBackupDaMigracao(local);
+        }
+
         const resposta = await requisicaoComPrazo(signal => api.get(
             "/listas/sincronizacao",
             { signal }
         ));
         const versao = Number(resposta?.versao || 0);
-        const local = capturarEstadoLocal();
         const remoto = lerEstadoRemoto(resposta);
 
         if (!remoto) {
             await enviarEstado(local, versao);
+            marcarSincronizacaoInicialConcluida();
             return;
         }
 
-        const combinado = combinarEstados(local, remoto);
+        const combinado = combinarEstados(local, remoto, {
+            protegerProdutosNaPrimeiraSincronizacao: protegerPrimeiraSincronizacao
+        });
         const localMudou = conteudoComparavel(combinado) !== conteudoComparavel(local);
         const remotoMudou = conteudoComparavel(combinado) !== conteudoComparavel(remoto);
 
         if (localMudou) aplicarEstadoLocal(combinado);
         if (remotoMudou) await enviarEstado(combinado, versao);
+        marcarSincronizacaoInicialConcluida();
     } catch (erro) {
         if (Number(erro?.status) === 409 && tentativa < 1) {
             sincronizando = false;
@@ -430,5 +565,7 @@ export async function iniciarSincronizacaoListas() {
 export const listasSyncInterno = {
     capturarEstadoLocal,
     combinarEstados,
+    identificadoresUsuarioSincronizacao,
+    prepararArmazenamentoDoUsuario,
     normalizarEstado
 };
