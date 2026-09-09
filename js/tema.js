@@ -140,6 +140,42 @@
         return `#${canais.map(canal => canal.toString(16).padStart(2, "0")).join("")}`;
     }
 
+    function luminanciaRelativa(hex) {
+        const canais = rgb(hex).map(canal => {
+            const normalizado = canal / 255;
+            return normalizado <= 0.04045
+                ? normalizado / 12.92
+                : ((normalizado + 0.055) / 1.055) ** 2.4;
+        });
+
+        return canais[0] * 0.2126 + canais[1] * 0.7152 + canais[2] * 0.0722;
+    }
+
+    function contrasteEntre(corA, corB) {
+        const maior = Math.max(luminanciaRelativa(corA), luminanciaRelativa(corB));
+        const menor = Math.min(luminanciaRelativa(corA), luminanciaRelativa(corB));
+        return (maior + 0.05) / (menor + 0.05);
+    }
+
+    function corComContrasteClaro(cor, fundos, contrasteMinimo) {
+        for (let proporcao = 0; proporcao <= 1.0001; proporcao += 0.04) {
+            const candidata = misturar(cor, "#ffffff", Math.min(proporcao, 1));
+            if (fundos.every(fundo => contrasteEntre(candidata, fundo) >= contrasteMinimo)) {
+                return candidata;
+            }
+        }
+
+        return "#ffffff";
+    }
+
+    function textoAcessivelSobre(corDeFundo) {
+        const claro = "#ffffff";
+        const escuro = "#000000";
+        return contrasteEntre(claro, corDeFundo) >= contrasteEntre(escuro, corDeFundo)
+            ? claro
+            : escuro;
+    }
+
     function limitar(valor, minimo, maximo) {
         return Math.min(maximo, Math.max(minimo, valor));
     }
@@ -193,12 +229,32 @@
     }
 
     function aplicarEstiloPersonalizado(hex) {
-        const primariaRgb = rgb(hex);
         const fundo = misturar(hex, "#030712", 0.88);
         const superficie = misturar(hex, "#08111f", 0.78);
         const secundaria = misturar(hex, "#111827", 0.68);
-        const destaque = misturar(hex, "#ffffff", 0.24);
-        const luminosidade = primariaRgb.reduce((soma, canal, indice) => soma + canal * [0.299, 0.587, 0.114][indice], 0);
+        const primaria = corComContrasteClaro(hex, [fundo, superficie], 3);
+        const primariaRgb = rgb(primaria);
+        const textoBotao = textoAcessivelSobre(primaria);
+        const primariaHover = misturar(
+            primaria,
+            textoBotao === "#ffffff" ? "#000000" : "#ffffff",
+            0.18
+        );
+        const textoSecundario = corComContrasteClaro(
+            "#b7c2d0",
+            [fundo, superficie, secundaria],
+            4.5
+        );
+        const destaque = corComContrasteClaro(
+            misturar(primaria, "#ffffff", 0.24),
+            [fundo, superficie, secundaria],
+            4.5
+        );
+        const borda = corComContrasteClaro(
+            misturar(primaria, "#64748b", 0.62),
+            [superficie, secundaria],
+            3
+        );
         const valores = {
             "--cor-fundo": fundo,
             "--cor-fundo-rgb": rgb(fundo).join(", "),
@@ -207,14 +263,14 @@
             "--cor-superficie-secundaria": secundaria,
             "--cor-superficie-hover": misturar(secundaria, "#ffffff", 0.08),
             "--cor-texto": "#ffffff",
-            "--cor-texto-secundario": "#b7c2d0",
-            "--cor-borda": misturar(hex, "#64748b", 0.62),
-            "--cor-primaria": hex,
-            "--cor-primaria-hover": misturar(hex, "#000000", 0.18),
+            "--cor-texto-secundario": textoSecundario,
+            "--cor-borda": borda,
+            "--cor-primaria": primaria,
+            "--cor-primaria-hover": primariaHover,
             "--cor-primaria-rgb": primariaRgb.join(", "),
             "--cor-destaque": destaque,
             "--cor-destaque-rgb": rgb(destaque).join(", "),
-            "--cor-texto-botao": luminosidade > 155 ? "#071018" : "#ffffff"
+            "--cor-texto-botao": textoBotao
         };
         Object.entries(valores).forEach(([nome, valor]) => document.documentElement.style.setProperty(nome, valor));
         atualizarCorNavegador(fundo);

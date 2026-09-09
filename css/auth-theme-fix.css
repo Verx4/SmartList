@@ -14,7 +14,7 @@
 :is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card {
     color: #172033 !important;
     background: #ffffff !important;
-    border-color: #cbd5e1 !important;
+    border-color: #76869b !important;
     box-shadow: 0 16px 40px rgba(34, 52, 79, 0.10) !important;
 }
 
@@ -48,7 +48,7 @@
 :is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .form-group textarea {
     color: #0f172a !important;
     background: #f8fafc !important;
-    border-color: #94a3b8 !important;
+    border-color: #76869b !important;
     opacity: 1 !important;
 }
 
@@ -103,21 +103,21 @@
 :is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .mensagem-aviso {
     color: #78350f !important;
     background: #fff7ed !important;
-    border-color: #f59e0b !important;
+    border-color: #b45309 !important;
     opacity: 1 !important;
 }
 
 :is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .mensagem-erro {
     color: #991b1b !important;
     background: #fef2f2 !important;
-    border-color: #fca5a5 !important;
+    border-color: #ef4444 !important;
     opacity: 1 !important;
 }
 
 :is(html[data-palette="claro"], html[data-theme="claro"]) .auth-card .mensagem-sucesso {
     color: #166534 !important;
     background: #f0fdf4 !important;
-    border-color: #86efac !important;
+    border-color: #16a34a !important;
     opacity: 1 !important;
 }
 
