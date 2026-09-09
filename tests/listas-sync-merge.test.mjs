@@ -15,6 +15,10 @@ class MemoriaStorage {
     removeItem(chave) {
         this.#dados.delete(chave);
     }
+
+    clear() {
+        this.#dados.clear();
+    }
 }
 
 globalThis.localStorage = new MemoriaStorage();
@@ -93,4 +97,58 @@ test("não ressuscita lista excluída em outro dispositivo", () => {
     );
 
     assert.equal(combinado.listas.some(item => item.id === "apagada"), false);
+});
+
+test("preserva os produtos do celular original contra lista remota vazia na primeira sincronização", () => {
+    const local = estado([
+        lista("compra-do-mes", "2026-09-08T10:00:00.000Z", [{ id: "feijao" }])
+    ], "2026-09-08T10:00:00.000Z", { orcamentoCompra: "500" });
+    const remoto = estado([
+        lista("compra-do-mes", "2026-09-08T11:00:00.000Z", [])
+    ], "2026-09-08T11:00:00.000Z", { orcamentoCompra: "500" });
+
+    const combinado = listasSyncInterno.combinarEstados(local, remoto, {
+        protegerProdutosNaPrimeiraSincronizacao: true
+    });
+
+    assert.equal(combinado.listas[0].produtos[0].id, "feijao");
+    assert.equal(combinado.orcamentoCompra, "500");
+});
+
+test("recupera produtos antigos quando listasSalvas foi criada vazia", () => {
+    localStorage.clear();
+    localStorage.setItem("listaAtualId", "lista-original");
+    localStorage.setItem("listasSalvas", JSON.stringify([
+        lista("lista-original", "2026-09-08T10:00:00.000Z", [])
+    ]));
+    localStorage.setItem("produtos", JSON.stringify([{ id: "arroz" }, { id: "feijao" }]));
+    localStorage.setItem("orcamentoCompra", "300");
+
+    const capturado = listasSyncInterno.capturarEstadoLocal();
+
+    assert.deepEqual(
+        capturado.listas[0].produtos.map(produto => produto.id),
+        ["arroz", "feijao"]
+    );
+    assert.equal(capturado.orcamentoCompra, "300");
+});
+
+test("não limpa os dados quando o identificador da mesma conta muda de e-mail para id", () => {
+    localStorage.clear();
+    localStorage.setItem("usuarioAtual", JSON.stringify({
+        id: "usuario-123",
+        email: "cliente@exemplo.com"
+    }));
+    localStorage.setItem("smartListUsuarioListasAtivo", "cliente@exemplo.com");
+    localStorage.setItem("listaAtualId", "lista-original");
+    localStorage.setItem("listasSalvas", JSON.stringify([
+        lista("lista-original", "2026-09-08T10:00:00.000Z", [{ id: "leite" }])
+    ]));
+    localStorage.setItem("produtos", JSON.stringify([{ id: "leite" }]));
+
+    listasSyncInterno.prepararArmazenamentoDoUsuario();
+    const capturado = listasSyncInterno.capturarEstadoLocal();
+
+    assert.equal(localStorage.getItem("smartListUsuarioListasAtivo"), "usuario-123");
+    assert.equal(capturado.listas[0].produtos[0].id, "leite");
 });
