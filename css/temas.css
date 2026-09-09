@@ -9,7 +9,7 @@ html[data-palette="azul"] {
     --cor-superficie-hover: #263449;
     --cor-texto: #ffffff;
     --cor-texto-secundario: #94a3b8;
-    --cor-borda: #334155;
+    --cor-borda: #687281;
     --cor-primaria: #2563eb;
     --cor-primaria-hover: #1d4ed8;
     --cor-primaria-rgb: 37, 99, 235;
@@ -32,7 +32,7 @@ html[data-palette="claro"] {
     --cor-superficie-hover: #e1e9f3;
     --cor-texto: #172033;
     --cor-texto-secundario: #5f6f86;
-    --cor-borda: #d5deeb;
+    --cor-borda: #76869b;
     --cor-primaria: #2563eb;
     --cor-primaria-hover: #1d4ed8;
     --cor-primaria-rgb: 37, 99, 235;
@@ -55,7 +55,7 @@ html[data-palette="preto"] {
     --cor-superficie-hover: #292929;
     --cor-texto: #fafafa;
     --cor-texto-secundario: #b8b8b8;
-    --cor-borda: #3d3d3d;
+    --cor-borda: #686868;
     --cor-primaria: #e4e4e7;
     --cor-primaria-hover: #d4d4d8;
     --cor-primaria-rgb: 228, 228, 231;
@@ -74,7 +74,7 @@ html[data-palette="amarelo"] {
     --cor-superficie-hover: #44350b;
     --cor-texto: #fffbea;
     --cor-texto-secundario: #d8cda2;
-    --cor-borda: #665116;
+    --cor-borda: #837242;
     --cor-primaria: #facc15;
     --cor-primaria-hover: #eab308;
     --cor-primaria-rgb: 250, 204, 21;
@@ -93,7 +93,7 @@ html[data-palette="vermelho"] {
     --cor-superficie-hover: #451a20;
     --cor-texto: #fff7f7;
     --cor-texto-secundario: #d7b0b4;
-    --cor-borda: #63303a;
+    --cor-borda: #876067;
     --cor-primaria: #dc2626;
     --cor-primaria-hover: #b91c1c;
     --cor-primaria-rgb: 220, 38, 38;
@@ -112,13 +112,13 @@ html[data-palette="verde"] {
     --cor-superficie-hover: #1b432d;
     --cor-texto: #f3fff7;
     --cor-texto-secundario: #a9cdb7;
-    --cor-borda: #275c3e;
+    --cor-borda: #547e67;
     --cor-primaria: #16a34a;
     --cor-primaria-hover: #15803d;
     --cor-primaria-rgb: 22, 163, 74;
     --cor-destaque: #4ade80;
     --cor-destaque-rgb: 74, 222, 128;
-    --cor-texto-botao: #ffffff;
+    --cor-texto-botao: #071018;
 }
 
 html[data-palette="roxo"] {
@@ -131,7 +131,7 @@ html[data-palette="roxo"] {
     --cor-superficie-hover: #382257;
     --cor-texto: #fcf8ff;
     --cor-texto-secundario: #c7b1d9;
-    --cor-borda: #51366c;
+    --cor-borda: #79648e;
     --cor-primaria: #7c3aed;
     --cor-primaria-hover: #6d28d9;
     --cor-primaria-rgb: 124, 58, 237;
@@ -150,7 +150,7 @@ html[data-palette="personalizada"] {
     --cor-superficie-hover: #174257;
     --cor-texto: #ffffff;
     --cor-texto-secundario: #b7c2d0;
-    --cor-borda: #2e5b70;
+    --cor-borda: #5a7d8e;
     --cor-primaria: #0ea5e9;
     --cor-primaria-hover: #0284c7;
     --cor-primaria-rgb: 14, 165, 233;
@@ -832,7 +832,7 @@ html[data-palette] .site-header .main-nav > a.active {
 :is(html[data-palette="claro"], html[data-theme="claro"]) {
     --cor-texto: #0f172a;
     --cor-texto-secundario: #475569;
-    --cor-borda: #cbd5e1;
+    --cor-borda: #76869b;
     --cor-sucesso: #166534;
     --cor-perigo: #b91c1c;
     --cor-alerta: #92400e;
@@ -884,10 +884,11 @@ html[data-palette] .site-header .main-nav > a.active {
 }
 
 :is(html[data-palette="claro"], html[data-theme="claro"]) .mensagem-sucesso,
-:is(html[data-palette="claro"], html[data-theme="claro"]) .status-ativo {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .status-ativo,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .status-ok {
     color: #166534 !important;
     background: #dcfce7 !important;
-    border-color: #86efac !important;
+    border-color: #16a34a !important;
     opacity: 1;
 }
 
@@ -896,15 +897,16 @@ html[data-palette] .site-header .main-nav > a.active {
 :is(html[data-palette="claro"], html[data-theme="claro"]) .status-erro {
     color: #991b1b !important;
     background: #fee2e2 !important;
-    border-color: #fca5a5 !important;
+    border-color: #ef4444 !important;
     opacity: 1;
 }
 
 :is(html[data-palette="claro"], html[data-theme="claro"]) .mensagem-aviso,
-:is(html[data-palette="claro"], html[data-theme="claro"]) .status-aviso {
+:is(html[data-palette="claro"], html[data-theme="claro"]) .status-aviso,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .status-alerta {
     color: #78350f !important;
     background: #fef3c7 !important;
-    border-color: #f59e0b !important;
+    border-color: #b45309 !important;
     opacity: 1;
 }
 
@@ -944,3 +946,124 @@ html[data-palette] .site-header .main-nav > a.active {
     background: #dbeafe !important;
 }
 
+/*
+ * Revisão global de contraste.
+ * Mantém o layout e usa os tokens da paleta ativa para neutralizar cores
+ * fixas que perdiam legibilidade, especialmente no modo claro.
+ */
+html[data-palette] .brand,
+html[data-palette] td,
+html[data-palette] .documento-legal h2,
+html[data-palette] .relatorio-barra-info strong {
+    color: var(--cor-texto) !important;
+}
+
+html[data-palette] .site-footer,
+html[data-palette] .documento-legal p,
+html[data-palette] .documento-legal ul,
+html[data-palette] .relatorio-barra-info span,
+html[data-palette] .compra-inteligente-card p,
+html[data-palette] .favorito-card p,
+html[data-palette] .diferenca-compra-primeira,
+html[data-palette] .historico-item-info p,
+html[data-palette] .foto-perfil-ajuda,
+html[data-palette] .perfil-resumo > p,
+html[data-palette] .zona-perigo p {
+    color: var(--cor-texto-secundario) !important;
+    opacity: 1;
+}
+
+html[data-palette] th,
+html[data-palette] td,
+html[data-palette] .documento-legal section {
+    border-color: var(--cor-borda) !important;
+}
+
+html[data-palette] tbody tr:hover {
+    background: var(--cor-superficie-hover);
+}
+
+html[data-palette] .documento-legal a:hover,
+html[data-palette] .footer-links a:hover {
+    color: var(--cor-texto) !important;
+}
+
+html[data-palette] .btn-editar-orcamento,
+html[data-palette] .editar-produto,
+html[data-palette] .categoria-produto,
+html[data-palette] .qtd button,
+html[data-palette] .pwa-install-button,
+html[data-palette] .avatar {
+    color: var(--cor-texto-botao) !important;
+}
+
+html[data-palette] .admin-nav .admin-abrir-app,
+html[data-palette] .inicio-topbar-acoes .admin-retorno-inicio {
+    color: #071018 !important;
+}
+
+html[data-palette] .btn-warning {
+    color: #ffffff !important;
+    background: #b45309 !important;
+}
+
+html[data-palette] .badge-sugestoes,
+html[data-palette] .sugestao-nova-resposta {
+    color: #ffffff !important;
+    background: #b91c1c !important;
+}
+
+html[data-palette] .btn-desfavoritar {
+    color: #f87171;
+}
+
+:is(html[data-palette="claro"], html[data-theme="claro"]) .selo-ativo,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .aviso-preco-original,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .resultado-mercado strong,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .nivel-alta,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .comparacao-economia,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .diferenca-compra-economia,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .historico-item-total strong,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .timeline-item strong,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .inicio-variacao.positiva {
+    color: #166534 !important;
+}
+
+:is(html[data-palette="claro"], html[data-theme="claro"]) .lista-nao-inclui li,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .nivel-baixa,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .orcamento-excedido .mensagem-orcamento,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .orcamento-excedido #orcamentoDisponivel,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .comparacao-aumento,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .diferenca-compra-aumento,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .btn-remover-mercado,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .zona-perigo h2,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .excluir-preco {
+    color: #b91c1c !important;
+}
+
+:is(html[data-palette="claro"], html[data-theme="claro"]) .nivel-media,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .mensagem-alerta,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .inicio-variacao.alerta,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .economia-cards article.alerta strong,
+:is(html[data-palette="claro"], html[data-theme="claro"]) .economia-comparador-real .saldo.alerta strong {
+    color: #92400e !important;
+}
+
+:is(html[data-palette="claro"], html[data-theme="claro"]) .configuracoes-mensagem.sucesso {
+    color: #14532d !important;
+    background: #dcfce7 !important;
+    border-color: #16a34a !important;
+}
+
+:is(html[data-palette="claro"], html[data-theme="claro"]) .configuracoes-mensagem.erro {
+    color: #991b1b !important;
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+}
+
+:is(html[data-palette="claro"], html[data-theme="claro"]) .status-neutro {
+    color: #334155 !important;
+    background: #e2e8f0 !important;
+    border-color: #64748b !important;
+    opacity: 1;
+}
