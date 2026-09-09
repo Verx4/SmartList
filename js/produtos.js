@@ -124,6 +124,38 @@ export function normalizarProduto(produto = {}) {
 }
 
 
+function combinarProdutosArmazenados(produtosDaLista, produtosEspelho) {
+
+    const lista = Array.isArray(produtosDaLista)
+        ? produtosDaLista.map(normalizarProduto)
+        : [];
+    const espelho = Array.isArray(produtosEspelho)
+        ? produtosEspelho.map(normalizarProduto)
+        : [];
+
+    if (!espelho.length) return lista;
+    if (!lista.length) return espelho;
+
+    const porId = new Map(lista.map(produto => [String(produto.id), produto]));
+
+    espelho.forEach(produto => {
+
+        const id = String(produto.id);
+        const anterior = porId.get(id);
+        const tempoAnterior = new Date(anterior?.atualizadoEm || 0).getTime();
+        const tempoAtual = new Date(produto.atualizadoEm || 0).getTime();
+
+        if (!anterior || tempoAtual >= tempoAnterior) {
+            porId.set(id, produto);
+        }
+
+    });
+
+    return [...porId.values()];
+
+}
+
+
 export function listarProdutos() {
 
     try {
@@ -131,11 +163,10 @@ export function listarProdutos() {
         const listaAtual = obterListaAtualSalva();
         const espelho = lerJson(CHAVE_PRODUTOS, null);
         const produtosDaLista = listaAtual?.produtos || [];
-        const dados = Array.isArray(espelho) && JSON.stringify(espelho) !== JSON.stringify(produtosDaLista)
-            ? espelho.map(normalizarProduto)
-            : produtosDaLista;
+        const dados = combinarProdutosArmazenados(produtosDaLista, espelho);
+        const listaMudou = JSON.stringify(dados) !== JSON.stringify(produtosDaLista);
 
-        if (dados !== produtosDaLista) {
+        if (listaMudou) {
             const { listas, idAtual } = carregarListas();
             const atual = listas.find(item => item.id === idAtual);
             if (atual) {
