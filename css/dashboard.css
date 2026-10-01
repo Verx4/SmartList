@@ -115,6 +115,8 @@
     font-size: 14px;
 }
 
+.sugestoes-despensa{display:grid;gap:9px;margin:0 0 16px}.sugestoes-despensa[hidden]{display:none}.sugestao-despensa-card{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;background:linear-gradient(135deg,rgba(245,158,11,.14),var(--cor-superficie));border:1px solid #f59e0b;border-radius:14px}.sugestao-despensa-card>div:first-child{min-width:0}.sugestao-despensa-card span{display:block;color:#fbbf24;font-size:10px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}.sugestao-despensa-card strong{display:block;margin-top:3px;font-size:16px}.sugestao-despensa-card p{margin:3px 0 0;color:var(--cor-texto-secundario);font-size:12px;line-height:1.35}.sugestao-despensa-acoes{display:flex;gap:7px;flex:0 0 auto}.sugestao-despensa-acoes button{min-width:55px;min-height:38px;padding:8px 11px;border-radius:9px;font:inherit;font-size:12px;font-weight:900}.sugestao-despensa-acoes button:first-child{color:#fff;background:var(--cor-primaria);border:1px solid var(--cor-primaria)}.sugestao-despensa-acoes button:last-child{color:var(--cor-texto);background:var(--cor-superficie-secundaria);border:1px solid var(--cor-borda)}
+
 .orcamento-card {
     padding: 16px;
 }
@@ -627,6 +629,7 @@
 }
 
 @media (max-width: 420px) {
+    .sugestao-despensa-card{align-items:stretch;flex-direction:column}.sugestao-despensa-acoes button{flex:1}
     .acoes-compra {
         gap: 8px;
     }
