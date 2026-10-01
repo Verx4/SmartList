@@ -19,5 +19,5 @@ test("remove completamente a criação de lista por microfone", () => {
     assert.doesNotMatch(listaRapida, /microfone|MediaRecorder|SpeechRecognition|voz-local-worker|Falar produtos/i);
     assert.doesNotMatch(estilo, /lista-rapida-voz|btn-voz-lista/);
     assert.doesNotMatch(cache, /voz-local-worker/);
-    assert.match(cache, /static-v95/);
+    assert.match(cache, /static-v96/);
 });

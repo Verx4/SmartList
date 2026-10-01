@@ -69,7 +69,12 @@ import {
     sincronizarColetasPendentes
 } from "./coleta-precos.js";
 import { iniciarSincronizacaoListas } from "./listas-sync.js";
-import { adicionarCompraNaDespensa } from "./despensa-store.js";
+import {
+    adicionarCompraNaDespensa,
+    listarDespensa,
+    produtosAcabando,
+    removerItemDespensa
+} from "./despensa-store.js";
 
 import {
     animarAberturaModal,
@@ -357,6 +362,27 @@ function atualizarInformacoesAuxiliares(lista) {
 
 }
 
+function normalizarNomeProduto(valor) {
+    return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .trim().toLocaleLowerCase("pt-BR");
+}
+
+function renderizarSugestoesDespensa() {
+    const container = elemento("sugestoesDespensa");
+    if (!container) return;
+    const nomesNaLista = new Set(produtos.map(item => normalizarNomeProduto(item.nome)));
+    const sugestoes = produtosAcabando(listarDespensa()).filter(
+        item => !nomesNaLista.has(normalizarNomeProduto(item.nome))
+    );
+    container.hidden = sugestoes.length === 0;
+    container.innerHTML = sugestoes.map(item => `
+        <article class="sugestao-despensa-card" data-despensa-id="${String(item.id).replaceAll('"', "&quot;")}">
+            <div><span>🏠 Estoque baixo</span><strong>${String(item.nome).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</strong>
+            <p>O item da sua despensa está com poucas unidades, deseja adicionar?</p></div>
+            <div class="sugestao-despensa-acoes"><button type="button" data-despensa-acao="sim">SIM</button><button type="button" data-despensa-acao="nao">NÃO</button></div>
+        </article>`).join("");
+}
+
 
 function atualizarTela() {
 
@@ -491,6 +517,7 @@ function atualizarTela() {
     renderizarOrcamento(produtos);
     atualizarMercadoNoModal();
     atualizarInformacoesAuxiliares(visiveis);
+    renderizarSugestoesDespensa();
 
 }
 
@@ -826,6 +853,28 @@ function alternarHistorico() {
 
 
 function configurarEventos() {
+
+    elemento("sugestoesDespensa")?.addEventListener("click", evento => {
+        const botao = evento.target.closest("button[data-despensa-acao]");
+        const card = evento.target.closest("[data-despensa-id]");
+        if (!botao || !card) return;
+        const item = listarDespensa().find(produto => String(produto.id) === String(card.dataset.despensaId));
+        if (!item) { atualizarTela(); return; }
+
+        if (botao.dataset.despensaAcao === "nao") {
+            removerItemDespensa(item.id);
+            notificar(`${item.nome} foi removido da despensa.`);
+            atualizarTela();
+            return;
+        }
+
+        const porPeso = item.unidade === MEDIDA_KG;
+        adicionarProduto({ nome: item.nome, categoria: item.categoria, medida: porPeso ? MEDIDA_KG : "unidade",
+            peso: porPeso ? 1 : 0, precos: [{ valor: 0, quantidade: porPeso ? 0 : 1 }],
+            supermercado: obterMercadoAtual(), favorito: false });
+        notificar(`${item.nome} foi adicionado à sua lista.`);
+        atualizarTela();
+    });
 
     elemento(
         "btnAdicionarProduto",
