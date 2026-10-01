@@ -40,5 +40,5 @@ test("finalizar compra exige mercado e volta para Manter vazio", async () => {
         concluirCompra.indexOf("limparMercadoAtual()"),
         "o mercado só pode ser limpo depois que a compra for registrada"
     );
-    assert.match(pagina, /\.\/js\/app\.js\?v=6/);
+    assert.match(pagina, /\.\/js\/app\.js\?v=72/);
 });
