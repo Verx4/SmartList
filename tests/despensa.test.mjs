@@ -13,3 +13,17 @@ test("abre a despensa pelo menu e mostra produtos acabando no início", async ()
     assert.match(app, /adicionarCompraNaDespensa\(resultado\.compra\)/);
     assert.match(cache, /despensa\.html/);
 });
+
+test("item acabando gera card com SIM e NÃO na lista", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const [dashboard, app] = await Promise.all([
+        readFile(new URL("../dashboard.html", import.meta.url), "utf8"),
+        readFile(new URL("../js/app.js", import.meta.url), "utf8")
+    ]);
+    assert.match(dashboard, /id="sugestoesDespensa"/);
+    assert.match(app, /O item da sua despensa está com poucas unidades, deseja adicionar\?/);
+    assert.match(app, /data-despensa-acao="sim"/);
+    assert.match(app, /data-despensa-acao="nao"/);
+    assert.match(app, /adicionarProduto\(/);
+    assert.match(app, /removerItemDespensa\(item\.id\)/);
+});
