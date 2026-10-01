@@ -390,7 +390,6 @@ function aplicarRegraDaUnidade(categoria, medida) {
     const categoriasPorPeso = new Set([
         "🥩 Carnes bovinas",
         "🐖 Carnes suínas",
-        "🍗 Aves",
         "🐟 Peixes e Frutos do Mar"
     ]);
 
