@@ -187,23 +187,53 @@ function configurarEntradaPorVoz() {
         return;
     }
 
+    let recebeuResultado = false;
+    let erroReconhecimento = false;
+    const dispositivoMovel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     reconhecimentoVoz = new Reconhecimento();
     reconhecimentoVoz.lang = "pt-BR";
-    reconhecimentoVoz.continuous = true;
+    // O modo contínuo encerra prematuramente no Safari/iOS e em alguns WebViews.
+    reconhecimentoVoz.continuous = !dispositivoMovel;
     reconhecimentoVoz.interimResults = false;
+    reconhecimentoVoz.maxAlternatives = 1;
+    reconhecimentoVoz.onstart = () => {
+        erroReconhecimento = false;
+        recebeuResultado = false;
+        atualizarEstadoVoz("Preparando o microfone…", true);
+    };
+    reconhecimentoVoz.onaudiostart = () => {
+        atualizarEstadoVoz("Pode falar agora — diga um ou mais produtos.", true);
+    };
     reconhecimentoVoz.onresult = evento => {
         for (let indice = evento.resultIndex; indice < evento.results.length; indice += 1) {
-            if (evento.results[indice].isFinal) adicionarTextoFalado(evento.results[indice][0].transcript);
+            if (evento.results[indice].isFinal) {
+                recebeuResultado = true;
+                adicionarTextoFalado(evento.results[indice][0].transcript);
+            }
         }
     };
     reconhecimentoVoz.onerror = evento => {
-        const mensagem = evento.error === "not-allowed"
-            ? "Permita o acesso ao microfone para usar a voz."
-            : "Não consegui ouvir. Tente novamente.";
+        erroReconhecimento = true;
+        const mensagens = {
+            "not-allowed": "Permita o microfone nos Ajustes do navegador e tente novamente.",
+            "service-not-allowed": "O reconhecimento de voz está bloqueado neste navegador.",
+            "audio-capture": "O microfone não está disponível. Verifique a permissão do navegador.",
+            "network": "A voz precisa de internet. Verifique sua conexão e tente novamente.",
+            "no-speech": "Toque novamente e espere aparecer “Pode falar agora” antes de dizer o produto.",
+            "aborted": "Escuta cancelada."
+        };
+        const mensagem = mensagens[evento.error] || "Não consegui reconhecer a voz. Tente novamente.";
         atualizarEstadoVoz(mensagem, false);
     };
     reconhecimentoVoz.onend = () => {
-        if (ouvindoLista) atualizarEstadoVoz("Itens ouvidos. Você pode revisar a lista.", false);
+        if (erroReconhecimento) return;
+        atualizarEstadoVoz(
+            recebeuResultado
+                ? "Produto registrado. Toque novamente para falar outro."
+                : "Toque para falar e aguarde o aviso do microfone.",
+            false
+        );
     };
     botao.addEventListener("click", () => {
         if (ouvindoLista) {
@@ -212,7 +242,7 @@ function configurarEntradaPorVoz() {
         }
         try {
             reconhecimentoVoz.start();
-            atualizarEstadoVoz("Ouvindo… fale um item por vez.", true);
+            atualizarEstadoVoz("Preparando o microfone…", true);
         } catch (_erro) {
             atualizarEstadoVoz("Aguarde um instante e tente novamente.", false);
         }
