@@ -113,6 +113,12 @@ class ColetaPrecoServiceTest {
     void deveUsarCategoriaDeterministicaEFallbackExistente() {
         ColetaPrecoService service = new ColetaPrecoService(produtoRepository, observacaoRepository, listaCompraRepository);
         assertEquals("🧼 Limpeza", service.resolverCategoria("Detergente neutro", null));
+        assertEquals("🥩 Carnes bovinas", service.resolverCategoria("Picanha", null));
+        assertEquals("🐖 Carnes suínas", service.resolverCategoria("Lombo suíno", null));
+        assertEquals("🍗 Aves", service.resolverCategoria("Peito de frango", null));
+        assertEquals("🐟 Peixes e Frutos do Mar", service.resolverCategoria("Tilápia", null));
+        assertEquals("🥩 Carnes bovinas", service.resolverCategoria("Produto antigo", "🥩 Carnes"));
+        assertEquals("🍗 Aves", service.resolverCategoria("Produto antigo", "🍗 Frango"));
         assertEquals("📦 Outros", service.resolverCategoria("Item desconhecido", null));
         assertEquals("🥛 Laticínios", service.resolverCategoria("Qualquer nome", "🥛 Laticínios"));
     }
