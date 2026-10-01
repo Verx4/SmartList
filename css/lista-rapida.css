@@ -1,0 +1,144 @@
+.acoes-compra .btn-lista-rapida {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    border-color: transparent;
+}
+
+.lista-rapida-modal-content {
+    width: min(760px, calc(100vw - 24px));
+    max-height: min(90vh, 820px);
+    overflow-y: auto;
+}
+
+.lista-rapida-introducao {
+    margin: 0 0 14px;
+    color: var(--text-secondary, #64748b);
+}
+
+.lista-rapida-texto {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.lista-rapida-dica {
+    display: block;
+    margin-top: 7px;
+    color: var(--text-secondary, #64748b);
+}
+
+.lista-rapida-etapa {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-color, #cbd5e1);
+}
+
+.lista-rapida-conferencia-topo {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.lista-rapida-conferencia-topo h3,
+.lista-rapida-conferencia-topo p {
+    margin: 0;
+}
+
+.lista-rapida-lista {
+    display: grid;
+    gap: 10px;
+}
+
+.lista-rapida-item {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.5fr) minmax(170px, 1.4fr) 105px 110px 42px;
+    gap: 9px;
+    align-items: end;
+    padding: 12px;
+    border: 1px solid var(--border-color, #cbd5e1);
+    border-radius: 14px;
+    background: var(--surface-color, #fff);
+}
+
+.lista-rapida-item label {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.lista-rapida-item label > span {
+    font-size: .76rem;
+    font-weight: 700;
+    color: var(--text-secondary, #64748b);
+}
+
+.lista-rapida-item input,
+.lista-rapida-item select {
+    width: 100%;
+    min-width: 0;
+}
+
+.lista-rapida-remover {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #ef4444;
+    border-radius: 10px;
+    background: transparent;
+    color: #ef4444;
+    font-size: 1.35rem;
+    cursor: pointer;
+}
+
+.lista-rapida-item-salvo {
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .acoes-compra {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .acoes-compra .btn-finalizar {
+        grid-column: 1 / -1;
+    }
+
+    .acoes-compra .btn {
+        width: 100%;
+        min-width: 0;
+        padding-inline: 10px;
+    }
+
+    .lista-rapida-modal-content {
+        max-height: 92dvh;
+        padding: 18px 14px;
+    }
+
+    .lista-rapida-texto {
+        min-height: 150px;
+    }
+
+    .lista-rapida-item {
+        grid-template-columns: minmax(0, 1fr) 92px 42px;
+    }
+
+    .lista-rapida-item label:first-child,
+    .lista-rapida-item label:nth-child(2) {
+        grid-column: 1 / -1;
+    }
+
+    .lista-rapida-item label:nth-child(3) {
+        grid-column: 1;
+    }
+
+    .lista-rapida-item label:nth-child(4) {
+        grid-column: 2;
+    }
+
+    .lista-rapida-remover {
+        grid-column: 3;
+    }
+}
