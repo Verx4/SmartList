@@ -93,6 +93,10 @@ app:
     openai-api-key: ${OPENAI_API_KEY:}
     openai-model: ${OPENAI_OFFER_MODEL:gpt-5-nano}
 
+  voz:
+    openai-api-key: ${OPENAI_API_KEY:}
+    openai-model: ${OPENAI_TRANSCRIPTION_MODEL:gpt-4o-mini-transcribe}
+
 logging:
   level:
     org.springframework.security: INFO
