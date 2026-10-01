@@ -68,7 +68,7 @@ export const REGRAS_CATEGORIZACAO = [
             "iogurte grego", "bebida láctea", "creme de leite",
             "leite condensado", "cream cheese", "requeijão", "ricota",
             "cottage", "gorgonzola", "mussarela", "muçarela", "parmesão",
-            "provolone", "leite", "queijo", "iogurte", "nata"
+            "provolone", "leite", "queijo", "iogurte", "nata", "kefir", "coalhada"
         ]
     },
     {
@@ -102,7 +102,7 @@ export const REGRAS_CATEGORIZACAO = [
             "linguiça toscana", "linguiça calabresa", "linguiça suína",
             "leitão", "carré", "panceta", "pernil", "lombo", "bisteca",
             "toucinho", "bacon", "linguiça", "calabresa", "paio",
-            "presunto", "salame", "mortadela", "pepperoni"
+            "presunto", "salame", "mortadela", "pepperoni", "salsicha"
         ]
     },
     {
@@ -144,7 +144,8 @@ export const REGRAS_CATEGORIZACAO = [
             "abóbora", "abobrinha", "chuchu", "berinjela", "quiabo", "jiló",
             "vagem", "batata", "inhame", "macaxeira", "mandioca", "mandioquinha",
             "aipim", "cebola", "alho", "rabanete", "nabo", "verdura", "legume",
-            "fruta"
+            "fruta", "cogumelo fresco", "gengibre", "hortelã", "alecrim",
+            "manjericão"
         ]
     },
     {
@@ -154,7 +155,7 @@ export const REGRAS_CATEGORIZACAO = [
             "pão italiano", "pão sírio", "pão brioche", "pão de leite", "pão doce",
             "biscoito de polvilho", "bolo de aniversário", "pão", "pães", "baguete",
             "bisnaguinha", "croissant", "torrada", "bolo", "sonho", "rosca", "broa",
-            "cuca"
+            "cuca", "panetone", "chocotone", "tortilha", "wrap"
         ]
     },
     {
@@ -179,7 +180,8 @@ export const REGRAS_CATEGORIZACAO = [
         termos: [
             "água mineral", "água com gás", "água de coco", "suco integral",
             "chá gelado", "água tônica", "bebida não alcoólica", "água",
-            "refrigerante", "suco", "néctar", "refresco", "isotônico", "bebida"
+            "refrigerante", "suco", "néctar", "refresco", "isotônico", "bebida",
+            "xarope", "kombucha"
         ]
     },
     {
@@ -207,7 +209,10 @@ export const REGRAS_CATEGORIZACAO = [
             "óleo", "azeite", "vinagre", "molho", "extrato", "ketchup", "catchup",
             "mostarda", "maionese", "shoyu", "fermento", "cuscuz", "granola",
             "margarina", "manteiga", "cacau", "achocolatado", "palito de dente",
-            "palitos de dente", "papel toalha", "papel-toalha"
+            "palitos de dente", "papel toalha", "papel-toalha", "tofu",
+            "cereal matinal", "farofa pronta", "gelatina", "pudim em pó",
+            "sopa instantânea", "purê instantâneo", "bicarbonato de sódio",
+            "essência de baunilha", "mel", "melado", "tahine"
         ]
     },
     {
@@ -217,7 +222,8 @@ export const REGRAS_CATEGORIZACAO = [
             "barra de proteína", "batata chips", "chocolate", "bombom", "trufa", "bala",
             "chiclete", "pirulito", "doce", "paçoca", "cocada", "goiabada", "geleia",
             "biscoito", "bolacha", "cookie", "wafer", "salgadinho", "chips", "pipoca",
-            "snack", "amendoim", "castanha", "sorvete"
+            "snack", "amendoim", "castanha", "sorvete", "rapadura", "suspiro",
+            "marshmallow", "granulado", "confeito"
         ]
     },
     {
@@ -228,7 +234,8 @@ export const REGRAS_CATEGORIZACAO = [
             "limpa piso", "esponja de aço", "palha de aço", "pano de chão",
             "pano multiuso", "saco de lixo", "lustra-móveis", "detergente", "desinfetante",
             "alvejante", "amaciante", "desengordurante", "limpador", "esponja", "álcool",
-            "inseticida"
+            "inseticida", "limpa forno", "limpa alumínio", "cera para piso", "vassoura",
+            "rodo", "balde", "luva de limpeza"
         ]
     },
     {
@@ -238,7 +245,9 @@ export const REGRAS_CATEGORIZACAO = [
             "fio dental", "enxaguante bucal", "papel higiênico", "protetor diário",
             "lenço umedecido", "aparelho de barbear", "espuma de barbear",
             "creme para cabelo", "hidratante corporal", "shampoo", "condicionador",
-            "sabonete", "desodorante", "absorvente", "fralda", "cotonete", "barbeador"
+            "sabonete", "desodorante", "absorvente", "fralda", "cotonete", "barbeador",
+            "escova de cabelo", "pente", "protetor solar", "repelente", "talco",
+            "preservativo"
         ]
     },
     {
@@ -246,7 +255,8 @@ export const REGRAS_CATEGORIZACAO = [
         termos: [
             "ração para cachorro", "ração para gato", "sachê para cachorro",
             "sachê para gato", "areia para gato", "tapete higiênico", "brinquedo pet",
-            "shampoo pet", "ração", "petisco", "coleira", "cachorro", "gato", "pet"
+            "shampoo pet", "ração", "petisco", "coleira", "cachorro", "gato", "pet",
+            "areia sanitária"
         ]
     },
     {
@@ -254,7 +264,8 @@ export const REGRAS_CATEGORIZACAO = [
         termos: [
             "suplemento vitamínico", "água oxigenada", "remédio", "medicamento",
             "analgésico", "antialérgico", "antitérmico", "vitamina", "curativo",
-            "bandagem", "gaze", "algodão", "antisséptico", "termômetro", "farmácia"
+            "bandagem", "gaze", "algodão", "antisséptico", "termômetro", "farmácia",
+            "máscara descartável", "soro fisiológico"
         ]
     },
     {
@@ -274,7 +285,7 @@ export const REGRAS_CATEGORIZACAO = [
             "polpa de fruta", "lasanha congelada", "escondidinho congelado",
             "almôndega congelada", "legumes congelados", "açaí congelado",
             "refeição congelada", "congelado", "pizza", "hambúrguer", "nugget", "nuggets",
-            "empanado", "steak"
+            "empanado", "steak", "coxinha congelada", "picolé"
         ]
     },
     {
@@ -300,7 +311,8 @@ export const REGRAS_CATEGORIZACAO = [
         termos: [
             "filtro de linha", "fita adesiva", "pilha", "bateria", "lâmpada", "extensão",
             "carvão", "acendedor", "gelo", "espeto", "fósforo", "isqueiro", "vela",
-            "supercola", "cola", "barbante", "pregador", "organizador"
+            "supercola", "cola", "barbante", "pregador", "organizador",
+            "prendedor de roupa", "forma de alumínio", "pano de prato", "saco para freezer"
         ]
     }
 ];
