@@ -15,9 +15,18 @@ test("mantém a criação rápida por texto e a organização dos produtos", () 
     assert.match(listaRapida, /function confirmarLista/);
 });
 
+test("mantém o botão final visível e a tecla retorno cria uma nova linha", () => {
+    assert.match(dashboard, /enterkeyhint="enter"/);
+    assert.match(dashboard, /lista-rapida-acao-final/);
+    assert.match(listaRapida, /beforeinput/);
+    assert.match(listaRapida, /insertLineBreak/);
+    assert.match(estilo, /#modalListaRapida\s*\{[\s\S]*?z-index:\s*2100/);
+    assert.match(estilo, /\.lista-rapida-acao-final\s*\{[\s\S]*?position:\s*sticky/);
+});
+
 test("remove completamente a criação de lista por microfone", () => {
     assert.doesNotMatch(listaRapida, /microfone|MediaRecorder|SpeechRecognition|voz-local-worker|Falar produtos/i);
     assert.doesNotMatch(estilo, /lista-rapida-voz|btn-voz-lista/);
     assert.doesNotMatch(cache, /voz-local-worker/);
-    assert.match(cache, /static-v96/);
+    assert.match(cache, /static-v97/);
 });
