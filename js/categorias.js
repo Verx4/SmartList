@@ -12,8 +12,9 @@ export const CATEGORIA_OUTROS = "📦 Outros";
 
 export const CATEGORIAS = [
     "🥛 Laticínios",
-    "🥩 Carnes",
-    "🍗 Frango",
+    "🥩 Carnes bovinas",
+    "🐖 Carnes suínas",
+    "🍗 Aves",
     "🐟 Peixes e Frutos do Mar",
     CATEGORIA_HORTIFRUTI,
     "🍞 Padaria",
@@ -68,28 +69,43 @@ export const REGRAS_CATEGORIZACAO = [
         ]
     },
     {
-        categoria: "🥩 Carnes",
+        categoria: "🥩 Carnes bovinas",
         termos: [
             "carne bovina", "carne moída", "carne seca", "carne de sol",
-            "carne suína", "carne de porco", "filé mignon", "contra filé",
-            "contrafilé", "costela bovina", "costela suína", "coxão mole",
-            "coxão duro", "fígado bovino", "língua bovina", "linguiça toscana",
-            "linguiça calabresa", "lombo suíno", "bisteca suína", "peito de peru",
-            "carne", "bife", "costela", "picanha", "alcatra", "acém",
+            "assado de tira", "bife ancho", "bife de chorizo", "capa de filé",
+            "filé de costela", "filé mignon", "contra filé", "contrafilé",
+            "costela bovina", "coxão mole", "coxão duro", "fígado bovino",
+            "língua bovina", "ponta de agulha", "peito bovino", "t bone",
+            "tomahawk", "carne", "bife", "picanha", "alcatra", "acém",
             "patinho", "maminha", "fraldinha", "cupim", "lagarto", "paleta",
-            "músculo", "ossobuco", "charque", "rabada", "mocotó", "pernil",
-            "lombo", "bisteca", "bacon", "linguiça", "calabresa", "paio",
-            "presunto", "salame", "mortadela"
+            "músculo", "ossobuco", "charque", "rabada", "mocotó", "matambre",
+            "bananinha", "aranha", "brisket", "chuleta", "vazio"
         ]
     },
     {
-        categoria: "🍗 Frango",
+        categoria: "🐖 Carnes suínas",
+        termos: [
+            "carne suína", "carne de porco", "costela suína", "filé mignon suíno",
+            "lombo suíno", "bisteca suína", "picanha suína", "pernil suíno",
+            "copa lombo", "copa-lombo", "joelho de porco", "pé de porco",
+            "orelha de porco", "rabo de porco", "barriga de porco",
+            "linguiça toscana", "linguiça calabresa", "linguiça suína",
+            "leitão", "carré", "panceta", "pernil", "lombo", "bisteca",
+            "toucinho", "bacon", "linguiça", "calabresa", "paio",
+            "presunto", "salame", "mortadela", "pepperoni"
+        ]
+    },
+    {
+        categoria: "🍗 Aves",
         termos: [
             "peito de frango", "filé de frango", "filé de peito",
             "coxa e sobrecoxa", "meio da asa", "coração de frango",
             "fígado de frango", "pé de frango", "frango inteiro",
+            "frango a passarinho", "frango desossado", "frango moído",
+            "peito de peru", "peru inteiro", "galinha caipira",
             "frango", "coxa", "sobrecoxa", "asa", "asinha", "drumette",
-            "tulipa", "moela", "galinha"
+            "tulipa", "moela", "galinha", "peru", "pato", "marreco",
+            "codorna", "chester", "faisão"
         ]
     },
     {
@@ -372,8 +388,9 @@ function normalizarMedida(medida) {
 
 function aplicarRegraDaUnidade(categoria, medida) {
     const categoriasPorPeso = new Set([
-        "🥩 Carnes",
-        "🍗 Frango",
+        "🥩 Carnes bovinas",
+        "🐖 Carnes suínas",
+        "🍗 Aves",
         "🐟 Peixes e Frutos do Mar"
     ]);
 
@@ -401,6 +418,14 @@ export function categoriaEhHortifruti(categoria) {
 
 export function normalizarCategoria(categoria) {
     const categoriaNormalizada = normalizarTexto(categoria);
+
+    // Mantém compatibilidade com listas criadas antes da divisão das carnes.
+    if (categoriaNormalizada === normalizarTexto("🥩 Carnes")) {
+        return "🥩 Carnes bovinas";
+    }
+    if (categoriaNormalizada === normalizarTexto("🍗 Frango")) {
+        return "🍗 Aves";
+    }
 
     if (!categoriaNormalizada || categoriaNormalizada === CATEGORIA_AUTOMATICA) {
         return CATEGORIA_OUTROS;
