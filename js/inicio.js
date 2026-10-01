@@ -32,6 +32,24 @@ const valorCompra = compra => Number(compra.total ?? compra.valorTotal ?? compra
 const economiaCompra = compra => Number(compra.economia ?? compra.economiaEstimada ?? 0);
 const itensCompra = compra => Array.isArray(compra.produtos) ? compra.produtos : Array.isArray(compra.itens) ? compra.itens : [];
 
+function subtotalProdutoMantido(produto = {}) {
+    const peso = Number(produto.peso || 0);
+    const precos = Array.isArray(produto.precos) ? produto.precos : [];
+    const subtotalAtual = peso > 0
+        ? Number(precos[0]?.valor ?? produto.preco ?? 0) * peso
+        : precos.length
+            ? precos.reduce(
+                (total, preco) => total + (Number(preco.valor || 0) * Number(preco.quantidade || 0)),
+                0
+            )
+            : Number(produto.preco || 0) * Number(produto.quantidade || 0);
+
+    if (subtotalAtual > 0) return subtotalAtual;
+
+    return Number(produto.ultimoPreco || 0)
+        * Number(produto.ultimaQuantidade || 0);
+}
+
 function historicoLocalDoUsuario() {
     const historico = ler("historicoCompras", []);
     const usuarioId = String(usuario?.id || usuario?.usuarioId || "");
@@ -73,12 +91,24 @@ async function carregarResumoInicio() {
     const gastoMes = comprasMes.reduce((total, compra) => total + valorCompra(compra), 0);
     const gastoAnterior = comprasMesAnterior.reduce((total, compra) => total + valorCompra(compra), 0);
     const economiaMes = comprasMes.reduce((total, compra) => total + economiaCompra(compra), 0);
-    const media = comprasMes.length ? gastoMes / comprasMes.length : 0;
+    const valorUltimaCompraMantida = Number(localStorage.getItem("ultimaCompra") || 0);
+    const mostrarListaMantida = !comprasMes.length
+        && produtos.length > 0
+        && valorUltimaCompraMantida > 0;
+    const gastoExibido = mostrarListaMantida ? valorUltimaCompraMantida : gastoMes;
+    const media = comprasMes.length ? gastoMes / comprasMes.length : gastoExibido;
 
     document.getElementById("saudacaoInicio").textContent = `Olá, ${usuario?.nome || usuario?.name || "Usuário"}! 👋`;
-    document.getElementById("mesReferencia").textContent = agora.toLocaleDateString("pt-BR", { month: "long" });
-    document.getElementById("gastoMes").textContent = moeda(gastoMes);
-    document.getElementById("comprasMes").textContent = String(comprasMes.length);
+    document.getElementById("mesReferencia").textContent = mostrarListaMantida
+        ? "Lista mantida"
+        : agora.toLocaleDateString("pt-BR", { month: "long" });
+    document.querySelector(".inicio-destaque-topo > span").textContent = mostrarListaMantida
+        ? "Valor da última compra"
+        : "Gasto neste mês";
+    document.getElementById("gastoMes").textContent = moeda(gastoExibido);
+    document.getElementById("comprasMes").textContent = String(
+        mostrarListaMantida ? 1 : comprasMes.length
+    );
     document.getElementById("economiaMes").textContent = moeda(economiaMes);
     document.getElementById("itensLista").textContent = String(Array.isArray(produtos) ? produtos.length : 0);
     document.getElementById("mediaCompra").textContent = `Média ${moeda(media)}`;
@@ -92,17 +122,28 @@ async function carregarResumoInicio() {
     } else if (comprasMes.length) {
         variacao.textContent = "Primeiras compras deste mês";
         variacao.className = "inicio-variacao neutra";
+    } else if (mostrarListaMantida) {
+        variacao.textContent = "Compra finalizada mantendo a lista";
+        variacao.className = "inicio-variacao positiva";
     } else {
         variacao.textContent = "Sem compras registradas";
         variacao.className = "inicio-variacao neutra";
     }
 
     const categorias = {};
-    comprasMes.forEach(compra => itensCompra(compra).forEach(item => {
-        const nome = item.categoria || "Outros";
-        const subtotal = Number(item.subtotal ?? (Number(item.precoUnitario ?? item.preco ?? 0) * Number(item.quantidade || 1)));
-        categorias[nome] = (categorias[nome] || 0) + subtotal;
-    }));
+    if (comprasMes.length) {
+        comprasMes.forEach(compra => itensCompra(compra).forEach(item => {
+            const nome = item.categoria || "Outros";
+            const subtotal = Number(item.subtotal ?? (Number(item.precoUnitario ?? item.preco ?? 0) * Number(item.quantidade || 1)));
+            categorias[nome] = (categorias[nome] || 0) + subtotal;
+        }));
+    } else if (mostrarListaMantida) {
+        produtos.forEach(item => {
+            const nome = item.categoria || "Outros";
+            const subtotal = subtotalProdutoMantido(item);
+            if (subtotal > 0) categorias[nome] = (categorias[nome] || 0) + subtotal;
+        });
+    }
     const categoriasOrdenadas = Object.entries(categorias).sort((a, b) => b[1] - a[1]);
     const principal = categoriasOrdenadas[0];
     const maiorCategoria = Math.max(1, ...categoriasOrdenadas.map(([, valor]) => valor));
@@ -117,9 +158,11 @@ async function carregarResumoInicio() {
     document.getElementById("categoriaPrincipal").textContent = principal ? `${principal[0]} · ${moeda(principal[1])}` : "Sem dados no mês";
 
     const ultima = compras[0];
-    document.getElementById("ultimaCompraInicio").textContent = ultima
-        ? `${moeda(valorCompra(ultima))} · ${dataCompra(ultima).toLocaleDateString("pt-BR")}`
-        : "Nenhuma compra";
+    document.getElementById("ultimaCompraInicio").textContent = mostrarListaMantida
+        ? `${moeda(valorUltimaCompraMantida)} · lista mantida`
+        : ultima
+            ? `${moeda(valorCompra(ultima))} · ${dataCompra(ultima).toLocaleDateString("pt-BR")}`
+            : "Nenhuma compra";
 }
 
 async function carregarGestaoPlanosInicio() {
