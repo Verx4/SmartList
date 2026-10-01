@@ -42,7 +42,7 @@
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/listas-salvas.css?v=3">
     <link rel="stylesheet" href="./css/produtos-multivalores.css?v=2">
-    <link rel="stylesheet" href="./css/lista-rapida.css?v=2">
+    <link rel="stylesheet" href="./css/lista-rapida.css?v=3">
 </head>
 
 <body class="sem-menu-superior">
@@ -347,7 +347,8 @@
 
             <label class="form-group" for="textoListaRapida">
                 <span>Produtos</span>
-                <textarea id="textoListaRapida" class="lista-rapida-texto"
+                <textarea id="textoListaRapida" class="lista-rapida-texto" enterkeyhint="enter"
+                    autocapitalize="sentences" spellcheck="true"
                     placeholder="Arroz&#10;Feijão&#10;3 leites&#10;2 kg de carne&#10;Pão de caixa"></textarea>
                 <small class="lista-rapida-dica">
                     Você também pode colar uma lista separada por vírgulas ou ponto e vírgula.
@@ -372,7 +373,7 @@
                     </div>
                 </div>
                 <div id="listaRapidaConferencia" class="lista-rapida-lista"></div>
-                <div class="modal-buttons">
+                <div class="modal-buttons lista-rapida-acao-final">
                     <button id="btnConfirmarListaRapida" type="button" class="btn btn-primary">
                         Adicionar à minha lista
                     </button>
@@ -396,7 +397,7 @@
     <script type="module" src="./js/login-intro.js?v=3"></script>
     <script type="module" src="./js/app.js?v=73"></script>
     <script type="module" src="./js/listas-salvas-ui.js?v=6"></script>
-    <script type="module" src="./js/lista-rapida.js?v=4"></script>
+    <script type="module" src="./js/lista-rapida.js?v=5"></script>
     <script src="./js/mobile-nav.js?v=4"></script>
 </body>
 

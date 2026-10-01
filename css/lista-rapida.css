@@ -9,6 +9,10 @@
     overflow-y: auto;
 }
 
+#modalListaRapida {
+    z-index: 2100;
+}
+
 .lista-rapida-introducao {
     margin: 0 0 14px;
     color: var(--cor-texto-secundario, #94a3b8);
@@ -130,6 +134,19 @@
     cursor: pointer;
 }
 
+.lista-rapida-acao-final {
+    position: sticky;
+    z-index: 3;
+    bottom: 0;
+    margin-inline: -4px;
+    padding: 10px 4px 4px;
+    background: linear-gradient(180deg, transparent, var(--cor-superficie, #131c2f) 24%);
+}
+
+.lista-rapida-acao-final .btn {
+    min-height: 52px;
+}
+
 @media (max-width: 700px) {
     .acoes-compra {
         display: grid;
@@ -148,8 +165,9 @@
     }
 
     .lista-rapida-modal-content {
-        max-height: 92dvh;
+        max-height: calc(100dvh - 24px);
         padding: 15px 12px;
+        scroll-padding-bottom: 76px;
     }
 
     .lista-rapida-texto {
@@ -179,6 +197,11 @@
         grid-column: 3;
         width: 40px;
         height: 40px;
+    }
+
+    .lista-rapida-acao-final {
+        bottom: -1px;
+        padding-bottom: max(7px, env(safe-area-inset-bottom));
     }
 
 }
