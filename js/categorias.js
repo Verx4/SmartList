@@ -12,6 +12,7 @@ export const CATEGORIA_OUTROS = "📦 Outros";
 
 export const CATEGORIAS = [
     "🥛 Laticínios",
+    "🥚 Ovos",
     "🥩 Carnes bovinas",
     "🐖 Carnes suínas",
     "🍗 Aves",
@@ -43,6 +44,8 @@ export const CATEGORIAS = [
 export const EXCECOES_CATEGORIZACAO = [
     { categoria: "❄️ Congelados", termos: ["pão de queijo", "nugget", "nuggets", "lasanha congelada"] },
     { categoria: "🍚 Mercearia", termos: ["chocolate em pó", "papel filme", "filme plástico", "margarina", "manteiga"] },
+    { categoria: "🍚 Mercearia", termos: ["palito de dente", "palitos de dente", "papel toalha", "papel-toalha"] },
+    { categoria: "🥚 Ovos", termos: ["ovo de galinha", "ovos de galinha", "ovo de codorna", "ovos de codorna", "ovo caipira", "ovos caipiras"] },
     { categoria: "🌾 Grãos", termos: ["ervilha seca"] },
     { categoria: "🥫 Enlatados e Conservas", termos: ["atum em lata", "atum enlatado", "sardinha em lata", "sardinha enlatada"] },
     { categoria: CATEGORIA_HORTIFRUTI, termos: ["pimentão", "coentro"] },
@@ -66,6 +69,13 @@ export const REGRAS_CATEGORIZACAO = [
             "leite condensado", "cream cheese", "requeijão", "ricota",
             "cottage", "gorgonzola", "mussarela", "muçarela", "parmesão",
             "provolone", "leite", "queijo", "iogurte", "nata"
+        ]
+    },
+    {
+        categoria: "🥚 Ovos",
+        termos: [
+            "ovo branco", "ovos brancos", "ovo vermelho", "ovos vermelhos",
+            "ovo orgânico", "ovos orgânicos", "ovo", "ovos"
         ]
     },
     {
@@ -196,7 +206,8 @@ export const REGRAS_CATEGORIZACAO = [
             "flocão", "tapioca", "polvilho", "açúcar", "adoçante", "café", "cappuccino",
             "óleo", "azeite", "vinagre", "molho", "extrato", "ketchup", "catchup",
             "mostarda", "maionese", "shoyu", "fermento", "cuscuz", "granola",
-            "margarina", "manteiga", "cacau", "achocolatado"
+            "margarina", "manteiga", "cacau", "achocolatado", "palito de dente",
+            "palitos de dente", "papel toalha", "papel-toalha"
         ]
     },
     {
@@ -272,7 +283,7 @@ export const REGRAS_CATEGORIZACAO = [
             "pimenta-do-reino", "pimenta calabresa", "páprica doce", "páprica picante",
             "noz-moscada", "caldo de carne", "caldo de galinha", "caldo de legumes",
             "tempero pronto", "tempero", "pimenta", "colorau", "orégano", "cominho",
-            "canela", "açafrão", "cúrcuma", "páprica", "cravo", "louro"
+            "canela", "açafrão", "cúrcuma", "páprica", "cravo", "louro", "sal"
         ]
     },
     {

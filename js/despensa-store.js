@@ -1,3 +1,5 @@
+import { CATEGORIA_OUTROS, identificarCategoria, normalizarCategoria } from "./categorias.js";
+
 const CHAVE_DESPENSA = "despensa";
 const CHAVE_ATUALIZACAO = "despensaAtualizadaEm";
 const CHAVE_LISTAS_ATUALIZACAO = "listasUltimaAlteracao";
@@ -22,7 +24,14 @@ function criarId() {
 
 export function normalizarItemDespensa(item = {}) {
     const agora = new Date().toISOString();
-    return { id: texto(item.id) || criarId(), nome: texto(item.nome) || "Produto sem nome", categoria: texto(item.categoria) || "📦 Outros", quantidade: numero(item.quantidade), unidade: normalizarUnidade(item.unidade || item.medida), minimo: Math.max(1, numero(item.minimo) || 1), atualizadoEm: item.atualizadoEm || agora };
+    const nome = texto(item.nome) || "Produto sem nome";
+    const unidade = normalizarUnidade(item.unidade || item.medida);
+    const categoriaInformada = texto(item.categoria);
+    const categoriaNormalizada = normalizarCategoria(categoriaInformada);
+    const categoria = !categoriaInformada || categoriaNormalizada === CATEGORIA_OUTROS
+        ? identificarCategoria(nome, unidade)
+        : categoriaNormalizada;
+    return { id: texto(item.id) || criarId(), nome, categoria, quantidade: numero(item.quantidade), unidade, minimo: Math.max(1, numero(item.minimo) || 1), atualizadoEm: item.atualizadoEm || agora };
 }
 
 export function listarDespensa() {
