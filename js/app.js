@@ -1044,6 +1044,18 @@ async function iniciarAplicacao() {
 
     preencherUsuarioDashboard();
     configurarEventos();
+
+    window.addEventListener("listarapida:concluida", evento => {
+        const adicionados = Number(evento.detail?.adicionados || 0);
+        atualizarTela();
+
+        notificar(
+            adicionados > 0
+                ? `${adicionados} ${adicionados === 1 ? "produto adicionado" : "produtos adicionados"} à lista.`
+                : "Os produtos informados já estavam na lista."
+        );
+    });
+
     atualizarTela();
     void sincronizarColetasPendentes();
 
