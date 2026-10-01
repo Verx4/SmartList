@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="./css/mobile-app.css">
     <link rel="stylesheet" href="./css/listas-salvas.css?v=3">
     <link rel="stylesheet" href="./css/produtos-multivalores.css?v=2">
+    <link rel="stylesheet" href="./css/lista-rapida.css?v=1">
 </head>
 
 <body class="sem-menu-superior">
@@ -223,6 +224,9 @@
             <button id="btnFinalizarCompra" class="btn btn-primary btn-finalizar" type="button">
                 ✅ Finalizar compra
             </button>
+            <button id="btnListaRapida" class="btn btn-primary btn-lista-rapida" type="button">
+                ✨ Lista rápida
+            </button>
             <button id="btnAdicionarProduto" class="btn btn-primary btn-add btn-adicionar-item-compra" type="button">
                 + Adicionar item
             </button>
@@ -319,6 +323,60 @@
         </div>
     </div>
 
+
+    <div id="modalListaRapida" class="modal" role="dialog" aria-modal="true"
+        aria-labelledby="tituloListaRapida" aria-hidden="true" hidden>
+        <div class="modal-content lista-rapida-modal-content">
+            <div class="modal-header">
+                <div>
+                    <span class="page-eyebrow">Vários produtos de uma vez</span>
+                    <h2 id="tituloListaRapida">Criar lista rápida</h2>
+                </div>
+                <button id="btnFecharListaRapida" class="btn-fechar-modal" type="button"
+                    aria-label="Fechar lista rápida">×</button>
+            </div>
+
+            <p class="lista-rapida-introducao">
+                Escreva um produto por linha. O Smart List identifica quantidades,
+                remove repetições e organiza tudo por categoria.
+            </p>
+
+            <label class="form-group" for="textoListaRapida">
+                <span>Produtos</span>
+                <textarea id="textoListaRapida" class="lista-rapida-texto"
+                    placeholder="Arroz&#10;Feijão&#10;3 leites&#10;2 kg de carne&#10;Pão de caixa"></textarea>
+                <small class="lista-rapida-dica">
+                    Você também pode colar uma lista separada por vírgulas ou ponto e vírgula.
+                </small>
+            </label>
+
+            <div class="modal-buttons">
+                <button id="btnGerarListaRapida" type="button" class="btn btn-primary">
+                    Organizar produtos
+                </button>
+                <button id="btnCancelarListaRapida" type="button" class="btn btn-secondary">
+                    Cancelar
+                </button>
+            </div>
+
+            <section id="listaRapidaEtapaConferencia" class="lista-rapida-etapa" hidden
+                aria-labelledby="tituloConferenciaListaRapida">
+                <div class="lista-rapida-conferencia-topo">
+                    <div>
+                        <h3 id="tituloConferenciaListaRapida">Confira antes de adicionar</h3>
+                        <p id="listaRapidaContador"></p>
+                    </div>
+                </div>
+                <div id="listaRapidaConferencia" class="lista-rapida-lista"></div>
+                <div class="modal-buttons">
+                    <button id="btnConfirmarListaRapida" type="button" class="btn btn-primary">
+                        Adicionar à minha lista
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
     <footer class="site-footer">
         <div class="container footer-content">
             <p>© 2026 Smart List</p>
@@ -334,6 +392,7 @@
     <script type="module" src="./js/login-intro.js?v=3"></script>
     <script type="module" src="./js/app.js?v=71"></script>
     <script type="module" src="./js/listas-salvas-ui.js?v=6"></script>
+    <script type="module" src="./js/lista-rapida.js?v=1"></script>
     <script src="./js/mobile-nav.js?v=4"></script>
 </body>
 
