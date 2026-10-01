@@ -1,6 +1,7 @@
 import "./animations.js";
 import { api } from "./api.js";
 import { combinarHistoricos } from "./historico-sync.js";
+import { listarDespensa, produtosAcabando } from "./despensa-store.js";
 
 const moeda = valor => Number(valor || 0).toLocaleString("pt-BR", {
     style: "currency",
@@ -21,6 +22,15 @@ const ler = (chave, padrao = []) => {
 
 const produtos = ler("produtos", []);
 const usuario = ler("usuarioAtual", ler("usuarioLogado", {}));
+
+function renderizarProdutosAcabando() {
+    const container = document.getElementById("produtosAcabandoInicio");
+    if (!container) return;
+    const baixos = produtosAcabando(listarDespensa());
+    container.innerHTML = baixos.length
+        ? baixos.slice(0, 5).map(item => `<a href="./despensa.html"><span><strong>${escapar(item.nome)}</strong><small>${escapar(item.categoria)}</small></span><b>${Number(item.quantidade || 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} ${escapar(item.unidade)}</b></a>`).join("")
+        : '<p>Todos os produtos estão abastecidos.</p>';
+}
 
 const normalizar = valor => String(valor || "")
     .normalize("NFD")
@@ -201,6 +211,7 @@ carregarResumoInicio().catch(erro => {
     console.warn("Não foi possível carregar o resumo da tela inicial.", erro);
 });
 carregarGestaoPlanosInicio();
+renderizarProdutosAcabando();
 
 document.getElementById("btnTemaInicio")?.addEventListener("click", evento => {
     evento.stopPropagation();
