@@ -40,19 +40,19 @@ public class ColetaPrecoService {
     private static final Set<String> CATEGORIAS_VALIDAS = Set.copyOf(CATEGORIAS);
     private static final List<RegraCategoria> TERMOS_CATEGORIAS = List.of(
         new RegraCategoria("🥛 Laticínios", List.of("leite", "queijo", "iogurte", "requeijao", "manteiga")),
-        new RegraCategoria("🥩 Carnes bovinas", List.of(
-            "carne bovina", "carne moida", "carne seca", "carne de sol", "file mignon",
-            "contra file", "contrafile", "costela bovina", "coxao mole", "coxao duro",
-            "figado bovino", "lingua bovina", "carne", "bife", "picanha", "alcatra",
-            "acem", "patinho", "maminha", "fraldinha", "cupim", "lagarto", "paleta",
-            "musculo", "ossobuco", "charque", "rabada", "mocoto"
-        )),
         new RegraCategoria("🐖 Carnes suínas", List.of(
             "carne suina", "carne de porco", "costela suina", "file mignon suino",
             "lombo suino", "bisteca suina", "picanha suina", "pernil suino",
             "copa lombo", "panceta", "leitao", "pernil", "lombo", "bisteca",
             "toucinho", "bacon", "linguica", "calabresa", "paio", "presunto",
             "salame", "mortadela", "pepperoni"
+        )),
+        new RegraCategoria("🥩 Carnes bovinas", List.of(
+            "carne bovina", "carne moida", "carne seca", "carne de sol", "file mignon",
+            "contra file", "contrafile", "costela bovina", "coxao mole", "coxao duro",
+            "figado bovino", "lingua bovina", "carne", "bife", "picanha", "alcatra",
+            "acem", "patinho", "maminha", "fraldinha", "cupim", "lagarto", "paleta",
+            "musculo", "ossobuco", "charque", "rabada", "mocoto"
         )),
         new RegraCategoria("🍗 Aves", List.of(
             "peito de frango", "file de frango", "coxa e sobrecoxa", "coracao de frango",
