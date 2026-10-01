@@ -2,6 +2,8 @@ import { adicionarProduto, listarProdutos } from "./produtos.js";
 import { CATEGORIAS, identificarCategoria } from "./categorias.js";
 
 let itensConferencia = [];
+let reconhecimentoVoz = null;
+let ouvindoLista = false;
 
 function semAcentos(valor) {
     return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -17,8 +19,6 @@ function escaparHTML(valor) {
 }
 
 function categoriaAutomatica(nome) {
-    // Na criação da lista ainda não sabemos a embalagem; "kg" evita que
-    // carnes frescas sejam confundidas com congelados por usarem quantidade.
     return identificarCategoria(nome, "kg");
 }
 
@@ -101,7 +101,11 @@ function renderizarConferencia() {
             </label>
             <label class="lista-rapida-campo-curto">
                 <span>Quantidade</span>
-                <input type="number" data-campo="quantidade" min="0.001" step="0.001" value="${item.quantidade}">
+                <span class="lista-rapida-quantidade">
+                    <button type="button" data-ajustar-quantidade="-1" aria-label="Diminuir quantidade de ${escaparHTML(item.nome)}">−</button>
+                    <input type="number" data-campo="quantidade" min="0.001" step="${item.medida === "kg" ? "0.1" : "1"}" value="${item.quantidade}">
+                    <button type="button" data-ajustar-quantidade="1" aria-label="Aumentar quantidade de ${escaparHTML(item.nome)}">+</button>
+                </span>
             </label>
             <label class="lista-rapida-campo-curto">
                 <span>Unidade</span>
@@ -130,6 +134,89 @@ function fecharModal() {
     modal.hidden = true;
     modal.setAttribute("aria-hidden", "true");
     document.body.classList.remove("modal-aberto");
+    if (ouvindoLista) reconhecimentoVoz?.stop();
+}
+
+function atualizarEstadoVoz(mensagem = "", ativo = false) {
+    ouvindoLista = ativo;
+    const botao = document.getElementById("btnFalarListaRapida");
+    const status = document.getElementById("statusVozListaRapida");
+    if (botao) {
+        botao.classList.toggle("esta-ouvindo", ativo);
+        botao.setAttribute("aria-pressed", String(ativo));
+        botao.querySelector("span:last-child").textContent = ativo ? "Parar" : "Falar produtos";
+    }
+    if (status) status.textContent = mensagem;
+}
+
+function adicionarTextoFalado(transcricao) {
+    const campo = document.getElementById("textoListaRapida");
+    if (!campo) return;
+    const itensFalados = String(transcricao || "")
+        .trim()
+        .replace(/[,.]+/g, "\n")
+        .replace(/\s+e\s+/gi, "\n")
+        .split("\n")
+        .map(item => item.trim())
+        .filter(Boolean)
+        .join("\n");
+    if (!itensFalados) return;
+    campo.value = [campo.value.trim(), itensFalados].filter(Boolean).join("\n");
+    campo.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+function configurarEntradaPorVoz() {
+    const campo = document.getElementById("textoListaRapida");
+    if (!campo || document.getElementById("btnFalarListaRapida")) return;
+
+    const area = document.createElement("div");
+    area.className = "lista-rapida-voz";
+    area.innerHTML = `
+        <button id="btnFalarListaRapida" type="button" class="btn btn-voz-lista" aria-pressed="false">
+            <span aria-hidden="true">🎙️</span><span>Falar produtos</span>
+        </button>
+        <small id="statusVozListaRapida" role="status" aria-live="polite"></small>
+    `;
+    campo.insertAdjacentElement("afterend", area);
+
+    const Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const botao = area.querySelector("#btnFalarListaRapida");
+    if (!Reconhecimento) {
+        botao.disabled = true;
+        atualizarEstadoVoz("Entrada por voz não disponível neste navegador.");
+        return;
+    }
+
+    reconhecimentoVoz = new Reconhecimento();
+    reconhecimentoVoz.lang = "pt-BR";
+    reconhecimentoVoz.continuous = true;
+    reconhecimentoVoz.interimResults = false;
+    reconhecimentoVoz.onresult = evento => {
+        for (let indice = evento.resultIndex; indice < evento.results.length; indice += 1) {
+            if (evento.results[indice].isFinal) adicionarTextoFalado(evento.results[indice][0].transcript);
+        }
+    };
+    reconhecimentoVoz.onerror = evento => {
+        const mensagem = evento.error === "not-allowed"
+            ? "Permita o acesso ao microfone para usar a voz."
+            : "Não consegui ouvir. Tente novamente.";
+        atualizarEstadoVoz(mensagem, false);
+    };
+    reconhecimentoVoz.onend = () => {
+        if (ouvindoLista) atualizarEstadoVoz("Itens ouvidos. Você pode revisar a lista.", false);
+    };
+    botao.addEventListener("click", () => {
+        if (ouvindoLista) {
+            reconhecimentoVoz.stop();
+            return;
+        }
+        try {
+            reconhecimentoVoz.start();
+            atualizarEstadoVoz("Ouvindo… fale um item por vez.", true);
+        } catch (_erro) {
+            atualizarEstadoVoz("Aguarde um instante e tente novamente.", false);
+        }
+    });
 }
 
 function gerarConferencia() {
@@ -201,6 +288,19 @@ function iniciar() {
     document.getElementById("listaRapidaConferencia")?.addEventListener("input", atualizarItem);
     document.getElementById("listaRapidaConferencia")?.addEventListener("change", atualizarItem);
     document.getElementById("listaRapidaConferencia")?.addEventListener("click", evento => {
+        const ajuste = evento.target.closest("[data-ajustar-quantidade]");
+        if (ajuste) {
+            const cardAjuste = ajuste.closest("[data-lista-rapida-id]");
+            const item = itensConferencia.find(atual => atual.id === cardAjuste?.dataset.listaRapidaId);
+            const campo = cardAjuste?.querySelector('[data-campo="quantidade"]');
+            if (!item || !campo) return;
+            const direcao = Number(ajuste.dataset.ajustarQuantidade);
+            const passo = item.medida === "kg" ? 0.1 : 1;
+            const minimo = item.medida === "kg" ? 0.1 : 1;
+            item.quantidade = Math.max(minimo, Math.round((Number(item.quantidade) + (direcao * passo)) * 1000) / 1000);
+            campo.value = item.quantidade;
+            return;
+        }
         const botao = evento.target.closest("[data-remover-item]");
         const card = botao?.closest("[data-lista-rapida-id]");
         if (!card) return;
@@ -213,6 +313,7 @@ function iniciar() {
     document.addEventListener("keydown", evento => {
         if (evento.key === "Escape" && !document.getElementById("modalListaRapida")?.hidden) fecharModal();
     });
+    configurarEntradaPorVoz();
     configurarCliqueNoProduto();
 }
 
