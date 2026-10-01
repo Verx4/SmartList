@@ -144,6 +144,18 @@ function gerarConferencia() {
     renderizarConferencia();
 }
 
+function inserirQuebraDeLinha(evento) {
+    if (!["insertLineBreak", "insertParagraph"].includes(evento.inputType)) return;
+    const campo = evento.currentTarget;
+    if (!(campo instanceof HTMLTextAreaElement)) return;
+
+    evento.preventDefault();
+    const inicio = campo.selectionStart ?? campo.value.length;
+    const fim = campo.selectionEnd ?? inicio;
+    campo.setRangeText("\n", inicio, fim, "end");
+    campo.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 function atualizarItem(evento) {
     const card = evento.target.closest("[data-lista-rapida-id]");
     const campo = evento.target.dataset.campo;
@@ -200,6 +212,7 @@ function iniciar() {
     document.getElementById("btnCancelarListaRapida")?.addEventListener("click", fecharModal);
     document.getElementById("btnGerarListaRapida")?.addEventListener("click", gerarConferencia);
     document.getElementById("btnConfirmarListaRapida")?.addEventListener("click", confirmarLista);
+    document.getElementById("textoListaRapida")?.addEventListener("beforeinput", inserirQuebraDeLinha);
     document.getElementById("listaRapidaConferencia")?.addEventListener("input", atualizarItem);
     document.getElementById("listaRapidaConferencia")?.addEventListener("change", atualizarItem);
     document.getElementById("listaRapidaConferencia")?.addEventListener("click", evento => {
