@@ -10,6 +10,8 @@ const CHAVE_ORCAMENTO = "orcamentoCompra";
 const CHAVE_EXCLUIDAS = "listasExcluidasSync";
 const CHAVE_ULTIMA_ALTERACAO = "listasUltimaAlteracao";
 const CHAVE_USUARIO_ATIVO = "smartListUsuarioListasAtivo";
+const CHAVE_DESPENSA = "despensa";
+const CHAVE_DESPENSA_ATUALIZADA = "despensaAtualizadaEm";
 const PREFIXO_CACHE_USUARIO = "smartListListasUsuario:";
 const PREFIXO_BACKUP_MIGRACAO = "smartListBackupMigracaoListas:";
 const PREFIXO_SINCRONIZACAO_INICIAL = "smartListListasSincronizadas:";
@@ -193,6 +195,8 @@ function capturarEstadoLocal() {
         mercadosFrequentes: lerJson(CHAVE_MERCADOS, []),
         mercadosRecentes: lerJson(CHAVE_MERCADOS_ANTIGOS, []),
         orcamentoCompra: localStorage.getItem(CHAVE_ORCAMENTO),
+        despensa: lerJson(CHAVE_DESPENSA, []),
+        despensaAtualizadaEm: localStorage.getItem(CHAVE_DESPENSA_ATUALIZADA),
         listasExcluidas: normalizarExcluidas(lerJson(CHAVE_EXCLUIDAS, []))
     };
 }
@@ -214,6 +218,8 @@ function normalizarEstado(estado = {}) {
         orcamentoCompra: estado.orcamentoCompra == null
             ? null
             : String(estado.orcamentoCompra),
+        despensa: Array.isArray(estado.despensa) ? estado.despensa : [],
+        despensaAtualizadaEm: estado.despensaAtualizadaEm || null,
         listasExcluidas: normalizarExcluidas(estado.listasExcluidas)
     };
 }
@@ -309,6 +315,8 @@ function combinarEstados(localInformado, remotoInformado, opcoes = {}) {
     const localMaisNovo = instante(local.atualizadoEm) >= instante(remoto.atualizadoEm);
     const preferido = localMaisNovo ? local : remoto;
     const alternativo = localMaisNovo ? remoto : local;
+    const despensaLocalMaisNova = instante(local.despensaAtualizadaEm) >= instante(remoto.despensaAtualizadaEm);
+    const estadoDespensa = despensaLocalMaisNova ? local : remoto;
     const ids = new Set(listas.map(lista => lista.id));
     const listaAtualId = ids.has(preferido.listaAtualId)
         ? preferido.listaAtualId
@@ -333,6 +341,8 @@ function combinarEstados(localInformado, remotoInformado, opcoes = {}) {
             local.mercadosRecentes
         ),
         orcamentoCompra: preferido.orcamentoCompra ?? alternativo.orcamentoCompra,
+        despensa: estadoDespensa.despensa,
+        despensaAtualizadaEm: estadoDespensa.despensaAtualizadaEm,
         listasExcluidas: excluidas
     };
 }
@@ -363,6 +373,8 @@ function aplicarEstadoLocal(estadoInformado) {
 
     if (estado.orcamentoCompra == null) localStorage.removeItem(CHAVE_ORCAMENTO);
     else localStorage.setItem(CHAVE_ORCAMENTO, estado.orcamentoCompra);
+    localStorage.setItem(CHAVE_DESPENSA, JSON.stringify(estado.despensa));
+    if (estado.despensaAtualizadaEm) localStorage.setItem(CHAVE_DESPENSA_ATUALIZADA, estado.despensaAtualizadaEm);
 
     const usuario = usuarioSincronizacao();
     if (usuario) {
@@ -383,7 +395,9 @@ function limparDadosDeOutraConta() {
         CHAVE_MERCADOS_ANTIGOS,
         CHAVE_ORCAMENTO,
         CHAVE_EXCLUIDAS,
-        CHAVE_ULTIMA_ALTERACAO
+        CHAVE_ULTIMA_ALTERACAO,
+        CHAVE_DESPENSA,
+        CHAVE_DESPENSA_ATUALIZADA
     ].forEach(chave => localStorage.removeItem(chave));
 }
 

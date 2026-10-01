@@ -69,6 +69,7 @@ import {
     sincronizarColetasPendentes
 } from "./coleta-precos.js";
 import { iniciarSincronizacaoListas } from "./listas-sync.js";
+import { adicionarCompraNaDespensa } from "./despensa-store.js";
 
 import {
     animarAberturaModal,
@@ -741,6 +742,8 @@ function concluirCompra() {
         const resultado =
             registrarCompra(produtos);
 
+        adicionarCompraNaDespensa(resultado.compra);
+
         enfileirarColetaPreco(resultado.compra);
         void sincronizarColetasPendentes();
 
@@ -767,7 +770,7 @@ function concluirCompra() {
                     style: "currency",
                     currency: "BRL"
                 })}.`
-                : "Compra finalizada e adicionada ao histórico."
+                : "Compra finalizada. Os itens foram adicionados à sua despensa."
         );
 
         const historicoContainer =

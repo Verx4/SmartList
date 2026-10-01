@@ -12,6 +12,7 @@
     const paginasDoMenu = new Set([
         "menu.html",
         "minha-economia.html",
+        "despensa.html",
         "perfil.html",
         "assinatura.html",
         "sugestoes.html",
