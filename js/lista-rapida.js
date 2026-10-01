@@ -1,6 +1,5 @@
 import { adicionarProduto, listarProdutos } from "./produtos.js";
 import { CATEGORIAS, identificarCategoria } from "./categorias.js";
-import { api } from "./api.js";
 
 let itensConferencia = [];
 let reconhecimentoVoz = null;
@@ -8,6 +7,13 @@ let ouvindoLista = false;
 let usarDitadoDoTeclado = false;
 let gravadorAudio = null;
 let partesAudio = [];
+let temporizadorGravacao = null;
+let workerVozLocal = null;
+let requisicaoVozAtual = 0;
+let transcrevendoVoz = false;
+
+const DURACAO_MAXIMA_GRAVACAO_MS = 30_000;
+const TAXA_AMOSTRAGEM_VOZ = 16_000;
 
 function semAcentos(valor) {
     return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -157,6 +163,12 @@ function atualizarEstadoVoz(mensagem = "", ativo = false) {
     if (status) status.textContent = mensagem;
 }
 
+function atualizarProcessamentoVoz(processando) {
+    transcrevendoVoz = processando;
+    const botao = document.getElementById("btnFalarListaRapida");
+    if (botao) botao.disabled = processando;
+}
+
 function adicionarTextoFalado(transcricao) {
     const campo = document.getElementById("textoListaRapida");
     if (!campo) return;
@@ -202,22 +214,101 @@ function tipoAudioSuportado() {
         .find(tipo => window.MediaRecorder?.isTypeSupported?.(tipo)) || "";
 }
 
-async function enviarAudioParaTranscricao(blob) {
-    atualizarEstadoVoz("Transformando sua voz em produtos…", true);
-    const formulario = new FormData();
-    const extensao = blob.type.includes("mp4") ? "m4a" : "webm";
-    formulario.append("audio", blob, `lista-rapida.${extensao}`);
+function criarWorkerVozLocal() {
+    if (workerVozLocal) return workerVozLocal;
+    workerVozLocal = new Worker(new URL("./voz-local-worker.js", import.meta.url), { type: "module" });
+    return workerVozLocal;
+}
+
+async function converterAudioParaMono16k(blob) {
+    const AudioContexto = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContexto) throw new Error("Este aparelho não consegue preparar o áudio.");
+
+    const contexto = new AudioContexto();
     try {
-        const resposta = await api.post("/voz/transcrever", formulario);
-        adicionarTextoFalado(resposta?.texto || "");
+        const dados = await blob.arrayBuffer();
+        const audio = await contexto.decodeAudioData(dados.slice(0));
+        const quantidadeAmostras = Math.max(1, Math.round(audio.duration * TAXA_AMOSTRAGEM_VOZ));
+        const resultado = new Float32Array(quantidadeAmostras);
+        const canais = Array.from(
+            { length: audio.numberOfChannels },
+            (_valor, indice) => audio.getChannelData(indice)
+        );
+        const proporcao = audio.sampleRate / TAXA_AMOSTRAGEM_VOZ;
+
+        for (let destino = 0; destino < quantidadeAmostras; destino += 1) {
+            const origem = Math.min(audio.length - 1, destino * proporcao);
+            const anterior = Math.floor(origem);
+            const proximo = Math.min(audio.length - 1, anterior + 1);
+            const fracao = origem - anterior;
+            let amostra = 0;
+            canais.forEach(canal => {
+                amostra += canal[anterior] + ((canal[proximo] - canal[anterior]) * fracao);
+            });
+            resultado[destino] = amostra / canais.length;
+        }
+        return resultado;
+    } finally {
+        await contexto.close().catch(() => undefined);
+    }
+}
+
+async function transcreverAudioLocalmente(blob) {
+    atualizarProcessamentoVoz(true);
+    atualizarEstadoVoz("Preparando o áudio no aparelho…", false);
+    try {
+        const audio = await converterAudioParaMono16k(blob);
+        const worker = criarWorkerVozLocal();
+        const id = ++requisicaoVozAtual;
+
+        await new Promise((resolve, reject) => {
+            const aoReceber = evento => {
+                const mensagem = evento.data || {};
+                if (mensagem.id !== id && mensagem.tipo !== "progresso") return;
+                if (mensagem.tipo === "progresso") {
+                    atualizarEstadoVoz(mensagem.mensagem, true);
+                    return;
+                }
+                if (mensagem.tipo === "resultado") {
+                    worker.removeEventListener("message", aoReceber);
+                    worker.removeEventListener("error", aoFalhar);
+                    adicionarTextoFalado(mensagem.texto);
+                    resolve();
+                    return;
+                }
+                if (mensagem.tipo === "erro") {
+                    worker.removeEventListener("message", aoReceber);
+                    worker.removeEventListener("error", aoFalhar);
+                    reject(new Error(mensagem.mensagem));
+                }
+            };
+            const aoFalhar = () => {
+                worker.removeEventListener("message", aoReceber);
+                worker.removeEventListener("error", aoFalhar);
+                reject(new Error("Não foi possível carregar o reconhecimento de voz gratuito."));
+            };
+            worker.addEventListener("message", aoReceber);
+            worker.addEventListener("error", aoFalhar, { once: true });
+            worker.postMessage({ tipo: "transcrever", id, audio }, [audio.buffer]);
+        });
+
         atualizarEstadoVoz("Produtos registrados. Revise a lista antes de organizar.", false);
     } catch (erro) {
-        atualizarEstadoVoz(erro?.message || "Não foi possível transcrever o áudio.", false);
+        workerVozLocal?.terminate();
+        workerVozLocal = null;
+        atualizarEstadoVoz(
+            erro?.message || "Não foi possível reconhecer a voz neste aparelho.",
+            false
+        );
+    } finally {
+        atualizarProcessamentoVoz(false);
     }
 }
 
 async function alternarGravacao() {
+    if (transcrevendoVoz) return;
     if (gravadorAudio?.state === "recording") {
+        clearTimeout(temporizadorGravacao);
         gravadorAudio.stop();
         return;
     }
@@ -230,13 +321,17 @@ async function alternarGravacao() {
             if (evento.data?.size) partesAudio.push(evento.data);
         };
         gravadorAudio.onstop = () => {
+            clearTimeout(temporizadorGravacao);
             fluxo.getTracks().forEach(trilha => trilha.stop());
             const blob = new Blob(partesAudio, { type: gravadorAudio.mimeType || tipo || "audio/mp4" });
-            if (blob.size > 0) void enviarAudioParaTranscricao(blob);
+            if (blob.size > 0) void transcreverAudioLocalmente(blob);
             else atualizarEstadoVoz("Nenhum áudio foi gravado. Tente novamente.", false);
         };
         gravadorAudio.start();
         atualizarEstadoVoz("Gravando… fale os produtos e toque em Parar.", true);
+        temporizadorGravacao = window.setTimeout(() => {
+            if (gravadorAudio?.state === "recording") gravadorAudio.stop();
+        }, DURACAO_MAXIMA_GRAVACAO_MS);
     } catch (_erro) {
         atualizarEstadoVoz("Permita o acesso ao microfone nos Ajustes do iPhone.", false);
     }
