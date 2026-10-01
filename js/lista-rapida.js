@@ -1,10 +1,13 @@
 import { adicionarProduto, listarProdutos } from "./produtos.js";
 import { CATEGORIAS, identificarCategoria } from "./categorias.js";
+import { api } from "./api.js";
 
 let itensConferencia = [];
 let reconhecimentoVoz = null;
 let ouvindoLista = false;
 let usarDitadoDoTeclado = false;
+let gravadorAudio = null;
+let partesAudio = [];
 
 function semAcentos(valor) {
     return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -194,6 +197,51 @@ function abrirDitadoDoTeclado() {
     atualizarEstadoVoz("Agora toque no 🎙️ do teclado e fale os produtos.", false);
 }
 
+function tipoAudioSuportado() {
+    return ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"]
+        .find(tipo => window.MediaRecorder?.isTypeSupported?.(tipo)) || "";
+}
+
+async function enviarAudioParaTranscricao(blob) {
+    atualizarEstadoVoz("Transformando sua voz em produtos…", true);
+    const formulario = new FormData();
+    const extensao = blob.type.includes("mp4") ? "m4a" : "webm";
+    formulario.append("audio", blob, `lista-rapida.${extensao}`);
+    try {
+        const resposta = await api.post("/voz/transcrever", formulario);
+        adicionarTextoFalado(resposta?.texto || "");
+        atualizarEstadoVoz("Produtos registrados. Revise a lista antes de organizar.", false);
+    } catch (erro) {
+        atualizarEstadoVoz(erro?.message || "Não foi possível transcrever o áudio.", false);
+    }
+}
+
+async function alternarGravacao() {
+    if (gravadorAudio?.state === "recording") {
+        gravadorAudio.stop();
+        return;
+    }
+    try {
+        const fluxo = await navigator.mediaDevices.getUserMedia({ audio: true });
+        partesAudio = [];
+        const tipo = tipoAudioSuportado();
+        gravadorAudio = new MediaRecorder(fluxo, tipo ? { mimeType: tipo } : undefined);
+        gravadorAudio.ondataavailable = evento => {
+            if (evento.data?.size) partesAudio.push(evento.data);
+        };
+        gravadorAudio.onstop = () => {
+            fluxo.getTracks().forEach(trilha => trilha.stop());
+            const blob = new Blob(partesAudio, { type: gravadorAudio.mimeType || tipo || "audio/mp4" });
+            if (blob.size > 0) void enviarAudioParaTranscricao(blob);
+            else atualizarEstadoVoz("Nenhum áudio foi gravado. Tente novamente.", false);
+        };
+        gravadorAudio.start();
+        atualizarEstadoVoz("Gravando… fale os produtos e toque em Parar.", true);
+    } catch (_erro) {
+        atualizarEstadoVoz("Permita o acesso ao microfone nos Ajustes do iPhone.", false);
+    }
+}
+
 function configurarEntradaPorVoz() {
     const campo = document.getElementById("textoListaRapida");
     if (!campo || document.getElementById("btnFalarListaRapida")) return;
@@ -210,9 +258,19 @@ function configurarEntradaPorVoz() {
 
     const Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
     const botao = area.querySelector("#btnFalarListaRapida");
+    const usarGravacao = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+        && Boolean(window.MediaRecorder && navigator.mediaDevices?.getUserMedia);
+    if (usarGravacao) {
+        botao.addEventListener("click", alternarGravacao);
+        return;
+    }
     if (!Reconhecimento) {
-        botao.disabled = true;
-        atualizarEstadoVoz("Entrada por voz não disponível neste navegador.");
+        if (window.MediaRecorder && navigator.mediaDevices?.getUserMedia) {
+            botao.addEventListener("click", alternarGravacao);
+        } else {
+            botao.disabled = true;
+            atualizarEstadoVoz("Entrada por voz não disponível neste aparelho.");
+        }
         return;
     }
 
