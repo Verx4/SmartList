@@ -1,35 +1,5 @@
 import { adicionarProduto, listarProdutos } from "./produtos.js";
-
-const CATEGORIAS = [
-    "🥛 Laticínios", "🥩 Carnes", "🍗 Frango", "🐟 Peixes e Frutos do Mar",
-    "🍎 Hortifruti", "🍞 Padaria", "🥤 Bebidas", "⚡ Energéticos",
-    "🍺 Bebidas Alcoólicas", "🌾 Grãos", "🍚 Mercearia", "🍪 Doces e Snacks",
-    "🧼 Limpeza", "🪥 Higiene", "🐶 Pet", "💊 Farmácia",
-    "🥫 Enlatados e Conservas", "❄️ Congelados", "🌶️ Temperos",
-    "🍽️ Descartáveis", "🔌 Utilidades", "📦 Outros"
-];
-
-const PALAVRAS_CATEGORIA = [
-    ["🥛 Laticínios", ["leite", "queijo", "iogurte", "manteiga", "requeijao", "creme de leite", "leite condensado"]],
-    ["🥩 Carnes", ["carne", "bife", "patinho", "picanha", "costela", "linguica", "presunto"]],
-    ["🍗 Frango", ["frango", "peito de frango", "coxa", "sobrecoxa"]],
-    ["🐟 Peixes e Frutos do Mar", ["peixe", "tilapia", "sardinha", "atum", "camarao", "salmao"]],
-    ["🍎 Hortifruti", ["banana", "maca", "laranja", "uva", "tomate", "cebola", "batata", "cenoura", "alface", "verdura", "fruta"]],
-    ["🍞 Padaria", ["pao", "bolo", "torrada", "biscoito de polvilho"]],
-    ["🥤 Bebidas", ["agua", "suco", "refrigerante", "cafe", "cha"]],
-    ["🌾 Grãos", ["arroz", "feijao", "grao", "lentilha", "milho", "aveia"]],
-    ["🍚 Mercearia", ["macarrao", "farinha", "acucar", "sal", "oleo", "azeite", "molho", "massa", "cuscuz"]],
-    ["🍪 Doces e Snacks", ["chocolate", "bombom", "doce", "salgadinho", "pipoca"]],
-    ["🧼 Limpeza", ["detergente", "sabao", "desinfetante", "amaciante", "agua sanitaria", "esponja", "limpeza"]],
-    ["🪥 Higiene", ["sabonete", "shampoo", "condicionador", "creme dental", "pasta de dente", "papel higienico", "desodorante"]],
-    ["🐶 Pet", ["racao", "petisco", "areia de gato"]],
-    ["💊 Farmácia", ["remedio", "medicamento", "vitamina", "curativo", "algodao"]],
-    ["🥫 Enlatados e Conservas", ["enlatado", "ervilha", "azeitona", "palmito", "extrato de tomate"]],
-    ["❄️ Congelados", ["congelado", "sorvete", "lasanha", "pizza"]],
-    ["🌶️ Temperos", ["tempero", "pimenta", "oregano", "colorau", "cominho"]],
-    ["🍽️ Descartáveis", ["copo descartavel", "prato descartavel", "guardanapo", "papel aluminio", "filme plastico"]],
-    ["🔌 Utilidades", ["pilha", "lampada", "fosforo", "vela"]]
-];
+import { CATEGORIAS, identificarCategoria } from "./categorias.js";
 
 let itensConferencia = [];
 
@@ -47,10 +17,9 @@ function escaparHTML(valor) {
 }
 
 function categoriaAutomatica(nome) {
-    const normalizado = semAcentos(nome);
-    return PALAVRAS_CATEGORIA.find(([, palavras]) =>
-        palavras.some(palavra => normalizado.includes(semAcentos(palavra)))
-    )?.[0] || "📦 Outros";
+    // Na criação da lista ainda não sabemos a embalagem; "kg" evita que
+    // carnes frescas sejam confundidas com congelados por usarem quantidade.
+    return identificarCategoria(nome, "kg");
 }
 
 function capitalizar(nome) {

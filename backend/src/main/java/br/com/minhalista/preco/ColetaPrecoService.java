@@ -32,7 +32,7 @@ import jakarta.validation.constraints.Size;
 public class ColetaPrecoService {
     public static final String CATEGORIA_OUTROS = "📦 Outros";
     public static final List<String> CATEGORIAS = List.of(
-        "🥛 Laticínios", "🥩 Carnes", "🍗 Frango", "🐟 Peixes e Frutos do Mar", "🍎 Hortifruti", "🍞 Padaria",
+        "🥛 Laticínios", "🥩 Carnes bovinas", "🐖 Carnes suínas", "🍗 Aves", "🐟 Peixes e Frutos do Mar", "🍎 Hortifruti", "🍞 Padaria",
         "🥤 Bebidas", "⚡ Energéticos", "🍺 Bebidas Alcoólicas", "🌾 Grãos", "🍚 Mercearia", "🍪 Doces e Snacks",
         "🧼 Limpeza", "🪥 Higiene", "🐶 Pet", "💊 Farmácia", "🥫 Enlatados e Conservas", "❄️ Congelados",
         "🌶️ Temperos", "🍽️ Descartáveis", "🔌 Utilidades", CATEGORIA_OUTROS
@@ -40,8 +40,26 @@ public class ColetaPrecoService {
     private static final Set<String> CATEGORIAS_VALIDAS = Set.copyOf(CATEGORIAS);
     private static final List<RegraCategoria> TERMOS_CATEGORIAS = List.of(
         new RegraCategoria("🥛 Laticínios", List.of("leite", "queijo", "iogurte", "requeijao", "manteiga")),
-        new RegraCategoria("🥩 Carnes", List.of("carne", "bife", "picanha", "linguica", "bacon")),
-        new RegraCategoria("🍗 Frango", List.of("frango", "coxa", "sobrecoxa", "galinha")),
+        new RegraCategoria("🐖 Carnes suínas", List.of(
+            "carne suina", "carne de porco", "costela suina", "file mignon suino",
+            "lombo suino", "bisteca suina", "picanha suina", "pernil suino",
+            "copa lombo", "panceta", "leitao", "pernil", "lombo", "bisteca",
+            "toucinho", "bacon", "linguica", "calabresa", "paio", "presunto",
+            "salame", "mortadela", "pepperoni"
+        )),
+        new RegraCategoria("🥩 Carnes bovinas", List.of(
+            "carne bovina", "carne moida", "carne seca", "carne de sol", "file mignon",
+            "contra file", "contrafile", "costela bovina", "coxao mole", "coxao duro",
+            "figado bovino", "lingua bovina", "carne", "bife", "picanha", "alcatra",
+            "acem", "patinho", "maminha", "fraldinha", "cupim", "lagarto", "paleta",
+            "musculo", "ossobuco", "charque", "rabada", "mocoto"
+        )),
+        new RegraCategoria("🍗 Aves", List.of(
+            "peito de frango", "file de frango", "coxa e sobrecoxa", "coracao de frango",
+            "figado de frango", "frango inteiro", "frango", "coxa", "sobrecoxa",
+            "asa", "tulipa", "moela", "galinha", "peru", "pato", "marreco",
+            "codorna", "chester", "faisao"
+        )),
         new RegraCategoria("🐟 Peixes e Frutos do Mar", List.of("peixe", "tilapia", "salmao", "camarao", "atum")),
         new RegraCategoria("🍎 Hortifruti", List.of("banana", "maca", "tomate", "batata", "cebola", "fruta", "verdura", "legume")),
         new RegraCategoria("🍞 Padaria", List.of("pao", "bolo", "torrada", "croissant")),
@@ -198,6 +216,8 @@ public class ColetaPrecoService {
     public String resolverCategoria(String nome, String categoriaRecebida) {
         String recebida = categoriaRecebida == null ? "" : categoriaRecebida.trim();
         if (CATEGORIAS_VALIDAS.contains(recebida)) return recebida;
+        if (recebida.equals("🥩 Carnes")) return "🥩 Carnes bovinas";
+        if (recebida.equals("🍗 Frango")) return "🍗 Aves";
         if (recebida.equalsIgnoreCase("Outros")) return CATEGORIA_OUTROS;
         String busca = removerAcentos(nome);
         return TERMOS_CATEGORIAS.stream().filter(regra -> regra.termos().stream().anyMatch(busca::contains)).map(RegraCategoria::categoria).findFirst().orElse(CATEGORIA_OUTROS);

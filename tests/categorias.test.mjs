@@ -37,11 +37,13 @@ const casosObrigatorios = [
     ["Chocolate em pó", "", "🍚 Mercearia"],
     ["Achocolatado", "", "🍚 Mercearia"],
     ["Chocolate", "", "🍪 Doces e Snacks"],
-    ["Frango", "KG", "🍗 Frango"],
+    ["Frango", "KG", "🍗 Aves"],
     ["Frango", "UNIDADES", "❄️ Congelados"],
-    ["Carne", "KG", "🥩 Carnes"],
+    ["Carne", "KG", "🥩 Carnes bovinas"],
     ["Carne", "UNIDADES", "❄️ Congelados"],
-    ["Picanha", "KG", "🥩 Carnes"],
+    ["Bacon", "KG", "🐖 Carnes suínas"],
+    ["Bacon", "UNIDADES", "❄️ Congelados"],
+    ["Picanha", "KG", "🥩 Carnes bovinas"],
     ["Picanha", "UNIDADES", "❄️ Congelados"],
     ["Tilápia", "KG", "🐟 Peixes e Frutos do Mar"],
     ["Tilápia", "UNIDADES", "❄️ Congelados"],
@@ -63,8 +65,9 @@ test("classifica todos os cenários obrigatórios da nova lista", () => {
 test("mantém cobertura representativa de todas as categorias", () => {
     const casos = [
         ["Iogurte grego", "🥛 Laticínios"],
-        ["Filé mignon", "🥩 Carnes"],
-        ["Coxa e sobrecoxa", "🍗 Frango"],
+        ["Filé mignon", "🥩 Carnes bovinas"],
+        ["Lombo suíno", "🐖 Carnes suínas"],
+        ["Coxa e sobrecoxa", "🍗 Aves"],
         ["Lagosta", "🐟 Peixes e Frutos do Mar"],
         ["Rúcula", "🍎 Hortifruti"],
         ["Bisnaguinha", "🍞 Padaria"],
@@ -115,8 +118,8 @@ test("expressões completas vencem palavras genéricas", () => {
 
 test("categoria manual não é substituída pelo Automático", () => {
     assert.equal(
-        resolverCategoriaSelecionada("Nugget", "🥩 Carnes", "unidade"),
-        "🥩 Carnes"
+        resolverCategoriaSelecionada("Nugget", "🐖 Carnes suínas", "unidade"),
+        "🐖 Carnes suínas"
     );
     assert.equal(
         resolverCategoriaSelecionada("Nugget", "automatico", "unidade"),
