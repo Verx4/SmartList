@@ -2,6 +2,7 @@ import {
     normalizarMedidaProduto,
     produtoEhPorPeso
 } from "./medidas-produtos.js";
+import { normalizarCategoria } from "./categorias.js";
 
 const CHAVE_PRODUTOS = "produtos";
 const CHAVE_LISTAS_SALVAS = "listasSalvas";
@@ -72,9 +73,9 @@ export function normalizarProduto(produto = {}) {
             textoSeguro(produto.nome) ||
             "Produto sem nome",
 
-        categoria:
-            textoSeguro(produto.categoria) ||
-            "📦 Outros",
+        categoria: normalizarCategoria(
+            textoSeguro(produto.categoria) || "📦 Outros"
+        ),
 
         medida: normalizarMedidaProduto(produto),
 
