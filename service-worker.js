@@ -1,6 +1,6 @@
 const CACHE_PREFIX = "smart-list-pwa";
-const STATIC_CACHE = `${CACHE_PREFIX}-static-v92`;
-const PAGE_CACHE = `${CACHE_PREFIX}-pages-v92`;
+const STATIC_CACHE = `${CACHE_PREFIX}-static-v93`;
+const PAGE_CACHE = `${CACHE_PREFIX}-pages-v93`;
 
 const PRECACHE_URLS = [
     "./",
@@ -73,6 +73,7 @@ const PRECACHE_URLS = [
     "./js/assinatura.js",
     "./js/listas-salvas-ui.js",
     "./js/lista-rapida.js",
+    "./js/voz-local-worker.js",
     "./js/listas-sync.js",
     "./js/admin-return.js",
     "./assets/logo/smart-list-app.png",
