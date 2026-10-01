@@ -27,40 +27,6 @@
     color: var(--cor-texto-secundario, #94a3b8);
 }
 
-.lista-rapida-voz {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 9px;
-}
-
-.btn-voz-lista {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-height: 42px;
-    padding: 8px 13px;
-    color: var(--cor-texto);
-    background: var(--cor-superficie-secundaria, #1f2937);
-    border: 1px solid var(--cor-borda, #687281);
-}
-
-.btn-voz-lista.esta-ouvindo {
-    color: #fff;
-    background: #b91c1c;
-    border-color: #ef4444;
-    animation: lista-rapida-pulso 1.2s ease-in-out infinite;
-}
-
-.lista-rapida-voz small {
-    color: var(--cor-texto-secundario, #94a3b8);
-}
-
-@keyframes lista-rapida-pulso {
-    50% { box-shadow: 0 0 0 5px rgba(239, 68, 68, .18); }
-}
-
 .lista-rapida-etapa {
     margin-top: 18px;
     padding-top: 18px;
@@ -215,13 +181,4 @@
         height: 40px;
     }
 
-    .lista-rapida-voz {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .btn-voz-lista {
-        width: 100%;
-    }
 }
