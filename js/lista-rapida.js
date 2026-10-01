@@ -4,6 +4,7 @@ import { CATEGORIAS, identificarCategoria } from "./categorias.js";
 let itensConferencia = [];
 let reconhecimentoVoz = null;
 let ouvindoLista = false;
+let usarDitadoDoTeclado = false;
 
 function semAcentos(valor) {
     return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -144,7 +145,11 @@ function atualizarEstadoVoz(mensagem = "", ativo = false) {
     if (botao) {
         botao.classList.toggle("esta-ouvindo", ativo);
         botao.setAttribute("aria-pressed", String(ativo));
-        botao.querySelector("span:last-child").textContent = ativo ? "Parar" : "Falar produtos";
+        botao.querySelector("span:last-child").textContent = ativo
+            ? "Parar"
+            : usarDitadoDoTeclado
+                ? "Usar voz pelo teclado"
+                : "Falar produtos";
     }
     if (status) status.textContent = mensagem;
 }
@@ -163,6 +168,30 @@ function adicionarTextoFalado(transcricao) {
     if (!itensFalados) return;
     campo.value = [campo.value.trim(), itensFalados].filter(Boolean).join("\n");
     campo.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+async function solicitarMicrofone() {
+    if (!navigator.mediaDevices?.getUserMedia) return true;
+    try {
+        const fluxo = await navigator.mediaDevices.getUserMedia({ audio: true });
+        fluxo.getTracks().forEach(trilha => trilha.stop());
+        return true;
+    } catch (_erro) {
+        return false;
+    }
+}
+
+function ativarDitadoDoTeclado() {
+    usarDitadoDoTeclado = true;
+    atualizarEstadoVoz("Toque no botão e depois no microfone do teclado do iPhone.", false);
+}
+
+function abrirDitadoDoTeclado() {
+    const campo = document.getElementById("textoListaRapida");
+    if (!campo) return;
+    campo.focus({ preventScroll: false });
+    campo.setSelectionRange(campo.value.length, campo.value.length);
+    atualizarEstadoVoz("Agora toque no 🎙️ do teclado e fale os produtos.", false);
 }
 
 function configurarEntradaPorVoz() {
@@ -215,9 +244,11 @@ function configurarEntradaPorVoz() {
     };
     reconhecimentoVoz.onerror = evento => {
         erroReconhecimento = true;
+        if (["service-not-allowed", "not-allowed"].includes(evento.error)) {
+            ativarDitadoDoTeclado();
+            return;
+        }
         const mensagens = {
-            "not-allowed": "Permita o microfone nos Ajustes do navegador e tente novamente.",
-            "service-not-allowed": "O reconhecimento de voz está bloqueado neste navegador.",
             "audio-capture": "O microfone não está disponível. Verifique a permissão do navegador.",
             "network": "A voz precisa de internet. Verifique sua conexão e tente novamente.",
             "no-speech": "Toque novamente e espere aparecer “Pode falar agora” antes de dizer o produto.",
@@ -235,9 +266,18 @@ function configurarEntradaPorVoz() {
             false
         );
     };
-    botao.addEventListener("click", () => {
+    botao.addEventListener("click", async () => {
+        if (usarDitadoDoTeclado) {
+            abrirDitadoDoTeclado();
+            return;
+        }
         if (ouvindoLista) {
             reconhecimentoVoz.stop();
+            return;
+        }
+        const permitido = await solicitarMicrofone();
+        if (!permitido) {
+            ativarDitadoDoTeclado();
             return;
         }
         try {
